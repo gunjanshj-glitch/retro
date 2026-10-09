@@ -17,6 +17,13 @@ name = "atlas-web"
 main = "workers/web/index.ts"
 compatibility_date = "2026-08-05"
 
+# Production domain. The zone must be on the same Cloudflare account; Cloudflare
+# creates and manages the DNS records for these hostnames.
+routes = [
+  { pattern = "retroholidays.in", custom_domain = true },
+  { pattern = "www.retroholidays.in", custom_domain = true },
+]
+
 [observability]
 enabled = true
 
