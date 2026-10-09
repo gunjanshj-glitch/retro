@@ -1,0 +1,2814 @@
+{
+  "cities": [
+    {
+      "name": "Mykonos",
+      "country": "Greece",
+      "lat": 37.446,
+      "lng": 25.328,
+      "iata": "JMK",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        3,
+        5
+      ],
+      "summary": "Mykonos pairs Cycladic lanes and beach clubs with easy ferry access to one of Greece's great ancient sites. It is compact, photogenic and geared to sun, dining and nightlife.",
+      "types": [
+        "ISLAND",
+        "BEACH",
+        "NIGHTLIFE",
+        "COASTAL"
+      ],
+      "island": true,
+      "best": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Chora & Little Venice",
+          "attractions": [
+            "Little Venice",
+            "Mykonos Windmills",
+            "Church of Panagia Paraportiani",
+            "Matogianni Street"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Delos Excursion",
+          "attractions": [
+            "Delos",
+            "Terrace of the Lions",
+            "House of Dionysus",
+            "Archaeological Museum of Delos"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 48
+        },
+        {
+          "name": "South Beach Circuit",
+          "attractions": [
+            "Platis Gialos Beach",
+            "Psarou Beach",
+            "Paradise Beach",
+            "Super Paradise Beach"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Ano Mera & Lighthouse",
+          "attractions": [
+            "Ano Mera",
+            "Panagia Tourliani Monastery",
+            "Fokos Beach",
+            "Armenistis Lighthouse"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Thessaloniki",
+      "country": "Greece",
+      "lat": 40.64,
+      "lng": 22.944,
+      "iata": "SKG",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Greece's second city mixes Roman, Byzantine and Ottoman layers with a lively seafront and food scene. It is one of the country's best urban breaks for history, markets and nightlife.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8,
+        9
+      ],
+      "clusters": [
+        {
+          "name": "Waterfront Icons",
+          "attractions": [
+            "White Tower of Thessaloniki",
+            "Thessaloniki Waterfront",
+            "Archaeological Museum of Thessaloniki",
+            "Alexander the Great Statue"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Upper Town & Rotunda",
+          "attractions": [
+            "Rotunda",
+            "Arch of Galerius",
+            "Church of Agios Dimitrios",
+            "Heptapyrgion"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Markets & Ladadika",
+          "attractions": [
+            "Modiano Market",
+            "Kapani Market",
+            "Aristotelous Square",
+            "Ladadika"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Byzantine Collections",
+          "attractions": [
+            "Museum of Byzantine Culture",
+            "Hagia Sophia",
+            "Roman Forum of Thessaloniki"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        }
+      ]
+    },
+    {
+      "name": "Meteora",
+      "country": "Greece",
+      "lat": 39.721,
+      "lng": 21.63,
+      "iata": "VOL",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Meteora's monasteries rise from sheer sandstone pillars in one of Europe's most dramatic landscapes. Come for the viewpoints, trails and extraordinary religious heritage.",
+      "types": [
+        "NATURE",
+        "HERITAGE",
+        "RELIGIOUS",
+        "ADVENTURE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Grand Monasteries",
+          "attractions": [
+            "Great Meteoron Monastery",
+            "Varlaam Monastery",
+            "Holy Trinity Monastery"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 9
+        },
+        {
+          "name": "Viewpoints & Sunset",
+          "attractions": [
+            "Meteora Viewpoint",
+            "Psaropetra Viewpoint",
+            "Sunset Rock",
+            "Kalambaka Old Town"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Kastraki Trails",
+          "attractions": [
+            "Roussanou Monastery",
+            "St. Stephen's Monastery",
+            "Kastraki",
+            "Byzantine Church of the Dormition of the Virgin Mary"
+          ],
+          "hours": 6,
+          "walk": "HIGH",
+          "eur": 6
+        }
+      ]
+    },
+    {
+      "name": "Delphi",
+      "country": "Greece",
+      "lat": 38.482,
+      "lng": 22.501,
+      "iata": "VOL",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Delphi sits high on Mount Parnassus above Greece's most evocative oracle sanctuary. It is a compact stop for classical ruins, mountain air and sweeping valley views.",
+      "types": [
+        "HERITAGE",
+        "MOUNTAIN",
+        "RELIGIOUS"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Sanctuary of Apollo",
+          "attractions": [
+            "Archaeological Site of Delphi",
+            "Temple of Apollo",
+            "Ancient Theatre of Delphi",
+            "Stadium of Delphi"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 20
+        },
+        {
+          "name": "Museum & Marmaria",
+          "attractions": [
+            "Delphi Archaeological Museum",
+            "Tholos of Delphi",
+            "Sanctuary of Athena Pronaia",
+            "Castalian Spring"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Arachova & Parnassus",
+          "attractions": [
+            "Arachova",
+            "Parnassos National Park",
+            "Corycian Cave"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Corfu",
+      "country": "Greece",
+      "lat": 39.624,
+      "lng": 19.922,
+      "iata": "CFU",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Corfu combines Venetian townscapes, green hills and easy swimming coves. The island works well for a longer stay thanks to its heritage core, beaches and scenic drives.",
+      "types": [
+        "ISLAND",
+        "COASTAL",
+        "BEACH",
+        "HERITAGE"
+      ],
+      "island": true,
+      "best": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Corfu Town Heritage",
+          "attractions": [
+            "Old Fortress of Corfu",
+            "Spianada Square",
+            "Liston Promenade",
+            "Church of Saint Spyridon"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Paleokastritsa Coast",
+          "attractions": [
+            "Paleokastritsa Monastery",
+            "Paleokastritsa Beach",
+            "La Grotta",
+            "Angelokastro"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Achilleion & Kanoni",
+          "attractions": [
+            "Achilleion Palace",
+            "Mouse Island",
+            "Vlacherna Monastery",
+            "Kanoni"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "North Corfu Views",
+          "attractions": [
+            "Canal d'Amour",
+            "Cape Drastis",
+            "Kassiopi Castle",
+            "Old Perithia"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Zakynthos",
+      "country": "Greece",
+      "lat": 37.787,
+      "lng": 20.899,
+      "iata": "ZTH",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Zakynthos is known for bright turquoise water, boat trips and dramatic limestone scenery. It suits beach time, marine-life outings and short scenic drives around the island.",
+      "types": [
+        "ISLAND",
+        "BEACH",
+        "NATURE",
+        "COASTAL"
+      ],
+      "island": true,
+      "best": [
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Shipwreck Coast",
+          "attractions": [
+            "Navagio Viewpoint",
+            "Porto Vromi",
+            "Blue Caves",
+            "Skinari Lighthouse"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "Turtle Bay South",
+          "attractions": [
+            "Laganas Bay",
+            "Marathonisi",
+            "Cameo Island",
+            "Zakynthos National Marine Park"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Town & Bochali",
+          "attractions": [
+            "Solomos Square",
+            "Church of Agios Dionysios",
+            "Bochali Viewpoint",
+            "Venetian Castle of Zakynthos"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 6
+        },
+        {
+          "name": "Keri & Mizithres",
+          "attractions": [
+            "Keri Caves",
+            "Mizithres Viewpoint",
+            "Keri Lighthouse",
+            "Limnionas Beach"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Crete",
+      "country": "Greece",
+      "lat": 35.339,
+      "lng": 25.144,
+      "iata": "HER",
+      "cost": "MEDIUM",
+      "nights": [
+        3,
+        5,
+        8
+      ],
+      "summary": "Crete is a full-scale destination with Minoan sites, superb food, long beaches and varied mountain landscapes. It rewards road-trippers and slow stays far beyond a quick island stop.",
+      "types": [
+        "ISLAND",
+        "BEACH",
+        "HERITAGE",
+        "NATURE"
+      ],
+      "island": true,
+      "best": [
+        5,
+        6,
+        7,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Knossos & Heraklion",
+          "attractions": [
+            "Knossos Palace",
+            "Heraklion Archaeological Museum",
+            "Koules Fortress",
+            "Morosini Fountain"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "Chania Old Port",
+          "attractions": [
+            "Old Venetian Harbor",
+            "Firka Fortress",
+            "Maritime Museum of Crete",
+            "Chania Old Town"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Rethymno & Arkadi",
+          "attractions": [
+            "Rethymno Old Town",
+            "Fortezza of Rethymno",
+            "Arkadi Monastery",
+            "Rimondi Fountain"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Samaria Gorge South",
+          "attractions": [
+            "Samaria Gorge",
+            "Agia Roumeli",
+            "White Mountains",
+            "Sougia"
+          ],
+          "hours": 8,
+          "walk": "HIGH",
+          "eur": 25
+        },
+        {
+          "name": "West Beaches & Lagoons",
+          "attractions": [
+            "Elafonisi Beach",
+            "Balos Lagoon",
+            "Gramvousa Island",
+            "Falasarna Beach"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 35
+        }
+      ]
+    },
+    {
+      "name": "Madrid",
+      "country": "Spain",
+      "lat": 40.416,
+      "lng": -3.703,
+      "iata": "MAD",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Madrid delivers grand boulevards, world-class art and one of Europe's liveliest late-night cultures. Its major sights are balanced by great parks, tapas districts and easy day-trip links.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "NIGHTLIFE",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        9,
+        10
+      ],
+      "peak": [
+        4,
+        5,
+        10,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Prado Triangle",
+          "attractions": [
+            "Museo del Prado",
+            "Thyssen-Bornemisza Museum",
+            "Museo Reina Sofía",
+            "CaixaForum Madrid"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 45
+        },
+        {
+          "name": "Royal Madrid",
+          "attractions": [
+            "Royal Palace of Madrid",
+            "Almudena Cathedral",
+            "Plaza Mayor",
+            "Mercado de San Miguel"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Retiro & Salamanca",
+          "attractions": [
+            "El Retiro Park",
+            "Crystal Palace",
+            "Puerta de Alcalá",
+            "National Archaeological Museum"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Gran Vía & Rooftops",
+          "attractions": [
+            "Gran Vía",
+            "Plaza de España",
+            "Círculo de Bellas Artes",
+            "Temple of Debod"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Malasaña & Chueca",
+          "attractions": [
+            "Plaza del Dos de Mayo",
+            "Museo del Romanticismo",
+            "Mercado de San Ildefonso",
+            "Chueca"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Barcelona",
+      "country": "Spain",
+      "lat": 41.387,
+      "lng": 2.17,
+      "iata": "BCN",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Barcelona layers Gaudí architecture, dense old quarters and city beaches into one of Europe's most complete short breaks. It is strong on art, food and street life from morning to late night.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "COASTAL",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Gothic Core",
+          "attractions": [
+            "Barcelona Cathedral",
+            "Gothic Quarter",
+            "Plaça del Rei",
+            "Plaça Sant Jaume"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Gaudí Icons",
+          "attractions": [
+            "Sagrada Família",
+            "Casa Batlló",
+            "Casa Milà",
+            "Passeig de Gràcia"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 63
+        },
+        {
+          "name": "Park Güell Heights",
+          "attractions": [
+            "Park Güell",
+            "Bunkers del Carmel",
+            "Gràcia",
+            "Recinte Modernista de Sant Pau"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 22
+        },
+        {
+          "name": "Born & Waterfront",
+          "attractions": [
+            "Picasso Museum",
+            "Santa Maria del Mar",
+            "Port Vell",
+            "Barceloneta Beach"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Montjuïc Hill",
+          "attractions": [
+            "Montjuïc Castle",
+            "Museu Nacional d'Art de Catalunya",
+            "Poble Espanyol",
+            "Magic Fountain of Montjuïc"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 25
+        }
+      ]
+    },
+    {
+      "name": "Seville",
+      "country": "Spain",
+      "lat": 37.389,
+      "lng": -5.984,
+      "iata": "SVQ",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Seville is an atmospheric Andalusian capital of palaces, patios and flamenco. Its compact centre makes it easy to combine major monuments with long evenings of tapas and riverfront walks.",
+      "types": [
+        "HERITAGE",
+        "URBAN",
+        "WINE_AND_FOOD",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        3,
+        4,
+        5,
+        10,
+        11
+      ],
+      "peak": [
+        4,
+        5,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Cathedral & Giralda",
+          "attractions": [
+            "Seville Cathedral",
+            "Giralda",
+            "Archivo de Indias",
+            "Patio de los Naranjos"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Alcázar & Santa Cruz",
+          "attractions": [
+            "Royal Alcázar of Seville",
+            "Barrio Santa Cruz",
+            "Murillo Gardens",
+            "Hospital de los Venerables"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Plaza de España Gardens",
+          "attractions": [
+            "Plaza de España",
+            "Maria Luisa Park",
+            "Real Fábrica de Tabacos",
+            "Palacio de San Telmo"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Triana & Flamenco",
+          "attractions": [
+            "Triana Market",
+            "Castillo de San Jorge",
+            "Puente de Isabel II",
+            "Casa de la Memoria"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 25
+        }
+      ]
+    },
+    {
+      "name": "Granada",
+      "country": "Spain",
+      "lat": 37.177,
+      "lng": -3.598,
+      "iata": "GRX",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        2,
+        2,
+        3
+      ],
+      "summary": "Granada combines the Alhambra with hilltop quarters, tea-house alleys and Sierra Nevada views. It is one of Spain's most rewarding short stays for history and atmosphere.",
+      "types": [
+        "HERITAGE",
+        "URBAN",
+        "ROMANTIC",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        4,
+        5,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Alhambra Day",
+          "attractions": [
+            "Alhambra",
+            "Generalife",
+            "Nasrid Palaces",
+            "Alcazaba"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 19
+        },
+        {
+          "name": "Albaicín Miradors",
+          "attractions": [
+            "Albaicín",
+            "Mirador de San Nicolás",
+            "Carrera del Darro",
+            "El Bañuelo"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 8
+        },
+        {
+          "name": "Cathedral Quarter",
+          "attractions": [
+            "Granada Cathedral",
+            "Royal Chapel of Granada",
+            "Alcaicería",
+            "Plaza Bib-Rambla"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 13
+        },
+        {
+          "name": "Sacromonte Caves",
+          "attractions": [
+            "Sacromonte",
+            "Museo Cuevas del Sacromonte",
+            "Abadía del Sacromonte"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Córdoba",
+      "country": "Spain",
+      "lat": 37.889,
+      "lng": -4.779,
+      "iata": "SVQ",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Córdoba is a compact Andalusian gem centred on the Mezquita and flower-filled lanes. One unhurried day covers its major layers of Roman, Islamic and Christian history.",
+      "types": [
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        3,
+        4,
+        5,
+        10,
+        11
+      ],
+      "peak": [
+        4,
+        5,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Mezquita Quarter",
+          "attractions": [
+            "Mosque-Cathedral of Córdoba",
+            "Patio de los Naranjos",
+            "Roman Bridge of Córdoba",
+            "Calahorra Tower"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Jewish Quarter & Alcázar",
+          "attractions": [
+            "Calleja de las Flores",
+            "Synagogue of Córdoba",
+            "Alcázar de los Reyes Cristianos",
+            "Puerta de Almodóvar"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Patios & Palaces",
+          "attractions": [
+            "Palacio de Viana",
+            "Plaza de la Corredera",
+            "Cristo de los Faroles"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Valencia",
+      "country": "Spain",
+      "lat": 39.47,
+      "lng": -0.376,
+      "iata": "VLC",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Valencia balances a lively old centre with futuristic museums, broad beaches and one of Spain's best urban parks. It is a very easy city break with excellent food and family appeal.",
+      "types": [
+        "URBAN",
+        "COASTAL",
+        "ARTS",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Ciutat Vella",
+          "attractions": [
+            "Valencia Cathedral",
+            "La Lonja de la Seda",
+            "Central Market of Valencia",
+            "Plaça de la Mare de Déu"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "City of Arts",
+          "attractions": [
+            "City of Arts and Sciences",
+            "L'Oceanogràfic",
+            "Hemisfèric",
+            "L'Umbracle"
+          ],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 49
+        },
+        {
+          "name": "Turia Gardens",
+          "attractions": [
+            "Turia Gardens",
+            "Torres de Serranos",
+            "IVAM",
+            "Jardí Botànic de la Universitat de València"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Beach & Albufera",
+          "attractions": [
+            "Malvarrosa Beach",
+            "Marina de Valencia",
+            "Albufera Natural Park",
+            "El Palmar"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Málaga",
+      "country": "Spain",
+      "lat": 36.721,
+      "lng": -4.421,
+      "iata": "AGP",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Málaga makes a strong short coastal stop with Moorish fortifications, major art museums and an easy beach-front promenade. It is compact, sunny and well connected across Andalusia.",
+      "types": [
+        "URBAN",
+        "COASTAL",
+        "ARTS",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        3,
+        4,
+        5,
+        9,
+        10,
+        11
+      ],
+      "peak": [
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Alcazaba Core",
+          "attractions": [
+            "Alcazaba of Málaga",
+            "Roman Theatre of Málaga",
+            "Málaga Cathedral",
+            "Plaza de la Merced"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Picasso & Port",
+          "attractions": [
+            "Picasso Museum Málaga",
+            "Centre Pompidou Málaga",
+            "Muelle Uno",
+            "Playa de La Malagueta"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 21
+        },
+        {
+          "name": "Gibralfaro Views",
+          "attractions": [
+            "Castillo de Gibralfaro",
+            "Mirador de Gibralfaro",
+            "Paseo del Parque",
+            "Jardines de Pedro Luis Alonso"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 6
+        },
+        {
+          "name": "Soho & Market",
+          "attractions": [
+            "CAC Málaga",
+            "Atarazanas Market",
+            "Soho",
+            "Museo Carmen Thyssen Málaga"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Marbella",
+      "country": "Spain",
+      "lat": 36.51,
+      "lng": -4.885,
+      "iata": "AGP",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Marbella combines a pretty old town with beach clubs, marinas and a polished Costa del Sol feel. It is best for sun, dining and a more upscale coastal base.",
+      "types": [
+        "COASTAL",
+        "BEACH",
+        "NIGHTLIFE",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Old Town & Orange Square",
+          "attractions": [
+            "Plaza de los Naranjos",
+            "Iglesia de la Encarnación",
+            "Marbella Old Town",
+            "Avenida del Mar"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Puerto Banús Glamour",
+          "attractions": [
+            "Puerto Banús",
+            "Playa Puerto Banús",
+            "Avenida José Banús",
+            "Museo Ralli"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Golden Mile Beaches",
+          "attractions": [
+            "Playa de Casablanca",
+            "Playa de Nagüeles",
+            "Mezquita del Rey Abdul Aziz",
+            "Paseo Marítimo de Marbella"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Ronda",
+      "country": "Spain",
+      "lat": 36.742,
+      "lng": -5.167,
+      "iata": "AGP",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Ronda sits dramatically above a deep gorge and packs major views into a walkable hill town. It is ideal for a slow day of scenery, history and white-village atmosphere.",
+      "types": [
+        "HERITAGE",
+        "MOUNTAIN",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        4,
+        5,
+        9
+      ],
+      "clusters": [
+        {
+          "name": "Gorge & Bridges",
+          "attractions": [
+            "Puente Nuevo",
+            "El Tajo de Ronda",
+            "Alameda del Tajo",
+            "Mirador de Aldehuela"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Moorish Ronda",
+          "attractions": [
+            "Mondragón Palace",
+            "Casa del Rey Moro",
+            "Baños Árabes de Ronda",
+            "Puerta de Almocábar"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Country Views",
+          "attractions": [
+            "Acinipo",
+            "Reservatauro Ronda",
+            "Ermita Rupestre de la Virgen de la Cabeza"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Bilbao",
+      "country": "Spain",
+      "lat": 43.263,
+      "lng": -2.935,
+      "iata": "BIO",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Bilbao is a food-loving Basque city where bold modern architecture meets a characterful old quarter. It works well for art, pintxos and quick side trips to the coast.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Guggenheim Riverfront",
+          "attractions": [
+            "Guggenheim Museum Bilbao",
+            "Puppy",
+            "Zubizuri",
+            "Itsasmuseum Bilbao"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Casco Viejo Pintxos",
+          "attractions": [
+            "Plaza Nueva",
+            "Santiago Cathedral",
+            "Mercado de la Ribera",
+            "Arriaga Theatre"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Artxanda & Fine Arts",
+          "attractions": [
+            "Bilbao Fine Arts Museum",
+            "Doña Casilda Iturrizar Park",
+            "Funicular de Artxanda",
+            "Artxanda Viewpoint"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 11
+        },
+        {
+          "name": "Getxo & Bridge",
+          "attractions": [
+            "Vizcaya Bridge",
+            "Puerto Viejo de Algorta",
+            "Ereaga Beach",
+            "Getxo Marina"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        }
+      ]
+    },
+    {
+      "name": "San Sebastián",
+      "country": "Spain",
+      "lat": 43.318,
+      "lng": -1.981,
+      "iata": "EAS",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "San Sebastián is famed for its elegant bay, compact old town and outstanding pintxos scene. It rewards travellers who want beach time, good walking and top-tier food in one place.",
+      "types": [
+        "COASTAL",
+        "BEACH",
+        "WINE_AND_FOOD",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "La Concha & Parte Vieja",
+          "attractions": [
+            "La Concha Beach",
+            "Parte Vieja",
+            "Basilica of Saint Mary of the Chorus",
+            "Plaza de la Constitución"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Monte Igueldo Day",
+          "attractions": [
+            "Monte Igueldo",
+            "Funicular Monte Igueldo",
+            "Ondarreta Beach",
+            "Peine del Viento"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 9
+        },
+        {
+          "name": "Urgull & Port",
+          "attractions": [
+            "Monte Urgull",
+            "Castillo de la Mota",
+            "San Telmo Museum",
+            "San Sebastián Aquarium"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 24
+        },
+        {
+          "name": "Zurriola & Culture",
+          "attractions": [
+            "Zurriola Beach",
+            "Kursaal",
+            "Tabakalera",
+            "Cristina Enea Park"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Toledo",
+      "country": "Spain",
+      "lat": 39.862,
+      "lng": -4.028,
+      "iata": "MAD",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Toledo crowns a river-wrapped hill with one of Spain's richest medieval skylines. It is a dense, high-reward heritage stop with cathedrals, synagogues and superb viewpoints.",
+      "types": [
+        "HERITAGE",
+        "RELIGIOUS",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        3,
+        4,
+        5,
+        10,
+        11
+      ],
+      "peak": [
+        4,
+        5,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Cathedral & Jewish Quarter",
+          "attractions": [
+            "Toledo Cathedral",
+            "Synagogue of Santa María la Blanca",
+            "Monastery of San Juan de los Reyes",
+            "El Greco Museum"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 22
+        },
+        {
+          "name": "Alcázar & Zocodover",
+          "attractions": [
+            "Alcázar of Toledo",
+            "Army Museum",
+            "Plaza de Zocodover",
+            "Puerta del Sol"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Miradors & Gates",
+          "attractions": [
+            "Mirador del Valle",
+            "Puente de San Martín",
+            "Puerta de Bisagra",
+            "Mezquita del Cristo de la Luz"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 4
+        }
+      ]
+    },
+    {
+      "name": "Zaragoza",
+      "country": "Spain",
+      "lat": 41.649,
+      "lng": -0.889,
+      "iata": "ZAZ",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Zaragoza is an underrated Aragonese city with major basilicas, Roman remains and a broad riverside setting. It fits well as a cultural stop between Madrid, Barcelona and the Basque Country.",
+      "types": [
+        "HERITAGE",
+        "URBAN",
+        "RELIGIOUS"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Pilar & Ebro",
+          "attractions": [
+            "Basilica of Our Lady of the Pillar",
+            "Puente de Piedra",
+            "La Seo Cathedral",
+            "Ebro River promenade"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 9
+        },
+        {
+          "name": "Roman Caesaraugusta",
+          "attractions": [
+            "Museo del Foro de Caesaraugusta",
+            "Museo del Teatro de Caesaraugusta",
+            "Roman Walls of Zaragoza",
+            "Central Market Zaragoza"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Aljafería & Mudéjar",
+          "attractions": [
+            "Aljafería Palace",
+            "Patio de Santa Isabel",
+            "Iglesia de San Pablo",
+            "Plaza del Justicia"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Ibiza",
+      "country": "Spain",
+      "lat": 38.909,
+      "lng": 1.433,
+      "iata": "IBZ",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        3,
+        5
+      ],
+      "summary": "Ibiza offers more than clubs: walled heritage streets, coves and easy boat days sit alongside famous nightlife. It is best in shoulder season when the sea is warm and the roads are calmer.",
+      "types": [
+        "ISLAND",
+        "BEACH",
+        "NIGHTLIFE",
+        "COASTAL"
+      ],
+      "island": true,
+      "best": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Dalt Vila & Marina",
+          "attractions": [
+            "Dalt Vila",
+            "Ibiza Cathedral",
+            "Portal de ses Taules",
+            "Marina Botafoch"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "West Coast Sunsets",
+          "attractions": [
+            "Cala Comte",
+            "Cala Bassa",
+            "Es Vedrà Viewpoint",
+            "Torre des Savinar"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Formentera Boat Day",
+          "attractions": [
+            "Ses Illetes",
+            "La Savina",
+            "Faro de la Mola",
+            "Cala Saona"
+          ],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 55
+        },
+        {
+          "name": "Clubs & Playa d'en Bossa",
+          "attractions": [
+            "Ushuaïa Ibiza",
+            "Hï Ibiza",
+            "Playa d'en Bossa",
+            "DC-10 Ibiza"
+          ],
+          "hours": 8,
+          "walk": "LOW",
+          "eur": 80
+        }
+      ]
+    },
+    {
+      "name": "Mallorca",
+      "country": "Spain",
+      "lat": 39.569,
+      "lng": 2.65,
+      "iata": "PMI",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        3,
+        4,
+        6
+      ],
+      "summary": "Mallorca combines Palma's elegant old core with mountain villages, coves and scenic drives. The island easily supports a longer stay split between city sights and beach or hiking days.",
+      "types": [
+        "ISLAND",
+        "BEACH",
+        "HERITAGE",
+        "MOUNTAIN"
+      ],
+      "island": true,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Palma Old City",
+          "attractions": [
+            "Cathedral of Santa Maria of Palma",
+            "Royal Palace of La Almudaina",
+            "Palma Old Town",
+            "Banys Àrabs"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Serra de Tramuntana",
+          "attractions": [
+            "Sóller",
+            "Port de Sóller",
+            "Sa Calobra",
+            "Torrent de Pareis"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 35
+        },
+        {
+          "name": "Formentor & Pollença",
+          "attractions": [
+            "Cap de Formentor",
+            "Formentor Beach",
+            "Pollença Old Town",
+            "Calvari Steps"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 8
+        },
+        {
+          "name": "East Coast Caves",
+          "attractions": [
+            "Cuevas del Drach",
+            "Porto Cristo",
+            "Cala Romàntica",
+            "Torre del Serral dels Falcons"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Valldemossa & Deià",
+          "attractions": [
+            "Valldemossa Charterhouse",
+            "Deià",
+            "Son Marroig",
+            "Cala Deià"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Tenerife",
+      "country": "Spain",
+      "lat": 28.463,
+      "lng": -16.251,
+      "iata": "TFN",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        3,
+        5,
+        7
+      ],
+      "summary": "Tenerife spans volcanic highlands, resort beaches and laurel-forest walks on one large island. It suits travellers who want warm weather, scenery and varied day trips in any season.",
+      "types": [
+        "ISLAND",
+        "BEACH",
+        "NATURE",
+        "ADVENTURE"
+      ],
+      "island": true,
+      "best": [
+        3,
+        4,
+        5,
+        9,
+        10,
+        11
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Teide National Park",
+          "attractions": [
+            "Mount Teide",
+            "Teide Cable Car",
+            "Roques de García",
+            "Las Cañadas caldera"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 41
+        },
+        {
+          "name": "La Laguna & Anaga",
+          "attractions": [
+            "San Cristóbal de La Laguna",
+            "Anaga Rural Park",
+            "Playa de Las Teresitas",
+            "Mirador Cruz del Carmen"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Puerto de la Cruz North",
+          "attractions": [
+            "Loro Parque",
+            "Lago Martiánez",
+            "Botanical Garden of Puerto de la Cruz",
+            "Plaza del Charco"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 48
+        },
+        {
+          "name": "Los Gigantes & Teno",
+          "attractions": [
+            "Los Gigantes",
+            "Masca",
+            "Teno Rural Park",
+            "Punta de Teno"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 25
+        },
+        {
+          "name": "South Coast Resorts",
+          "attractions": [
+            "Siam Park",
+            "Playa del Duque",
+            "Costa Adeje",
+            "Los Cristianos"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 42
+        }
+      ]
+    },
+    {
+      "name": "Gran Canaria",
+      "country": "Spain",
+      "lat": 28.124,
+      "lng": -15.43,
+      "iata": "LPA",
+      "cost": "MEDIUM",
+      "nights": [
+        3,
+        4,
+        6
+      ],
+      "summary": "Gran Canaria mixes a city beach, desert-like dunes and a rugged interior of viewpoints and villages. It is one of Europe's easiest islands for all-season sunshine and varied outings.",
+      "types": [
+        "ISLAND",
+        "BEACH",
+        "NATURE",
+        "ADVENTURE"
+      ],
+      "island": true,
+      "best": [
+        3,
+        4,
+        5,
+        9,
+        10,
+        11
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Las Palmas Heritage",
+          "attractions": [
+            "Vegueta",
+            "Cathedral of Santa Ana",
+            "Casa de Colón",
+            "Las Canteras Beach"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 6
+        },
+        {
+          "name": "Maspalomas South",
+          "attractions": [
+            "Maspalomas Dunes",
+            "Maspalomas Lighthouse",
+            "Playa del Inglés",
+            "Charca de Maspalomas"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Mountain Interior",
+          "attractions": [
+            "Roque Nublo",
+            "Tejeda",
+            "Pico de las Nieves",
+            "Cruz de Tejeda"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Agaete West Coast",
+          "attractions": [
+            "Agaete",
+            "Puerto de las Nieves",
+            "Dedo de Dios",
+            "Valle de Agaete"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Arucas & North",
+          "attractions": [
+            "Arucas",
+            "Arehucas Distillery",
+            "Firgas",
+            "Cenobio de Valerón"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Lisbon",
+      "country": "Portugal",
+      "lat": 38.722,
+      "lng": -9.139,
+      "iata": "LIS",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Lisbon spreads across steep hills with miradouros, tiled facades and an excellent food scene. It is one of Europe's best-value capitals for culture, nightlife and easy Atlantic day trips.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "NIGHTLIFE",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        3,
+        4,
+        5,
+        9,
+        10,
+        11
+      ],
+      "peak": [
+        4,
+        5,
+        9,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Baixa & Alfama",
+          "attractions": [
+            "Praça do Comércio",
+            "Lisbon Cathedral",
+            "Castelo de São Jorge",
+            "Miradouro de Santa Luzia"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 15
+        },
+        {
+          "name": "Belém Monuments",
+          "attractions": [
+            "Jerónimos Monastery",
+            "Belém Tower",
+            "Monument to the Discoveries",
+            "MAAT"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 28
+        },
+        {
+          "name": "Chiado & Bairro Alto",
+          "attractions": [
+            "Chiado",
+            "Convento do Carmo",
+            "Santa Justa Lift",
+            "Bairro Alto"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 7
+        },
+        {
+          "name": "Tram Hills & Graça",
+          "attractions": [
+            "Tram 28",
+            "Miradouro da Senhora do Monte",
+            "National Pantheon",
+            "Feira da Ladra"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 4
+        },
+        {
+          "name": "Riverside Modern Lisbon",
+          "attractions": [
+            "Time Out Market Lisboa",
+            "LX Factory",
+            "Pilar 7 Bridge Experience",
+            "National Coach Museum"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Sintra",
+      "country": "Portugal",
+      "lat": 38.798,
+      "lng": -9.39,
+      "iata": "LIS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Sintra is Portugal's classic fairy-tale escape, packed with palaces, gardens and misty hilltop views. It merits more than a rushed day trip if you want both monuments and coast.",
+      "types": [
+        "FAIRYTALE",
+        "HERITAGE",
+        "MOUNTAIN",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        3,
+        4,
+        5,
+        9,
+        10
+      ],
+      "peak": [
+        4,
+        5,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Pena & Moorish Heights",
+          "attractions": [
+            "Pena Palace",
+            "Castelo dos Mouros",
+            "Parque da Pena",
+            "Chalet of the Countess of Edla"
+          ],
+          "hours": 8,
+          "walk": "HIGH",
+          "eur": 20
+        },
+        {
+          "name": "Regaleira & Old Town",
+          "attractions": [
+            "Quinta da Regaleira",
+            "Sintra National Palace",
+            "Sintra Historic Center",
+            "Palácio de Seteais"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 18
+        },
+        {
+          "name": "Monserrate Gardens",
+          "attractions": [
+            "Palácio de Monserrate",
+            "Parque de Monserrate",
+            "Convent of the Capuchos",
+            "Vila Sassetti"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 12
+        },
+        {
+          "name": "Atlantic Coast",
+          "attractions": [
+            "Cabo da Roca",
+            "Praia da Adraga",
+            "Azenhas do Mar",
+            "Praia das Maçãs"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Cascais",
+      "country": "Portugal",
+      "lat": 38.697,
+      "lng": -9.422,
+      "iata": "LIS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Cascais is an easy-going Atlantic resort town with beaches, promenades and a polished marina feel. It works well for a relaxed coastal break or as a Lisbon-side sea escape.",
+      "types": [
+        "COASTAL",
+        "BEACH",
+        "FAMILY",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Historic Cascais",
+          "attractions": [
+            "Cascais Citadel",
+            "Praça 5 de Outubro",
+            "Santa Marta Lighthouse Museum",
+            "Cascais Marina"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 5
+        },
+        {
+          "name": "Boca & Museums",
+          "attractions": [
+            "Boca do Inferno",
+            "Praia da Rainha",
+            "Casa das Histórias Paula Rego",
+            "Parque Marechal Carmona"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 13
+        },
+        {
+          "name": "Guincho Coast",
+          "attractions": [
+            "Guincho Beach",
+            "Farol do Cabo Raso",
+            "Cresmina Dune",
+            "Casa da Guia"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Porto",
+      "country": "Portugal",
+      "lat": 41.149,
+      "lng": -8.61,
+      "iata": "OPO",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Porto pairs riverfront drama, tiled churches and famous wine lodges with a compact, atmospheric centre. It is highly rewarding for food, views and romantic walks across the Douro.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ROMANTIC",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7,
+        9
+      ],
+      "clusters": [
+        {
+          "name": "Ribeira & Bridges",
+          "attractions": [
+            "Ribeira",
+            "Dom Luís I Bridge",
+            "Bolsa Palace",
+            "Church of Saint Francis"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 18
+        },
+        {
+          "name": "Clérigos & Core",
+          "attractions": [
+            "Clérigos Tower",
+            "Livraria Lello",
+            "São Bento Station",
+            "Rua das Flores"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Gaia Cellars",
+          "attractions": [
+            "Cais de Gaia",
+            "Graham's Port Lodge",
+            "Jardim do Morro",
+            "World of Wine"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 25
+        },
+        {
+          "name": "Foz & Serralves",
+          "attractions": [
+            "Serralves Museum",
+            "Crystal Palace Gardens",
+            "Foz do Douro",
+            "Farolim de Felgueiras"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "name": "Coimbra",
+      "country": "Portugal",
+      "lat": 40.211,
+      "lng": -8.429,
+      "iata": "OPO",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Coimbra is a handsome hill city dominated by Portugal's historic university and student traditions. It is compact, atmospheric and strong on libraries, churches and river views.",
+      "types": [
+        "HERITAGE",
+        "ARTS",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "University Hill",
+          "attractions": [
+            "University of Coimbra",
+            "Joanina Library",
+            "Paço das Escolas",
+            "Chapel of São Miguel"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 14
+        },
+        {
+          "name": "Old Town & Santa Cruz",
+          "attractions": [
+            "Sé Velha de Coimbra",
+            "Machado de Castro National Museum",
+            "Monastery of Santa Cruz",
+            "Almedina Tower"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "River & Santa Clara",
+          "attractions": [
+            "Santa Clara-a-Velha",
+            "Portugal dos Pequenitos",
+            "Pedro and Inês Footbridge",
+            "Quinta das Lágrimas"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 17
+        }
+      ]
+    },
+    {
+      "name": "Faro",
+      "country": "Portugal",
+      "lat": 37.019,
+      "lng": -7.93,
+      "iata": "FAO",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Faro combines a walled old town with easy boat access into the lagoons and islands of the Ria Formosa. It is more rewarding than a simple airport stop, especially in shoulder season.",
+      "types": [
+        "COASTAL",
+        "HERITAGE",
+        "BEACH",
+        "NATURE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Cidade Velha",
+          "attractions": [
+            "Arco da Vila",
+            "Faro Cathedral",
+            "Municipal Museum of Faro",
+            "Largo da Sé"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Ria Formosa Islands",
+          "attractions": [
+            "Ria Formosa Natural Park",
+            "Ilha Deserta",
+            "Ilha do Farol",
+            "Culatra Island"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 30
+        },
+        {
+          "name": "Marina & Salt Marshes",
+          "attractions": [
+            "Faro Marina",
+            "Igreja do Carmo",
+            "Chapel of Bones of Faro",
+            "Ludo Trail"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 6
+        }
+      ]
+    },
+    {
+      "name": "Lagos",
+      "country": "Portugal",
+      "lat": 37.102,
+      "lng": -8.674,
+      "iata": "FAO",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Lagos is one of the Algarve's best all-round bases, mixing a lively historic centre with famous cliffs and beaches. It suits travellers who want boat trips, swims and easy nightlife.",
+      "types": [
+        "COASTAL",
+        "BEACH",
+        "ADVENTURE",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Ponta da Piedade Coast",
+          "attractions": [
+            "Ponta da Piedade",
+            "Praia Dona Ana",
+            "Praia do Camilo",
+            "Praia dos Estudantes"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 20
+        },
+        {
+          "name": "Old Town & Fort",
+          "attractions": [
+            "Lagos Old Town",
+            "Forte da Ponta da Bandeira",
+            "Igreja de Santo António",
+            "Mercado de Escravos"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Sagres Day Trip",
+          "attractions": [
+            "Sagres Fortress",
+            "Cape St. Vincent",
+            "Praia do Tonel",
+            "Fortaleza de Beliche"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Marina & Meia Praia",
+          "attractions": [
+            "Marina de Lagos",
+            "Meia Praia",
+            "São Roque Beach"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Albufeira",
+      "country": "Portugal",
+      "lat": 37.089,
+      "lng": -8.247,
+      "iata": "FAO",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Albufeira is a classic Algarve resort with cliffs, sandy beaches and a big evening scene. It is a practical base for boat trips and beach time, especially for groups and families.",
+      "types": [
+        "BEACH",
+        "COASTAL",
+        "NIGHTLIFE",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Old Town Clifftops",
+          "attractions": [
+            "Albufeira Old Town",
+            "Praia dos Pescadores",
+            "Pau da Bandeira Viewpoint",
+            "Clock Tower of Albufeira"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Marina & Caves",
+          "attractions": [
+            "Albufeira Marina",
+            "Benagil Cave",
+            "Praia da Marinha",
+            "Algar de Benagil"
+          ],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "East Beaches & Strip",
+          "attractions": [
+            "Praia da Oura",
+            "The Strip",
+            "Praia de Santa Eulália",
+            "Olhos de Água"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Évora",
+      "country": "Portugal",
+      "lat": 38.571,
+      "lng": -7.913,
+      "iata": "LIS",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Évora is a beautifully preserved Alentejo city of Roman remains, churches and whitewashed lanes. It makes a rich but manageable heritage stop with strong food and wine nearby.",
+      "types": [
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "RELIGIOUS"
+      ],
+      "island": false,
+      "best": [
+        3,
+        4,
+        5,
+        9,
+        10,
+        11
+      ],
+      "peak": [
+        4,
+        5,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Roman & Cathedral Core",
+          "attractions": [
+            "Roman Temple of Évora",
+            "Évora Cathedral",
+            "Praça do Giraldo",
+            "Museu Nacional Frei Manuel do Cenáculo"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Bones & Aqueduct",
+          "attractions": [
+            "Chapel of Bones",
+            "Igreja de São Francisco",
+            "Aqueduto da Água de Prata",
+            "Jardim Público de Évora"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 6
+        },
+        {
+          "name": "Megaliths & Wine",
+          "attractions": [
+            "Almendres Cromlech",
+            "Anta Grande do Zambujeiro",
+            "Adega Cartuxa"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Funchal",
+      "country": "Portugal",
+      "lat": 32.649,
+      "lng": -16.909,
+      "iata": "FNC",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Funchal is a lush Atlantic island capital backed by steep slopes and famous for gardens, levadas and subtropical produce. It is a strong year-round base for scenery, walking and ocean views.",
+      "types": [
+        "ISLAND",
+        "COASTAL",
+        "NATURE",
+        "WINE_AND_FOOD"
+      ],
+      "island": true,
+      "best": [
+        3,
+        4,
+        5,
+        9,
+        10,
+        11
+      ],
+      "peak": [
+        7,
+        8,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Old Town & Market",
+          "attractions": [
+            "Zona Velha",
+            "Mercado dos Lavradores",
+            "Funchal Cathedral",
+            "Fortaleza de São Tiago"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Monte Heights",
+          "attractions": [
+            "Monte Palace Tropical Garden",
+            "Funchal Cable Car",
+            "Igreja de Nossa Senhora do Monte",
+            "Carreiros do Monte"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 37
+        },
+        {
+          "name": "Câmara de Lobos & Cabo Girão",
+          "attractions": [
+            "Câmara de Lobos",
+            "Cabo Girão Skywalk",
+            "Pico da Torre",
+            "Fajã dos Padres"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Peaks & Levada",
+          "attractions": [
+            "Pico do Arieiro",
+            "Ribeiro Frio",
+            "Levada dos Balcões",
+            "Santana"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Ponta Delgada",
+      "country": "Portugal",
+      "lat": 37.742,
+      "lng": -25.675,
+      "iata": "PDL",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Ponta Delgada is the gateway to São Miguel's crater lakes, hot springs and green Atlantic landscapes. It suits travellers who want soft adventure, viewpoints and a slower island rhythm.",
+      "types": [
+        "ISLAND",
+        "NATURE",
+        "ADVENTURE",
+        "COASTAL"
+      ],
+      "island": true,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Historic Ponta Delgada",
+          "attractions": [
+            "Portas da Cidade",
+            "Igreja Matriz de São Sebastião",
+            "Forte de São Brás",
+            "Mercado da Graça"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Sete Cidades Crater",
+          "attractions": [
+            "Vista do Rei",
+            "Lagoa Azul",
+            "Lagoa Verde",
+            "Miradouro da Boca do Inferno"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Furnas & Hot Springs",
+          "attractions": [
+            "Terra Nostra Park",
+            "Poça da Dona Beija",
+            "Furnas Lake",
+            "Chapel of Nossa Senhora das Vitórias"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Tea & Waterfalls",
+          "attractions": [
+            "Gorreana Tea Factory",
+            "Ribeira dos Caldeirões",
+            "Nordeste viewpoints",
+            "Farol do Arnel"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    }
+  ]
+}

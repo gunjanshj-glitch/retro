@@ -1,0 +1,1505 @@
+{
+  "cities": [
+    {
+      "name": "Paris",
+      "country": "France",
+      "lat": 48.857,
+      "lng": 2.352,
+      "iata": "CDG",
+      "cost": "HIGH",
+      "nights": [2, 4, 6],
+      "summary": "France's capital pairs world-class museums, grand boulevards and river views with neighborhood cafés, markets and late-night energy.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Eiffel Tower and Seine Icons",
+          "attractions": ["Eiffel Tower", "Champ de Mars", "Trocadéro", "Seine river cruise"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 45
+        },
+        {
+          "name": "Louvre and Royal Gardens",
+          "attractions": ["Louvre Museum", "Tuileries Garden", "Palais Royal", "Pont des Arts"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Notre-Dame and Latin Quarter",
+          "attractions": ["Notre-Dame Cathedral", "Sainte-Chapelle", "Panthéon", "Île Saint-Louis"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 26
+        },
+        {
+          "name": "Montmartre and Sacré-Cœur",
+          "attractions": ["Sacré-Cœur", "Place du Tertre", "Musée de Montmartre", "Moulin Rouge"],
+          "hours": 6,
+          "walk": "HIGH",
+          "eur": 15
+        },
+        {
+          "name": "Arc de Triomphe and Champs-Élysées",
+          "attractions": ["Arc de Triomphe", "Champs-Élysées", "Petit Palais", "Place de la Concorde"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Versailles",
+      "country": "France",
+      "lat": 48.805,
+      "lng": 2.135,
+      "iata": "ORY",
+      "cost": "HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Best known for the palace of Louis XIV, Versailles rewards a day or overnight stay with lavish interiors, formal gardens and elegant streets.",
+      "types": ["HERITAGE", "ARTS", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Palace and Hall of Mirrors",
+          "attractions": ["Palace of Versailles", "Hall of Mirrors", "King's Grand Apartments", "Royal Chapel"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 32
+        },
+        {
+          "name": "Gardens and Trianon Estate",
+          "attractions": ["Gardens of Versailles", "Grand Trianon", "Petit Trianon", "Queen's Hamlet"],
+          "hours": 6,
+          "walk": "HIGH",
+          "eur": 12
+        },
+        {
+          "name": "Market Quarter and Potager du Roi",
+          "attractions": ["Place du Marché Notre-Dame", "Versailles Cathedral", "Potager du Roi", "Rue de la Paroisse"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 9
+        }
+      ]
+    },
+    {
+      "name": "Strasbourg",
+      "country": "France",
+      "lat": 48.583,
+      "lng": 7.746,
+      "iata": "SXB",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Strasbourg blends Alsatian timbered lanes, a soaring Gothic cathedral and a lively food scene with a distinctly European outlook.",
+      "types": ["URBAN", "HERITAGE", "WINE_AND_FOOD", "FAIRYTALE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [7, 8, 12],
+      "clusters": [
+        {
+          "name": "Grande Île and Cathedral",
+          "attractions": ["Strasbourg Cathedral", "Astronomical Clock", "Maison Kammerzell", "Place Gutenberg"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 9
+        },
+        {
+          "name": "Petite France and Covered Bridges",
+          "attractions": ["Petite France", "Ponts Couverts", "Barrage Vauban", "Canal quays"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "European Quarter and Orangerie",
+          "attractions": ["Parc de l'Orangerie", "Palais de l'Europe", "European Parliament", "Batorama boat cruise"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Colmar",
+      "country": "France",
+      "lat": 48.082,
+      "lng": 7.356,
+      "iata": "BSL",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Colmar is a compact Alsace favorite of canals, painted gables and excellent wine bars, with easy access to nearby vineyard villages.",
+      "types": ["HERITAGE", "WINE_AND_FOOD", "FAIRYTALE", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [7, 8, 12],
+      "clusters": [
+        {
+          "name": "Little Venice and Old Town",
+          "attractions": ["Little Venice", "Quai de la Poissonnerie", "Maison Pfister", "Koïfhus"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Unterlinden and Bartholdi Museums",
+          "attractions": ["Unterlinden Museum", "Bartholdi Museum", "Dominican Church", "Rue des Marchands"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Alsace Wine Route Villages",
+          "attractions": ["Eguisheim", "Turckheim", "Riquewihr", "Route des Vins d'Alsace"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Lyon",
+      "country": "France",
+      "lat": 45.767,
+      "lng": 4.835,
+      "iata": "LYS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Lyon combines Roman roots, Renaissance lanes and one of France's best dining scenes, all set between two rivers and two hills.",
+      "types": ["URBAN", "WINE_AND_FOOD", "HERITAGE", "ARTS"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [6, 7, 9],
+      "clusters": [
+        {
+          "name": "Vieux Lyon and Fourvière",
+          "attractions": ["Basilica of Notre-Dame de Fourvière", "Vieux Lyon", "Lyon Cathedral", "Roman theatres of Fourvière"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 10
+        },
+        {
+          "name": "Presqu'île and Fine Arts",
+          "attractions": ["Place Bellecour", "Place des Terreaux", "Musée des Beaux-Arts de Lyon", "Hôtel de Ville"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Croix-Rousse and Traboules",
+          "attractions": ["Croix-Rousse", "Mur des Canuts", "Maison des Canuts", "Traboules of Croix-Rousse"],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 10
+        },
+        {
+          "name": "Confluence and Riverbanks",
+          "attractions": ["Musée des Confluences", "Confluence district", "Rhône riverbanks", "La Sucrière"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 13
+        }
+      ]
+    },
+    {
+      "name": "Nice",
+      "country": "France",
+      "lat": 43.703,
+      "lng": 7.266,
+      "iata": "NCE",
+      "cost": "HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Nice offers Riviera beaches, a handsome old town and big-name art museums, with easy train links along the Côte d'Azur.",
+      "types": ["COASTAL", "URBAN", "BEACH", "ARTS"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Promenade and Old Nice",
+          "attractions": ["Promenade des Anglais", "Cours Saleya", "Colline du Château", "Cathédrale Sainte-Réparate"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Cimiez Museum Hill",
+          "attractions": ["Musée Matisse", "Marc Chagall National Museum", "Monastère de Cimiez", "Arènes de Cimiez"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 29
+        },
+        {
+          "name": "Monaco Riviera Day Trip",
+          "attractions": ["Prince's Palace of Monaco", "Oceanographic Museum", "Casino de Monte-Carlo", "Monaco-Ville"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 37
+        },
+        {
+          "name": "Port Lympia and City Beaches",
+          "attractions": ["Port Lympia", "Place Masséna", "Plage Beau Rivage", "Opéra de Nice"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Cannes",
+      "country": "France",
+      "lat": 43.551,
+      "lng": 7.013,
+      "iata": "NCE",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Cannes is more than red carpets: expect polished beaches, island excursions, old-quarter viewpoints and a glamorous Riviera atmosphere.",
+      "types": ["COASTAL", "BEACH", "URBAN", "NIGHTLIFE"],
+      "island": false,
+      "best": [5, 6, 9, 10],
+      "peak": [5, 7, 8],
+      "clusters": [
+        {
+          "name": "La Croisette and Le Suquet",
+          "attractions": ["Boulevard de la Croisette", "Palais des Festivals", "Le Suquet", "Marché Forville"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Lérins Islands Escape",
+          "attractions": ["Île Sainte-Marguerite", "Fort Royal", "Île Saint-Honorat", "Abbaye de Lérins"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Hilltop Views and Museums",
+          "attractions": ["Musée des Explorations du Monde", "Tour du Masque de Fer", "Rue d'Antibes", "Port de Cannes"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 6
+        }
+      ]
+    },
+    {
+      "name": "Marseille",
+      "country": "France",
+      "lat": 43.296,
+      "lng": 5.370,
+      "iata": "MRS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 3, 4],
+      "summary": "France's oldest city mixes Mediterranean grit and energy with seafood, historic quarters, islands and dramatic calanques.",
+      "types": ["COASTAL", "URBAN", "WINE_AND_FOOD", "ADVENTURE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Old Port and Le Panier",
+          "attractions": ["Vieux-Port", "Le Panier", "Cathédrale La Major", "MuCEM"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 13
+        },
+        {
+          "name": "Notre-Dame and Corniche",
+          "attractions": ["Notre-Dame de la Garde", "Vallon des Auffes", "Corniche Kennedy", "Abbaye Saint-Victor"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Calanques National Park Cruise",
+          "attractions": ["Calanques National Park", "Port-Miou", "Calanque de Sugiton", "Boat trip from Marseille"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 40
+        },
+        {
+          "name": "Château d'If and Frioul",
+          "attractions": ["Château d'If", "Frioul Islands", "Fort Saint-Jean", "Plage de Saint-Estève"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Bordeaux",
+      "country": "France",
+      "lat": 44.840,
+      "lng": -0.580,
+      "iata": "BOD",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Bordeaux pairs elegant riverfront architecture with serious wine culture, lively markets and easy excursions into famous vineyard country.",
+      "types": ["URBAN", "WINE_AND_FOOD", "HERITAGE", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [6, 7, 9],
+      "clusters": [
+        {
+          "name": "Historic Core and Riverfront",
+          "attractions": ["Place de la Bourse", "Miroir d'eau", "Grand Théâtre de Bordeaux", "Grosse Cloche"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Wine Culture and Chartrons",
+          "attractions": ["La Cité du Vin", "Bassins des Lumières", "Chartrons", "Quais de Bordeaux"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "Saint-Émilion Vineyard Day",
+          "attractions": ["Monolithic Church of Saint-Émilion", "Cloître des Cordeliers", "Saint-Émilion old town", "Wine tasting estate"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 30
+        },
+        {
+          "name": "Gardens and Contemporary Art",
+          "attractions": ["Jardin Public", "CAPC Museum of Contemporary Art", "Pont de Pierre", "Porte Cailhau"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Toulouse",
+      "country": "France",
+      "lat": 43.604,
+      "lng": 1.444,
+      "iata": "TLS",
+      "cost": "MEDIUM",
+      "nights": [2, 3, 4],
+      "summary": "The Pink City charms with brick squares, Romanesque treasures, canal walks and one of Europe's strongest aerospace stories.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Capitole and Old Toulouse",
+          "attractions": ["Place du Capitole", "Basilique Saint-Sernin", "Couvent des Jacobins", "Pont Neuf"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Space and Science Day",
+          "attractions": ["Cité de l'Espace", "Halle de La Machine", "Jardin des Plantes", "Canal du Midi"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Canal and Museum Quarter",
+          "attractions": ["Canal du Midi", "Musée des Augustins", "Hôtel d'Assézat", "Fondation Bemberg"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Aerospace and Airbus Visit",
+          "attractions": ["Aeroscopia", "Airbus factory tour", "Manatour", "Ailes Anciennes Toulouse"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 28
+        }
+      ]
+    },
+    {
+      "name": "Avignon",
+      "country": "France",
+      "lat": 43.950,
+      "lng": 4.808,
+      "iata": "MRS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Avignon's papal palace, medieval walls and Provençal squares make a rewarding base for culture, food and Rhône valley wine trips.",
+      "types": ["HERITAGE", "ARTS", "ROMANTIC", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Palace of the Popes and Bridge",
+          "attractions": ["Palais des Papes", "Pont d'Avignon", "Place de l'Horloge", "Avignon Cathedral"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 26
+        },
+        {
+          "name": "Ramparts and Garden Views",
+          "attractions": ["Rocher des Doms", "Musée du Petit Palais", "Ramparts of Avignon", "Rue des Teinturiers"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Villeneuve and Châteauneuf-du-Pape",
+          "attractions": ["Fort Saint-André", "Chartreuse du Val de Bénédiction", "Villeneuve-lès-Avignon", "Châteauneuf-du-Pape"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "name": "Chamonix",
+      "country": "France",
+      "lat": 45.923,
+      "lng": 6.870,
+      "iata": "GVA",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Chamonix is one of Europe's classic alpine bases, prized for Mont Blanc views, cable cars, glacier access and year-round outdoor adventure.",
+      "types": ["MOUNTAIN", "ADVENTURE", "SKI", "NATURE"],
+      "island": false,
+      "best": [1, 2, 6, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "Aiguille du Midi High Alps",
+          "attractions": ["Aiguille du Midi Cable Car", "Step into the Void", "Plan de l'Aiguille", "Chamonix centre"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 78
+        },
+        {
+          "name": "Mer de Glace and Montenvers",
+          "attractions": ["Montenvers Railway", "Mer de Glace", "Grotte de Glace", "Glaciorium"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 42
+        },
+        {
+          "name": "Brévent and Valley Trails",
+          "attractions": ["Brévent cable car", "Lac Blanc", "Parc de Merlet", "Mont Blanc viewpoints"],
+          "hours": 8,
+          "walk": "HIGH",
+          "eur": 35
+        }
+      ]
+    },
+    {
+      "name": "Mont Saint-Michel",
+      "country": "France",
+      "lat": 48.636,
+      "lng": -1.511,
+      "iata": "RNS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 1, 2],
+      "summary": "The abbey-crowned tidal mount is one of France's signature sights, especially atmospheric early or late in the day once day-trippers thin out.",
+      "types": ["HERITAGE", "COASTAL", "FAIRYTALE", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Abbey and Medieval Streets",
+          "attractions": ["Mont-Saint-Michel Abbey", "Grand Rue", "Ramparts Walk", "Église Saint-Pierre"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 13
+        },
+        {
+          "name": "Bay and Causeway Perspectives",
+          "attractions": ["Barrage du Mont-Saint-Michel", "Chapelle Saint-Aubert", "Guided bay walk", "Mainland viewpoints"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Loire Valley",
+      "country": "France",
+      "lat": 47.394,
+      "lng": 0.684,
+      "iata": "TUF",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 3, 5],
+      "summary": "A castle-rich stretch of central France, the Loire Valley excels at Renaissance châteaux, gardens, wine tasting and gentle cycling.",
+      "types": ["HERITAGE", "WINE_AND_FOOD", "ROMANTIC", "FAMILY"],
+      "island": false,
+      "best": [5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Chambord and Blois Castles",
+          "attractions": ["Château de Chambord", "Château Royal de Blois", "Domaine national de Chambord"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 34
+        },
+        {
+          "name": "Chenonceau and Amboise Highlights",
+          "attractions": ["Château de Chenonceau", "Château Royal d'Amboise", "Clos Lucé", "Amboise old town"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 47
+        },
+        {
+          "name": "Villandry and Azay Gardens",
+          "attractions": ["Château de Villandry", "Gardens of Villandry", "Château d'Azay-le-Rideau", "Loire à Vélo paths"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 31
+        }
+      ]
+    },
+    {
+      "name": "Zurich",
+      "country": "Switzerland",
+      "lat": 47.374,
+      "lng": 8.541,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Zurich mixes polished lakefront scenery, a compact old town, excellent museums and easy rail access to the rest of Switzerland.",
+      "types": ["URBAN", "LAKES", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 9, 12],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Old Town and Lakefront",
+          "attractions": ["Bahnhofstrasse", "Grossmünster", "Lindenhof", "Lake Zurich promenade"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Kunsthaus and Historic Churches",
+          "attractions": ["Kunsthaus Zürich", "Fraumünster", "Cabaret Voltaire", "Niederdorf"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Uetliberg and City Viewpoints",
+          "attractions": ["Uetliberg", "Polybahn", "ETH Zürich terrace", "Uto Kulm"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Chocolate and Lake Cruise",
+          "attractions": ["Lindt Home of Chocolate", "Kilchberg", "Lake Zurich cruise", "Rapperswil"],
+          "hours": 8,
+          "walk": "LOW",
+          "eur": 38
+        }
+      ]
+    },
+    {
+      "name": "Lucerne",
+      "country": "Switzerland",
+      "lat": 47.050,
+      "lng": 8.300,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [2, 2, 4],
+      "summary": "Lucerne is a classic Swiss stop for lakeside scenery, covered bridges, mountain excursions and a beautifully preserved old town.",
+      "types": ["LAKES", "HERITAGE", "MOUNTAIN", "FAMILY"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9, 12],
+      "peak": [7, 8, 12],
+      "clusters": [
+        {
+          "name": "Chapel Bridge and Old Lucerne",
+          "attractions": ["Chapel Bridge", "Water Tower", "Jesuit Church", "Weinmarkt"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Lake Cruise and Transport Museum",
+          "attractions": ["Lake Lucerne cruise", "Swiss Museum of Transport", "Lion Monument", "Glacier Garden"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 48
+        },
+        {
+          "name": "Pilatus Panorama Day",
+          "attractions": ["Mount Pilatus", "Pilatus Railway", "Dragon Ride cableway", "Fräkmüntegg"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 86
+        },
+        {
+          "name": "Musegg Walls and Rosengart",
+          "attractions": ["Musegg Wall", "Rosengart Collection", "KKL Luzern", "Spreuer Bridge"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Interlaken",
+      "country": "Switzerland",
+      "lat": 46.686,
+      "lng": 7.863,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Interlaken sits between two lakes and works brilliantly as a base for alpine rail trips, cruises and adventure sports.",
+      "types": ["NATURE", "MOUNTAIN", "ADVENTURE", "LAKES"],
+      "island": false,
+      "best": [1, 2, 6, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "Höhematte and Harder Kulm",
+          "attractions": ["Höhematte", "Harder Kulm", "Höheweg", "Aare promenade"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 40
+        },
+        {
+          "name": "Lake Brienz and Giessbach",
+          "attractions": ["Lake Brienz cruise", "Giessbach Falls", "Grandhotel Giessbach", "Iseltwald"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 49
+        },
+        {
+          "name": "Lake Thun Castles Circuit",
+          "attractions": ["Lake Thun cruise", "Oberhofen Castle", "Spiez Castle", "St. Beatus Caves"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 46
+        }
+      ]
+    },
+    {
+      "name": "Grindelwald",
+      "country": "Switzerland",
+      "lat": 46.624,
+      "lng": 8.041,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Grindelwald delivers big Eiger views, lift-linked hikes and winter sports in one of the Bernese Oberland's best-known villages.",
+      "types": ["MOUNTAIN", "ADVENTURE", "NATURE", "SKI"],
+      "island": false,
+      "best": [1, 2, 6, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "First Cliff Walk and Bachalpsee",
+          "attractions": ["Grindelwald First", "First Cliff Walk", "Bachalpsee", "First Flyer"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 91
+        },
+        {
+          "name": "Eiger Views at Kleine Scheidegg",
+          "attractions": ["Kleine Scheidegg", "Eiger Express", "Eigergletscher", "Eiger Trail viewpoint"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 68
+        },
+        {
+          "name": "Glacier Canyon and Pfingstegg",
+          "attractions": ["Gletscherschlucht", "Pfingstegg", "Grindelwald village centre", "Lütschine gorge"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 33
+        }
+      ]
+    },
+    {
+      "name": "Lauterbrunnen",
+      "country": "Switzerland",
+      "lat": 46.593,
+      "lng": 7.909,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Lauterbrunnen's vertical valley of cliffs and waterfalls is one of Switzerland's most dramatic landscapes and a gateway to high villages.",
+      "types": ["NATURE", "MOUNTAIN", "FAIRYTALE", "ADVENTURE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Waterfalls of the Valley Floor",
+          "attractions": ["Staubbach Falls", "Lauterbrunnen village", "Trümmelbach Falls", "Valley viewpoints"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Mürren and Schilthorn Day",
+          "attractions": ["Mürren", "Schilthorn", "Birg Thrill Walk", "Allmendhubel"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 108
+        },
+        {
+          "name": "Wengen and Kleine Scheidegg",
+          "attractions": ["Wengen", "Kleine Scheidegg", "Männlichen", "Wengernalp Railway"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 74
+        }
+      ]
+    },
+    {
+      "name": "Bern",
+      "country": "Switzerland",
+      "lat": 46.948,
+      "lng": 7.447,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Switzerland's capital charms with arcaded medieval streets, river bends, strong museums and a relaxed local feel.",
+      "types": ["URBAN", "HERITAGE", "FAMILY", "ARTS"],
+      "island": false,
+      "best": [5, 6, 9, 12],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "UNESCO Old Town Walk",
+          "attractions": ["Zytglogge", "Kramgasse", "Bern Cathedral", "Federal Palace"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Bears and Bern Museums",
+          "attractions": ["BearPark", "Rosengarten", "Zentrum Paul Klee", "Einstein Museum"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 34
+        },
+        {
+          "name": "Gurten and Aare Leisure",
+          "attractions": ["Gurten", "Marzili", "Aare river promenade", "Botanical Garden"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        }
+      ]
+    },
+    {
+      "name": "Geneva",
+      "country": "Switzerland",
+      "lat": 46.202,
+      "lng": 6.147,
+      "iata": "GVA",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Geneva combines lakefront elegance, major international institutions and an old town packed with history and good dining.",
+      "types": ["URBAN", "LAKES", "ARTS", "ROMANTIC"],
+      "island": false,
+      "best": [5, 6, 9, 12],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Lakefront and Old Town",
+          "attractions": ["Jet d'Eau", "Jardin Anglais", "Flower Clock", "Vieille Ville"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "International Geneva",
+          "attractions": ["Palais des Nations", "International Red Cross and Red Crescent Museum", "Ariana Museum", "Broken Chair"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Cathedral and City Museums",
+          "attractions": ["St Pierre Cathedral", "Maison Tavel", "Musée d'Art et d'Histoire", "Reformation Wall"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 13
+        },
+        {
+          "name": "Salève and Lakeside Swim",
+          "attractions": ["Mont Salève cable car", "Bains des Pâquis", "Lake Geneva cruise", "Quai du Mont-Blanc"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 36
+        }
+      ]
+    },
+    {
+      "name": "Montreux",
+      "country": "Switzerland",
+      "lat": 46.435,
+      "lng": 6.912,
+      "iata": "GVA",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Montreux is a polished Lake Geneva resort backed by vineyards and Alps, with one of Switzerland's best lakeside promenades.",
+      "types": ["LAKES", "MOUNTAIN", "WINE_AND_FOOD", "ROMANTIC"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Chillon and Lakeside Montreux",
+          "attractions": ["Château de Chillon", "Montreux lakeside promenade", "Freddie Mercury statue", "Montreux old town"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Rochers-de-Naye Panorama",
+          "attractions": ["Rochers-de-Naye", "GoldenPass line", "Marmots Paradise", "Lake Geneva viewpoints"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 76
+        },
+        {
+          "name": "Lavaux Vineyards and Vevey",
+          "attractions": ["Lavaux Vineyard Terraces", "Chaplin's World", "Vevey promenade", "Alimentarium"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 42
+        }
+      ]
+    },
+    {
+      "name": "Zermatt",
+      "country": "Switzerland",
+      "lat": 46.020,
+      "lng": 7.749,
+      "iata": "GVA",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Car-free Zermatt is the Matterhorn base for iconic viewpoints, high lifts, polished chalets and some of the Alps' best mountain scenery.",
+      "types": ["MOUNTAIN", "SKI", "NATURE", "ROMANTIC"],
+      "island": false,
+      "best": [1, 2, 3, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "Gornergrat and Matterhorn Views",
+          "attractions": ["Gornergrat Railway", "Riffelsee", "Zermatt village", "Matterhorn Museum"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 126
+        },
+        {
+          "name": "Glacier Paradise Summit Day",
+          "attractions": ["Matterhorn Glacier Paradise", "Klein Matterhorn", "Glacier Palace", "Trockener Steg"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 114
+        },
+        {
+          "name": "Sunnegga and Five Lakes",
+          "attractions": ["Sunnegga", "Leisee", "Blauherd", "Five Lakes Walk"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 52
+        }
+      ]
+    },
+    {
+      "name": "St. Moritz",
+      "country": "Switzerland",
+      "lat": 46.497,
+      "lng": 9.838,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 4],
+      "summary": "St. Moritz is Switzerland at its glossiest, mixing high-alpine panoramas, lake views, winter sports and grand-hotel polish.",
+      "types": ["MOUNTAIN", "SKI", "LAKES", "ROMANTIC"],
+      "island": false,
+      "best": [1, 2, 6, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "Lake and Historic St. Moritz",
+          "attractions": ["Lake St. Moritz", "Leaning Tower of St. Moritz", "Segantini Museum", "Via Serlas"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Bernina Scenic Rail Day",
+          "attractions": ["Bernina Express route", "Alp Grüm", "Ospizio Bernina", "Morteratsch Glacier viewpoint"],
+          "hours": 8,
+          "walk": "LOW_MEDIUM",
+          "eur": 62
+        },
+        {
+          "name": "Corviglia and Piz Nair",
+          "attractions": ["Corviglia", "Piz Nair", "Signalbahn", "Engadine viewpoints"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 74
+        }
+      ]
+    },
+    {
+      "name": "Basel",
+      "country": "Switzerland",
+      "lat": 47.555,
+      "lng": 7.591,
+      "iata": "BSL",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Basel stands out for top-tier art, a walkable old town and lively Rhine-side summer culture at the meeting point of three countries.",
+      "types": ["URBAN", "ARTS", "HERITAGE", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 9, 12],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Old Town and Rhine Classics",
+          "attractions": ["Basel Minster", "Basel Rathaus", "Pfalz terrace", "Mittlere Brücke"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Basel Art Institutions",
+          "attractions": ["Kunstmuseum Basel", "Fondation Beyeler", "Tinguely Fountain", "Museum Tinguely"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 50
+        },
+        {
+          "name": "Design and Riverside Excursion",
+          "attractions": ["Rhine ferry", "Vitra Design Museum", "Dreiländereck", "Novartis Campus exterior"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Engelberg",
+      "country": "Switzerland",
+      "lat": 46.821,
+      "lng": 8.409,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [2, 2, 4],
+      "summary": "Engelberg is a convenient central Swiss resort for monastery history, mountain lifts and family-friendly alpine activities.",
+      "types": ["MOUNTAIN", "SKI", "NATURE", "FAMILY"],
+      "island": false,
+      "best": [1, 2, 6, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "Titlis from Engelberg",
+          "attractions": ["Titlis Rotair", "Titlis Cliff Walk", "Glacier Cave", "Trübsee"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 108
+        },
+        {
+          "name": "Abbey and Village Centre",
+          "attractions": ["Engelberg Abbey", "Schaukäserei Kloster", "Kurpark Engelberg", "Dorfstrasse"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Brunni and Summer Trails",
+          "attractions": ["Brunni cable car", "Härzlisee", "Ristis", "Kitzelpfad"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 35
+        }
+      ]
+    },
+    {
+      "name": "Jungfraujoch",
+      "country": "Switzerland",
+      "lat": 46.547,
+      "lng": 7.980,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "The Top of Europe station brings high-alpine glaciers, observatory views and snow experiences within reach by rail and cable car.",
+      "types": ["MOUNTAIN", "NATURE", "ADVENTURE", "FAMILY"],
+      "island": false,
+      "best": [1, 2, 6, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "Top of Europe Essentials",
+          "attractions": ["Jungfraujoch station", "Sphinx Observatory", "Ice Palace", "Jungfraujoch Plateau"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 230
+        },
+        {
+          "name": "Alpine Sensation and Snow Fun",
+          "attractions": ["Alpine Sensation", "Snow Fun Park", "Lindt Swiss Chocolate Heaven", "Aletsch Glacier viewpoint"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 35
+        }
+      ]
+    },
+    {
+      "name": "Mount Titlis",
+      "country": "Switzerland",
+      "lat": 46.772,
+      "lng": 8.437,
+      "iata": "ZRH",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Mount Titlis is a high-value Swiss mountain day for glacier scenery, a rotating cable car and easy all-season snow fun.",
+      "types": ["MOUNTAIN", "NATURE", "ADVENTURE", "FAMILY"],
+      "island": false,
+      "best": [1, 2, 6, 7, 8, 9],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "Titlis Summit Highlights",
+          "attractions": ["Titlis Rotair", "Titlis Cliff Walk", "Glacier Cave", "Titlis Glacier Park"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 108
+        },
+        {
+          "name": "Trübsee and Stand Stopovers",
+          "attractions": ["Trübsee", "Ice Flyer", "Stand station", "Titlis viewpoints"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 28
+        }
+      ]
+    },
+    {
+      "name": "Luxembourg City",
+      "country": "Luxembourg",
+      "lat": 49.611,
+      "lng": 6.130,
+      "iata": "LUX",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Luxembourg City blends dramatic fortifications, polished squares and modern institutions in a compact capital easy to explore on foot.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Casemates and Old Quarter",
+          "attractions": ["Bock Casemates", "Chemin de la Corniche", "Grand Ducal Palace", "St Michael's Church"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Squares and National Collections",
+          "attractions": ["Place Guillaume II", "Notre-Dame Cathedral", "National Museum of History and Art", "Place d'Armes"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Kirchberg and Lower City Views",
+          "attractions": ["Mudam", "Philharmonie Luxembourg", "Pfaffenthal Panoramic Elevator", "Grund"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Vianden",
+      "country": "Luxembourg",
+      "lat": 49.934,
+      "lng": 6.208,
+      "iata": "LUX",
+      "cost": "MEDIUM",
+      "nights": [1, 1, 2],
+      "summary": "Vianden is a storybook riverside town crowned by one of Europe's finest hilltop castles and surrounded by wooded Ardennes scenery.",
+      "types": ["FAIRYTALE", "HERITAGE", "NATURE", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Vianden Castle and Chairlift",
+          "attractions": ["Vianden Castle", "Vianden Chairlift", "Our riverside", "Victor Hugo House"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 19
+        },
+        {
+          "name": "Dam and Riverside Walks",
+          "attractions": ["Vianden Dam", "Église des Trinitaires", "Upper town viewpoints", "Our valley trails"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Echternach",
+      "country": "Luxembourg",
+      "lat": 49.812,
+      "lng": 6.422,
+      "iata": "LUX",
+      "cost": "MEDIUM",
+      "nights": [1, 1, 2],
+      "summary": "Luxembourg's oldest town combines an abbey heritage core with quick access to the rocky trails and streams of Mullerthal.",
+      "types": ["HERITAGE", "NATURE", "FAMILY", "RELIGIOUS"],
+      "island": false,
+      "best": [4, 5, 6, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Abbey Quarter and Old Town",
+          "attractions": ["Abbey of Echternach", "Basilica of St Willibrord", "Market Square", "Denzelt"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Mullerthal Nature Highlights",
+          "attractions": ["Schiessentümpel", "Hohllay Cave", "Wolfsschlucht", "Berdorf trails"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Clervaux",
+      "country": "Luxembourg",
+      "lat": 50.055,
+      "lng": 6.031,
+      "iata": "LUX",
+      "cost": "MEDIUM",
+      "nights": [1, 1, 2],
+      "summary": "Clervaux is a quiet Ardennes town known for its castle museums, abbey skyline and green northern Luxembourg setting.",
+      "types": ["HERITAGE", "NATURE", "FAIRYTALE", "FAMILY"],
+      "island": false,
+      "best": [5, 6, 7, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Castle Museums and Town Core",
+          "attractions": ["Clervaux Castle", "The Family of Man", "Museum of the Battle of the Bulge", "Saint-Hubert Church"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Abbey and Ardennes Countryside",
+          "attractions": ["Abbey of St Maurice and St Maur", "Clervaux viewpoints", "Clerf riverside walk", "Robbesscheier"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Remich",
+      "country": "Luxembourg",
+      "lat": 49.545,
+      "lng": 6.367,
+      "iata": "LUX",
+      "cost": "MEDIUM",
+      "nights": [1, 1, 2],
+      "summary": "Remich is a pleasant Moselle wine town for river promenades, cellar visits and easy side trips to Schengen and nearby vineyards.",
+      "types": ["WINE_AND_FOOD", "NATURE", "ROMANTIC"],
+      "island": false,
+      "best": [5, 6, 7, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Moselle Promenade and Cruise",
+          "attractions": ["Remich riverside promenade", "Saint Cunibert Church", "Bacchus Fountain", "Moselle river cruise"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 16
+        },
+        {
+          "name": "Wine Cellars and Schengen",
+          "attractions": ["Caves St Martin", "Markusberg Chapel", "Schengen", "Musée A Possen"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Brussels",
+      "country": "Belgium",
+      "lat": 50.847,
+      "lng": 4.353,
+      "iata": "BRU",
+      "cost": "HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Belgium's capital mixes ornate squares, strong museums, comic-book culture, beer bars and European institutions in one compact city.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Grand-Place and Historic Centre",
+          "attractions": ["Grand-Place", "Galeries Royales Saint-Hubert", "Manneken Pis", "Brussels Town Hall"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Royal Quarter and Museums",
+          "attractions": ["Magritte Museum", "Royal Museums of Fine Arts of Belgium", "Mont des Arts", "Royal Palace of Brussels"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "EU District and Art Nouveau",
+          "attractions": ["Parlamentarium", "House of European History", "Parc du Cinquantenaire", "Horta Museum"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Atomium and Laeken",
+          "attractions": ["Atomium", "Mini-Europe", "Laeken Park", "Royal Greenhouses of Laeken"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 36
+        }
+      ]
+    },
+    {
+      "name": "Bruges",
+      "country": "Belgium",
+      "lat": 51.209,
+      "lng": 3.224,
+      "iata": "BRU",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Bruges is Belgium's fairy-tale classic for canals, belfry views, cobbled lanes and a richly preserved medieval center.",
+      "types": ["FAIRYTALE", "HERITAGE", "ROMANTIC", "URBAN"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Markt and Burg Heart",
+          "attractions": ["Markt", "Belfry of Bruges", "Burg Square", "Basilica of the Holy Blood"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Canals and Groeninge",
+          "attractions": ["Bruges canal cruise", "Rozenhoedkaai", "Groeningemuseum", "Begijnhof"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 27
+        },
+        {
+          "name": "Windmills and Chocolate Trail",
+          "attractions": ["Sint-Janshuismolen", "Jerusalem Church", "Choco-Story", "Kruisvest"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "name": "Ghent",
+      "country": "Belgium",
+      "lat": 51.054,
+      "lng": 3.725,
+      "iata": "BRU",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Ghent feels youthful and lively, pairing medieval quays and major art treasures with bars, students and strong local food.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "NIGHTLIFE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Castle and Canal Quays",
+          "attractions": ["Gravensteen", "Graslei", "Korenlei", "St Nicholas' Church"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 13
+        },
+        {
+          "name": "Cathedral and Belfry Masterpieces",
+          "attractions": ["Saint Bavo's Cathedral", "Ghent Altarpiece", "Belfry of Ghent", "Mammelokker"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 21
+        },
+        {
+          "name": "Citadelpark Museum District",
+          "attractions": ["STAM", "Museum of Fine Arts Ghent", "SMAK", "Citadelpark"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 25
+        }
+      ]
+    },
+    {
+      "name": "Antwerp",
+      "country": "Belgium",
+      "lat": 51.218,
+      "lng": 4.400,
+      "iata": "BRU",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Antwerp stands out for fashion, diamonds, major art collections and a handsome old center balanced by a creative, modern edge.",
+      "types": ["URBAN", "ARTS", "WINE_AND_FOOD", "NIGHTLIFE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Cathedral and Grote Markt",
+          "attractions": ["Cathedral of Our Lady", "Grote Markt", "Vlaeykensgang", "Brabo Fountain"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Rubens and Fashion Quarter",
+          "attractions": ["Rubenshuis", "MoMu", "Meir", "Plantin-Moretus Museum"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 27
+        },
+        {
+          "name": "MAS and Docklands Heritage",
+          "attractions": ["Museum aan de Stroom", "Het Steen", "Red Star Line Museum", "Eilandje"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 25
+        },
+        {
+          "name": "Central Station and Diamond District",
+          "attractions": ["Antwerp Central Station", "Zoo Antwerp", "Diamond District", "Chocolate Nation"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 40
+        }
+      ]
+    },
+    {
+      "name": "Leuven",
+      "country": "Belgium",
+      "lat": 50.879,
+      "lng": 4.701,
+      "iata": "BRU",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Leuven is a compact university city with Gothic highlights, famous beer ties and a youthful café scene centered on lively squares.",
+      "types": ["URBAN", "HERITAGE", "NIGHTLIFE", "ARTS"],
+      "island": false,
+      "best": [4, 5, 6, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Grote Markt and Old University",
+          "attractions": ["Grote Markt", "Leuven Town Hall", "Saint Peter's Church", "Oude Markt"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Beguinage and Brewing Story",
+          "attractions": ["Grand Beguinage", "University Library", "M-Museum Leuven", "Stella Artois Brewery"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Mechelen",
+      "country": "Belgium",
+      "lat": 51.028,
+      "lng": 4.481,
+      "iata": "BRU",
+      "cost": "MEDIUM",
+      "nights": [1, 1, 2],
+      "summary": "Mechelen is an underrated stop between Brussels and Antwerp, with a grand cathedral, canal walks and strong historic character.",
+      "types": ["HERITAGE", "URBAN", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Cathedral Tower and Market Square",
+          "attractions": ["St. Rumbold's Cathedral", "Grote Markt", "Mechelen City Hall", "IJzerenleen"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Canals and Memory Sites",
+          "attractions": ["Kazerne Dossin", "Brewery Het Anker", "Dijlepad", "Mechelen Beguinage"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 28
+        }
+      ]
+    },
+    {
+      "name": "Liège",
+      "country": "Belgium",
+      "lat": 50.640,
+      "lng": 5.571,
+      "iata": "CRL",
+      "cost": "MEDIUM",
+      "nights": [1, 2, 3],
+      "summary": "Liège offers gritty character, hilltop stairways, lively markets and a mix of Walloon history, riverfront walks and late-night energy.",
+      "types": ["URBAN", "HERITAGE", "NIGHTLIFE", "ARTS"],
+      "island": false,
+      "best": [4, 5, 6, 9, 12],
+      "peak": [7, 8, 12],
+      "clusters": [
+        {
+          "name": "Historic Core and Bueren Steps",
+          "attractions": ["Montagne de Bueren", "Palace of the Prince-Bishops", "Place Saint-Lambert", "Liège Cathedral"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "River Museums and Parks",
+          "attractions": ["La Boverie", "Parc de la Boverie", "Grand Curtius", "Outremeuse"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Citadel and Sunday Market",
+          "attractions": ["Citadel of Liège", "Coteaux de la Citadelle", "Marché de la Batte", "Collegiate Church of Saint Bartholomew"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        }
+      ]
+    }
+  ]
+}

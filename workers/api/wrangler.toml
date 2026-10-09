@@ -1,0 +1,90 @@
+# Atlas backend Worker.
+#
+# Holds the two things that cannot run in the browser: calls that must keep an
+# API key secret, and state that outlives the page. The catalogue and the
+# quotation engine deliberately stay client-side — see `src/index.ts`.
+#
+# First-time setup (from this directory):
+#
+#   npx wrangler d1 create atlas
+#     -> copy the printed database_id into [[d1_databases]] below
+#   npx wrangler kv namespace create RATE_CACHE
+#     -> copy the printed id into [[kv_namespaces]] below
+#   npx wrangler d1 migrations apply atlas --remote
+#
+#   npx wrangler secret put TRAVELPAYOUTS_TOKEN   # optional
+#   npx wrangler secret put LITEAPI_KEY           # optional
+#
+#   # Social sign-in (both optional; the matching button just stays hidden
+#   # until these are set — see src/oauth.ts).
+#   npx wrangler secret put GOOGLE_CLIENT_ID
+#   npx wrangler secret put GOOGLE_CLIENT_SECRET
+#   npx wrangler secret put FACEBOOK_CLIENT_ID
+#   npx wrangler secret put FACEBOOK_CLIENT_SECRET
+#
+#   # Outgoing mail for final-approval requests (src/email.ts). Requires an
+#   # SPF record on the sending domain authorising MailChannels — see
+#   # https://developers.cloudflare.com/email-routing/mailchannels/ — no API
+#   # key needed otherwise.
+#   npx wrangler secret put REVIEW_INBOX           # optional, defaults to info@retroholidays.in
+#   npx wrangler secret put MAIL_FROM              # optional, defaults to no-reply@retroholidays.in
+#
+# Deploy this Worker before the frontend: the frontend's service binding
+# resolves by name and will fail to deploy if `atlas-api` does not yet exist.
+
+name = "atlas-api"
+main = "src/index.ts"
+compatibility_date = "2026-08-05"
+workers_dev = false
+
+# Keeps logs and invocation traces in the dashboard. Free.
+[observability]
+enabled = true
+
+[vars]
+ENVIRONMENT = "production"
+# Only needed for local development against `next dev`; in production the
+# frontend forwards over a service binding, so calls are same-origin.
+ALLOWED_ORIGINS = ""
+# The site's public origin — used to build the OAuth redirect_uri registered
+# with Google/Facebook, and the link back after sign-in. Set this to the real
+# production domain before configuring either provider.
+PUBLIC_SITE_URL = "https://retroholidays.in"
+
+# Enquiries and saved quotes. Create with `wrangler d1 create atlas`.
+[[d1_databases]]
+binding = "DB"
+database_name = "atlas"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+# Optional cross-request cache for upstream rate lookups. The Worker runs
+# without it; it just calls the upstreams more often.
+[[kv_namespaces]]
+binding = "RATE_CACHE"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# ---------------------------------------------------------------------------
+# Preview environment
+# ---------------------------------------------------------------------------
+# A separate Worker and a separate database, so a preview deploy can never
+# write to production leads.
+
+[env.preview]
+name = "atlas-api-preview"
+workers_dev = true
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+ALLOWED_ORIGINS = ""
+PUBLIC_SITE_URL = ""
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "atlas-preview"
+database_id = "REPLACE_WITH_PREVIEW_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[[env.preview.kv_namespaces]]
+binding = "RATE_CACHE"
+id = "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID"

@@ -1,0 +1,1572 @@
+{
+  "cities": [
+    {
+      "name": "Copenhagen",
+      "country": "Denmark",
+      "lat": 55.676,
+      "lng": 12.568,
+      "iata": "CPH",
+      "cost": "HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Denmark’s capital blends royal landmarks, design culture and relaxed canal-side neighbourhoods. It is compact, bike-friendly and packed with excellent food and museums.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Nyhavn & Canals",
+          "attractions": ["Nyhavn", "Canal Tours Copenhagen", "Christiansborg Palace", "Danish Architecture Center"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 41
+        },
+        {
+          "name": "Royal Copenhagen",
+          "attractions": ["Amalienborg Palace", "Frederik's Church", "Rosenborg Castle", "King's Garden"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 38
+        },
+        {
+          "name": "Tivoli & Strøget",
+          "attractions": ["Tivoli Gardens", "City Hall Square", "Strøget", "Round Tower"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Nørrebro Local Life",
+          "attractions": ["Torvehallerne", "Jægersborggade", "Superkilen", "Assistens Cemetery"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Aarhus",
+      "country": "Denmark",
+      "lat": 56.162,
+      "lng": 10.204,
+      "iata": "AAR",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Aarhus mixes a youthful waterfront with one of Scandinavia’s best open-air museums. It is easy to explore on foot and strong on food, art and history.",
+      "types": ["URBAN", "ARTS", "HERITAGE", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Latin Quarter & Dokk1",
+          "attractions": ["Latin Quarter", "Aarhus Cathedral", "Dokk1", "Aarhus River"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "ARoS & City Culture",
+          "attractions": ["ARoS Aarhus Art Museum", "Your Rainbow Panorama", "Musikhuset Aarhus", "City Hall"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Moesgaard & Marselisborg",
+          "attractions": ["Moesgaard Museum", "Marselisborg Palace Park", "Infinite Bridge"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "name": "Odense",
+      "country": "Denmark",
+      "lat": 55.403,
+      "lng": 10.402,
+      "iata": "BLL",
+      "cost": "HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Odense is Hans Christian Andersen’s hometown, with cobbled lanes, creative museums and a walkable medieval core. It works well as a compact cultural stop on Funen.",
+      "types": ["HERITAGE", "FAIRYTALE", "ARTS", "FAMILY"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Andersen Quarter",
+          "attractions": ["Hans Christian Andersen House", "Hans Christian Andersen's Childhood Home", "Møntergården", "Odense Cathedral"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 27
+        },
+        {
+          "name": "Castle & Village",
+          "attractions": ["Egeskov Castle", "Egeskov Gardens", "Veteran Museum at Egeskov"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 33
+        },
+        {
+          "name": "Harbour & Zoo",
+          "attractions": ["Odense Harbour", "Storms Pakhus", "Odense Zoo"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 26
+        }
+      ]
+    },
+    {
+      "name": "Aalborg",
+      "country": "Denmark",
+      "lat": 57.048,
+      "lng": 9.919,
+      "iata": "AAL",
+      "cost": "HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Aalborg pairs a lively Limfjord waterfront with Viking history and striking modern architecture. It is a relaxed northern Denmark base with good museums and nightlife.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "NIGHTLIFE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Waterfront & Utzon",
+          "attractions": ["Aalborg Waterfront", "Utzon Center", "Musikkens Hus", "Aalborg Street Food"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Old Aalborg",
+          "attractions": ["Jens Bang's House", "Budolfi Church", "Aalborg Historical Museum", "Jomfru Ane Gade"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Viking Fjord Edge",
+          "attractions": ["Lindholm Høje", "Lindholm Høje Museum", "Springeren Maritime Experience Center"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        }
+      ]
+    },
+    {
+      "name": "Roskilde",
+      "country": "Denmark",
+      "lat": 55.642,
+      "lng": 12.081,
+      "iata": "CPH",
+      "cost": "HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Roskilde is a rewarding day trip west of Copenhagen, famed for royal tombs and reconstructed longships. The compact centre sits beside a broad, scenic fjord.",
+      "types": ["HERITAGE", "NATURE", "FAMILY"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Cathedral & Core",
+          "attractions": ["Roskilde Cathedral", "Stændertorvet", "Roskilde Museum"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Viking Fjord Ships",
+          "attractions": ["Viking Ship Museum", "The Shipyard", "Roskilde Fjord"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 23
+        }
+      ]
+    },
+    {
+      "name": "Billund",
+      "country": "Denmark",
+      "lat": 55.731,
+      "lng": 9.116,
+      "iata": "BLL",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Billund is Denmark’s family-fun capital, built around LEGO attractions and easy airport access. It is a purpose-made short-stay stop with big appeal for children.",
+      "types": ["FAMILY", "FAIRYTALE", "ADVENTURE"],
+      "island": false,
+      "best": [5, 6, 7, 8],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "LEGOLAND Day",
+          "attractions": ["LEGOLAND Billund", "Miniland", "Polar X-plorer"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 56
+        },
+        {
+          "name": "LEGO House Play",
+          "attractions": ["LEGO House", "Masterpiece Gallery", "History Collection"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 34
+        },
+        {
+          "name": "Billund Resort Extras",
+          "attractions": ["Lalandia Aquadome", "WOW PARK Billund", "Sculpture Park Billund"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 42
+        }
+      ]
+    },
+    {
+      "name": "Helsinki",
+      "country": "Finland",
+      "lat": 60.170,
+      "lng": 24.938,
+      "iata": "HEL",
+      "cost": "HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Finland’s capital combines neoclassical squares, modern design and Baltic seafront life. Ferries, saunas and excellent museums make it easy to fill several days.",
+      "types": ["URBAN", "ARTS", "COASTAL", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 12],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Senate & Market",
+          "attractions": ["Helsinki Cathedral", "Senate Square", "Market Square", "Uspenski Cathedral"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Design & Temppeliaukio",
+          "attractions": ["Design Museum", "Temppeliaukio Church", "Kamppi Chapel", "Esplanadi"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 26
+        },
+        {
+          "name": "Suomenlinna Sea Fort",
+          "attractions": ["Suomenlinna", "King's Gate", "Suomenlinna Museum", "Submarine Vesikko"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 22
+        },
+        {
+          "name": "Modern Waterfront",
+          "attractions": ["Oodi", "Kiasma", "Allas Sea Pool", "Helsinki Central Library Plaza"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Rovaniemi",
+      "country": "Finland",
+      "lat": 66.503,
+      "lng": 25.729,
+      "iata": "RVN",
+      "cost": "HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Rovaniemi is the best-known gateway to Finnish Lapland, mixing Arctic museums, snowy excursions and Santa Claus sights. Winter brings aurora chances and classic husky and reindeer trips.",
+      "types": ["ARCTIC", "FAMILY", "ADVENTURE", "SKI"],
+      "island": false,
+      "best": [1, 2, 3, 9, 12],
+      "peak": [12, 1, 2],
+      "clusters": [
+        {
+          "name": "Santa Arctic Village",
+          "attractions": ["Santa Claus Village", "Arctic Circle", "Santa Claus Main Post Office"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Arktikum & Science",
+          "attractions": ["Arktikum", "Pilke Science Centre", "Lordi's Square"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        },
+        {
+          "name": "Lapland Winter Excursions",
+          "attractions": ["Ounasvaara", "Northern lights tour", "Husky safari", "Reindeer sleigh ride"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 140
+        }
+      ]
+    },
+    {
+      "name": "Saariselkä",
+      "country": "Finland",
+      "lat": 68.420,
+      "lng": 27.417,
+      "iata": "IVL",
+      "cost": "HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Saariselkä is a compact fell resort on the edge of Urho Kekkonen National Park. It is ideal for aurora viewing, winter safaris and low-light wilderness scenery.",
+      "types": ["ARCTIC", "NATURE", "SKI", "ADVENTURE"],
+      "island": false,
+      "best": [1, 2, 3, 9, 10, 12],
+      "peak": [12, 1, 2],
+      "clusters": [
+        {
+          "name": "Urho Kekkonen Trails",
+          "attractions": ["Urho Kekkonen National Park", "Aurora Trail", "Saariselkä fell paths"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Kaunispää Views",
+          "attractions": ["Kaunispää Fell", "Saariselkä Ski & Sport Resort", "Summit viewpoints"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "Aurora & Sámi Evenings",
+          "attractions": ["Northern lights camp", "Reindeer farm visit", "Glass igloo experience"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 130
+        }
+      ]
+    },
+    {
+      "name": "Levi",
+      "country": "Finland",
+      "lat": 67.805,
+      "lng": 24.807,
+      "iata": "KTT",
+      "cost": "HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Levi is Finland’s best-developed ski village, with reliable winter infrastructure and year-round outdoor activities. It suits travellers who want Lapland comfort with easy excursions.",
+      "types": ["SKI", "ARCTIC", "ADVENTURE", "NATURE"],
+      "island": false,
+      "best": [1, 2, 3, 9, 10, 12],
+      "peak": [12, 1, 2, 3],
+      "clusters": [
+        {
+          "name": "Levi Slopes & Village",
+          "attractions": ["Levi Ski Resort", "Levi Front Slopes", "Zero Point", "Levi village center"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 56
+        },
+        {
+          "name": "Summit Landscapes",
+          "attractions": ["Levi Express Gondola", "Levi Summit", "Samiland Exhibition"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        },
+        {
+          "name": "Lapland Safaris",
+          "attractions": ["Snowmobile safari", "Husky ride", "Northern lights hunt"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 145
+        }
+      ]
+    },
+    {
+      "name": "Ivalo",
+      "country": "Finland",
+      "lat": 68.657,
+      "lng": 27.538,
+      "iata": "IVL",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Ivalo is a practical and scenic Lapland base near the airport, with river views and quick access to Sámi culture and wilderness. It works well for a quieter Arctic stay.",
+      "types": ["ARCTIC", "NATURE", "ADVENTURE"],
+      "island": false,
+      "best": [1, 2, 3, 9, 10, 12],
+      "peak": [12, 1, 2],
+      "clusters": [
+        {
+          "name": "Ivalo River Base",
+          "attractions": ["Ivalo River", "Taidenäyttelytila Kuulas", "Ivalo village center"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Inari Culture Outing",
+          "attractions": ["Siida", "Sámi Museum", "Lake Inari"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Aurora Wilderness",
+          "attractions": ["Northern lights tour", "Reindeer experience", "Snowshoeing trails"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 125
+        }
+      ]
+    },
+    {
+      "name": "Kemi",
+      "country": "Finland",
+      "lat": 65.736,
+      "lng": 24.564,
+      "iata": "KEM",
+      "cost": "HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Kemi sits on the Gulf of Bothnia and is best known for icy winter attractions and unusual sea adventures. It is a compact stop with a strong Arctic character.",
+      "types": ["ARCTIC", "COASTAL", "ADVENTURE", "FAMILY"],
+      "island": false,
+      "best": [1, 2, 3, 7, 8],
+      "peak": [2, 7, 8],
+      "clusters": [
+        {
+          "name": "SnowCastle Experience",
+          "attractions": ["SnowCastle of Kemi", "SnowExperience365", "Kemi Inner Harbour"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        },
+        {
+          "name": "Icebreaker Adventure",
+          "attractions": ["Sampo Icebreaker", "Ice floating experience"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 395
+        },
+        {
+          "name": "Seaside City Walk",
+          "attractions": ["Kemi Church", "Gemstone Gallery", "Marina promenade"],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Turku",
+      "country": "Finland",
+      "lat": 60.451,
+      "lng": 22.267,
+      "iata": "TKU",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Turku offers riverfront cafés, a fine medieval core and easy links to the Finnish archipelago. It feels smaller and softer-paced than Helsinki, with strong history.",
+      "types": ["URBAN", "HERITAGE", "COASTAL", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Aura River Heart",
+          "attractions": ["Aura River", "Turku Cathedral", "Old Great Square", "Aboa Vetus Ars Nova"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Castle & Maritime",
+          "attractions": ["Turku Castle", "Forum Marinum", "Turku harbour"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "Ruissalo Escape",
+          "attractions": ["Ruissalo", "Turku Botanical Garden", "Saaronniemi Beach"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        }
+      ]
+    },
+    {
+      "name": "Tampere",
+      "country": "Finland",
+      "lat": 61.498,
+      "lng": 23.761,
+      "iata": "TMP",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Tampere is Finland’s sauna capital, set between two lakes and threaded by old factory districts. It combines industrial heritage, viewpoints and lively local food halls.",
+      "types": ["URBAN", "LAKES", "HERITAGE", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Tammerkoski Classics",
+          "attractions": ["Finlayson Area", "Tampere Cathedral", "Museum Centre Vapriikki", "Koskipuisto"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Sauna & Viewpoints",
+          "attractions": ["Pyynikki Observation Tower", "Pyynikki Nature Reserve", "Rajaportti Sauna"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Lakeside Family Fun",
+          "attractions": ["Särkänniemi", "Näsinneula", "Sara Hildén Art Museum"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 44
+        }
+      ]
+    },
+    {
+      "name": "Porvoo",
+      "country": "Finland",
+      "lat": 60.393,
+      "lng": 25.665,
+      "iata": "HEL",
+      "cost": "HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Porvoo is a charming old riverside town of red shore warehouses, wooden houses and small boutiques. It is one of Finland’s prettiest easy trips from Helsinki.",
+      "types": ["HERITAGE", "ROMANTIC", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 12],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Old Porvoo",
+          "attractions": ["Porvoo Old Town", "Porvoo Cathedral", "Old Town Hall Museum", "Cobbled Lane district"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Riverside Warehouses",
+          "attractions": ["Porvoo River", "Red Shore Houses", "Runeberg Home", "Castle Hill"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Oslo",
+      "country": "Norway",
+      "lat": 59.913,
+      "lng": 10.752,
+      "iata": "OSL",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Oslo combines cutting-edge waterfront architecture with big-name museums and easy access to forests and fjord views. It feels polished, outdoorsy and very livable.",
+      "types": ["URBAN", "ARTS", "COASTAL", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Opera Waterfront",
+          "attractions": ["Oslo Opera House", "MUNCH", "Bjørvika", "Deichman Bjørvika"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Akershus & Aker Brygge",
+          "attractions": ["Akershus Fortress", "Oslo City Hall", "Aker Brygge", "Nobel Peace Center"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Bygdøy Museums",
+          "attractions": ["Fram Museum", "Kon-Tiki Museum", "Norwegian Folk Museum"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 44
+        },
+        {
+          "name": "Vigeland & Holmenkollen",
+          "attractions": ["Vigeland Park", "Holmenkollen Ski Museum", "Holmenkollen Jump Tower"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        }
+      ]
+    },
+    {
+      "name": "Bergen",
+      "country": "Norway",
+      "lat": 60.393,
+      "lng": 5.324,
+      "iata": "BGO",
+      "cost": "VERY HIGH",
+      "nights": [2, 2, 4],
+      "summary": "Bergen is Norway’s postcard fjord city, with colourful Bryggen lanes, steep hills and fast access to dramatic water landscapes. It is lively even in wet weather.",
+      "types": ["HERITAGE", "COASTAL", "NATURE", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Bryggen & Harbour",
+          "attractions": ["Bryggen", "Bryggens Museum", "Fish Market", "St. Mary's Church"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Fløyen Views",
+          "attractions": ["Fløibanen", "Mount Fløyen", "Skansen Fire Station viewpoint"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "KODE & City Culture",
+          "attractions": ["KODE 1-4", "Lille Lungegårdsvannet", "Grieg Hall"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Fjord Gateway Excursion",
+          "attractions": ["Mostraumen fjord cruise", "Bergenhus Fortress", "Rosenkrantz Tower"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 78
+        }
+      ]
+    },
+    {
+      "name": "Tromsø",
+      "country": "Norway",
+      "lat": 69.649,
+      "lng": 18.956,
+      "iata": "TOS",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Tromsø is the Arctic city most travellers choose for aurora trips, winter safaris and polar scenery. It also has a lively centre, good museums and sea-based excursions.",
+      "types": ["ARCTIC", "ADVENTURE", "NATURE", "NIGHTLIFE"],
+      "island": false,
+      "best": [1, 2, 3, 6, 9, 10],
+      "peak": [2, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Harbour & Polar Core",
+          "attractions": ["Polaria", "The Polar Museum", "Storgata", "Tromsø harbour"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 28
+        },
+        {
+          "name": "Cable Car & Cathedral",
+          "attractions": ["Fjellheisen", "Arctic Cathedral", "Storsteinen viewpoint"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 33
+        },
+        {
+          "name": "Aurora Chase",
+          "attractions": ["Northern lights minibus tour", "Aurora camp", "Arctic wilderness stops"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 125
+        },
+        {
+          "name": "Whales & Fjords",
+          "attractions": ["Whale watching tour", "Kaldfjord", "Tromsø fjords"],
+          "hours": 8,
+          "walk": "LOW",
+          "eur": 110
+        }
+      ]
+    },
+    {
+      "name": "Stavanger",
+      "country": "Norway",
+      "lat": 58.970,
+      "lng": 5.733,
+      "iata": "SVG",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Stavanger pairs a handsome old town and excellent museums with easy access to Lysefjord adventures. It is one of Norway’s most convenient bases for famous hikes.",
+      "types": ["COASTAL", "HERITAGE", "ADVENTURE", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Old Stavanger",
+          "attractions": ["Gamle Stavanger", "Norwegian Petroleum Museum", "Øvre Holmegate", "Stavanger Cathedral"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Lysefjord Icons",
+          "attractions": ["Lysefjord cruise", "Preikestolen", "Fantahålå"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 82
+        },
+        {
+          "name": "Swords & Beaches",
+          "attractions": ["Sverd i fjell", "Hafrsfjord", "Solastranden"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Flåm",
+      "country": "Norway",
+      "lat": 60.860,
+      "lng": 7.114,
+      "iata": "SOG",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Tiny Flåm sits at the end of Aurlandsfjord and delivers outsized scenery. Travellers come for the railway, fjord cruises and steep valley viewpoints.",
+      "types": ["NATURE", "COASTAL", "MOUNTAIN", "ADVENTURE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Flåm Railway Journey",
+          "attractions": ["Flåm Railway", "Myrdal", "Kjosfossen"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 70
+        },
+        {
+          "name": "Aurlandsfjord Viewpoints",
+          "attractions": ["Stegastein", "Aurlandsfjord", "Otternes Bygdetun"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 38
+        },
+        {
+          "name": "Naerøyfjord Waters",
+          "attractions": ["Nærøyfjord cruise", "Flåm harbour", "Brekkefossen trail"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 64
+        }
+      ]
+    },
+    {
+      "name": "Geiranger",
+      "country": "Norway",
+      "lat": 62.101,
+      "lng": 7.206,
+      "iata": "AES",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Geiranger is one of Norway’s signature fjord villages, framed by towering cliffs and famous waterfalls. It is scenic at every turn and best explored by boat and lookout road.",
+      "types": ["NATURE", "COASTAL", "MOUNTAIN", "ADVENTURE"],
+      "island": false,
+      "best": [6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Geirangerfjord Cruise",
+          "attractions": ["Geirangerfjord", "Seven Sisters Waterfall", "The Suitor", "Bride's Veil"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 52
+        },
+        {
+          "name": "Skyline Lookouts",
+          "attractions": ["Flydalsjuvet", "Ørnesvingen", "Geiranger Skywalk Dalsnibba"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 34
+        },
+        {
+          "name": "Village & Waterfalls",
+          "attractions": ["Storsæterfossen", "Norwegian Fjord Centre", "Geiranger village center"],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Ålesund",
+      "country": "Norway",
+      "lat": 62.472,
+      "lng": 6.154,
+      "iata": "AES",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Ålesund is Norway’s standout Art Nouveau town, spread across islands with a dramatic harbour setting. It works well for architecture, viewpoints and coastal day trips.",
+      "types": ["COASTAL", "ARTS", "HERITAGE", "NATURE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Jugendstil Centre",
+          "attractions": ["Jugendstilsenteret", "Ålesund harbour", "Apotekergata", "Aalesunds Museum"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Aksla Panorama",
+          "attractions": ["Aksla Viewpoint", "Byparken", "Fjellstua"],
+          "hours": 3,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Sea Life & Islands",
+          "attractions": ["Atlanterhavsparken", "Alnes Lighthouse", "Godøy coastline"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Lofoten",
+      "country": "Norway",
+      "lat": 68.234,
+      "lng": 14.564,
+      "iata": "SVJ",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Lofoten is a spectacular island chain of fishing villages, beaches and sharp granite peaks. It is one of Europe’s most photogenic road-trip and hiking destinations.",
+      "types": ["ISLAND", "COASTAL", "NATURE", "ADVENTURE"],
+      "island": true,
+      "best": [2, 3, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Svolvær Gateway",
+          "attractions": ["Svolvær harbour", "Lofoten War Memorial Museum", "Magic Ice Lofoten"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 27
+        },
+        {
+          "name": "Henningsvær & Kabelvåg",
+          "attractions": ["Henningsvær", "KaviarFactory", "Lofoten Cathedral", "Lofotakvariet"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "Reine Scenic Loop",
+          "attractions": ["Reine", "Sakrisøy", "Hamnøy", "Reinebringen"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Beaches & Heritage Villages",
+          "attractions": ["Rambergstranda", "Uttakleiv Beach", "Nusfjord"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Trondheim",
+      "country": "Norway",
+      "lat": 63.430,
+      "lng": 10.395,
+      "iata": "TRD",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Trondheim blends a grand medieval cathedral with colourful riverside warehouses and a big student population. It is one of Norway’s most likeable small cities.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Nidaros & Bakklandet",
+          "attractions": ["Nidaros Cathedral", "Archbishop's Palace", "Bakklandet", "Gamle Bybro"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Museums by the Fjord",
+          "attractions": ["Rockheim", "Pirbadet", "Trondheim Fjord promenade"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 28
+        },
+        {
+          "name": "Ringve & Munkholmen",
+          "attractions": ["Ringve Museum", "Ringve Botanical Garden", "Munkholmen"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "name": "Nordkapp",
+      "country": "Norway",
+      "lat": 71.173,
+      "lng": 25.784,
+      "iata": "HVG",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Nordkapp is the dramatic far-north cape where sea cliffs, wind and endless sky create a true edge-of-Europe feel. Most visitors come for the monument and Arctic emptiness.",
+      "types": ["ARCTIC", "NATURE", "COASTAL", "ADVENTURE"],
+      "island": false,
+      "best": [2, 3, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "North Cape Plateau",
+          "attractions": ["North Cape Hall", "Globe Monument", "King Oscar II's Chapel viewpoint"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 31
+        },
+        {
+          "name": "Honningsvåg Arctic Coast",
+          "attractions": ["Honningsvåg", "Gjesværstappan", "Skarsvåg"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 85
+        }
+      ]
+    },
+    {
+      "name": "Stockholm",
+      "country": "Sweden",
+      "lat": 59.329,
+      "lng": 18.069,
+      "iata": "ARN",
+      "cost": "HIGH",
+      "nights": [2, 3, 5],
+      "summary": "Stockholm stretches across islands with elegant old streets, top-tier museums and stylish Nordic dining. The city feels spacious, scenic and easy to explore by water.",
+      "types": ["URBAN", "ARTS", "COASTAL", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Gamla Stan Royal Core",
+          "attractions": ["Gamla Stan", "Royal Palace", "Storkyrkan", "Nobel Prize Museum"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 27
+        },
+        {
+          "name": "Vasa & Djurgården",
+          "attractions": ["Vasa Museum", "Skansen", "ABBA The Museum", "Djurgården"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 69
+        },
+        {
+          "name": "City Hall & Waterfront",
+          "attractions": ["Stockholm City Hall", "Riddarholmen", "Söder Mälarstrand"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Södermalm Perspectives",
+          "attractions": ["Monteliusvägen", "Fotografiska", "SoFo"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Archipelago by Boat",
+          "attractions": ["Stockholm archipelago cruise", "Vaxholm", "Strandvägen"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 38
+        }
+      ]
+    },
+    {
+      "name": "Gothenburg",
+      "country": "Sweden",
+      "lat": 57.708,
+      "lng": 11.974,
+      "iata": "GOT",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Gothenburg is Sweden’s friendliest big city, known for seafood, canals and a breezy west-coast feel. It mixes compact neighbourhoods with easy island escapes.",
+      "types": ["URBAN", "COASTAL", "WINE_AND_FOOD", "FAMILY"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Haga & Canals",
+          "attractions": ["Haga", "Skansen Kronan", "Kungsportsavenyen", "Paddan canal area"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Liseberg & Science",
+          "attractions": ["Liseberg", "Universeum", "Gothenburg Museum of Art"],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 64
+        },
+        {
+          "name": "Southern Archipelago",
+          "attractions": ["Styrsö", "Vrångö", "Saltholmen"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 9
+        }
+      ]
+    },
+    {
+      "name": "Malmö",
+      "country": "Sweden",
+      "lat": 55.605,
+      "lng": 13.003,
+      "iata": "MMX",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Malmö is a youthful southern city with a laid-back food scene, bike-friendly streets and striking modern waterfront architecture. It also has an appealing older core.",
+      "types": ["URBAN", "COASTAL", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Old Town Squares",
+          "attractions": ["Stortorget", "Lilla Torg", "St. Peter's Church", "Malmö Castle"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Western Harbour",
+          "attractions": ["Turning Torso", "Västra Hamnen", "Scaniabadet", "Stapelbäddsparken"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Parks & Culture",
+          "attractions": ["Kungsparken", "Moderna Museet Malmö", "Möllevångstorget"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        }
+      ]
+    },
+    {
+      "name": "Uppsala",
+      "country": "Sweden",
+      "lat": 59.858,
+      "lng": 17.638,
+      "iata": "ARN",
+      "cost": "HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Uppsala is a historic university city with a giant brick cathedral, old academic halls and Viking-era heritage nearby. It makes an easy and rewarding day or overnight trip.",
+      "types": ["HERITAGE", "URBAN", "RELIGIOUS"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Cathedral & Castle Ridge",
+          "attractions": ["Uppsala Cathedral", "Uppsala Castle", "Carolina Rediviva", "Botanical Garden"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Academia & Viking Past",
+          "attractions": ["Gustavianum", "University Main Building", "Gamla Uppsala Museum", "Royal Mounds"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Kiruna",
+      "country": "Sweden",
+      "lat": 67.855,
+      "lng": 20.225,
+      "iata": "KRN",
+      "cost": "HIGH",
+      "nights": [2, 2, 4],
+      "summary": "Kiruna is Sweden’s far-north mining town, famous for auroras, snowy landscapes and the remarkable relocation of its centre. It is a strong base for Arctic adventures.",
+      "types": ["ARCTIC", "ADVENTURE", "NATURE", "SKI"],
+      "island": false,
+      "best": [1, 2, 3, 9, 10, 12],
+      "peak": [12, 1, 2, 3],
+      "clusters": [
+        {
+          "name": "Mine & Moving Town",
+          "attractions": ["LKAB Visitor Centre", "Kiruna City Hall", "Kiruna relocation district"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 43
+        },
+        {
+          "name": "Church & Arctic Views",
+          "attractions": ["Kiruna Church", "Luossavaara", "Midnattssolen viewpoint"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Wilderness Excursions",
+          "attractions": ["Northern lights tour", "Dog sledding", "Snowmobile safari"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 135
+        }
+      ]
+    },
+    {
+      "name": "Abisko",
+      "country": "Sweden",
+      "lat": 68.349,
+      "lng": 18.831,
+      "iata": "KRN",
+      "cost": "HIGH",
+      "nights": [2, 2, 4],
+      "summary": "Abisko is one of Scandinavia’s top aurora destinations, prized for dry skies and easy access to national-park scenery. It suits hikers in summer and northern-lights seekers in winter.",
+      "types": ["ARCTIC", "NATURE", "ADVENTURE", "MOUNTAIN"],
+      "island": false,
+      "best": [1, 2, 3, 6, 9, 10],
+      "peak": [2, 3, 7, 8],
+      "clusters": [
+        {
+          "name": "National Park Highlights",
+          "attractions": ["Abisko National Park", "Abiskojåkka Canyon", "Lake Torneträsk"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Aurora Sky Station",
+          "attractions": ["Aurora Sky Station", "Nuolja", "chairlift ascent"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 89
+        },
+        {
+          "name": "Lapporten Trails",
+          "attractions": ["Kungsleden", "Björkliden viewpoint", "Lapporten views"],
+          "hours": 6,
+          "walk": "HIGH",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Visby",
+      "country": "Sweden",
+      "lat": 57.634,
+      "lng": 18.294,
+      "iata": "VBY",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Visby is a beautifully preserved Hanseatic walled town on Gotland, with rose-covered lanes and Baltic sea views. Summer brings a festive but still atmospheric mood.",
+      "types": ["ISLAND", "HERITAGE", "COASTAL", "ROMANTIC"],
+      "island": true,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Medieval Wall Core",
+          "attractions": ["Visby City Wall", "Stora Torget", "Visby Cathedral", "Almedalen"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Museums & Gardens",
+          "attractions": ["Gotland Museum", "DBW's Botanical Garden", "St. Karin's Ruins"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Clifftop Sea Walks",
+          "attractions": ["Snäckgärdsbaden", "Kruttornet", "Strandpromenaden"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Jukkasjärvi",
+      "country": "Sweden",
+      "lat": 67.850,
+      "lng": 20.601,
+      "iata": "KRN",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Jukkasjärvi is a tiny Arctic village made famous by the original ICEHOTEL. It is a memorable short stay for ice art, Sámi culture and winter excursions near Kiruna.",
+      "types": ["ARCTIC", "ADVENTURE", "FAIRYTALE", "FAMILY"],
+      "island": false,
+      "best": [1, 2, 3, 9, 12],
+      "peak": [12, 1, 2, 3],
+      "clusters": [
+        {
+          "name": "ICEHOTEL World",
+          "attractions": ["ICEHOTEL", "ICEBAR", "Icechurch"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 32
+        },
+        {
+          "name": "River & Sámi Encounters",
+          "attractions": ["Torne River", "Nutti Sámi Siida", "reindeer experience"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 55
+        }
+      ]
+    },
+    {
+      "name": "Reykjavik",
+      "country": "Iceland",
+      "lat": 64.147,
+      "lng": -21.942,
+      "iata": "KEF",
+      "cost": "VERY HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Reykjavík is a compact capital of colourful houses, strong music culture and easy geothermal escapes. It works equally well as a city break and as a base for Iceland day trips.",
+      "types": ["URBAN", "ARTS", "COASTAL", "NIGHTLIFE"],
+      "island": true,
+      "best": [2, 3, 6, 7, 9, 10],
+      "peak": [6, 7, 8, 12],
+      "clusters": [
+        {
+          "name": "Hallgrímskirkja & Laugavegur",
+          "attractions": ["Hallgrímskirkja", "Laugavegur", "Rainbow Street", "Einar Jónsson Museum"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Harpa & Old Harbour",
+          "attractions": ["Harpa", "Sun Voyager", "Old Harbour", "Whales of Iceland"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        },
+        {
+          "name": "Perlan & Museums",
+          "attractions": ["Perlan", "National Museum of Iceland", "Tjörnin"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 42
+        },
+        {
+          "name": "Sky Lagoon Evening",
+          "attractions": ["Sky Lagoon", "Kársnes coast views"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 92
+        },
+        {
+          "name": "City Pools & Food Halls",
+          "attractions": ["Sundhöllin", "Hlemmur Mathöll", "Austurvöllur"],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Golden Circle",
+      "country": "Iceland",
+      "lat": 64.255,
+      "lng": -20.522,
+      "iata": "KEF",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "The Golden Circle bundles Iceland’s most famous classic sights into an easy loop of rift valleys, geysers and waterfalls. It is the country’s essential first-time road trip.",
+      "types": ["NATURE", "ADVENTURE", "FAMILY"],
+      "island": true,
+      "best": [5, 6, 7, 8, 9, 10],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Þingvellir Rift",
+          "attractions": ["Þingvellir National Park", "Öxarárfoss", "Almannagjá"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Geysir & Gullfoss",
+          "attractions": ["Great Geysir", "Strokkur", "Gullfoss"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Laugarvatn Extras",
+          "attractions": ["Secret Lagoon", "Friðheimar", "Laugarvatn Fontana"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 55
+        }
+      ]
+    },
+    {
+      "name": "Vik",
+      "country": "Iceland",
+      "lat": 63.419,
+      "lng": -19.006,
+      "iata": null,
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Vík is a small south-coast stop surrounded by black-sand beaches, sea stacks and lava landscapes. It is one of Iceland’s most dramatic and photogenic overnight bases.",
+      "types": ["COASTAL", "NATURE", "ADVENTURE", "BEACH"],
+      "island": true,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Reynisfjara Coast",
+          "attractions": ["Reynisfjara", "Reynisdrangar", "Hálsanefshellir"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Dyrhólaey & Village",
+          "attractions": ["Dyrhólaey", "Vík í Mýrdal Church", "Víkurfjara black beach"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Katla Ice Cave",
+          "attractions": ["Katla Ice Cave", "Mýrdalsjökull", "Kötlujökull"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 165
+        }
+      ]
+    },
+    {
+      "name": "Akureyri",
+      "country": "Iceland",
+      "lat": 65.684,
+      "lng": -18.110,
+      "iata": "AEY",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Akureyri is north Iceland’s main town, set at the head of a long fjord with a surprisingly lively cultural scene. It is a strong base for whales, waterfalls and geothermal baths.",
+      "types": ["URBAN", "COASTAL", "NATURE", "ADVENTURE"],
+      "island": true,
+      "best": [2, 3, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Fjord Town Centre",
+          "attractions": ["Akureyrarkirkja", "Akureyri Botanical Garden", "Hof Cultural Center", "Akureyri Old Town"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Forest Lagoon & Coast",
+          "attractions": ["Forest Lagoon", "Eyjafjörður", "Akureyri harbour"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 51
+        },
+        {
+          "name": "Whales & Waterfalls",
+          "attractions": ["Whale watching from Akureyri", "Goðafoss", "Laufás Museum and Heritage Site"],
+          "hours": 8,
+          "walk": "LOW",
+          "eur": 96
+        }
+      ]
+    },
+    {
+      "name": "Blue Lagoon",
+      "country": "Iceland",
+      "lat": 63.880,
+      "lng": -22.449,
+      "iata": "KEF",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "The Blue Lagoon is Iceland’s best-known geothermal spa, set in black lava on the Reykjanes Peninsula. It is most often combined with arrival or departure day logistics.",
+      "types": ["NATURE", "ROMANTIC", "FAMILY"],
+      "island": true,
+      "best": [1, 2, 3, 6, 9, 10],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Lagoon Soak",
+          "attractions": ["Blue Lagoon", "Silica mud mask bar", "steam cave"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 90
+        },
+        {
+          "name": "Reykjanes Lava Coast",
+          "attractions": ["Bridge Between Continents", "Gunnuhver", "Reykjanesviti"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Jökulsárlón",
+      "country": "Iceland",
+      "lat": 64.048,
+      "lng": -16.179,
+      "iata": null,
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Jökulsárlón is Iceland’s unforgettable glacier lagoon, where icebergs drift toward the sea beside a black-sand beach. Light and weather change the scene hour by hour.",
+      "types": ["NATURE", "ADVENTURE", "COASTAL", "ARCTIC"],
+      "island": true,
+      "best": [5, 6, 7, 8, 9, 10],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Lagoon & Icebergs",
+          "attractions": ["Jökulsárlón", "amphibian boat tour", "glacier viewpoint"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 49
+        },
+        {
+          "name": "Diamond Beach Stretch",
+          "attractions": ["Diamond Beach", "Breiðamerkursandur", "Fellsfjara"],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Selfoss",
+      "country": "Iceland",
+      "lat": 63.934,
+      "lng": -20.998,
+      "iata": "KEF",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Selfoss is a convenient south-coast base with modern food halls and quick access to waterfalls, hot rivers and the Golden Circle. It is practical rather than scenic, but well placed.",
+      "types": ["URBAN", "NATURE", "WINE_AND_FOOD", "ADVENTURE"],
+      "island": true,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Old Dairy Centre",
+          "attractions": ["Old Dairy Food Hall", "Selfosskirkja", "Ölfusá riverside"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Hot River Outing",
+          "attractions": ["Reykjadalur Hot Spring Thermal River", "Hveragerði geothermal area"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Southwest Crater Loop",
+          "attractions": ["Kerið", "Skyrland", "Ingólfsfjall viewpoint"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 5
+        }
+      ]
+    },
+    {
+      "name": "Keflavík",
+      "country": "Iceland",
+      "lat": 64.004,
+      "lng": -22.562,
+      "iata": "KEF",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Keflavík is more than an airport stop, with a rugged Reykjanes coast, maritime museums and easy geothermal detours. It is a smart overnight before early or late flights.",
+      "types": ["COASTAL", "NATURE", "FAMILY"],
+      "island": true,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Harbour & Museums",
+          "attractions": ["Duus Museum", "The Icelandic Museum of Rock 'n' Roll", "Keflavík harbour"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Reykjanes Peninsula Drive",
+          "attractions": ["Bridge Between Continents", "Brimketill", "Gunnuhver", "Reykjanesviti"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Snæfellsnes Peninsula",
+      "country": "Iceland",
+      "lat": 64.806,
+      "lng": -23.774,
+      "iata": "RKV",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Snæfellsnes packs lava fields, cliffs, beaches, fishing hamlets and the famous Kirkjufell into one compact peninsula. It is often called Iceland in miniature for good reason.",
+      "types": ["NATURE", "COASTAL", "ADVENTURE", "MOUNTAIN"],
+      "island": true,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "Kirkjufell & North Shore",
+          "attractions": ["Kirkjufell", "Kirkjufellsfoss", "Grundarfjörður"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Snæfellsjökull Coast",
+          "attractions": ["Snæfellsjökull National Park", "Djúpalónssandur", "Dritvík"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Arnarstapi to Búðir",
+          "attractions": ["Arnarstapi", "Hellnar", "Búðakirkja", "Ytri Tunga"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    }
+  ]
+}

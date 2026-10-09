@@ -1,0 +1,3925 @@
+{
+  "cities": [
+    {
+      "name": "Berlin",
+      "country": "Germany",
+      "lat": 52.52,
+      "lng": 13.405,
+      "iata": "BER",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Germany's capital layers Prussian grandeur, Cold War history and a creative edge across walkable districts, world-class museums and lively neighbourhoods.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        7,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Museum Island and Unter den Linden",
+          "attractions": [
+            "Neues Museum",
+            "Berliner Dom",
+            "Humboldt Forum",
+            "Unter den Linden"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "Brandenburg Gate and Reichstag",
+          "attractions": [
+            "Brandenburg Gate",
+            "Reichstag Building",
+            "Memorial to the Murdered Jews of Europe",
+            "Tiergarten"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "East Side and Kreuzberg",
+          "attractions": [
+            "East Side Gallery",
+            "Oberbaum Bridge",
+            "Checkpoint Charlie",
+            "Topography of Terror"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Charlottenburg and Zoo",
+          "attractions": [
+            "Charlottenburg Palace",
+            "Berlin Zoological Garden",
+            "Kaiser Wilhelm Memorial Church"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 33
+        },
+        {
+          "name": "Potsdamer Platz and Kulturforum",
+          "attractions": [
+            "Potsdamer Platz",
+            "Gemäldegalerie",
+            "Sony Center",
+            "Berliner Philharmonie"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Munich",
+      "country": "Germany",
+      "lat": 48.137,
+      "lng": 11.575,
+      "iata": "MUC",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        3,
+        5
+      ],
+      "summary": "Munich mixes royal architecture, beer-hall tradition and polished museums with easy access to big parks and the Alps.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        9,
+        10,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Marienplatz and Old Town",
+          "attractions": [
+            "Marienplatz",
+            "Neues Rathaus",
+            "Viktualienmarkt",
+            "Frauenkirche"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Residenz and Hofgarten",
+          "attractions": [
+            "Munich Residenz",
+            "Residenz Treasury",
+            "Hofgarten",
+            "Odeonsplatz"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Nymphenburg and Olympic Park",
+          "attractions": [
+            "Nymphenburg Palace",
+            "Olympic Park",
+            "BMW Museum"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 28
+        },
+        {
+          "name": "English Garden and Isar",
+          "attractions": [
+            "English Garden",
+            "Eisbachwelle",
+            "Deutsches Museum",
+            "Isartor"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Frankfurt",
+      "country": "Germany",
+      "lat": 50.111,
+      "lng": 8.682,
+      "iata": "FRA",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Frankfurt pairs a striking skyline with restored old-town lanes, excellent museums and one of Germany's best air-rail hubs.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        5,
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Römerberg and Main River",
+          "attractions": [
+            "Römerberg",
+            "Frankfurt Cathedral",
+            "Eiserner Steg",
+            "Main Tower"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Museumsufer",
+          "attractions": [
+            "Städel Museum",
+            "Liebieghaus",
+            "Museum Embankment"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "Westend and Palmengarten",
+          "attractions": [
+            "Palmengarten",
+            "Alte Oper",
+            "Goethe House"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 23
+        }
+      ]
+    },
+    {
+      "name": "Cologne",
+      "country": "Germany",
+      "lat": 50.938,
+      "lng": 6.96,
+      "iata": "CGN",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Cologne is a friendly Rhine city built around its immense Gothic cathedral, museums and an easygoing beer culture.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        2,
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Cathedral and Old Town",
+          "attractions": [
+            "Cologne Cathedral",
+            "Hohenzollern Bridge",
+            "Alter Markt",
+            "Great St. Martin Church"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Roman Cologne and Museums",
+          "attractions": [
+            "Museum Ludwig",
+            "Romano-Germanic Museum",
+            "Farina Fragrance Museum"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 25
+        },
+        {
+          "name": "Rhine and Chocolate",
+          "attractions": [
+            "Chocolate Museum",
+            "Rheinauhafen",
+            "Severinstorburg"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 17
+        }
+      ]
+    },
+    {
+      "name": "Düsseldorf",
+      "country": "Germany",
+      "lat": 51.227,
+      "lng": 6.773,
+      "iata": "DUS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Düsseldorf combines smart shopping streets, contemporary architecture and a compact Altstadt right on the Rhine.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Altstadt and Rhine",
+          "attractions": [
+            "Königsallee",
+            "Rhine Promenade",
+            "Marktplatz",
+            "St. Lambertus Church"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "MedienHafen and Architecture",
+          "attractions": [
+            "MedienHafen",
+            "Neuer Zollhof",
+            "Rheinturm",
+            "Kunst im Tunnel"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Art and Japanese Quarter",
+          "attractions": [
+            "Museum Kunstpalast",
+            "Hofgarten",
+            "Immermannstraße"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Hamburg",
+      "country": "Germany",
+      "lat": 53.551,
+      "lng": 9.993,
+      "iata": "HAM",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        3,
+        5
+      ],
+      "summary": "Hamburg brings together grand merchant architecture, harbor energy, top museums and waterside districts with real character.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "NIGHTLIFE",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        7,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Speicherstadt and HafenCity",
+          "attractions": [
+            "Miniatur Wunderland",
+            "Speicherstadt",
+            "Elbphilharmonie Plaza",
+            "St. Nikolai Memorial"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 27
+        },
+        {
+          "name": "Port and St. Pauli",
+          "attractions": [
+            "Landungsbrücken",
+            "Old Elbe Tunnel",
+            "Reeperbahn",
+            "St. Pauli Piers"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Binnenalster and City Hall",
+          "attractions": [
+            "Hamburg Rathaus",
+            "Jungfernstieg",
+            "Binnenalster",
+            "Chilehaus"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Blankenese and Elbe Views",
+          "attractions": [
+            "Treppenviertel Blankenese",
+            "Elbstrand",
+            "Jenisch Park"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Stuttgart",
+      "country": "Germany",
+      "lat": 48.778,
+      "lng": 9.18,
+      "iata": "STR",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Stuttgart is a hill-ringed city of car museums, wine slopes and broad squares backed by strong cultural collections.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "WINE_AND_FOOD",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        9,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Schlossplatz and Museums",
+          "attractions": [
+            "Schlossplatz",
+            "New Palace",
+            "Kunstmuseum Stuttgart",
+            "Stiftskirche"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Cars and Cannstatt",
+          "attractions": [
+            "Mercedes-Benz Museum",
+            "Wilhelma",
+            "Cannstatter Wasen"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "Hills and Vineyards",
+          "attractions": [
+            "Stuttgart TV Tower",
+            "Sepulchral Chapel on Württemberg",
+            "Stuttgart Wine Museum"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        }
+      ]
+    },
+    {
+      "name": "Dresden",
+      "country": "Germany",
+      "lat": 51.05,
+      "lng": 13.738,
+      "iata": "DRS",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Dresden's rebuilt baroque core, river terraces and major art collections make it one of Germany's most elegant city breaks.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Zwinger and Semperoper",
+          "attractions": [
+            "Zwinger",
+            "Old Masters Picture Gallery",
+            "Semperoper",
+            "Theaterplatz"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 30
+        },
+        {
+          "name": "Frauenkirche and Neumarkt",
+          "attractions": [
+            "Frauenkirche Dresden",
+            "Fürstenzug",
+            "Brühl's Terrace",
+            "Dresden Castle"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Neustadt and Elbe",
+          "attractions": [
+            "Kunsthofpassage",
+            "Golden Rider",
+            "Elbe riverbanks"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Leipzig",
+      "country": "Germany",
+      "lat": 51.34,
+      "lng": 12.375,
+      "iata": "LEJ",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Leipzig is a music-rich, fast-changing city known for Bach, grand passages, canals and a lively creative scene.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Market Square and Thomaskirche",
+          "attractions": [
+            "St. Thomas Church",
+            "Market Square",
+            "Old Town Hall",
+            "Mädler Passage"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Music and Memory",
+          "attractions": [
+            "Bach Museum",
+            "Gewandhaus",
+            "St. Nicholas Church",
+            "Augustusplatz"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Canals and Cotton Mill",
+          "attractions": [
+            "Karl-Heine Canal",
+            "Spinnerei",
+            "Clara-Zetkin Park"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Heidelberg",
+      "country": "Germany",
+      "lat": 49.399,
+      "lng": 8.672,
+      "iata": "FRA",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Heidelberg charms with a romantic riverside setting, Germany's most famous castle ruin and a handsome old university quarter.",
+      "types": [
+        "HERITAGE",
+        "ROMANTIC",
+        "FAIRYTALE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        5,
+        6,
+        9
+      ],
+      "clusters": [
+        {
+          "name": "Castle and Altstadt",
+          "attractions": [
+            "Heidelberg Castle",
+            "Old Bridge",
+            "Church of the Holy Spirit",
+            "Hauptstrasse"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 11
+        },
+        {
+          "name": "Philosophers' Way and River",
+          "attractions": [
+            "Philosophenweg",
+            "Neckarwiese",
+            "Student Jail"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 6
+        }
+      ]
+    },
+    {
+      "name": "Nuremberg",
+      "country": "Germany",
+      "lat": 49.452,
+      "lng": 11.077,
+      "iata": "NUE",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Nuremberg blends imperial history, strong museums and one of Europe's best Christmas market traditions inside stout old walls.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Imperial Castle and Old Town",
+          "attractions": [
+            "Nuremberg Castle",
+            "Hauptmarkt",
+            "St. Sebaldus Church",
+            "Albrecht Dürer's House"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 13
+        },
+        {
+          "name": "WWII and Memory",
+          "attractions": [
+            "Documentation Center Nazi Party Rally Grounds",
+            "Congress Hall",
+            "Zeppelin Field"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Crafts and Market Halls",
+          "attractions": [
+            "Germanisches Nationalmuseum",
+            "Handwerkerhof",
+            "St. Lorenz Church"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Rothenburg ob der Tauber",
+      "country": "Germany",
+      "lat": 49.378,
+      "lng": 10.179,
+      "iata": "NUE",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Rothenburg is a beautifully preserved medieval town of walls, towers and storybook lanes that feels best after day-trippers leave.",
+      "types": [
+        "HERITAGE",
+        "FAIRYTALE",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Walls and Market Square",
+          "attractions": [
+            "Market Square",
+            "Town Hall Tower",
+            "St. Jakob's Church",
+            "Burggarten"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Medieval Lanes and Museums",
+          "attractions": [
+            "Plönlein",
+            "Medieval Crime Museum",
+            "Town Walls",
+            "Christmas Museum"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Freiburg",
+      "country": "Germany",
+      "lat": 47.999,
+      "lng": 7.842,
+      "iata": "BSL",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Sunny Freiburg offers a lively old town, Black Forest access and a relaxed café culture threaded by little water channels.",
+      "types": [
+        "URBAN",
+        "NATURE",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Minster and Old Town",
+          "attractions": [
+            "Freiburg Minster",
+            "Münsterplatz",
+            "Schwabentor",
+            "Augustinerplatz"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 3
+        },
+        {
+          "name": "Schlossberg and Green City",
+          "attractions": [
+            "Schlossberg",
+            "Kanonenplatz",
+            "Seepark Betzenhausen"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Hanover",
+      "country": "Germany",
+      "lat": 52.375,
+      "lng": 9.732,
+      "iata": "HAJ",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Hanover is an easy city break with formal gardens, lakeside paths and a compact old centre rebuilt around key landmarks.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        5,
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Royal Gardens and Old Town",
+          "attractions": [
+            "Herrenhausen Gardens",
+            "Marktkirche",
+            "Old Town Hall",
+            "Leineschloss"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Lakes and Museums",
+          "attractions": [
+            "Maschsee",
+            "Sprengel Museum",
+            "New Town Hall"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Vienna",
+      "country": "Austria",
+      "lat": 48.208,
+      "lng": 16.373,
+      "iata": "VIE",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Vienna excels at imperial sights, coffeehouse culture, music and museum time, yet still feels graceful and manageable on foot and tram.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Imperial Centre",
+          "attractions": [
+            "Hofburg",
+            "Spanish Riding School",
+            "Heldenplatz",
+            "Michaelerplatz"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 34
+        },
+        {
+          "name": "St. Stephen and Inner City",
+          "attractions": [
+            "St. Stephen's Cathedral",
+            "Graben",
+            "Peterskirche",
+            "Albertina"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Schönbrunn and Hietzing",
+          "attractions": [
+            "Schönbrunn Palace",
+            "Gloriette",
+            "Tiergarten Schönbrunn"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 52
+        },
+        {
+          "name": "Belvedere and Ringstrasse",
+          "attractions": [
+            "Belvedere Palace",
+            "Karlskirche",
+            "Vienna State Opera",
+            "Musikverein"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 27
+        },
+        {
+          "name": "Prater and Danube",
+          "attractions": [
+            "Prater",
+            "Giant Ferris Wheel",
+            "Danube Canal",
+            "Hundertwasser House"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Salzburg",
+      "country": "Austria",
+      "lat": 47.8,
+      "lng": 13.044,
+      "iata": "SZG",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        2,
+        4
+      ],
+      "summary": "Salzburg pairs baroque beauty, Mozart heritage and fortress views with easy hill walks and classic café stops.",
+      "types": [
+        "HERITAGE",
+        "ARTS",
+        "ROMANTIC",
+        "FAIRYTALE"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        7,
+        8,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Altstadt and Cathedral Quarter",
+          "attractions": [
+            "Salzburg Cathedral",
+            "Residenzplatz",
+            "Getreidegasse",
+            "Mozart's Birthplace"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Hohensalzburg and Mönchsberg",
+          "attractions": [
+            "Hohensalzburg Fortress",
+            "St. Peter's Abbey",
+            "Mönchsberg",
+            "Festspielhaus"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 19
+        },
+        {
+          "name": "Mirabell and Sound of Music",
+          "attractions": [
+            "Mirabell Palace",
+            "Mirabell Gardens",
+            "Kapuzinerberg"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Innsbruck",
+      "country": "Austria",
+      "lat": 47.269,
+      "lng": 11.404,
+      "iata": "INN",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Innsbruck gives you a Tyrolean old town, mountain panoramas and easy lift access right from a compact urban base.",
+      "types": [
+        "URBAN",
+        "MOUNTAIN",
+        "SKI",
+        "ADVENTURE"
+      ],
+      "island": false,
+      "best": [
+        1,
+        2,
+        6,
+        7,
+        8,
+        12
+      ],
+      "peak": [
+        2,
+        7,
+        8,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Golden Roof and Old Town",
+          "attractions": [
+            "Golden Roof",
+            "Hofburg Innsbruck",
+            "St. James Cathedral",
+            "Maria-Theresien-Strasse"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Nordkette Heights",
+          "attractions": [
+            "Hungerburg Funicular",
+            "Nordkette Cable Cars",
+            "Seegrube"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 49
+        },
+        {
+          "name": "Bergisel and Tyrol",
+          "attractions": [
+            "Bergisel Ski Jump",
+            "Tyrolean Folk Art Museum",
+            "Hofkirche"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "name": "Hallstatt",
+      "country": "Austria",
+      "lat": 47.561,
+      "lng": 13.649,
+      "iata": "SZG",
+      "cost": "HIGH",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Hallstatt is a tiny lakeside village with dramatic mountain scenery, photogenic lanes and one of Austria's best-known salt-mine visits.",
+      "types": [
+        "FAIRYTALE",
+        "LAKES",
+        "MOUNTAIN",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7,
+        8,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Lakeside Village",
+          "attractions": [
+            "Marktplatz Hallstatt",
+            "Evangelical Church",
+            "Hallstätter See",
+            "Charnel House"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 4
+        },
+        {
+          "name": "Salt World and Skywalk",
+          "attractions": [
+            "Salzwelten Hallstatt",
+            "Hallstatt Skywalk",
+            "Rudolfsturm"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 43
+        }
+      ]
+    },
+    {
+      "name": "Zell am See",
+      "country": "Austria",
+      "lat": 47.323,
+      "lng": 12.798,
+      "iata": "SZG",
+      "cost": "HIGH",
+      "nights": [
+        1,
+        2,
+        4
+      ],
+      "summary": "Zell am See combines an attractive lakefront with mountain lifts and easy access to year-round alpine scenery.",
+      "types": [
+        "LAKES",
+        "MOUNTAIN",
+        "SKI",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        1,
+        2,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        2,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Lake and Town",
+          "attractions": [
+            "Zeller See",
+            "Elisabeth Park",
+            "Zell am See old town",
+            "Parish Church of St. Hippolyte"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Schmittenhöhe and Glacier Views",
+          "attractions": [
+            "Schmittenhöhebahn",
+            "Schmittenhöhe summit",
+            "Panorama Platform Kaiserblick"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 42
+        }
+      ]
+    },
+    {
+      "name": "Kitzbühel",
+      "country": "Austria",
+      "lat": 47.446,
+      "lng": 12.392,
+      "iata": "INN",
+      "cost": "HIGH",
+      "nights": [
+        1,
+        2,
+        4
+      ],
+      "summary": "Kitzbühel is a polished Alpine resort famous for ski racing, a handsome centre and easy high-mountain viewpoints.",
+      "types": [
+        "MOUNTAIN",
+        "SKI",
+        "WINE_AND_FOOD",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        1,
+        2,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        1,
+        2,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Medieval Core and Hahnenkamm",
+          "attractions": [
+            "Kitzbühel old town",
+            "Hahnenkammbahn",
+            "Church of Our Lady",
+            "Streif viewpoint"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 39
+        },
+        {
+          "name": "Alpine Lakes and Panorama",
+          "attractions": [
+            "Schwarzsee",
+            "Kitzbüheler Horn",
+            "Alpenblumengarten"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 28
+        }
+      ]
+    },
+    {
+      "name": "Graz",
+      "country": "Austria",
+      "lat": 47.07,
+      "lng": 15.439,
+      "iata": "GRZ",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Graz offers a relaxed historic core, Renaissance courtyards and a stylish modern side around the Mur river.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Schlossberg and Old Town",
+          "attractions": [
+            "Schlossberg",
+            "Clock Tower",
+            "Hauptplatz",
+            "Graz Cathedral"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 6
+        },
+        {
+          "name": "Renaissance Courtyards",
+          "attractions": [
+            "Landhaus",
+            "Mausoleum of Emperor Ferdinand II",
+            "Joanneumsviertel",
+            "Styrian Armoury"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Modern Graz",
+          "attractions": [
+            "Kunsthaus Graz",
+            "Murinsel",
+            "Kaiser-Josef-Platz Market"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Linz",
+      "country": "Austria",
+      "lat": 48.306,
+      "lng": 14.286,
+      "iata": "LNZ",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Linz sits neatly on the Danube and mixes baroque streets with inventive media art and hilltop viewpoints.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        9,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Danube and Old Town",
+          "attractions": [
+            "Hauptplatz",
+            "Old Cathedral",
+            "Linz Castle",
+            "Landstrasse"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 9
+        },
+        {
+          "name": "Ars Electronica and Heights",
+          "attractions": [
+            "Ars Electronica Center",
+            "Lentos Art Museum",
+            "Pöstlingberg"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 26
+        }
+      ]
+    },
+    {
+      "name": "Wachau Valley",
+      "country": "Austria",
+      "lat": 48.397,
+      "lng": 15.499,
+      "iata": "VIE",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "The Wachau is a scenic Danube valley of abbeys, vineyards, river villages and easy wine-focused day trips.",
+      "types": [
+        "NATURE",
+        "WINE_AND_FOOD",
+        "HERITAGE",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "clusters": [
+        {
+          "name": "Melk Abbey and Danube",
+          "attractions": [
+            "Melk Abbey",
+            "Melk riverfront",
+            "Wachau vineyards"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Dürnstein and Ruins",
+          "attractions": [
+            "Dürnstein Abbey",
+            "Dürnstein Castle ruins",
+            "Kremser Tor"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Wine Villages and River Cruise",
+          "attractions": [
+            "Spitz",
+            "Weißenkirchen",
+            "Danube boat cruise"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Grossglockner",
+      "country": "Austria",
+      "lat": 47.074,
+      "lng": 12.694,
+      "iata": "SZG",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Grossglockner rewards a clear-weather visit with Austria's loftiest mountain scenery, glacier viewpoints and a famed panoramic road.",
+      "types": [
+        "MOUNTAIN",
+        "NATURE",
+        "ADVENTURE"
+      ],
+      "island": false,
+      "best": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "High Alpine Road Highlights",
+          "attractions": [
+            "Grossglockner High Alpine Road",
+            "Kaiser-Franz-Josefs-Höhe",
+            "Fuscher Törl"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Alpine Trails and Viewpoints",
+          "attractions": [
+            "Edelweißspitze",
+            "Pasterze Glacier",
+            "Glocknerhaus"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Amsterdam",
+      "country": "Netherlands",
+      "lat": 52.367,
+      "lng": 4.904,
+      "iata": "AMS",
+      "cost": "HIGH",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Amsterdam combines canal views, major museums and lively neighbourhoods with easy cycling and a compact historic core.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        4,
+        5,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Canal Ring and Dam",
+          "attractions": [
+            "Dam Square",
+            "Royal Palace Amsterdam",
+            "Jordaan",
+            "Begijnhof"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Museumplein",
+          "attractions": [
+            "Rijksmuseum",
+            "Van Gogh Museum",
+            "Stedelijk Museum",
+            "Vondelpark"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM",
+          "eur": 47
+        },
+        {
+          "name": "Anne Frank and Westerkerk",
+          "attractions": [
+            "Anne Frank House",
+            "Westerkerk",
+            "The Nine Streets"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Harbor and Science",
+          "attractions": [
+            "NEMO Science Museum",
+            "National Maritime Museum",
+            "A'DAM Lookout",
+            "Eye Filmmuseum"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 33
+        },
+        {
+          "name": "Plantage and East",
+          "attractions": [
+            "ARTIS",
+            "Hortus Botanicus",
+            "Portuguese Synagogue"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 35
+        }
+      ]
+    },
+    {
+      "name": "Rotterdam",
+      "country": "Netherlands",
+      "lat": 51.922,
+      "lng": 4.479,
+      "iata": "RTM",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Rotterdam stands out for bold postwar architecture, a striking river skyline and one of Europe's biggest ports.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Modern Icons",
+          "attractions": [
+            "Erasmus Bridge",
+            "Markthal",
+            "Cube Houses",
+            "Oude Haven"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "River and Skyline",
+          "attractions": [
+            "Euromast",
+            "Witte de Withstraat",
+            "Depot Boijmans Van Beuningen"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 30
+        },
+        {
+          "name": "Port and Architecture",
+          "attractions": [
+            "ss Rotterdam",
+            "Hotel New York",
+            "Kop van Zuid"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        }
+      ]
+    },
+    {
+      "name": "The Hague",
+      "country": "Netherlands",
+      "lat": 52.08,
+      "lng": 4.311,
+      "iata": "RTM",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "The Hague offers Dutch political grandeur, excellent art museums and an easy tram hop to the North Sea beach at Scheveningen.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "COASTAL"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Mauritshuis and Binnenhof",
+          "attractions": [
+            "Mauritshuis",
+            "Binnenhof",
+            "Hofvijver",
+            "Noordeinde Palace"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Coast and Kurhaus",
+          "attractions": [
+            "Scheveningen Pier",
+            "Kurhaus",
+            "SEA LIFE Scheveningen",
+            "Scheveningen beach promenade"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Peace and Panorama",
+          "attractions": [
+            "Peace Palace",
+            "Panorama Mesdag",
+            "Kunstmuseum Den Haag"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 30
+        }
+      ]
+    },
+    {
+      "name": "Utrecht",
+      "country": "Netherlands",
+      "lat": 52.09,
+      "lng": 5.121,
+      "iata": "AMS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Utrecht is an appealing canal city with a towering cathedral precinct, good museums and a less touristy feel than Amsterdam.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        4,
+        5,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Dom Quarter",
+          "attractions": [
+            "Dom Tower",
+            "Dom Church",
+            "Oudegracht",
+            "Museum Speelklok"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Canals and Museums",
+          "attractions": [
+            "Centraal Museum",
+            "Miffy Museum",
+            "Ledig Erf"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 21
+        },
+        {
+          "name": "Castles and Parks",
+          "attractions": [
+            "Castle De Haar",
+            "Máximapark"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Delft",
+      "country": "Netherlands",
+      "lat": 52.012,
+      "lng": 4.357,
+      "iata": "RTM",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Delft is a compact canal town known for Vermeer, blue pottery and one of the Netherlands' prettiest market squares.",
+      "types": [
+        "HERITAGE",
+        "ARTS",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        4,
+        5,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Vermeer and Market Square",
+          "attractions": [
+            "Nieuwe Kerk",
+            "Markt",
+            "Vermeer Centrum Delft",
+            "City Hall"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Canals and Porcelain",
+          "attractions": [
+            "Royal Delft",
+            "Oostpoort",
+            "Oude Kerk"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Haarlem",
+      "country": "Netherlands",
+      "lat": 52.387,
+      "lng": 4.646,
+      "iata": "AMS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Haarlem rewards a short stay with fine museums, a graceful market square and quick access to dunes and the coast.",
+      "types": [
+        "HERITAGE",
+        "ARTS",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        4,
+        5,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Grote Markt and Museums",
+          "attractions": [
+            "Grote Markt",
+            "St. Bavo Church",
+            "Teylers Museum",
+            "Frans Hals Museum"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 31
+        },
+        {
+          "name": "Dunes and Windmills",
+          "attractions": [
+            "Amsterdamse Waterleidingduinen",
+            "Molen De Adriaan"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Giethoorn",
+      "country": "Netherlands",
+      "lat": 52.74,
+      "lng": 6.079,
+      "iata": "AMS",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Giethoorn is a quiet canal village best explored by boat, with reed thatch, little bridges and wetland scenery.",
+      "types": [
+        "NATURE",
+        "LAKES",
+        "FAIRYTALE",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Canals by Boat",
+          "attractions": [
+            "Binnenpad",
+            "Dorpsgracht",
+            "Bovenwijde",
+            "Giethoorn village bridges"
+          ],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 22
+        },
+        {
+          "name": "Reed and Nature Reserve",
+          "attractions": [
+            "Weerribben-Wieden National Park",
+            "Museum Giethoorn 't Olde Maat Uus"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Eindhoven",
+      "country": "Netherlands",
+      "lat": 51.441,
+      "lng": 5.469,
+      "iata": "EIN",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Eindhoven is a modern design city where Philips heritage, creative districts and good museums drive the appeal.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Design and Innovation",
+          "attractions": [
+            "Philips Museum",
+            "Van Abbemuseum",
+            "18 Septemberplein"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "Strijp-S and Industry",
+          "attractions": [
+            "Strijp-S",
+            "Klokgebouw",
+            "DAF Museum"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Maastricht",
+      "country": "Netherlands",
+      "lat": 50.851,
+      "lng": 5.691,
+      "iata": "MST",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Maastricht feels distinctly southern, with handsome squares, old churches, caves and a strong food-and-café scene.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        7,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Vrijthof and Old Town",
+          "attractions": [
+            "Vrijthof",
+            "Basilica of Saint Servatius",
+            "Basilica of Our Lady",
+            "Stokstraatkwartier"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Caves and River",
+          "attractions": [
+            "St. Pietersberg Caves",
+            "Fort St. Pieter",
+            "Sint Servaasbrug"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        }
+      ]
+    },
+    {
+      "name": "Zaanse Schans",
+      "country": "Netherlands",
+      "lat": 52.474,
+      "lng": 4.816,
+      "iata": "AMS",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Zaanse Schans is a photogenic windmill village with classic Dutch craft workshops and quick access from Amsterdam.",
+      "types": [
+        "HERITAGE",
+        "FAMILY",
+        "FAIRYTALE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        4,
+        5,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Windmills and Workshops",
+          "attractions": [
+            "De Kat",
+            "Het Jonge Schaap",
+            "Kooijman Souvenirs & Clogs",
+            "Catharina Hoeve Cheese Farm"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 23
+        },
+        {
+          "name": "Zaandam and Riverfront",
+          "attractions": [
+            "Zaans Museum",
+            "Czaar Peter House",
+            "River Zaan promenade"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Vaduz",
+      "country": "Liechtenstein",
+      "lat": 47.141,
+      "lng": 9.521,
+      "iata": "ZRH",
+      "cost": "HIGH",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Vaduz is a tiny capital with museums, vineyard views and a neat main street under the princely castle hill.",
+      "types": [
+        "HERITAGE",
+        "MOUNTAIN",
+        "ARTS"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Castle Hill and Museums",
+          "attractions": [
+            "Vaduz Castle viewpoint",
+            "Kunstmuseum Liechtenstein",
+            "Liechtenstein National Museum",
+            "Cathedral of St. Florin"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Vineyards and Finance Quarter",
+          "attractions": [
+            "Hofkellerei",
+            "Städtle",
+            "Red House"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Schaan",
+      "country": "Liechtenstein",
+      "lat": 47.166,
+      "lng": 9.51,
+      "iata": "ZRH",
+      "cost": "HIGH",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Schaan is Liechtenstein's main town for daily life, good valley views and access to easy mountain paths.",
+      "types": [
+        "NATURE",
+        "MOUNTAIN",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Village Centre and Monastery",
+          "attractions": [
+            "Schaan parish church",
+            "Monastery of the Sisters of the Precious Blood",
+            "DoMuS"
+          ],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 6
+        },
+        {
+          "name": "Three Sisters Slopes",
+          "attractions": [
+            "Dux Chapel",
+            "Three Sisters trailhead",
+            "Schaan viewpoint"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Balzers",
+      "country": "Liechtenstein",
+      "lat": 47.066,
+      "lng": 9.502,
+      "iata": "ZRH",
+      "cost": "HIGH",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Balzers is best known for picture-book Gutenberg Castle and its quiet setting near the Rhine and Swiss border.",
+      "types": [
+        "HERITAGE",
+        "FAIRYTALE",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Gutenberg Hill",
+          "attractions": [
+            "Gutenberg Castle",
+            "St. Nicholas Church"
+          ],
+          "hours": 3,
+          "walk": "MEDIUM",
+          "eur": 6
+        },
+        {
+          "name": "Rhine and Border Views",
+          "attractions": [
+            "Rhine embankment trail",
+            "Mälsner Dorfzentrum"
+          ],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Triesenberg",
+      "country": "Liechtenstein",
+      "lat": 47.118,
+      "lng": 9.541,
+      "iata": "ZRH",
+      "cost": "HIGH",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Triesenberg brings Walser heritage, broad mountain views and straightforward access up to Liechtenstein's small alpine resort zone.",
+      "types": [
+        "MOUNTAIN",
+        "NATURE",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        1,
+        2,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        2,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Walser Village Core",
+          "attractions": [
+            "Walser Museum",
+            "Pfarrkirche St. Joseph"
+          ],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Malbun Heights",
+          "attractions": [
+            "Malbun",
+            "Sareis chairlift",
+            "Sareiserjoch"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Prague",
+      "country": "Czechia",
+      "lat": 50.075,
+      "lng": 14.438,
+      "iata": "PRG",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Prague delivers a dense mix of Gothic, baroque and riverside beauty with major sights packed into an atmospheric historic core.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10,
+        12
+      ],
+      "peak": [
+        5,
+        6,
+        7,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Old Town and Astronomical Clock",
+          "attractions": [
+            "Old Town Square",
+            "Prague Astronomical Clock",
+            "Church of Our Lady before Týn",
+            "Clementinum"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Charles Bridge and Lesser Town",
+          "attractions": [
+            "Charles Bridge",
+            "St. Nicholas Church",
+            "Lennon Wall",
+            "Kampa Island"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Prague Castle Hill",
+          "attractions": [
+            "Prague Castle",
+            "St. Vitus Cathedral",
+            "Golden Lane",
+            "Lobkowicz Palace"
+          ],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 28
+        },
+        {
+          "name": "Jewish Quarter and River",
+          "attractions": [
+            "Old Jewish Cemetery",
+            "Spanish Synagogue",
+            "Rudolfinum",
+            "Vltava embankment"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "New Town and Views",
+          "attractions": [
+            "Wenceslas Square",
+            "National Museum",
+            "Dancing House",
+            "Petřín Tower"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 27
+        }
+      ]
+    },
+    {
+      "name": "Český Krumlov",
+      "country": "Czechia",
+      "lat": 48.811,
+      "lng": 14.315,
+      "iata": "LNZ",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Český Krumlov is a fairytale South Bohemian town with a looping river, a vast castle complex and atmospheric lanes.",
+      "types": [
+        "HERITAGE",
+        "FAIRYTALE",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Castle and Old Town",
+          "attractions": [
+            "Český Krumlov Castle",
+            "Castle Tower",
+            "Svornosti Square",
+            "Cloak Bridge"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "River and Monasteries",
+          "attractions": [
+            "Vltava embankment",
+            "Egon Schiele Art Centrum",
+            "Minorite Monastery"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        }
+      ]
+    },
+    {
+      "name": "Karlovy Vary",
+      "country": "Czechia",
+      "lat": 50.231,
+      "lng": 12.872,
+      "iata": "PRG",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Karlovy Vary is a handsome spa town of colonnades, hot springs and grand hotels set in wooded western Bohemia.",
+      "types": [
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Colonnades and Springs",
+          "attractions": [
+            "Mill Colonnade",
+            "Hot Spring Colonnade",
+            "Market Colonnade",
+            "Diana Lookout Tower"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Spa Grandeur",
+          "attractions": [
+            "Grandhotel Pupp",
+            "St. Mary Magdalene Church",
+            "Jan Becher Museum"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Brno",
+      "country": "Czechia",
+      "lat": 49.195,
+      "lng": 16.607,
+      "iata": "BRQ",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Brno offers a youthful café scene, strong modernist heritage and an old centre layered with underground sights.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Špilberk and Old Town",
+          "attractions": [
+            "Špilberk Castle",
+            "Freedom Square",
+            "Cathedral of St. Peter and Paul",
+            "Old Town Hall"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Underground Brno",
+          "attractions": [
+            "Labyrinth under Vegetable Market",
+            "Capuchin Crypt",
+            "Ossuary at St. James"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Modernist Edge",
+          "attractions": [
+            "Villa Tugendhat",
+            "Lužánky Park"
+          ],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Kutná Hora",
+      "country": "Czechia",
+      "lat": 49.949,
+      "lng": 15.268,
+      "iata": "PRG",
+      "cost": "LOW",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Kutná Hora packs striking medieval wealth, a famous bone church and one of Czechia's most rewarding small-town centres.",
+      "types": [
+        "HERITAGE",
+        "RELIGIOUS",
+        "FAIRYTALE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Sedlec and Bone Church",
+          "attractions": [
+            "Sedlec Ossuary",
+            "Cathedral of the Assumption of Our Lady and Saint John the Baptist",
+            "Czech Museum of Silver"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "St. Barbara and Historic Centre",
+          "attractions": [
+            "St. Barbara's Cathedral",
+            "Italian Court",
+            "Stone Fountain"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 11
+        }
+      ]
+    },
+    {
+      "name": "Olomouc",
+      "country": "Czechia",
+      "lat": 49.594,
+      "lng": 17.251,
+      "iata": "OSR",
+      "cost": "LOW",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Olomouc is a handsome Moravian university city with grand squares, baroque fountains and far fewer tourists than Prague.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Squares and Columns",
+          "attractions": [
+            "Holy Trinity Column",
+            "Upper Square",
+            "Olomouc Town Hall",
+            "Astronomical Clock"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Cathedral and Parks",
+          "attractions": [
+            "St. Wenceslas Cathedral",
+            "Archdiocesan Museum",
+            "Bezruč Gardens"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Pilsen",
+      "country": "Czechia",
+      "lat": 49.747,
+      "lng": 13.377,
+      "iata": "PRG",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Pilsen is best known for lager history, but its broad square, cathedral and cellars make it a worthwhile stop.",
+      "types": [
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "URBAN"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Beer Heritage",
+          "attractions": [
+            "Pilsner Urquell Brewery",
+            "Brewery Museum",
+            "Republic Square"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Gothic Core",
+          "attractions": [
+            "St. Bartholomew's Cathedral",
+            "Great Synagogue",
+            "Historic Underground"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 13
+        }
+      ]
+    },
+    {
+      "name": "Budapest",
+      "country": "Hungary",
+      "lat": 47.497,
+      "lng": 19.04,
+      "iata": "BUD",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Budapest balances grand Danube views, thermal baths, nightlife and layered history across Buda hills and Pest boulevards.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "NIGHTLIFE",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10,
+        12
+      ],
+      "peak": [
+        5,
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Castle Hill",
+          "attractions": [
+            "Buda Castle",
+            "Matthias Church",
+            "Fisherman's Bastion",
+            "Hospital in the Rock"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 28
+        },
+        {
+          "name": "Parliament and Danube",
+          "attractions": [
+            "Hungarian Parliament Building",
+            "Shoes on the Danube Bank",
+            "St. Stephen's Basilica",
+            "Chain Bridge"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 23
+        },
+        {
+          "name": "Thermal Baths and City Park",
+          "attractions": [
+            "Széchenyi Thermal Bath",
+            "Heroes' Square",
+            "Vajdahunyad Castle",
+            "City Park"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Jewish Quarter and Nightlife",
+          "attractions": [
+            "Dohány Street Synagogue",
+            "Gozsdu Udvar",
+            "Szimpla Kert",
+            "Great Market Hall"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Gellért Hill and Liberty",
+          "attractions": [
+            "Gellért Baths",
+            "Citadella",
+            "Liberty Statue",
+            "Central Market Hall"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 29
+        }
+      ]
+    },
+    {
+      "name": "Szentendre",
+      "country": "Hungary",
+      "lat": 47.673,
+      "lng": 19.076,
+      "iata": "BUD",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Szentendre is a colourful Danube town of baroque lanes, artists' museums and easy day-trip charm from Budapest.",
+      "types": [
+        "HERITAGE",
+        "ARTS",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Baroque Centre",
+          "attractions": [
+            "Main Square",
+            "Serbian Orthodox Museum",
+            "Blagovestenska Church",
+            "Danube promenade"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Artists and Riverbank",
+          "attractions": [
+            "Skanzen Hungarian Open Air Museum",
+            "Margit Kovács Museum"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Eger",
+      "country": "Hungary",
+      "lat": 47.902,
+      "lng": 20.373,
+      "iata": "DEB",
+      "cost": "LOW",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Eger combines a compact baroque centre, a hilltop castle and easy access to cellars pouring Egri Bikavér wines.",
+      "types": [
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "ROMANTIC"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Castle and Baroque Core",
+          "attractions": [
+            "Eger Castle",
+            "Dobó Square",
+            "Eger Basilica",
+            "Minorite Church"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Wine and Baths",
+          "attractions": [
+            "Valley of the Beautiful Woman",
+            "Eger Turkish Bath",
+            "Archbishop's Garden"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        }
+      ]
+    },
+    {
+      "name": "Debrecen",
+      "country": "Hungary",
+      "lat": 47.532,
+      "lng": 21.627,
+      "iata": "DEB",
+      "cost": "LOW",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Debrecen is eastern Hungary's main city, valued for its Calvinist heritage, broad square and green spa park.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Great Church and Centre",
+          "attractions": [
+            "Reformed Great Church",
+            "Kossuth Square",
+            "Déri Museum",
+            "Csokonai Theatre"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Nagyerdő and Baths",
+          "attractions": [
+            "Nagyerdei Park",
+            "Aquaticum",
+            "Debrecen Zoo"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "name": "Pécs",
+      "country": "Hungary",
+      "lat": 46.072,
+      "lng": 18.233,
+      "iata": null,
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Pécs mixes Roman remains, Ottoman-era landmarks and a sunny southern feel with strong arts spaces.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Roman and Ottoman Layers",
+          "attractions": [
+            "Pécs Cathedral",
+            "Early Christian Mausoleum",
+            "Széchenyi Square",
+            "Mosque of Pasha Qasim"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Zsolnay and Hills",
+          "attractions": [
+            "Zsolnay Cultural Quarter",
+            "Pécs TV Tower",
+            "Tettye ruins"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Lake Balaton",
+      "country": "Hungary",
+      "lat": 46.833,
+      "lng": 17.733,
+      "iata": "SOB",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        3,
+        5
+      ],
+      "summary": "Lake Balaton is Central Europe's classic summer lake, mixing beaches, sailing, wine hills and pretty north-shore villages.",
+      "types": [
+        "LAKES",
+        "NATURE",
+        "WINE_AND_FOOD",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "North Shore Villages",
+          "attractions": [
+            "Tihany Abbey",
+            "Tihany Echo",
+            "Balatonfüred promenade"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Beaches and Sailing",
+          "attractions": [
+            "Tagore Promenade",
+            "Platan Strand",
+            "Balaton boat trip"
+          ],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 18
+        },
+        {
+          "name": "Castles and Views",
+          "attractions": [
+            "Szigliget Castle",
+            "Badacsony lookout",
+            "Folly Arboretum"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Hévíz",
+      "country": "Hungary",
+      "lat": 46.792,
+      "lng": 17.185,
+      "iata": "SOB",
+      "cost": "MEDIUM",
+      "nights": [
+        1,
+        2,
+        4
+      ],
+      "summary": "Hévíz is centred on its famous thermal lake and works well with nearby Keszthely for spa time and palace visits.",
+      "types": [
+        "LAKES",
+        "NATURE",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Thermal Lake and Spa",
+          "attractions": [
+            "Lake Hévíz",
+            "Festetics Bath House",
+            "Dr. Schulhof Vilmos Promenade"
+          ],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 22
+        },
+        {
+          "name": "Keszthely Pairing",
+          "attractions": [
+            "Festetics Palace",
+            "Balaton Museum",
+            "Keszthely old town"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 16
+        }
+      ]
+    },
+    {
+      "name": "Warsaw",
+      "country": "Poland",
+      "lat": 52.229,
+      "lng": 21.012,
+      "iata": "WAW",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        2,
+        3,
+        5
+      ],
+      "summary": "Warsaw blends reconstructed old-town charm with major museums, broad royal routes and a resilient modern energy.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        5,
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Royal Route and Old Town",
+          "attractions": [
+            "Royal Castle",
+            "Old Town Market Square",
+            "Sigismund's Column",
+            "Krakowskie Przedmieście"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Łazienki and Palaces",
+          "attractions": [
+            "Łazienki Park",
+            "Palace on the Isle",
+            "Chopin Monument",
+            "Ujazdów Castle"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 11
+        },
+        {
+          "name": "WWII and Memory",
+          "attractions": [
+            "Warsaw Uprising Museum",
+            "POLIN Museum",
+            "Tomb of the Unknown Soldier"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 29
+        },
+        {
+          "name": "Vistula and Modern Centre",
+          "attractions": [
+            "Palace of Culture and Science",
+            "Saxon Garden",
+            "Copernicus Science Centre",
+            "Vistula Boulevards"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 23
+        }
+      ]
+    },
+    {
+      "name": "Kraków",
+      "country": "Poland",
+      "lat": 50.061,
+      "lng": 19.938,
+      "iata": "KRK",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        2,
+        4,
+        6
+      ],
+      "summary": "Kraków is one of Europe's great short breaks for medieval streets, castle views, Jewish heritage and easy side trips.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "WINE_AND_FOOD",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        10,
+        12
+      ],
+      "peak": [
+        5,
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Rynek and St. Mary's",
+          "attractions": [
+            "Main Market Square",
+            "St. Mary's Basilica",
+            "Cloth Hall",
+            "Town Hall Tower"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Wawel and River",
+          "attractions": [
+            "Wawel Royal Castle",
+            "Wawel Cathedral",
+            "Vistula boulevards",
+            "Dragon's Den"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 25
+        },
+        {
+          "name": "Kazimierz and Schindler",
+          "attractions": [
+            "Old Synagogue",
+            "Plac Nowy",
+            "Oskar Schindler's Enamel Factory",
+            "Ghetto Heroes Square"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 21
+        },
+        {
+          "name": "Salt and Sanctuary",
+          "attractions": [
+            "Wieliczka Salt Mine",
+            "Sanctuary of Divine Mercy"
+          ],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 31
+        }
+      ]
+    },
+    {
+      "name": "Wrocław",
+      "country": "Poland",
+      "lat": 51.107,
+      "lng": 17.038,
+      "iata": "WRO",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        2,
+        4
+      ],
+      "summary": "Wrocław charms with a colourful square, river islands, quirky dwarfs and some of Poland's best family attractions.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "FAMILY",
+        "ARTS"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Market Square and Islands",
+          "attractions": [
+            "Rynek",
+            "Wrocław Town Hall",
+            "Cathedral Island",
+            "Tumski Bridge"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Hala Stulecia and Zoo",
+          "attractions": [
+            "Centennial Hall",
+            "Japanese Garden",
+            "Wrocław Zoo",
+            "Afrykarium"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Panoramas and Dwarfs",
+          "attractions": [
+            "Panorama of the Battle of Racławice",
+            "National Museum",
+            "Wrocław dwarfs trail"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Gdańsk",
+      "country": "Poland",
+      "lat": 54.352,
+      "lng": 18.646,
+      "iata": "GDN",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        2,
+        3,
+        4
+      ],
+      "summary": "Gdańsk pairs a richly rebuilt Hanseatic centre with maritime history and easy access to Baltic seaside stretches.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "COASTAL",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Royal Way",
+          "attractions": [
+            "Long Market",
+            "Neptune Fountain",
+            "St. Mary's Basilica",
+            "Golden Gate"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 9
+        },
+        {
+          "name": "Maritime Gdańsk",
+          "attractions": [
+            "European Solidarity Centre",
+            "Crane",
+            "National Maritime Museum",
+            "Motława riverfront"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 24
+        },
+        {
+          "name": "Seaside and Westerplatte",
+          "attractions": [
+            "Westerplatte",
+            "Brzeźno Pier",
+            "Oliwa Cathedral"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        }
+      ]
+    },
+    {
+      "name": "Poznań",
+      "country": "Poland",
+      "lat": 52.407,
+      "lng": 16.925,
+      "iata": "POZ",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Poznań is a lively western Polish city of merchant squares, cathedral history and a strong student atmosphere.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Old Market and Cathedral Island",
+          "attractions": [
+            "Old Market Square",
+            "Poznań Town Hall",
+            "Cathedral Island",
+            "Rogalowe Museum of Poznań"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Imperial and Lakeside",
+          "attractions": [
+            "Imperial Castle",
+            "Stary Browar",
+            "Lake Malta"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Zakopane",
+      "country": "Poland",
+      "lat": 49.299,
+      "lng": 19.95,
+      "iata": "KRK",
+      "cost": "MEDIUM",
+      "nights": [
+        2,
+        3,
+        5
+      ],
+      "summary": "Zakopane is Poland's mountain capital, good for wooden-villa charm, cable cars and Tatra hiking or winter sports.",
+      "types": [
+        "MOUNTAIN",
+        "ADVENTURE",
+        "SKI",
+        "FAMILY"
+      ],
+      "island": false,
+      "best": [
+        1,
+        2,
+        6,
+        7,
+        8,
+        9
+      ],
+      "peak": [
+        2,
+        7,
+        8
+      ],
+      "clusters": [
+        {
+          "name": "Krupówki and Gubałówka",
+          "attractions": [
+            "Krupówki Street",
+            "Gubałówka funicular",
+            "Zakopane market",
+            "Villa Koliba"
+          ],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Tatra Trails",
+          "attractions": [
+            "Kuźnice",
+            "Kasprowy Wierch cable car",
+            "Morskie Oko trailhead"
+          ],
+          "hours": 8,
+          "walk": "HIGH",
+          "eur": 45
+        }
+      ]
+    },
+    {
+      "name": "Katowice",
+      "country": "Poland",
+      "lat": 50.264,
+      "lng": 19.023,
+      "iata": "KTW",
+      "cost": "LOW-MEDIUM",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Katowice surprises with strong contemporary culture, Silesian industrial heritage and a compact, improving centre.",
+      "types": [
+        "URBAN",
+        "ARTS",
+        "NIGHTLIFE"
+      ],
+      "island": false,
+      "best": [
+        4,
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Culture Zone",
+          "attractions": [
+            "Silesian Museum",
+            "NOSPR",
+            "Spodek",
+            "International Congress Centre"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Parks and Nikiszowiec",
+          "attractions": [
+            "Nikiszowiec",
+            "Kościuszko Park",
+            "Parachute Tower"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Toruń",
+      "country": "Poland",
+      "lat": 53.013,
+      "lng": 18.598,
+      "iata": "BZG",
+      "cost": "LOW",
+      "nights": [
+        1,
+        1,
+        2
+      ],
+      "summary": "Toruń offers a richly preserved Gothic old town, Copernicus heritage and famous gingerbread in a compact riverside setting.",
+      "types": [
+        "HERITAGE",
+        "FAIRYTALE",
+        "WINE_AND_FOOD"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9,
+        12
+      ],
+      "peak": [
+        6,
+        12
+      ],
+      "clusters": [
+        {
+          "name": "Gothic Old Town",
+          "attractions": [
+            "Old Town Hall",
+            "House of Nicolaus Copernicus",
+            "Toruń Cathedral",
+            "Leaning Tower of Toruń"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Riverside and Gingerbread",
+          "attractions": [
+            "Philadelphia Boulevard",
+            "Living Museum of Gingerbread",
+            "Teutonic Castle ruins"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 21
+        }
+      ]
+    },
+    {
+      "name": "Lublin",
+      "country": "Poland",
+      "lat": 51.247,
+      "lng": 22.568,
+      "iata": "LUZ",
+      "cost": "LOW",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "summary": "Lublin has one of Poland's most atmospheric eastern old towns, plus important multicultural and wartime history.",
+      "types": [
+        "URBAN",
+        "HERITAGE",
+        "ARTS"
+      ],
+      "island": false,
+      "best": [
+        5,
+        6,
+        9
+      ],
+      "peak": [
+        6,
+        7
+      ],
+      "clusters": [
+        {
+          "name": "Castle and Old Town",
+          "attractions": [
+            "Lublin Castle",
+            "Trinity Chapel",
+            "Kraków Gate",
+            "Market Square"
+          ],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 13
+        },
+        {
+          "name": "Multicultural Memory",
+          "attractions": [
+            "Majdanek State Museum",
+            "Grodzka Gate",
+            "Plac Litewski"
+          ],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        }
+      ]
+    }
+  ]
+}

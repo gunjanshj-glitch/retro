@@ -1,0 +1,398 @@
+{
+  "_comment": "Placeholder image gallery for package detail pages. Every package (destinationSlug/packageSlug) not listed under \"overrides\" gets a deterministic rotation of \"defaultImages\". Replace files in public/packages/ and update the paths here to swap in real package photography — no code changes needed.",
+  "defaultImages": [
+    "/packages/placeholders/placeholder-1.webp",
+    "/packages/placeholders/placeholder-2.webp",
+    "/packages/placeholders/placeholder-3.webp",
+    "/packages/placeholders/placeholder-4.webp",
+    "/packages/placeholders/placeholder-5.webp",
+    "/packages/placeholders/placeholder-6.webp",
+    "/packages/placeholders/placeholder-7.webp",
+    "/packages/placeholders/placeholder-8.webp",
+    "/packages/placeholders/placeholder-9.webp",
+    "/packages/placeholders/placeholder-10.webp"
+  ],
+  "overrides": {
+    "africa/mystic-egypt": [
+      "/packages/africa/mystic-egypt/image-1.webp",
+      "/packages/africa/mystic-egypt/image-2.webp"
+    ],
+    "africa/kenya-safari": [
+      "/packages/africa/kenya-safari/image-1.webp",
+      "/packages/africa/kenya-safari/image-2.webp"
+    ],
+    "africa/mauritius": [
+      "/packages/africa/mauritius/image-1.webp",
+      "/packages/africa/mauritius/image-2.webp"
+    ],
+    "africa/seychelles": [
+      "/packages/africa/seychelles/image-1.webp",
+      "/packages/africa/seychelles/image-2.webp"
+    ],
+    "africa/south-africa": [
+      "/packages/africa/south-africa/image-1.webp",
+      "/packages/africa/south-africa/image-2.webp"
+    ],
+    "east-asia/japan": [
+      "/packages/east-asia/japan/image-1.webp",
+      "/packages/east-asia/japan/image-2.webp",
+      "/packages/east-asia/japan/image-3.webp",
+      "/packages/east-asia/japan/image-4.webp"
+    ],
+    "east-asia/south-korea": [
+      "/packages/east-asia/south-korea/image-1.webp",
+      "/packages/east-asia/south-korea/image-2.webp"
+    ],
+    "east-asia/beijing-shanghai-xian-and-neighbouring-cities-tour": [
+      "/packages/east-asia/beijing-shanghai-xian-and-neighbouring-cities-tour/image-1.webp",
+      "/packages/east-asia/beijing-shanghai-xian-and-neighbouring-cities-tour/image-2.webp"
+    ],
+    "east-asia/hong-kong-and-macau": [
+      "/packages/east-asia/hong-kong-and-macau/image-1.webp",
+      "/packages/east-asia/hong-kong-and-macau/image-2.webp"
+    ],
+    "east-asia/kailash-mansarovar-tour": [
+      "/packages/east-asia/kailash-mansarovar-tour/image-1.webp",
+      "/packages/east-asia/kailash-mansarovar-tour/image-2.webp"
+    ],
+    "east-asia/china-ancient-villages-and-countryside-tour": [
+      "/packages/east-asia/china-ancient-villages-and-countryside-tour/image-1.webp",
+      "/packages/east-asia/china-ancient-villages-and-countryside-tour/image-2.webp",
+      "/packages/east-asia/china-ancient-villages-and-countryside-tour/image-3.webp",
+      "/packages/east-asia/china-ancient-villages-and-countryside-tour/image-4.webp"
+    ],
+    "eurasia-cis/georgia": [
+      "/packages/eurasia-cis/georgia/image-1.webp",
+      "/packages/eurasia-cis/georgia/image-2.webp"
+    ],
+    "eurasia-cis/azerbaijan": [
+      "/packages/eurasia-cis/azerbaijan/image-1.webp",
+      "/packages/eurasia-cis/azerbaijan/image-2.webp"
+    ],
+    "eurasia-cis/kazakhstan": [
+      "/packages/eurasia-cis/kazakhstan/image-1.webp",
+      "/packages/eurasia-cis/kazakhstan/image-2.webp"
+    ],
+    "eurasia-cis/uzbekistan": [
+      "/packages/eurasia-cis/uzbekistan/image-1.webp",
+      "/packages/eurasia-cis/uzbekistan/image-2.webp"
+    ],
+    "eurasia-cis/kyrgisthan": [
+      "/packages/eurasia-cis/kyrgisthan/image-1.webp",
+      "/packages/eurasia-cis/kyrgisthan/image-2.webp"
+    ],
+    "europe/european-delights": [
+      "/packages/europe/european-delights/image-1.webp",
+      "/packages/europe/european-delights/image-2.webp"
+    ],
+    "europe/europe-at-a-glance": [
+      "/packages/europe/europe-at-a-glance/image-1.webp",
+      "/packages/europe/europe-at-a-glance/image-2.webp"
+    ],
+    "europe/iberia": [
+      "/packages/europe/iberia/image-1.webp",
+      "/packages/europe/iberia/image-2.webp"
+    ],
+    "europe/europe-off-beat": [
+      "/packages/europe/europe-off-beat/image-1.webp",
+      "/packages/europe/europe-off-beat/image-2.webp"
+    ],
+    "europe/italy": [
+      "/packages/europe/italy/image-1.webp",
+      "/packages/europe/italy/image-2.webp"
+    ],
+    "europe/greece": [
+      "/packages/europe/greece/image-1.webp",
+      "/packages/europe/greece/image-2.webp"
+    ],
+    "europe/nordic-adventure": [
+      "/packages/europe/nordic-adventure/image-1.webp",
+      "/packages/europe/nordic-adventure/image-2.webp"
+    ],
+    "europe/united-kingdom": [
+      "/packages/europe/united-kingdom/image-1.webp",
+      "/packages/europe/united-kingdom/image-2.webp"
+    ],
+    "europe/scotland": [
+      "/packages/europe/scotland/image-1.webp",
+      "/packages/europe/scotland/image-2.webp"
+    ],
+    "europe/ireland": [
+      "/packages/europe/ireland/image-1.webp",
+      "/packages/europe/ireland/image-2.webp"
+    ],
+    "india/kerala": [
+      "/packages/india/kerala/image-1.webp",
+      "/packages/india/kerala/image-2.webp",
+      "/packages/india/kerala/image-3.webp",
+      "/packages/india/kerala/image-4.webp"
+    ],
+    "india/goa": [
+      "/packages/india/goa/image-1.webp",
+      "/packages/india/goa/image-2.webp"
+    ],
+    "india/lakshadweep": [
+      "/packages/india/lakshadweep/image-1.webp",
+      "/packages/india/lakshadweep/image-2.webp",
+      "/packages/india/lakshadweep/image-3.webp",
+      "/packages/india/lakshadweep/image-4.webp"
+    ],
+    "india/andaman-island": [
+      "/packages/india/andaman-island/image-1.webp",
+      "/packages/india/andaman-island/image-2.webp",
+      "/packages/india/andaman-island/image-3.webp"
+    ],
+    "india/andhra-pradesh": [
+      "/packages/india/andhra-pradesh/image-1.webp",
+      "/packages/india/andhra-pradesh/image-2.webp",
+      "/packages/india/andhra-pradesh/image-3.webp"
+    ],
+    "india/telangana": [
+      "/packages/india/telangana/image-1.webp",
+      "/packages/india/telangana/image-2.webp",
+      "/packages/india/telangana/image-3.webp"
+    ],
+    "india/tamil-nadu": [
+      "/packages/india/tamil-nadu/image-1.webp",
+      "/packages/india/tamil-nadu/image-2.webp"
+    ],
+    "india/karnataka": [
+      "/packages/india/karnataka/image-1.webp",
+      "/packages/india/karnataka/image-2.webp",
+      "/packages/india/karnataka/image-3.webp",
+      "/packages/india/karnataka/image-4.webp",
+      "/packages/india/karnataka/image-5.webp"
+    ],
+    "india/himachal-gateway": [
+      "/packages/india/himachal-gateway/image-1.webp",
+      "/packages/india/himachal-gateway/image-2.webp",
+      "/packages/india/himachal-gateway/image-3.webp",
+      "/packages/india/himachal-gateway/image-4.webp",
+      "/packages/india/himachal-gateway/image-5.webp"
+    ],
+    "india/himachal-delights": [
+      "/packages/india/himachal-delights/image-1.webp",
+      "/packages/india/himachal-delights/image-2.webp",
+      "/packages/india/himachal-delights/image-3.webp",
+      "/packages/india/himachal-delights/image-4.webp"
+    ],
+    "india/uttarakhand-pilgrimage": [
+      "/packages/india/uttarakhand-pilgrimage/image-1.webp",
+      "/packages/india/uttarakhand-pilgrimage/image-2.webp"
+    ],
+    "india/great-uttarakhand-outdoors": [
+      "/packages/india/great-uttarakhand-outdoors/image-1.webp",
+      "/packages/india/great-uttarakhand-outdoors/image-2.webp",
+      "/packages/india/great-uttarakhand-outdoors/image-3.webp",
+      "/packages/india/great-uttarakhand-outdoors/image-4.webp"
+    ],
+    "india/kashmir-delights": [
+      "/packages/india/kashmir-delights/image-1.webp",
+      "/packages/india/kashmir-delights/image-2.webp",
+      "/packages/india/kashmir-delights/image-3.webp",
+      "/packages/india/kashmir-delights/image-4.webp"
+    ],
+    "india/kashmir-off-beat": [
+      "/packages/india/kashmir-off-beat/image-1.webp",
+      "/packages/india/kashmir-off-beat/image-2.webp",
+      "/packages/india/kashmir-off-beat/image-3.webp"
+    ],
+    "india/ladakh": [
+      "/packages/india/ladakh/image-1.webp",
+      "/packages/india/ladakh/image-2.webp",
+      "/packages/india/ladakh/image-3.webp",
+      "/packages/india/ladakh/image-4.webp",
+      "/packages/india/ladakh/image-5.webp"
+    ],
+    "india/arunachal-pradesh": [
+      "/packages/india/arunachal-pradesh/image-1.webp",
+      "/packages/india/arunachal-pradesh/image-2.webp",
+      "/packages/india/arunachal-pradesh/image-3.webp"
+    ],
+    "india/uttar-pradesh": [
+      "/packages/india/uttar-pradesh/image-1.webp",
+      "/packages/india/uttar-pradesh/image-2.webp",
+      "/packages/india/uttar-pradesh/image-3.webp",
+      "/packages/india/uttar-pradesh/image-4.webp",
+      "/packages/india/uttar-pradesh/image-5.webp",
+      "/packages/india/uttar-pradesh/image-6.webp"
+    ],
+    "india/maharashtra": [
+      "/packages/india/maharashtra/image-1.webp",
+      "/packages/india/maharashtra/image-2.webp",
+      "/packages/india/maharashtra/image-3.webp",
+      "/packages/india/maharashtra/image-4.webp"
+    ],
+    "india/rajasthan": [
+      "/packages/india/rajasthan/image-1.webp",
+      "/packages/india/rajasthan/image-2.webp",
+      "/packages/india/rajasthan/image-3.webp",
+      "/packages/india/rajasthan/image-4.webp",
+      "/packages/india/rajasthan/image-5.webp",
+      "/packages/india/rajasthan/image-6.webp"
+    ],
+    "india/punjab": [
+      "/packages/india/punjab/image-1.webp",
+      "/packages/india/punjab/image-2.webp",
+      "/packages/india/punjab/image-3.webp",
+      "/packages/india/punjab/image-4.webp"
+    ],
+    "india/gujarat": [
+      "/packages/india/gujarat/image-1.webp",
+      "/packages/india/gujarat/image-2.webp",
+      "/packages/india/gujarat/image-3.webp",
+      "/packages/india/gujarat/image-4.webp"
+    ],
+    "india/madhya-pradesh": [
+      "/packages/india/madhya-pradesh/image-1.webp",
+      "/packages/india/madhya-pradesh/image-2.webp",
+      "/packages/india/madhya-pradesh/image-3.webp",
+      "/packages/india/madhya-pradesh/image-4.webp",
+      "/packages/india/madhya-pradesh/image-5.webp"
+    ],
+    "india/chhattisgarh": [
+      "/packages/india/chhattisgarh/image-1.webp",
+      "/packages/india/chhattisgarh/image-2.webp",
+      "/packages/india/chhattisgarh/image-3.webp",
+      "/packages/india/chhattisgarh/image-4.webp"
+    ],
+    "india/odisha": [
+      "/packages/india/odisha/image-1.webp",
+      "/packages/india/odisha/image-2.webp",
+      "/packages/india/odisha/image-3.webp"
+    ],
+    "india/west-bengal": [
+      "/packages/india/west-bengal/image-1.webp",
+      "/packages/india/west-bengal/image-2.webp"
+    ],
+    "india/sikkim": [
+      "/packages/india/sikkim/image-1.webp",
+      "/packages/india/sikkim/image-2.webp"
+    ],
+    "india/uttarakhand-long-holiday": [
+      "/packages/india/uttarakhand-long-holiday/image-1.webp",
+      "/packages/india/uttarakhand-long-holiday/image-2.webp",
+      "/packages/india/uttarakhand-long-holiday/image-3.webp",
+      "/packages/india/uttarakhand-long-holiday/image-4.webp",
+      "/packages/india/uttarakhand-long-holiday/image-5.webp",
+      "/packages/india/uttarakhand-long-holiday/image-6.webp"
+    ],
+    "middle-east/uae": [
+      "/packages/middle-east/uae/image-1.webp",
+      "/packages/middle-east/uae/image-2.webp",
+      "/packages/middle-east/uae/image-3.webp"
+    ],
+    "middle-east/turkey": [
+      "/packages/middle-east/turkey/image-1.webp",
+      "/packages/middle-east/turkey/image-2.webp",
+      "/packages/middle-east/turkey/image-3.webp",
+      "/packages/middle-east/turkey/image-4.webp"
+    ],
+    "middle-east/oman": [
+      "/packages/middle-east/oman/image-1.webp",
+      "/packages/middle-east/oman/image-2.webp"
+    ],
+    "middle-east/jordan": [
+      "/packages/middle-east/jordan/image-1.webp",
+      "/packages/middle-east/jordan/image-2.webp"
+    ],
+    "oceania/new-zealand": [
+      "/packages/oceania/new-zealand/image-1.webp",
+      "/packages/oceania/new-zealand/image-2.webp"
+    ],
+    "oceania/australia": [
+      "/packages/oceania/australia/image-1.webp",
+      "/packages/oceania/australia/image-2.webp"
+    ],
+    "oceania/fiji": [
+      "/packages/oceania/fiji/image-1.webp",
+      "/packages/oceania/fiji/image-2.webp"
+    ],
+    "russia/trans-siberian-route": [
+      "/packages/russia/trans-siberian-route/image-1.webp",
+      "/packages/russia/trans-siberian-route/image-2.webp"
+    ],
+    "russia/jewels-of-russia": [
+      "/packages/russia/jewels-of-russia/image-1.webp",
+      "/packages/russia/jewels-of-russia/image-2.webp"
+    ],
+    "russia/northern-lights-of-russia": [
+      "/packages/russia/northern-lights-of-russia/image-1.webp",
+      "/packages/russia/northern-lights-of-russia/image-2.webp"
+    ],
+    "south-asia/sri-lanka": [
+      "/packages/south-asia/sri-lanka/image-1.webp",
+      "/packages/south-asia/sri-lanka/image-2.webp"
+    ],
+    "south-asia/nepal": [
+      "/packages/south-asia/nepal/image-1.webp",
+      "/packages/south-asia/nepal/image-2.webp"
+    ],
+    "south-asia/bhutan": [
+      "/packages/south-asia/bhutan/image-1.webp",
+      "/packages/south-asia/bhutan/image-2.webp"
+    ],
+    "south-asia/maldives": [
+      "/packages/south-asia/maldives/image-1.webp",
+      "/packages/south-asia/maldives/image-2.webp"
+    ],
+    "south-east-asia/vietnam": [
+      "/packages/south-east-asia/vietnam/image-1.webp",
+      "/packages/south-east-asia/vietnam/image-2.webp",
+      "/packages/south-east-asia/vietnam/image-3.webp",
+      "/packages/south-east-asia/vietnam/image-4.webp"
+    ],
+    "south-east-asia/thailand": [
+      "/packages/south-east-asia/thailand/image-1.webp",
+      "/packages/south-east-asia/thailand/image-2.webp",
+      "/packages/south-east-asia/thailand/image-3.webp",
+      "/packages/south-east-asia/thailand/image-4.webp"
+    ],
+    "south-east-asia/singapore": [
+      "/packages/south-east-asia/singapore/image-1.webp",
+      "/packages/south-east-asia/singapore/image-2.webp",
+      "/packages/south-east-asia/singapore/image-3.webp",
+      "/packages/south-east-asia/singapore/image-4.webp"
+    ],
+    "south-east-asia/malaysia": [
+      "/packages/south-east-asia/malaysia/image-1.webp",
+      "/packages/south-east-asia/malaysia/image-2.webp",
+      "/packages/south-east-asia/malaysia/image-3.webp",
+      "/packages/south-east-asia/malaysia/image-4.webp"
+    ],
+    "south-east-asia/indonesia": [
+      "/packages/south-east-asia/indonesia/image-1.webp",
+      "/packages/south-east-asia/indonesia/image-2.webp",
+      "/packages/south-east-asia/indonesia/image-3.webp",
+      "/packages/south-east-asia/indonesia/image-4.webp",
+      "/packages/south-east-asia/indonesia/image-5.webp",
+      "/packages/south-east-asia/indonesia/image-6.webp"
+    ],
+    "south-east-asia/cambodia": [
+      "/packages/south-east-asia/cambodia/image-1.webp",
+      "/packages/south-east-asia/cambodia/image-2.webp",
+      "/packages/south-east-asia/cambodia/image-3.webp",
+      "/packages/south-east-asia/cambodia/image-4.webp"
+    ],
+    "south-east-asia/laos": [
+      "/packages/south-east-asia/laos/image-1.webp",
+      "/packages/south-east-asia/laos/image-2.webp",
+      "/packages/south-east-asia/laos/image-3.webp",
+      "/packages/south-east-asia/laos/image-4.webp"
+    ],
+    "south-east-asia/philippines": [
+      "/packages/south-east-asia/philippines/image-1.webp",
+      "/packages/south-east-asia/philippines/image-2.webp",
+      "/packages/south-east-asia/philippines/image-3.webp",
+      "/packages/south-east-asia/philippines/image-4.webp"
+    ],
+    "india/assam": [
+      "/packages/india/assam/image-1.webp",
+      "/packages/india/assam/image-2.webp"
+    ],
+    "india/meghalaya": [
+      "/packages/india/meghalaya/image-1.webp",
+      "/packages/india/meghalaya/image-2.webp"
+    ]
+  }
+}

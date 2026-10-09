@@ -1,0 +1,1599 @@
+{
+  "cities": [
+    {
+      "name": "Glasgow",
+      "country": "United Kingdom",
+      "lat": 55.864,
+      "lng": -4.251,
+      "iata": "GLA",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Scotland's biggest city mixes Victorian grandeur, major museums and a lively music scene with easy escapes to Loch Lomond.",
+      "types": ["URBAN", "ARTS", "NIGHTLIFE", "HERITAGE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Merchant City & Cathedral Quarter",
+          "attractions": ["George Square", "Glasgow Cathedral", "Glasgow Necropolis"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "West End Museums",
+          "attractions": ["Kelvingrove Art Gallery and Museum", "University of Glasgow", "Glasgow Botanic Gardens"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Riverside Glasgow",
+          "attractions": ["Riverside Museum", "The Tall Ship Glenlee", "SEC Armadillo"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Music & Whisky Night",
+          "attractions": ["King Tut's Wah Wah Hut", "The Pot Still", "Buchanan Street"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 35
+        }
+      ]
+    },
+    {
+      "name": "Birmingham",
+      "country": "United Kingdom",
+      "lat": 52.486,
+      "lng": -1.890,
+      "iata": "BHX",
+      "cost": "MEDIUM",
+      "nights": [2, 2, 3],
+      "summary": "Birmingham pairs canals, industrial heritage and top museums with one of Britain's strongest food scenes.",
+      "types": ["URBAN", "WINE_AND_FOOD", "ARTS", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 12],
+      "clusters": [
+        {
+          "name": "City Core & Library",
+          "attractions": ["Victoria Square", "Birmingham Museum and Art Gallery", "Library of Birmingham"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Canals & Brindleyplace",
+          "attractions": ["Brindleyplace", "Gas Street Basin", "National SEA LIFE Centre Birmingham"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 30
+        },
+        {
+          "name": "Jewellery Quarter",
+          "attractions": ["Museum of the Jewellery Quarter", "St Paul's Square", "Pen Museum"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Bournville Day Out",
+          "attractions": ["Cadbury World", "Bournville Village Green", "Selly Manor Museum"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 28
+        }
+      ]
+    },
+    {
+      "name": "Bath",
+      "country": "United Kingdom",
+      "lat": 51.381,
+      "lng": -2.360,
+      "iata": "BRS",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Elegant Georgian streets, Roman remains and spa culture make Bath one of England's most atmospheric small cities.",
+      "types": ["HERITAGE", "ROMANTIC", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8, 12],
+      "clusters": [
+        {
+          "name": "Roman Bath Core",
+          "attractions": ["Roman Baths", "Bath Abbey", "Pump Room"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 39
+        },
+        {
+          "name": "Georgian Bath",
+          "attractions": ["Royal Crescent", "The Circus", "No. 1 Royal Crescent"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Pulteney & Gardens",
+          "attractions": ["Pulteney Bridge", "Holburne Museum", "Parade Gardens"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 12
+        },
+        {
+          "name": "Spa & Skyline",
+          "attractions": ["Thermae Bath Spa", "Prior Park Landscape Garden", "Bath Skyline"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 34
+        }
+      ]
+    },
+    {
+      "name": "Oxford",
+      "country": "United Kingdom",
+      "lat": 51.752,
+      "lng": -1.258,
+      "iata": "LHR",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Oxford's dreaming spires, college quads and riverside walks create one of England's classic heritage city breaks.",
+      "types": ["HERITAGE", "ARTS", "ROMANTIC", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Historic Colleges",
+          "attractions": ["Christ Church", "Radcliffe Camera", "University Church of St Mary the Virgin"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 26
+        },
+        {
+          "name": "Bodleian & Museums",
+          "attractions": ["Bodleian Library", "Ashmolean Museum", "Sheldonian Theatre"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Rivers & Gardens",
+          "attractions": ["Magdalen College", "Botanic Garden", "Punting on the River Cherwell"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Castle Quarter",
+          "attractions": ["Oxford Castle and Prison", "Covered Market", "Carfax Tower"],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 25
+        }
+      ]
+    },
+    {
+      "name": "Cambridge",
+      "country": "United Kingdom",
+      "lat": 52.205,
+      "lng": 0.119,
+      "iata": "STN",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Cambridge combines world-famous colleges, river punting and fine museums in a compact, handsome city.",
+      "types": ["HERITAGE", "ARTS", "ROMANTIC", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 7, 9],
+      "peak": [6, 7, 8],
+      "clusters": [
+        {
+          "name": "King's Parade Colleges",
+          "attractions": ["King's College Chapel", "Trinity College", "St John's College"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 34
+        },
+        {
+          "name": "The Backs & River Cam",
+          "attractions": ["The Backs", "Mathematical Bridge", "Punting on the River Cam"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 28
+        },
+        {
+          "name": "Museums & Market",
+          "attractions": ["Fitzwilliam Museum", "Cambridge Market Square", "Great St Mary's Church"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Science & Greens",
+          "attractions": ["Botanic Garden", "The Polar Museum", "Kettle's Yard"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "York",
+      "country": "United Kingdom",
+      "lat": 53.960,
+      "lng": -1.087,
+      "iata": "LBA",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "York packs Roman, Viking and medieval history into a walkable walled centre full of lanes, towers and tea rooms.",
+      "types": ["HERITAGE", "FAIRYTALE", "FAMILY", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8, 12],
+      "clusters": [
+        {
+          "name": "Minster & City Walls",
+          "attractions": ["York Minster", "York City Walls", "Bootham Bar"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 21
+        },
+        {
+          "name": "Shambles & Jorvik",
+          "attractions": ["The Shambles", "Jorvik Viking Centre", "Clifford's Tower"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 30
+        },
+        {
+          "name": "Museums by the Ouse",
+          "attractions": ["York Castle Museum", "Yorkshire Museum", "Museum Gardens"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Rail & Riverside",
+          "attractions": ["National Railway Museum", "River Ouse", "Bishopthorpe Road"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Bristol",
+      "country": "United Kingdom",
+      "lat": 51.454,
+      "lng": -2.587,
+      "iata": "BRS",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 2, 3],
+      "summary": "Creative Bristol blends maritime history, street art, harbourside culture and easy access to southwest food and cider.",
+      "types": ["URBAN", "ARTS", "WINE_AND_FOOD", "NIGHTLIFE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Harbourside Essentials",
+          "attractions": ["M Shed", "Arnolfini", "Bristol Cathedral"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Brunel Bristol",
+          "attractions": ["SS Great Britain", "Clifton Suspension Bridge", "Brandon Hill"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 25
+        },
+        {
+          "name": "Street Art & Old City",
+          "attractions": ["St Nicholas Market", "Well Hung Lover", "Cabot Tower"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Clifton & Zoo Project",
+          "attractions": ["Clifton Village", "Bristol Museum and Art Gallery", "Bristol Zoo Project"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 27
+        }
+      ]
+    },
+    {
+      "name": "Belfast",
+      "country": "United Kingdom",
+      "lat": 54.597,
+      "lng": -5.930,
+      "iata": "BHD",
+      "cost": "MEDIUM",
+      "nights": [2, 3, 4],
+      "summary": "Belfast pairs Titanic history, political murals and lively pubs with a fast-rising restaurant and music scene.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "NIGHTLIFE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Titanic Quarter",
+          "attractions": ["Titanic Belfast", "SS Nomadic", "Titanic Dock and Pump-House"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "City Centre & Cathedral Quarter",
+          "attractions": ["Belfast City Hall", "St Anne's Cathedral", "The Duke of York"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Political History",
+          "attractions": ["Falls Road Murals", "Shankill Road Murals", "Crumlin Road Gaol"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Cave Hill & Waterfront",
+          "attractions": ["Cave Hill Country Park", "Belfast Castle", "Waterfront Hall"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Cardiff",
+      "country": "United Kingdom",
+      "lat": 51.481,
+      "lng": -3.179,
+      "iata": "CWL",
+      "cost": "MEDIUM",
+      "nights": [2, 2, 3],
+      "summary": "Cardiff offers a compact capital mix of castle history, rejuvenated waterfront and stadium energy.",
+      "types": ["URBAN", "HERITAGE", "FAMILY", "NIGHTLIFE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Castle & Civic Core",
+          "attractions": ["Cardiff Castle", "Bute Park", "National Museum Cardiff"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Arcades & Market",
+          "attractions": ["Cardiff Central Market", "Morgan Arcade", "St David's Hall"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Bay Waterfront",
+          "attractions": ["Wales Millennium Centre", "Mermaid Quay", "Senedd Cymru"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Sporting Cardiff",
+          "attractions": ["Principality Stadium", "Sophia Gardens", "Cardiff Arms Park"],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        }
+      ]
+    },
+    {
+      "name": "Scottish Highlands",
+      "country": "United Kingdom",
+      "lat": 56.820,
+      "lng": -5.100,
+      "iata": "INV",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 3, 5],
+      "summary": "The Scottish Highlands deliver dramatic glens, lochs and mountain scenery, with Fort William and Glen Coe as classic bases.",
+      "types": ["NATURE", "MOUNTAIN", "ADVENTURE", "FAIRYTALE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Glen Coe Highlights",
+          "attractions": ["Glencoe Visitor Centre", "Three Sisters Viewpoint", "Lost Valley Trail"],
+          "hours": 6,
+          "walk": "HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Ben Nevis & Glen Nevis",
+          "attractions": ["Ben Nevis", "Steall Falls", "Glen Nevis Visitor Centre"],
+          "hours": 8,
+          "walk": "HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Glenfinnan & Loch Shiel",
+          "attractions": ["Glenfinnan Viaduct", "Glenfinnan Monument", "Loch Shiel"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Road to the Isles",
+          "attractions": ["Arisaig Beach", "Morar Silver Sands", "Neptune's Staircase"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Galway",
+      "country": "Ireland",
+      "lat": 53.270,
+      "lng": -9.056,
+      "iata": "SNN",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 2, 3],
+      "summary": "Galway is Ireland's west-coast cultural capital, loved for trad music, seafood and quick access to Connemara and the Aran ferries.",
+      "types": ["URBAN", "COASTAL", "WINE_AND_FOOD", "NIGHTLIFE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Latin Quarter",
+          "attractions": ["Eyre Square", "Quay Street", "Spanish Arch"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Culture & Coast",
+          "attractions": ["Galway Cathedral", "Salthill Promenade", "Blackrock Diving Tower"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Markets & Museums",
+          "attractions": ["Galway Market", "Galway City Museum", "St Nicholas' Collegiate Church"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Harbour & Music",
+          "attractions": ["Galway Docks", "The Crane Bar", "Galway Bay"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Cork",
+      "country": "Ireland",
+      "lat": 51.898,
+      "lng": -8.475,
+      "iata": "ORK",
+      "cost": "MEDIUM",
+      "nights": [2, 2, 3],
+      "summary": "Cork mixes a confident food scene, riverside streets and easy access to castles and coves in southwest Ireland.",
+      "types": ["URBAN", "WINE_AND_FOOD", "HERITAGE", "NIGHTLIFE"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "City Centre Essentials",
+          "attractions": ["English Market", "St Fin Barre's Cathedral", "Crawford Art Gallery"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Shandon & Bells",
+          "attractions": ["Shandon Bells and Tower", "Butter Museum", "Elizabeth Fort"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Harbour Heritage",
+          "attractions": ["Blackrock Castle Observatory", "Cork City Gaol", "Fitzgerald Park"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 23
+        },
+        {
+          "name": "Food & Whiskey",
+          "attractions": ["Midleton Distillery Experience", "Jameson Distillery Midleton", "Ballymaloe area"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 32
+        }
+      ]
+    },
+    {
+      "name": "Killarney",
+      "country": "Ireland",
+      "lat": 52.060,
+      "lng": -9.507,
+      "iata": "KIR",
+      "cost": "MEDIUM",
+      "nights": [2, 3, 4],
+      "summary": "Killarney is a classic base for lakes, mountain views and manor houses at the gateway to the Ring of Kerry.",
+      "types": ["NATURE", "LAKES", "MOUNTAIN", "FAMILY"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Killarney National Park",
+          "attractions": ["Muckross House", "Torc Waterfall", "Muckross Abbey"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Lakes & Castle",
+          "attractions": ["Ross Castle", "Lough Leane", "Innisfallen Island"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Gap of Dunloe",
+          "attractions": ["Gap of Dunloe", "Kate Kearney's Cottage", "Black Valley"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 35
+        },
+        {
+          "name": "Town & Jaunting Cars",
+          "attractions": ["St Mary's Cathedral", "Killarney House and Gardens", "Jaunting car ride"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 25
+        }
+      ]
+    },
+    {
+      "name": "Limerick",
+      "country": "Ireland",
+      "lat": 52.663,
+      "lng": -8.626,
+      "iata": "SNN",
+      "cost": "MEDIUM",
+      "nights": [1, 2, 3],
+      "summary": "Limerick layers Norman history, riverside walks and a growing arts scene along the River Shannon.",
+      "types": ["URBAN", "HERITAGE", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Medieval Limerick",
+          "attractions": ["King John's Castle", "St Mary's Cathedral", "Nicholas Street"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 17
+        },
+        {
+          "name": "Georgian & Museum Mile",
+          "attractions": ["The Hunt Museum", "People's Park", "Limerick City Gallery of Art"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Shannon Riverside",
+          "attractions": ["Treaty Stone", "Arthur's Quay", "Limerick Milk Market"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Adare Excursion",
+          "attractions": ["Adare Manor gates", "Adare Heritage Centre", "Desmond Castle Adare"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        }
+      ]
+    },
+    {
+      "name": "Kilkenny",
+      "country": "Ireland",
+      "lat": 52.654,
+      "lng": -7.253,
+      "iata": "DUB",
+      "cost": "MEDIUM",
+      "nights": [1, 2, 3],
+      "summary": "Kilkenny's compact medieval streets, castle and craft culture make it one of Ireland's easiest and richest short breaks.",
+      "types": ["HERITAGE", "ARTS", "ROMANTIC", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 7, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Castle Quarter",
+          "attractions": ["Kilkenny Castle", "Kilkenny Design Centre", "Butler House"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 16
+        },
+        {
+          "name": "Medieval Mile",
+          "attractions": ["St Canice's Cathedral", "Rothe House", "Black Abbey"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "River & Brewery",
+          "attractions": ["Smithwick's Experience", "River Nore", "Canal Walk"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        },
+        {
+          "name": "Craft & Views",
+          "attractions": ["National Design & Craft Gallery", "St Mary's Medieval Mile Museum", "Kilkenny Castle Park"],
+          "hours": 3,
+          "walk": "LOW_MEDIUM",
+          "eur": 14
+        }
+      ]
+    },
+    {
+      "name": "Cliffs of Moher",
+      "country": "Ireland",
+      "lat": 52.972,
+      "lng": -9.430,
+      "iata": "SNN",
+      "cost": "MEDIUM",
+      "nights": [1, 1, 2],
+      "summary": "Ireland's most dramatic sea cliffs rise above the Atlantic, with broad coastal views, birdlife and wave-cut rock scenery.",
+      "types": ["NATURE", "COASTAL", "ADVENTURE", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Visitor Centre & Main Cliffs",
+          "attractions": ["Cliffs of Moher Visitor Experience", "O'Brien's Tower", "Main Viewing Platforms"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 15
+        },
+        {
+          "name": "Coastal Walk",
+          "attractions": ["Cliffs of Moher Coastal Walk", "Hags Head", "Liscannor Bay views"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 0
+        },
+        {
+          "name": "Burren Add-On",
+          "attractions": ["Doolin Pier", "Burren National Park", "Poulnabrone Dolmen"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Ring of Kerry",
+      "country": "Ireland",
+      "lat": 51.950,
+      "lng": -10.000,
+      "iata": "KIR",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 2, 3],
+      "summary": "This famous Kerry loop combines Atlantic viewpoints, beaches, stone forts and mountain passes best explored by car or tour.",
+      "types": ["COASTAL", "NATURE", "ADVENTURE", "MOUNTAIN"],
+      "island": false,
+      "best": [5, 6, 7, 8, 9],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Killarney to Ladies View",
+          "attractions": ["Ladies View", "Moll's Gap", "Torc Mountain viewpoint"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Iveragh Atlantic Coast",
+          "attractions": ["Waterville Beach", "Kerry Cliffs", "Skellig Ring viewpoint"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Cahersiveen Heritage",
+          "attractions": ["Cahergall Stone Fort", "Leacanabuaile Fort", "Valentia Island Bridge"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "National Park Finish",
+          "attractions": ["Rossbeigh Strand", "Caragh Lake", "Killarney National Park"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Florence",
+      "country": "Italy",
+      "lat": 43.769,
+      "lng": 11.255,
+      "iata": "FLR",
+      "cost": "HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Florence is a Renaissance showpiece of art, domes and palaces, with superb food and walkable streets along the Arno.",
+      "types": ["ARTS", "HERITAGE", "ROMANTIC", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [6, 7, 9],
+      "clusters": [
+        {
+          "name": "Duomo & Piazza Core",
+          "attractions": ["Cathedral of Santa Maria del Fiore", "Brunelleschi's Dome", "Piazza della Signoria"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 50
+        },
+        {
+          "name": "Uffizi & Arno",
+          "attractions": ["Uffizi Galleries", "Ponte Vecchio", "Palazzo Vecchio"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 43
+        },
+        {
+          "name": "Oltrarno & Pitti",
+          "attractions": ["Pitti Palace", "Boboli Gardens", "Basilica of Santo Spirito"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Accademia & San Marco",
+          "attractions": ["Galleria dell'Accademia", "Basilica of San Lorenzo", "Mercato Centrale"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 25
+        }
+      ]
+    },
+    {
+      "name": "Milan",
+      "country": "Italy",
+      "lat": 45.464,
+      "lng": 9.190,
+      "iata": "MXP",
+      "cost": "HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Milan blends blockbuster art, cathedral grandeur, fashion districts and aperitivo energy with fast rail links across Italy.",
+      "types": ["URBAN", "ARTS", "WINE_AND_FOOD", "NIGHTLIFE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [4, 9, 10],
+      "clusters": [
+        {
+          "name": "Duomo District",
+          "attractions": ["Duomo di Milano", "Galleria Vittorio Emanuele II", "Museo del Novecento"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 28
+        },
+        {
+          "name": "Brera & Castello",
+          "attractions": ["Pinacoteca di Brera", "Sforza Castle", "Parco Sempione"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 26
+        },
+        {
+          "name": "Leonardo Milan",
+          "attractions": ["Santa Maria delle Grazie", "The Last Supper", "Basilica di Sant'Ambrogio"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 32
+        },
+        {
+          "name": "Navigli Evening",
+          "attractions": ["Navigli", "Darsena", "Colonne di San Lorenzo"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Naples",
+      "country": "Italy",
+      "lat": 40.851,
+      "lng": 14.268,
+      "iata": "NAP",
+      "cost": "MEDIUM",
+      "nights": [2, 3, 4],
+      "summary": "Naples delivers intense street life, top archaeology, pizza culture and easy access to Pompeii, Vesuvius and the bay.",
+      "types": ["URBAN", "HERITAGE", "WINE_AND_FOOD", "NIGHTLIFE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Historic Centre",
+          "attractions": ["Spaccanapoli", "Naples Cathedral", "Sansevero Chapel Museum"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Museums & Underground",
+          "attractions": ["Naples National Archaeological Museum", "Napoli Sotterranea", "Via dei Tribunali"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 28
+        },
+        {
+          "name": "Seafront & Castles",
+          "attractions": ["Castel dell'Ovo", "Lungomare Caracciolo", "Castel Nuovo"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 6
+        },
+        {
+          "name": "Royal Naples",
+          "attractions": ["Royal Palace of Naples", "Teatro di San Carlo", "Galleria Umberto I"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Pisa",
+      "country": "Italy",
+      "lat": 43.722,
+      "lng": 10.401,
+      "iata": "PSA",
+      "cost": "MEDIUM",
+      "nights": [1, 1, 2],
+      "summary": "Pisa offers far more than its famous leaning tower, with a handsome riverfront and one of Tuscany's great cathedral squares.",
+      "types": ["HERITAGE", "ARTS", "FAMILY", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Piazza dei Miracoli",
+          "attractions": ["Leaning Tower of Pisa", "Pisa Cathedral", "Battistero di San Giovanni"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 33
+        },
+        {
+          "name": "Camposanto & Museums",
+          "attractions": ["Camposanto Monumentale", "Opera del Duomo Museum", "Sinopie Museum"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Arno & Old Town",
+          "attractions": ["Piazza dei Cavalieri", "Borgo Stretto", "Lungarno Mediceo"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Siena",
+      "country": "Italy",
+      "lat": 43.318,
+      "lng": 11.331,
+      "iata": "FLR",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Siena's shell-shaped piazza, Gothic cathedral and contrada traditions make it Tuscany's most atmospheric hill city.",
+      "types": ["HERITAGE", "ROMANTIC", "FAIRYTALE", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Piazza del Campo",
+          "attractions": ["Piazza del Campo", "Torre del Mangia", "Palazzo Pubblico"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 25
+        },
+        {
+          "name": "Duomo Complex",
+          "attractions": ["Siena Cathedral", "Piccolomini Library", "Baptistery of San Giovanni"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 30
+        },
+        {
+          "name": "Backstreets & Views",
+          "attractions": ["Via di Città", "Basilica of San Domenico", "Facciatone"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Bologna",
+      "country": "Italy",
+      "lat": 44.494,
+      "lng": 11.342,
+      "iata": "BLQ",
+      "cost": "MEDIUM-HIGH",
+      "nights": [2, 2, 3],
+      "summary": "Bologna charms with arcaded streets, medieval towers and one of Italy's best food cultures.",
+      "types": ["URBAN", "WINE_AND_FOOD", "HERITAGE", "NIGHTLIFE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [5, 9, 10],
+      "clusters": [
+        {
+          "name": "Piazza Maggiore",
+          "attractions": ["Piazza Maggiore", "Basilica di San Petronio", "Neptune Fountain"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Towers & Porticoes",
+          "attractions": ["Asinelli Tower", "Garisenda Tower", "Portico di San Luca"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Markets & Museums",
+          "attractions": ["Quadrilatero", "Archiginnasio of Bologna", "Palazzo Pepoli"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "San Luca & Aperitivo",
+          "attractions": ["Sanctuary of the Madonna di San Luca", "Via del Pratello", "Mercato delle Erbe"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 8
+        }
+      ]
+    },
+    {
+      "name": "Verona",
+      "country": "Italy",
+      "lat": 45.438,
+      "lng": 10.991,
+      "iata": "VRN",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Verona combines Roman ruins, river views and romantic lanes beyond its famous Shakespeare associations.",
+      "types": ["HERITAGE", "ROMANTIC", "ARTS", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Arena & Piazza Bra",
+          "attractions": ["Verona Arena", "Piazza Bra", "Museo Lapidario Maffeiano"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 22
+        },
+        {
+          "name": "Old Town Classics",
+          "attractions": ["Piazza delle Erbe", "Torre dei Lamberti", "Casa di Giulietta"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Riverside Verona",
+          "attractions": ["Castelvecchio Museum", "Ponte Scaligero", "Duomo di Verona"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Hilltop Views",
+          "attractions": ["Teatro Romano", "Giardino Giusti", "Castel San Pietro"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        }
+      ]
+    },
+    {
+      "name": "Lake Como",
+      "country": "Italy",
+      "lat": 45.997,
+      "lng": 9.257,
+      "iata": "MXP",
+      "cost": "HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Lake Como pairs elegant villas, mountain-backed ferry rides and pretty lakeside towns around deep blue water.",
+      "types": ["LAKES", "ROMANTIC", "NATURE", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Como Town & Funicular",
+          "attractions": ["Como Cathedral", "Tempio Voltiano", "Brunate Funicular"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Central Lake Icons",
+          "attractions": ["Bellagio", "Villa Melzi Gardens", "Punta Spartivento"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Villa Circuit",
+          "attractions": ["Villa Carlotta", "Tremezzo", "Villa del Balbianello"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 34
+        },
+        {
+          "name": "Lake Cruising",
+          "attractions": ["Lake Como ferry", "Varenna", "Villa Monastero"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Cinque Terre",
+      "country": "Italy",
+      "lat": 44.127,
+      "lng": 9.709,
+      "iata": "GOA",
+      "cost": "HIGH",
+      "nights": [2, 3, 4],
+      "summary": "Cinque Terre strings together five colourful Ligurian villages with coastal paths, vineyards and sea views.",
+      "types": ["COASTAL", "NATURE", "ROMANTIC", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Monterosso & Vernazza",
+          "attractions": ["Monterosso al Mare", "Church of Santa Margherita d'Antiochia", "Vernazza Harbour"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Corniglia & Manarola",
+          "attractions": ["Corniglia", "Via dell'Amore viewpoint", "Manarola Harbour"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Riomaggiore Finale",
+          "attractions": ["Riomaggiore Castle", "Church of San Giovanni Battista", "Marina di Riomaggiore"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "National Park Trails",
+          "attractions": ["Cinque Terre National Park", "Blue Trail", "Vineyard terraces"],
+          "hours": 6,
+          "walk": "HIGH",
+          "eur": 19
+        }
+      ]
+    },
+    {
+      "name": "Amalfi",
+      "country": "Italy",
+      "lat": 40.634,
+      "lng": 14.602,
+      "iata": "NAP",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Amalfi offers a historic maritime centre, dramatic sea cliffs and easy boat links along the Amalfi Coast.",
+      "types": ["COASTAL", "HERITAGE", "ROMANTIC", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Amalfi Core",
+          "attractions": ["Amalfi Cathedral", "Cloister of Paradise", "Piazza del Duomo"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Coast by Boat",
+          "attractions": ["Amalfi Harbour", "Atrani", "Fiordo di Furore"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 25
+        },
+        {
+          "name": "Paper & Valleys",
+          "attractions": ["Museo della Carta", "Valle delle Ferriere", "Ruga Nova Mercatorum"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Positano",
+      "country": "Italy",
+      "lat": 40.629,
+      "lng": 14.486,
+      "iata": "NAP",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Positano is the Amalfi Coast's glamorous cliffside village, known for beaches, boutiques and postcard sea views.",
+      "types": ["COASTAL", "BEACH", "ROMANTIC", "WINE_AND_FOOD"],
+      "island": false,
+      "best": [5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Spiaggia Grande",
+          "attractions": ["Spiaggia Grande", "Church of Santa Maria Assunta", "Positano Beachfront"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Upper Positano Views",
+          "attractions": ["Via Cristoforo Colombo", "MAR Positano Roman Villa", "Fornillo lookout"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Sea & Coves",
+          "attractions": ["Fornillo Beach", "Arienzo Beach", "Boat trip to Li Galli"],
+          "hours": 6,
+          "walk": "MEDIUM_HIGH",
+          "eur": 40
+        }
+      ]
+    },
+    {
+      "name": "Sorrento",
+      "country": "Italy",
+      "lat": 40.627,
+      "lng": 14.375,
+      "iata": "NAP",
+      "cost": "HIGH",
+      "nights": [2, 2, 3],
+      "summary": "Sorrento combines lemon-scented lanes, clifftop views and excellent transport links to Capri, Pompeii and the Amalfi Coast.",
+      "types": ["COASTAL", "WINE_AND_FOOD", "ROMANTIC", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Historic Sorrento",
+          "attractions": ["Piazza Tasso", "Chiostro di San Francesco", "Sorrento Cathedral"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Marina & Views",
+          "attractions": ["Villa Comunale di Sorrento", "Marina Grande", "Bagni della Regina Giovanna"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 8
+        },
+        {
+          "name": "Museums & Lemons",
+          "attractions": ["Museo Correale", "Sedil Dominova", "I Giardini di Cataldo"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Capri",
+      "country": "Italy",
+      "lat": 40.553,
+      "lng": 14.222,
+      "iata": "NAP",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Capri is a chic island escape of sea caves, dramatic viewpoints and stylish piazzas above brilliantly blue water.",
+      "types": ["ISLAND", "COASTAL", "ROMANTIC", "BEACH"],
+      "island": true,
+      "best": [5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Capri Town & Gardens",
+          "attractions": ["Piazzetta di Capri", "Gardens of Augustus", "Via Camerelle"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 5
+        },
+        {
+          "name": "Blue Grotto Circuit",
+          "attractions": ["Blue Grotto", "Anacapri", "Monte Solaro Chairlift"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "Faraglioni & Coast",
+          "attractions": ["Faraglioni", "Via Krupp viewpoint", "Marina Piccola"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 22
+        }
+      ]
+    },
+    {
+      "name": "Palermo",
+      "country": "Italy",
+      "lat": 38.115,
+      "lng": 13.361,
+      "iata": "PMO",
+      "cost": "MEDIUM",
+      "nights": [2, 3, 4],
+      "summary": "Palermo layers Arab-Norman monuments, vibrant markets and grand Sicilian streets with the sea close by.",
+      "types": ["URBAN", "HERITAGE", "WINE_AND_FOOD", "ARTS"],
+      "island": true,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Historic Core",
+          "attractions": ["Palermo Cathedral", "Quattro Canti", "Pretoria Fountain"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Arab-Norman Palermo",
+          "attractions": ["Palatine Chapel", "Norman Palace", "San Giovanni degli Eremiti"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Markets & Street Food",
+          "attractions": ["Ballarò Market", "Vucciria Market", "Capo Market"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Seafront & Oratory Art",
+          "attractions": ["Teatro Massimo", "Santa Maria dell'Ammiraglio", "Foro Italico"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 15
+        }
+      ]
+    },
+    {
+      "name": "Catania",
+      "country": "Italy",
+      "lat": 37.508,
+      "lng": 15.083,
+      "iata": "CTA",
+      "cost": "MEDIUM",
+      "nights": [2, 2, 3],
+      "summary": "Catania mixes dark lava-stone baroque, buzzing markets and nightlife at the foot of Mount Etna.",
+      "types": ["URBAN", "HERITAGE", "NIGHTLIFE", "WINE_AND_FOOD"],
+      "island": true,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Piazza del Duomo",
+          "attractions": ["Catania Cathedral", "Fontana dell'Elefante", "Fish Market of Catania"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Baroque Catania",
+          "attractions": ["Via Etnea", "Monastero dei Benedettini", "Roman Amphitheatre of Catania"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 14
+        },
+        {
+          "name": "Castles & Coast",
+          "attractions": ["Castello Ursino", "Villa Bellini", "Aci Castello"],
+          "hours": 6,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Etna Gateway",
+          "attractions": ["Mount Etna cable car base", "Sapienza Refuge", "Etna wine bars"],
+          "hours": 8,
+          "walk": "MEDIUM_HIGH",
+          "eur": 48
+        }
+      ]
+    },
+    {
+      "name": "Taormina",
+      "country": "Italy",
+      "lat": 37.853,
+      "lng": 15.288,
+      "iata": "CTA",
+      "cost": "HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Taormina sits high above the Ionian Sea, famous for its Greek theatre, views of Etna and elegant resort atmosphere.",
+      "types": ["COASTAL", "ROMANTIC", "HERITAGE", "WINE_AND_FOOD"],
+      "island": true,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Teatro Greco",
+          "attractions": ["Ancient Theatre of Taormina", "Public Gardens", "Corso Umberto"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Town & Churches",
+          "attractions": ["Piazza IX Aprile", "Taormina Cathedral", "Palazzo Corvaja"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Sea Level Taormina",
+          "attractions": ["Isola Bella", "Mazzarò", "Taormina cable car"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 20
+        }
+      ]
+    },
+    {
+      "name": "Bari",
+      "country": "Italy",
+      "lat": 41.125,
+      "lng": 16.873,
+      "iata": "BRI",
+      "cost": "MEDIUM",
+      "nights": [2, 2, 3],
+      "summary": "Bari combines a lively old port, white-stone lanes and strong Puglian food culture on the Adriatic coast.",
+      "types": ["URBAN", "COASTAL", "WINE_AND_FOOD", "HERITAGE"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Bari Vecchia",
+          "attractions": ["Basilica di San Nicola", "Bari Cathedral", "Strada delle Orecchiette"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Murattiano & Seafront",
+          "attractions": ["Lungomare Nazario Sauro", "Teatro Petruzzelli", "Piazza Mercantile"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 10
+        },
+        {
+          "name": "Castles & Markets",
+          "attractions": ["Castello Svevo di Bari", "Mercato del Pesce", "Fortino di Sant'Antonio"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Polignano Add-On",
+          "attractions": ["Polignano a Mare", "Lama Monachile", "Statue of Domenico Modugno"],
+          "hours": 6,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    },
+    {
+      "name": "Matera",
+      "country": "Italy",
+      "lat": 40.667,
+      "lng": 16.605,
+      "iata": "BRI",
+      "cost": "MEDIUM",
+      "nights": [1, 2, 3],
+      "summary": "Matera's ancient cave districts create one of Italy's most distinctive cityscapes, especially at golden hour and by night.",
+      "types": ["HERITAGE", "FAIRYTALE", "ROMANTIC", "ARTS"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Sassi Essentials",
+          "attractions": ["Sasso Caveoso", "Sasso Barisano", "Piazza Vittorio Veneto"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 0
+        },
+        {
+          "name": "Rock Churches",
+          "attractions": ["Casa Grotta di Vico Solitario", "Chiesa Rupestre di Santa Lucia alle Malve", "Convicinio di Sant'Antonio"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Ravine Views",
+          "attractions": ["Matera Cathedral", "Belvedere di Murgia Timone", "Parco della Murgia Materana"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Vatican City",
+      "country": "Vatican City",
+      "lat": 41.903,
+      "lng": 12.453,
+      "iata": "FCO",
+      "cost": "VERY HIGH",
+      "nights": [1, 1, 2],
+      "summary": "Vatican City concentrates some of the world's greatest religious art and architecture within a tiny walled state.",
+      "types": ["RELIGIOUS", "HERITAGE", "ARTS", "FAMILY"],
+      "island": false,
+      "best": [3, 4, 5, 10, 11],
+      "peak": [6, 7, 8, 9],
+      "clusters": [
+        {
+          "name": "St Peter's Basilica & Square",
+          "attractions": ["St Peter's Basilica", "St Peter's Square", "St Peter's Dome"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 12
+        },
+        {
+          "name": "Vatican Museums & Sistine",
+          "attractions": ["Vatican Museums", "Sistine Chapel", "Raphael Rooms"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 35
+        },
+        {
+          "name": "Gardens & Necropolis",
+          "attractions": ["Vatican Gardens", "Saint Peter's Tomb", "Vatican Grottoes"],
+          "hours": 4,
+          "walk": "MEDIUM",
+          "eur": 35
+        }
+      ]
+    },
+    {
+      "name": "San Marino",
+      "country": "San Marino",
+      "lat": 43.936,
+      "lng": 12.447,
+      "iata": "RMI",
+      "cost": "MEDIUM-HIGH",
+      "nights": [1, 1, 2],
+      "summary": "San Marino packs mountaintop fortresses, panoramic lanes and tax-free shopping into one of Europe's smallest states.",
+      "types": ["HERITAGE", "MOUNTAIN", "FAIRYTALE", "FAMILY"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [7, 8],
+      "clusters": [
+        {
+          "name": "Historic Summit",
+          "attractions": ["Guaita Tower", "Cesta Tower", "Passo delle Streghe"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 18
+        },
+        {
+          "name": "Old Town Core",
+          "attractions": ["Piazza della Libertà", "Palazzo Pubblico", "Basilica di San Marino"],
+          "hours": 4,
+          "walk": "LOW",
+          "eur": 0
+        },
+        {
+          "name": "Beyond the Walls",
+          "attractions": ["Borgo Maggiore", "San Marino Cable Car", "Serravalle"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        }
+      ]
+    },
+    {
+      "name": "Monaco",
+      "country": "Monaco",
+      "lat": 43.738,
+      "lng": 7.424,
+      "iata": "NCE",
+      "cost": "VERY HIGH",
+      "nights": [1, 2, 3],
+      "summary": "Monaco combines yacht-filled glamour, palace views and Formula 1 streets in a tiny but spectacular Riviera state.",
+      "types": ["URBAN", "COASTAL", "NIGHTLIFE", "ROMANTIC"],
+      "island": false,
+      "best": [4, 5, 6, 9, 10],
+      "peak": [5, 6, 7, 8],
+      "clusters": [
+        {
+          "name": "Monte Carlo Icons",
+          "attractions": ["Casino de Monte-Carlo", "Place du Casino", "Jardin Japonais"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 19
+        },
+        {
+          "name": "Monaco-Ville",
+          "attractions": ["Prince's Palace of Monaco", "Monaco Cathedral", "Oceanographic Museum"],
+          "hours": 6,
+          "walk": "MEDIUM",
+          "eur": 31
+        },
+        {
+          "name": "Harbour & Fontvieille",
+          "attractions": ["Port Hercule", "Collection de Voitures du Prince", "Princess Grace Rose Garden"],
+          "hours": 4,
+          "walk": "LOW_MEDIUM",
+          "eur": 10
+        },
+        {
+          "name": "Grand Prix Circuit",
+          "attractions": ["Circuit de Monaco", "La Rascasse", "Fairmont Hairpin"],
+          "hours": 3,
+          "walk": "LOW",
+          "eur": 0
+        }
+      ]
+    }
+  ]
+}

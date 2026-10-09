@@ -1,0 +1,256 @@
+{
+  "regions": [
+    {
+      "region": "Africa",
+      "destinationSlug": "africa",
+      "destinationName": "African Jewels",
+      "rating": 4.8,
+      "palette": {
+        "accent": "#F5A623",
+        "deep": "#130D04"
+      },
+      "cards": [
+        {
+          "country": "Egypt",
+          "placeSlug": "cairo",
+          "packageSlug": "mystic-egypt",
+          "headline": "Walk beside the pyramids and sail the Nile through living history",
+          "tagline": "Ancient wonders, golden light, unforgettable stories",
+          "buttonLabel": "Explore Egypt",
+          "media": {
+            "clip": "egypt",
+            "poster": "egypt"
+          }
+        }
+      ]
+    },
+    {
+      "region": "East Asia",
+      "destinationSlug": "east-asia",
+      "destinationName": "East Asia",
+      "rating": 4.8,
+      "palette": {
+        "accent": "#FF7A7A",
+        "deep": "#1A0D0D"
+      },
+      "cards": [
+        {
+          "country": "Beijing, Shanghai & Xian",
+          "placeSlug": "beijing",
+          "packageSlug": "beijing-shanghai-xian-neighbouring-cities-tour",
+          "headline": "From the Great Wall to neon skylines, China in every colour",
+          "tagline": "Imperial heritage meets modern marvels",
+          "buttonLabel": "Discover China",
+          "media": {
+            "clip": "china",
+            "poster": "china"
+          }
+        }
+      ]
+    },
+    {
+      "region": "Eurasia CIS",
+      "destinationSlug": "eurasia-cis",
+      "destinationName": "Eurasia — CIS Countries",
+      "rating": 4.6,
+      "palette": {
+        "accent": "#A0C4A4",
+        "deep": "#080F09"
+      },
+      "cards": [
+        {
+          "country": "Azerbaijan",
+          "placeSlug": "baku",
+          "packageSlug": "azerbaijan",
+          "headline": "Baku glows where ancient old town meets flaming towers",
+          "tagline": "A rising Caspian gem for curious travellers",
+          "buttonLabel": "Discover Baku",
+          "media": {
+            "clip": "baku",
+            "poster": "baku"
+          }
+        }
+      ]
+    },
+    {
+      "region": "Europe",
+      "destinationSlug": "europe",
+      "destinationName": "Around the Heart of Europe",
+      "rating": 4.8,
+      "palette": {
+        "accent": "#9B8BC4",
+        "deep": "#0C0D1A"
+      },
+      "cards": [
+        {
+          "country": "Paris",
+          "placeSlug": "france",
+          "packageSlug": "european-delights",
+          "headline": "Paris at golden hour, where every street feels like a love story",
+          "tagline": "Romance, art and timeless elegance",
+          "buttonLabel": "Discover Paris",
+          "media": {
+            "clip": "paris",
+            "poster": "paris"
+          }
+        },
+        {
+          "country": "Budapest",
+          "placeSlug": "czech",
+          "packageSlug": "europe-off-beat",
+          "headline": "Budapest by night, thermal baths and glittering Danube views",
+          "tagline": "Grand architecture with a lively soul",
+          "buttonLabel": "Discover Budapest",
+          "media": {
+            "clip": "budapest",
+            "poster": "budapest"
+          }
+        },
+        {
+          "country": "Norway",
+          "placeSlug": "denmark",
+          "packageSlug": "nordic-adventure",
+          "headline": "Norway's fjords and mountains, nature at its most dramatic",
+          "tagline": "Wild landscapes made for slow, memorable journeys",
+          "buttonLabel": "Discover Norway",
+          "media": {
+            "clip": "norway",
+            "poster": "norway"
+          }
+        },
+        {
+          "country": "Scotland",
+          "placeSlug": "glasgow",
+          "packageSlug": "scotland",
+          "headline": "Misty highlands, ancient castles and lochs steeped in legend",
+          "tagline": "Heritage trails across rugged, romantic scenery",
+          "buttonLabel": "Discover Scotland",
+          "media": {
+            "clip": "scotland",
+            "poster": "scotland"
+          }
+        }
+      ]
+    },
+    {
+      "region": "India",
+      "destinationSlug": "india",
+      "destinationName": "Incredible India",
+      "rating": 4.9,
+      "palette": {
+        "accent": "#E6B96B",
+        "deep": "#0D1A0E"
+      },
+      "cards": [
+        {
+          "country": "Agra",
+          "placeSlug": "lucknow",
+          "packageSlug": "uttar-pradesh",
+          "headline": "Stand before the Taj Mahal and feel India's greatest love story",
+          "tagline": "Mughal grandeur, sunrise views and royal heritage",
+          "buttonLabel": "Discover Agra",
+          "media": {
+            "clip": "agra",
+            "poster": "agra"
+          }
+        }
+      ]
+    },
+    {
+      "region": "Middle East & Gulf",
+      "destinationSlug": "middle-east",
+      "destinationName": "Middle East",
+      "rating": 4.7,
+      "palette": {
+        "accent": "#C4976B",
+        "deep": "#130D04"
+      },
+      "cards": [
+        {
+          "country": "Dubai",
+          "placeSlug": "dubai",
+          "packageSlug": "uae",
+          "headline": "Dubai rises above the desert with bold design and luxury",
+          "tagline": "Iconic skylines, golden dunes and world class stays",
+          "buttonLabel": "Discover Dubai",
+          "media": {
+            "clip": "dubai-skyline",
+            "poster": "dubai-skyline"
+          }
+        }
+      ]
+    },
+    {
+      "region": "Oceania",
+      "destinationSlug": "oceania",
+      "destinationName": "Oceania",
+      "rating": 4.7,
+      "palette": {
+        "accent": "#5BB8F5",
+        "deep": "#07101A"
+      },
+      "cards": [
+        {
+          "country": "Sydney",
+          "placeSlug": "melbourne",
+          "packageSlug": "australia",
+          "headline": "Sydney Harbour sparkles around the Opera House and Bridge",
+          "tagline": "Sun, sea and city energy in one stunning escape",
+          "buttonLabel": "Discover Sydney",
+          "media": {
+            "clip": "sydney",
+            "poster": "sydney"
+          }
+        }
+      ]
+    },
+    {
+      "region": "South Asia",
+      "destinationSlug": "south-asia",
+      "destinationName": "South Asia",
+      "rating": 4.7,
+      "palette": {
+        "accent": "#6FD4B2",
+        "deep": "#071C1A"
+      },
+      "cards": [
+        {
+          "country": "Maldives",
+          "placeSlug": "male",
+          "packageSlug": "maldives",
+          "headline": "Turquoise lagoons and overwater villas made for pure escape",
+          "tagline": "Barefoot luxury on the Indian Ocean",
+          "buttonLabel": "Discover Maldives",
+          "media": {
+            "clip": "maldives",
+            "poster": "maldives"
+          }
+        }
+      ]
+    },
+    {
+      "region": "South East Asia",
+      "destinationSlug": "south-east-asia",
+      "destinationName": "South East Asia",
+      "rating": 4.8,
+      "palette": {
+        "accent": "#7BC67E",
+        "deep": "#071309"
+      },
+      "cards": [
+        {
+          "country": "Vietnam",
+          "placeSlug": "ha-noi",
+          "packageSlug": "vietnam",
+          "headline": "Emerald bays, lantern lit towns and the flavours of Vietnam",
+          "tagline": "Culture, cuisine and coastline in perfect balance",
+          "buttonLabel": "Discover Vietnam",
+          "media": {
+            "clip": "vietnam",
+            "poster": "vietnam"
+          }
+        }
+      ]
+    }
+  ]
+}
