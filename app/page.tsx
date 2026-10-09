@@ -40,7 +40,7 @@ const REVIEWS = [
 export default async function HomePage() {
   const heroCardRegions = loadHeroCardRegions();
   const live = await fetchGoogleReviews();
-  const reviews = live && live.reviews.length ? live.reviews : REVIEWS;
+  const reviews = (live && live.reviews.length ? live.reviews : REVIEWS).slice(0, 4);
   const rating = live ? live.rating.toFixed(1) : "4.9";
   const total = live ? live.total : 77;
 
