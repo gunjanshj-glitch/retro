@@ -68,11 +68,11 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   if (path === "/auth/me" && method === "GET") return handleMe(request, env);
   if (path === "/auth/providers" && method === "GET") return handleOAuthProviders(env);
 
-  const oauthStart = /^\/auth\/(google|facebook)\/start$/.exec(path);
+  const oauthStart = /^\/auth\/(google|facebook|x)\/start$/.exec(path);
   if (oauthStart && method === "GET") {
     return handleOAuthStart(oauthStart[1] as Provider, request, env);
   }
-  const oauthCallback = /^\/auth\/(google|facebook)\/callback$/.exec(path);
+  const oauthCallback = /^\/auth\/(google|facebook|x)\/callback$/.exec(path);
   if (oauthCallback && method === "GET") {
     return handleOAuthCallback(oauthCallback[1] as Provider, request, env);
   }

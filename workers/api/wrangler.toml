@@ -21,6 +21,8 @@
 #   npx wrangler secret put GOOGLE_CLIENT_SECRET
 #   npx wrangler secret put FACEBOOK_CLIENT_ID
 #   npx wrangler secret put FACEBOOK_CLIENT_SECRET
+#   npx wrangler secret put X_CLIENT_ID          # X developer portal, OAuth 2.0
+#   npx wrangler secret put X_CLIENT_SECRET
 #
 #   # Outgoing mail for final-approval requests (src/email.ts). Requires an
 #   # SPF record on the sending domain authorising MailChannels — see

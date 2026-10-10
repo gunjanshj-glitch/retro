@@ -35,7 +35,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
   const [mode, setMode] = useState<Mode>("login");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [providers, setProviders] = useState<OAuthProviderAvailability>({ google: false, facebook: false });
+  const [providers, setProviders] = useState<OAuthProviderAvailability>({ google: false, facebook: false, x: false });
 
   useEffect(() => {
     if (open) fetchOAuthProviders().then(setProviders);
@@ -120,7 +120,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
           Needed to send your request and keep track of the quotes we send back.
         </p>
 
-        {(providers.google || providers.facebook) && (
+        {(providers.google || providers.facebook || providers.x) && (
           <div className="mt-6 flex flex-col gap-2.5">
             {providers.google && (
               <button
@@ -140,6 +140,16 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
                 style={{ borderColor: "var(--hairline)" }}
               >
                 <FacebookMark /> Continue with Facebook
+              </button>
+            )}
+            {providers.x && (
+              <button
+                type="button"
+                onClick={() => startOAuth("x", redirectTo)}
+                className="flex items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-medium transition hover:bg-white/5"
+                style={{ borderColor: "var(--hairline)" }}
+              >
+                <XMark /> Continue with X
               </button>
             )}
             <div className="my-1 flex items-center gap-3 text-xs" style={{ color: "var(--muted)" }}>
@@ -225,6 +235,17 @@ function FacebookMark() {
       <path
         fill="#1877F2"
         d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.09 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.25h3.32l-.53 3.49h-2.79V24C19.61 23.09 24 18.1 24 12.07z"
+      />
+    </svg>
+  );
+}
+
+function XMark() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
       />
     </svg>
   );

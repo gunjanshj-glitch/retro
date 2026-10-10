@@ -49,6 +49,10 @@ export type Env = {
   FACEBOOK_CLIENT_ID?: string;
   FACEBOOK_CLIENT_SECRET?: string;
 
+  /** X (Twitter) OAuth 2.0 app. Both unset hides the "Continue with X" button. */
+  X_CLIENT_ID?: string;
+  X_CLIENT_SECRET?: string;
+
   /** Mailbox a final-approval request's full JSON is sent to for manual
    *  review. Defaults to info@retroholidays.in when unset. */
   REVIEW_INBOX?: string;

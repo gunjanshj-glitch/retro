@@ -56,15 +56,15 @@ export async function fetchCurrentUser(): Promise<AuthUser | null> {
   }
 }
 
-export type OAuthProviderAvailability = { google: boolean; facebook: boolean };
+export type OAuthProviderAvailability = { google: boolean; facebook: boolean; x: boolean };
 
 export async function fetchOAuthProviders(): Promise<OAuthProviderAvailability> {
   try {
     const res = await fetch("/api/auth/providers", { credentials: "include" });
-    if (!res.ok) return { google: false, facebook: false };
+    if (!res.ok) return { google: false, facebook: false, x: false };
     return (await res.json()) as OAuthProviderAvailability;
   } catch {
-    return { google: false, facebook: false };
+    return { google: false, facebook: false, x: false };
   }
 }
 
@@ -74,7 +74,7 @@ export async function fetchOAuthProviders(): Promise<OAuthProviderAvailability> 
  *  in, so asking them to sign in never loses the page they were on. This is
  *  a real server route (the backend Worker), not a Next.js page, so a plain
  *  navigation is correct here rather than `useRouter().push()`. */
-export function startOAuth(provider: "google" | "facebook", redirectTo: string): void {
+export function startOAuth(provider: "google" | "facebook" | "x", redirectTo: string): void {
   // eslint-disable-next-line @next/next/no-location-assign-relative-destination
   window.location.href = `/api/auth/${provider}/start?redirect=${encodeURIComponent(redirectTo)}`;
 }
