@@ -7,7 +7,7 @@ import { getPackageImages } from "@/lib/package-images";
 import { formatPrice } from "@/lib/trips";
 import { NavBar } from "@/components/ui/NavBar";
 import { Footer } from "@/components/ui/Footer";
-import { Button } from "@/components/ui/Button";
+import { PackageRequestButton } from "@/components/packages/PackageRequestButton";
 
 export function generateStaticParams() {
   return loadDestinations().flatMap((d) =>
@@ -172,10 +172,18 @@ export default async function PackagePage({
                 : "per person, indicative — land package only, flights extra"}
             </p>
             <div className="mt-6">
-              <Button href={`/plan?destination=${dest.slug}&package=${pkg.packageSlug}`}>
-                Request a quote
-                <span aria-hidden="true">→</span>
-              </Button>
+              <PackageRequestButton
+                pkg={{
+                  destinationSlug: dest.slug,
+                  destinationName: dest.name,
+                  packageSlug: pkg.packageSlug,
+                  packageName: pkg.packageName,
+                  places: pkg.places,
+                  days: offer?.days ?? null,
+                  priceFromInr: offer?.price_from_usd ?? null,
+                  includesFlight: !!offer?.price_includes_flight,
+                }}
+              />
             </div>
             <p className="mt-4 text-xs" style={{ color: "var(--muted)" }}>
               Every trip is shaped by hand — this is a starting point, not a fixed package.

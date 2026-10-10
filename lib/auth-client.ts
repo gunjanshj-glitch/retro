@@ -129,3 +129,62 @@ export async function getFinalRequest(id: string): Promise<RequestDetail | null>
     return null;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Package quote requests
+// ---------------------------------------------------------------------------
+
+export type PackageRequestInput = {
+  destinationSlug: string;
+  destinationName: string;
+  packageSlug: string;
+  packageName: string;
+  package: { places: string[]; days: number | null; priceFromInr: number | null };
+  tripType: string;
+  adults: number;
+  children: number;
+  startDate: string | null;
+  departureCity: string;
+  hotelStar: string;
+  includeFlights: boolean;
+  food: string;
+  notes: string;
+};
+
+export type PackageRequestRow = {
+  id: string;
+  createdAt: string;
+  status: "pending" | "quoted" | "closed" | string;
+  destinationName: string;
+  destinationSlug: string;
+  packageName: string;
+  packageSlug: string;
+  tripType: string;
+  adults: number;
+  children: number;
+  startDate: string | null;
+  departureCity: string;
+  hotelStar: string;
+  includeFlights: boolean;
+  quote: { amountInr: number; note: string | null; quotedAt: string | null } | null;
+};
+
+/** Requires an active session — the caller prompts sign-in first. */
+export async function createPackageRequest(
+  input: PackageRequestInput,
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  const result = await postJson<{ id: string }>("/package-requests", input);
+  if (!result.ok) return result;
+  return { ok: true, id: result.data.id };
+}
+
+export async function listPackageRequests(): Promise<PackageRequestRow[]> {
+  try {
+    const res = await fetch("/api/package-requests", { credentials: "include" });
+    if (!res.ok) return [];
+    const body = (await res.json()) as { requests: PackageRequestRow[] };
+    return body.requests;
+  } catch {
+    return [];
+  }
+}

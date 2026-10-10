@@ -20,8 +20,10 @@ type AuthContextValue = {
   /** True until the initial `/auth/me` check resolves. */
   loading: boolean;
   /** Runs `onSuccess` immediately when already signed in; otherwise opens the
-   *  sign-in/register modal and runs it once that succeeds. */
-  requireAuth: (onSuccess: (user: AuthUser) => void) => void;
+   *  sign-in/register modal and runs it once that succeeds. `redirectTo` is
+   *  where a Google/Facebook login (a full-page redirect that discards
+   *  `onSuccess`) sends the traveller back to, so the caller can resume. */
+  requireAuth: (onSuccess: (user: AuthUser) => void, options?: { redirectTo?: string }) => void;
   openLogin: () => void;
   logout: () => Promise<void>;
 };
@@ -33,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [pending, setPending] = useState<PendingAction>(null);
+  const [redirectTo, setRedirectTo] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,11 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const requireAuth = useCallback(
-    (onSuccess: (u: AuthUser) => void) => {
+    (onSuccess: (u: AuthUser) => void, options?: { redirectTo?: string }) => {
       if (user) {
         onSuccess(user);
         return;
       }
+      setRedirectTo(options?.redirectTo);
       setPending(() => ({ onSuccess }));
       setModalOpen(true);
     },
@@ -61,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const openLogin = useCallback(() => {
     setPending(null);
+    setRedirectTo(undefined);
     setModalOpen(true);
   }, []);
 
@@ -94,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setPending(null);
         }}
         onAuthenticated={handleAuthenticated}
+        redirectTo={redirectTo}
       />
     </AuthContext.Provider>
   );

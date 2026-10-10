@@ -5,7 +5,7 @@ import { MyRequestsList } from "@/components/my-requests/MyRequestsList";
 
 export const metadata: Metadata = {
   title: "My requests — Retro Holidays",
-  description: "Track the final quotation requests you've sent us for review.",
+  description: "Track the quotes you've requested and the answers we've sent back.",
 };
 
 export default function MyRequestsPage() {
@@ -18,8 +18,7 @@ export default function MyRequestsPage() {
         </p>
         <h1 className="mt-3 font-display text-4xl md:text-5xl">My requests</h1>
         <p className="mt-3 max-w-xl text-base" style={{ color: "var(--muted)" }}>
-          Every quotation you&apos;ve sent us for a final, human-checked answer — and what we
-          replied with once it&apos;s confirmed.
+          Every quote you&apos;ve requested from us, and the price we sent back once it&apos;s ready.
         </p>
         <div className="mt-10">
           <MyRequestsList />

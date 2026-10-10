@@ -24,12 +24,14 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onAuthenticated: (user: AuthUser) => void;
+  /** Where Google/Facebook sign-in returns to. Defaults to the current page. */
+  redirectTo?: string;
 };
 
 const fieldClassName =
   "mt-1.5 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-2.5 text-sm text-[var(--text)] outline-none transition placeholder:text-[rgba(155,179,180,0.55)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(253,191,0,0.12)]";
 
-export function AuthModal({ open, onClose, onAuthenticated }: Props) {
+export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirectOverride }: Props) {
   const [mode, setMode] = useState<Mode>("login");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +80,8 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
     onAuthenticated(result.data.user);
   }
 
-  const redirectTo = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/plan";
+  const redirectTo =
+    redirectOverride ?? (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/plan");
 
   return (
     <div
@@ -114,7 +117,7 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
           {mode === "login" ? "Sign in to continue" : "Sign up to continue"}
         </h2>
         <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
-          Needed only to send your trip for a final, human-checked quotation.
+          Needed to send your request and keep track of the quotes we send back.
         </p>
 
         {(providers.google || providers.facebook) && (

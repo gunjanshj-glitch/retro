@@ -24,6 +24,7 @@ import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
 import { handleLogin, handleLogout, handleMe, handleRegister } from "./auth";
 import { handleOAuthCallback, handleOAuthProviders, handleOAuthStart, type Provider } from "./oauth";
+import { handleCreatePackageRequest, handleListPackageRequests } from "./package-requests";
 import { handleCreateRequest, handleGetRequest, handleListRequests } from "./requests";
 
 async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -78,6 +79,10 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   // ---- final-approval requests ----
   if (path === "/requests" && method === "POST") return handleCreateRequest(request, env);
   if (path === "/requests" && method === "GET") return handleListRequests(request, env);
+  // ---- package quote requests ----
+  if (path === "/package-requests" && method === "POST") return handleCreatePackageRequest(request, env);
+  if (path === "/package-requests" && method === "GET") return handleListPackageRequests(request, env);
+
   const requestMatch = /^\/requests\/([A-Za-z0-9-]{1,64})$/.exec(path);
   if (requestMatch && method === "GET") return handleGetRequest(requestMatch[1], request, env);
 
