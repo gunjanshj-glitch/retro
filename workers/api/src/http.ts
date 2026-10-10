@@ -55,6 +55,12 @@ export type Env = {
   /** From-address for outgoing mail. MailChannels requires the sending
    *  domain to carry an SPF record authorising it; see email.ts. */
   MAIL_FROM?: string;
+  /** MailChannels API key, sent as `X-Api-Key` when set. */
+  MAILCHANNELS_API_KEY?: string;
+  /** Comma-separated emails allowed into /admin. Defaults to
+   *  info@retroholidays.in. Must also be a Google-signed-in account with no
+   *  password — see admin.ts. */
+  ADMIN_EMAILS?: string;
 };
 
 

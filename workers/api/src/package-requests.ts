@@ -9,6 +9,7 @@
 import type { Env } from "./http";
 import { badRequest, field, json, readJson } from "./http";
 import { getSessionUser, requireAuth } from "./auth";
+import { sendPackageRequestEmail } from "./email";
 
 const TRIP_TYPES = ["family", "couple", "friends", "stags", "business", "pilgrimage", "solo"] as const;
 const HOTEL_STARS = ["3 Star", "4 Star", "5 Star", "Luxury 5 Star"] as const;
@@ -30,7 +31,7 @@ function intInRange(value: unknown, min: number, max: number): number | null {
   return typeof value === "number" && Number.isInteger(value) && value >= min && value <= max ? value : null;
 }
 
-export async function handleCreatePackageRequest(request: Request, env: Env): Promise<Response> {
+export async function handleCreatePackageRequest(request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
   const user = await getSessionUser(request, env);
   const unauthorised = requireAuth(user);
   if (unauthorised) return unauthorised;
@@ -111,6 +112,26 @@ export async function handleCreatePackageRequest(request: Request, env: Env): Pr
       includeFlights, food, notes, packageSnapshot,
     )
     .run();
+
+  // Tell the agency inbox. Best-effort and off the response path: a mail
+  // outage must never cost the traveller their saved request.
+  const notify = sendPackageRequestEmail(env, {
+    requestId: id,
+    userName: user!.name,
+    userEmail: user!.email,
+    destinationName,
+    packageName,
+    tripType,
+    adults,
+    children,
+    startDate,
+    departureCity,
+    hotelStar,
+    food,
+    includeFlights: includeFlights === 1,
+    notes,
+  }).catch(() => false);
+  if (ctx) ctx.waitUntil(notify);
 
   return json({ ok: true, id }, { status: 201 });
 }

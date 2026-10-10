@@ -27,6 +27,8 @@
 #   # https://developers.cloudflare.com/email-routing/mailchannels/ — no API
 #   # key needed otherwise.
 #   npx wrangler secret put REVIEW_INBOX           # optional, defaults to info@retroholidays.in
+#   npx wrangler secret put MAILCHANNELS_API_KEY   # needed if MailChannels rejects keyless sends
+#   npx wrangler secret put ADMIN_EMAILS           # optional, defaults to info@retroholidays.in
 #   npx wrangler secret put MAIL_FROM              # optional, defaults to no-reply@retroholidays.in
 #
 # Deploy this Worker before the frontend: the frontend's service binding

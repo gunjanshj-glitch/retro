@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import worker from "@/workers/api/src/index";
 import type { Env } from "@/workers/api/src/http";
 
@@ -77,7 +77,41 @@ function call(method: "GET" | "POST", body: unknown, db: ReturnType<typeof fakeD
   );
 }
 
+const mailFetch = vi.fn(async () => new Response(null, { status: 202 }));
+beforeEach(() => {
+  mailFetch.mockClear();
+  vi.stubGlobal("fetch", mailFetch);
+});
+afterEach(() => vi.unstubAllGlobals());
+
 describe("package requests", () => {
+  it("emails the agency inbox when a request is created", async () => {
+    const db = fakeDb({ signedIn: true });
+    const waited: Promise<unknown>[] = [];
+    const env: Env = { DB: db.database, ENVIRONMENT: "test" };
+    const res = await worker.fetch(
+      new Request("https://example.com/api/package-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Cookie: "atlas_session=tok" },
+        body: JSON.stringify(valid),
+      }),
+      env,
+      { waitUntil: (p: Promise<unknown>) => void waited.push(p), passThroughOnException() {} } as ExecutionContext,
+    );
+    expect(res.status).toBe(201);
+    await Promise.all(waited);
+    expect(mailFetch).toHaveBeenCalledTimes(1);
+    const sent = JSON.parse((mailFetch.mock.calls[0] as unknown as [string, RequestInit])[1].body as string);
+    expect(sent.personalizations[0].to[0].email).toBe("info@retroholidays.in");
+    expect(sent.subject).toContain("Western Europe");
+  });
+
+  it("still saves the request when the mail provider fails", async () => {
+    mailFetch.mockRejectedValueOnce(new Error("down"));
+    const db = fakeDb({ signedIn: true });
+    expect((await call("POST", valid, db)).status).toBe(201);
+  });
+
   it("requires a signed-in user to create or list", async () => {
     const db = fakeDb({ signedIn: false });
     expect((await call("POST", valid, db, false)).status).toBe(401);

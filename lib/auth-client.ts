@@ -188,3 +188,33 @@ export async function listPackageRequests(): Promise<PackageRequestRow[]> {
     return [];
   }
 }
+
+// ---------------------------------------------------------------------------
+// Admin: answering package quote requests
+// ---------------------------------------------------------------------------
+
+export type AdminPackageRequest = PackageRequestRow & {
+  userName: string;
+  userEmail: string;
+  food: string;
+  notes: string | null;
+};
+
+/** `null` means "not an admin" (the API answers 404 to everyone else). */
+export async function adminListPackageRequests(): Promise<AdminPackageRequest[] | null> {
+  try {
+    const res = await fetch("/api/admin/package-requests", { credentials: "include" });
+    if (!res.ok) return null;
+    return ((await res.json()) as { requests: AdminPackageRequest[] }).requests;
+  } catch {
+    return null;
+  }
+}
+
+export async function adminSendQuote(id: string, amountInr: number, note: string) {
+  return postJson<{ ok: true }>(`/admin/package-requests/${encodeURIComponent(id)}/quote`, { amountInr, note });
+}
+
+export async function adminCloseRequest(id: string) {
+  return postJson<{ ok: true }>(`/admin/package-requests/${encodeURIComponent(id)}/close`, {});
+}

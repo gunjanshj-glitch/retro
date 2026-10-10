@@ -86,16 +86,83 @@ export async function sendReviewEmail(env: Env, input: ReviewEmailInput): Promis
     ],
   };
 
+  return deliver(env, payload);
+}
+
+/** Posts one message to MailChannels; `MAILCHANNELS_API_KEY` is sent when set
+ *  (the keyless Workers integration has been withdrawn for new accounts). */
+async function deliver(env: Env, payload: unknown): Promise<boolean> {
   try {
     const res = await fetch(MAILCHANNELS_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(env.MAILCHANNELS_API_KEY ? { "X-Api-Key": env.MAILCHANNELS_API_KEY } : {}),
+      },
       body: JSON.stringify(payload),
     });
+    if (!res.ok) console.error("Mail send rejected", res.status);
     return res.ok;
-  } catch {
+  } catch (error) {
+    console.error("Mail send failed", error);
     return false;
   }
+}
+
+export type PackageRequestEmailInput = {
+  requestId: string;
+  userName: string;
+  userEmail: string;
+  destinationName: string;
+  packageName: string;
+  tripType: string;
+  adults: number;
+  children: number;
+  startDate: string | null;
+  departureCity: string;
+  hotelStar: string;
+  food: string;
+  includeFlights: boolean;
+  notes: string | null;
+};
+
+/** Tells the agency inbox a package quote request has arrived. Best-effort. */
+export async function sendPackageRequestEmail(env: Env, input: PackageRequestEmailInput): Promise<boolean> {
+  const to = env.REVIEW_INBOX || DEFAULT_REVIEW_INBOX;
+  const from = env.MAIL_FROM || DEFAULT_FROM;
+  const site = env.PUBLIC_SITE_URL || "https://retroholidays.in";
+
+  const text = [
+    `New package quote request.`,
+    ``,
+    `Package: ${input.packageName} (${input.destinationName})`,
+    `Traveller: ${input.userName} <${input.userEmail}>`,
+    `Trip type: ${input.tripType}`,
+    `Travellers: ${input.adults} adult(s), ${input.children} child(ren)`,
+    `Travel date: ${input.startDate ?? "not decided"}`,
+    `Departing from: ${input.departureCity}`,
+    `Hotel: ${input.hotelStar} · Food: ${input.food} · Flights: ${input.includeFlights ? "yes" : "no"}`,
+    `Notes: ${input.notes ?? "—"}`,
+    ``,
+    `Request ID: ${input.requestId}`,
+    `Reply with a quote at ${site}/admin`,
+  ].join("\n");
+
+  const html = text
+    .split("\n")
+    .map((line) => (line ? `<p style="margin:0 0 8px">${escapeHtml(line)}</p>` : "<br/>"))
+    .join("\n");
+
+  return deliver(env, {
+    personalizations: [{ to: [{ email: to }] }],
+    from: { email: from, name: "Retro Holidays — Website" },
+    reply_to: { email: input.userEmail, name: input.userName },
+    subject: `Quote request — ${input.packageName} (${input.adults + input.children} travellers)`,
+    content: [
+      { type: "text/plain", value: text },
+      { type: "text/html", value: html },
+    ],
+  });
 }
 
 function escapeHtml(s: string): string {
