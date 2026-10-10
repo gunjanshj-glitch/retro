@@ -36,6 +36,14 @@ export async function login(input: { email: string; password: string }) {
   return postJson<{ user: AuthUser }>("/auth/login", input);
 }
 
+export async function forgotPassword(email: string) {
+  return postJson<{ ok: true; message: string }>("/auth/forgot", { email });
+}
+
+export async function resetPassword(input: { token: string; password: string }) {
+  return postJson<{ user: AuthUser; admin: boolean }>("/auth/reset", input);
+}
+
 export async function logout(): Promise<void> {
   try {
     await fetch("/api/auth/logout", { method: "POST", credentials: "include" });

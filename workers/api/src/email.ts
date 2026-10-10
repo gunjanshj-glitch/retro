@@ -165,6 +165,32 @@ export async function sendPackageRequestEmail(env: Env, input: PackageRequestEma
   });
 }
 
+/** Sends the one-hour password-set/reset link. Best-effort, never throws. */
+export async function sendPasswordResetEmail(env: Env, to: string, link: string): Promise<boolean> {
+  const from = env.MAIL_FROM || DEFAULT_FROM;
+  const text = [
+    `Someone asked to set or reset the password for ${to} on Retro Holidays.`,
+    ``,
+    `Choose a new password (link valid for 1 hour, works once):`,
+    link,
+    ``,
+    `If this wasn't you, ignore this email — your password stays as it is.`,
+  ].join("\n");
+  const html =
+    `<p style="margin:0 0 12px">Someone asked to set or reset the password for ${escapeHtml(to)} on Retro Holidays.</p>` +
+    `<p style="margin:0 0 12px"><a href="${escapeHtml(link)}">Choose a new password</a> (valid for 1 hour, works once).</p>` +
+    `<p style="margin:0">If this wasn't you, ignore this email — your password stays as it is.</p>`;
+  return deliver(env, {
+    personalizations: [{ to: [{ email: to }] }],
+    from: { email: from, name: "Retro Holidays" },
+    subject: "Reset your Retro Holidays password",
+    content: [
+      { type: "text/plain", value: text },
+      { type: "text/html", value: html },
+    ],
+  });
+}
+
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }

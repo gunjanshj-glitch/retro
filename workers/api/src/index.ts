@@ -22,7 +22,7 @@ import { corsHeaders, json, notFound } from "./http";
 import { handleLiveRates } from "./live-rates";
 import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
-import { handleLogin, handleLogout, handleMe, handleRegister } from "./auth";
+import { handleForgotPassword, handleLogin, handleLogout, handleMe, handleRegister, handleResetPassword } from "./auth";
 import { handleOAuthCallback, handleOAuthProviders, handleOAuthStart, type Provider } from "./oauth";
 import { handleCreatePackageRequest, handleListPackageRequests } from "./package-requests";
 import { handleAdminList, handleAdminQuote } from "./admin";
@@ -64,6 +64,8 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   // ---- auth ----
   if (path === "/auth/register" && method === "POST") return handleRegister(request, env);
   if (path === "/auth/login" && method === "POST") return handleLogin(request, env);
+  if (path === "/auth/forgot" && method === "POST") return handleForgotPassword(request, env, ctx);
+  if (path === "/auth/reset" && method === "POST") return handleResetPassword(request, env);
   if (path === "/auth/logout" && method === "POST") return handleLogout(request, env);
   if (path === "/auth/me" && method === "GET") return handleMe(request, env);
   if (path === "/auth/providers" && method === "GET") return handleOAuthProviders(env);

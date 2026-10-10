@@ -3,17 +3,23 @@
  * back onto a request, or close one.
  *
  * Who is an admin: a signed-in account whose email is in `ADMIN_EMAILS`
- * (default info@retroholidays.in) AND which signed in with Google AND has no
- * password. Email/password sign-up never verifies the address, so anyone could
- * register `info@retroholidays.in` with a password of their own and, with an
- * email-only check, become admin. Google vouches for the address; the
- * no-password rule stops a squatter's pre-registered account (which Google
- * sign-in would otherwise link to by email) from keeping a back door.
+ * (default info@retroholidays.in) AND whose ownership of that address has been
+ * proven — either a Google sign-in with no password, or a password chosen
+ * through the emailed reset link (`password_verified_at`). Plain sign-up never
+ * verifies the address, so it is blocked for admin addresses (auth.ts) and a
+ * password alone is never enough.
  */
 import type { Env } from "./http";
 import { badRequest, field, json, notFound, parseCookies, readJson, SESSION_COOKIE } from "./http";
 
 const DEFAULT_ADMINS = "info@retroholidays.in";
+
+export function adminEmails(env: Env): string[] {
+  return (env.ADMIN_EMAILS || DEFAULT_ADMINS)
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
 
 type AdminUser = { id: string; email: string };
 
@@ -21,20 +27,18 @@ export async function getAdminUser(request: Request, env: Env): Promise<AdminUse
   const token = parseCookies(request)[SESSION_COOKIE];
   if (!token) return null;
   const row = await env.DB.prepare(
-    `SELECT u.id AS id, u.email AS email, u.auth_provider AS auth_provider, u.password_hash AS password_hash
+    `SELECT u.id AS id, u.email AS email, u.auth_provider AS auth_provider, u.password_hash AS password_hash,
+           u.password_verified_at AS password_verified_at
        FROM session s JOIN user u ON u.id = s.user_id
       WHERE s.id = ? AND s.expires_at > ?`,
   )
     .bind(token, new Date().toISOString())
-    .first<{ id: string; email: string; auth_provider: string | null; password_hash: string | null }>();
+    .first<{ id: string; email: string; auth_provider: string | null; password_hash: string | null; password_verified_at: string | null }>();
   if (!row) return null;
 
-  const admins = (env.ADMIN_EMAILS || DEFAULT_ADMINS)
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  if (!admins.includes(row.email.toLowerCase())) return null;
-  if (row.auth_provider !== "google" || row.password_hash) return null;
+  if (!adminEmails(env).includes(row.email.toLowerCase())) return null;
+  const googleOnly = row.auth_provider === "google" && !row.password_hash;
+  if (!googleOnly && !row.password_verified_at) return null;
   return { id: row.id, email: row.email };
 }
 

@@ -11,6 +11,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import {
   fetchOAuthProviders,
+  forgotPassword,
   login,
   registerAccount,
   startOAuth,
@@ -18,7 +19,7 @@ import {
   type OAuthProviderAvailability,
 } from "@/lib/auth-client";
 
-type Mode = "login" | "register";
+type Mode = "login" | "register" | "forgot";
 
 type Props = {
   open: boolean;
@@ -35,6 +36,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
   const [mode, setMode] = useState<Mode>("login");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [providers, setProviders] = useState<OAuthProviderAvailability>({ google: false, facebook: false, x: false });
 
   useEffect(() => {
@@ -52,6 +54,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
     if (open) {
       setMode("login");
       setError(null);
+      setNotice(null);
       setSubmitting(false);
     }
   }
@@ -66,6 +69,14 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
     const data = new FormData(event.currentTarget);
     const email = String(data.get("email") ?? "").trim();
     const password = String(data.get("password") ?? "");
+
+    if (mode === "forgot") {
+      const sent = await forgotPassword(email);
+      setSubmitting(false);
+      if (!sent.ok) setError(sent.error);
+      else setNotice(sent.data.message);
+      return;
+    }
 
     const result =
       mode === "login"
@@ -87,7 +98,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={mode === "login" ? "Sign in" : "Create an account"}
+      aria-label={mode === "login" ? "Sign in" : mode === "forgot" ? "Reset password" : "Create an account"}
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
     >
       <button
@@ -111,16 +122,18 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
         </button>
 
         <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>
-          {mode === "login" ? "Welcome back" : "Create your account"}
+          {mode === "login" ? "Welcome back" : mode === "forgot" ? "Forgot password" : "Create your account"}
         </p>
         <h2 className="mt-2 font-display text-2xl">
-          {mode === "login" ? "Sign in to continue" : "Sign up to continue"}
+          {mode === "login" ? "Sign in to continue" : mode === "forgot" ? "Reset by email" : "Sign up to continue"}
         </h2>
         <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
-          Needed to send your request and keep track of the quotes we send back.
+          {mode === "forgot"
+            ? "We'll email you a link to choose a new password."
+            : "Needed to send your request and keep track of the quotes we send back."}
         </p>
 
-        {(providers.google || providers.facebook || providers.x) && (
+        {mode !== "forgot" && (providers.google || providers.facebook || providers.x) && (
           <div className="mt-6 flex flex-col gap-2.5">
             {providers.google && (
               <button
@@ -171,6 +184,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
             Email address
             <input name="email" type="email" required autoComplete="email" placeholder="you@example.com" className={fieldClassName} />
           </label>
+          {mode !== "forgot" && (
           <label className="text-sm font-medium">
             Password
             <input
@@ -183,7 +197,27 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
               className={fieldClassName}
             />
           </label>
+          )}
+          {mode === "login" && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode("forgot");
+                setError(null);
+                setNotice(null);
+              }}
+              className="-mt-1.5 self-end text-xs font-semibold underline-offset-2 hover:underline"
+              style={{ color: "var(--accent)" }}
+            >
+              Forgot password?
+            </button>
+          )}
 
+          {notice && (
+            <p role="status" className="text-xs" style={{ color: "var(--accent)" }}>
+              {notice}
+            </p>
+          )}
           {error && (
             <p className="text-xs" style={{ color: "#f28b82" }}>
               {error}
@@ -195,22 +229,23 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
             disabled={submitting}
             className="mt-1 inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--accent)] px-6 py-2.5 text-sm font-semibold text-[var(--deep)] transition hover:-translate-y-0.5 disabled:opacity-60"
           >
-            {submitting ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
+            {submitting ? "Please wait…" : mode === "login" ? "Sign in" : mode === "forgot" ? "Email me a link" : "Create account"}
           </button>
         </form>
 
         <p className="mt-5 text-center text-xs" style={{ color: "var(--muted)" }}>
-          {mode === "login" ? "New here?" : "Already have an account?"}{" "}
+          {mode === "login" ? "New here?" : mode === "forgot" ? "Remembered it?" : "Already have an account?"}{" "}
           <button
             type="button"
             onClick={() => {
               setMode(mode === "login" ? "register" : "login");
               setError(null);
+              setNotice(null);
             }}
             className="font-semibold underline-offset-2 hover:underline"
             style={{ color: "var(--accent)" }}
           >
-            {mode === "login" ? "Create an account" : "Sign in instead"}
+            {mode === "login" ? "Create an account" : mode === "forgot" ? "Back to sign in" : "Sign in instead"}
           </button>
         </p>
       </div>

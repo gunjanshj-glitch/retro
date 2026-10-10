@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import worker from "@/workers/api/src/index";
 import type { Env } from "@/workers/api/src/http";
 
-type User = { email: string; auth_provider: string | null; password_hash: string | null };
+type User = { email: string; auth_provider: string | null; password_hash: string | null; password_verified_at?: string | null };
 
 function fakeDb(user: User | null, changes = 1) {
   const executed: { sql: string; values: unknown[] }[] = [];
@@ -63,6 +63,11 @@ describe("admin package requests", () => {
     expect((await call("GET", "/admin/package-requests", db)).status).toBe(404);
     expect((await call("POST", "/admin/package-requests/r1/quote", db, { amountInr: 5 })).status).toBe(404);
     expect(db.executed.some((e) => e.sql.includes("UPDATE package_request"))).toBe(false);
+  });
+
+  it("lets the admin in with a password set through the emailed link", async () => {
+    const reset: User = { email: "info@retroholidays.in", auth_provider: null, password_hash: "h", password_verified_at: "2026-01-01" };
+    expect((await call("GET", "/admin/package-requests", fakeDb(reset))).status).toBe(200);
   });
 
   it("honours ADMIN_EMAILS", async () => {
