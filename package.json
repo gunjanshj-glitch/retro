@@ -24,7 +24,7 @@
     "build-package-cards": "tsx scripts/build-package-cards.ts",
     "prepare-media": "tsx scripts/prepare-media.ts",
     "lighthouse": "npm run build-maps && npm run build && lhci autorun",
-    "cf:typecheck": "tsc --noEmit",
+    "cf:typecheck": "next typegen && tsc --noEmit",
     "cf:dev": "wrangler dev --env=\"\" -c wrangler.toml -c workers/api/wrangler.toml --persist-to .wrangler/state",
     "cf:dev:api": "wrangler dev --env=\"\" -c workers/api/wrangler.toml --persist-to .wrangler/state",
     "cf:d1:migrate": "wrangler d1 migrations apply atlas --remote --env=\"\" --config workers/api/wrangler.toml",
