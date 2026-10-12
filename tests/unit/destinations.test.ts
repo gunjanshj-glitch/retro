@@ -23,10 +23,12 @@ describe("loadDestinations", () => {
     }
   });
 
-  it("india covers the whole country and has a group for every one of its 27 states", () => {
+  // 29 groups, not one per state: Himachal Pradesh, Uttarakhand and Kashmir
+  // are each split into several "Cluster" packages.
+  it("india covers the whole country and has its 29 state/cluster groups", () => {
     const india = loadDestination("india");
     expect(india?.map_area).toEqual({ type: "country", countries: ["IND"] });
-    expect(india?.groups?.length).toBe(27);
+    expect(india?.groups?.length).toBe(29);
   });
 
   it("russia spans exactly one country", () => {
