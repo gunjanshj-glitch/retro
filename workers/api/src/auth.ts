@@ -12,7 +12,9 @@ import type { Env } from "./http";
 import { badRequest, field, json, readJson, parseCookies, sessionCookie, clearSessionCookie, SESSION_COOKIE } from "./http";
 
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
-const PBKDF2_ITERATIONS = 150_000;
+// Workers' Web Crypto rejects PBKDF2 above 100,000 iterations (NotSupportedError),
+// which made registration and login return a 500. 100,000 is the ceiling.
+const PBKDF2_ITERATIONS = 100_000;
 
 export type SessionUser = { id: string; name: string; email: string; avatarUrl: string | null };
 
