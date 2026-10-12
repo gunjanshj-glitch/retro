@@ -69,3 +69,6 @@ data/raw-footage/
 # wrangler local state — miniflare's on-disk D1/KV for `npm run cf:dev`
 .wrangler/
 .scripts/
+
+# lighthouse ci output
+/.lighthouseci/
