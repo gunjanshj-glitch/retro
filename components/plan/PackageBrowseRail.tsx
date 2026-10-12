@@ -80,10 +80,39 @@ function Card({ pkg, inert }: { pkg: PackageCard; inert?: boolean }) {
   );
 }
 
+/** Manually scrollable row with prev/next arrows. Mounted only once the cards
+ *  exist, so `useHorizontalScroll` finds its scroller on first effect run and
+ *  keeps the arrows' disabled state in sync. */
+function ManualRail({ cards, startNudge }: { cards: PackageCard[]; startNudge?: 1 | -1 }) {
+  const { scrollerRef, atStart, atEnd, nudge } = useHorizontalScroll<HTMLDivElement>();
+
+  useEffect(() => {
+    if (startNudge) nudge(startNudge);
+    // Only the initial hand-off from the auto-scrolling rail.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2">
+      <ScrollArrowButton dir="left" onClick={() => nudge(-1)} disabled={atStart} label="Scroll packages left" />
+      <div ref={scrollerRef} className="no-scrollbar flex flex-1 gap-4 overflow-x-auto scroll-smooth pb-2" role="list">
+        {cards.map((pkg) => (
+          <div key={pkg.id} role="listitem" className="contents">
+            <Card pkg={pkg} />
+          </div>
+        ))}
+      </div>
+      <ScrollArrowButton dir="right" onClick={() => nudge(1)} disabled={atEnd} label="Scroll packages right" />
+    </div>
+  );
+}
+
 export function PackageBrowseRail() {
   const [cards, setCards] = useState<PackageCard[] | null>(null);
   const reduceMotion = usePrefersReducedMotion();
-  const { scrollerRef, atStart, atEnd, nudge } = useHorizontalScroll<HTMLDivElement>();
+  // Set once the traveller uses an arrow: the auto-scrolling loop hands over
+  // to the manual row (same cards, same arrows) and stays there.
+  const [manualDir, setManualDir] = useState<1 | -1 | null>(null);
 
   useEffect(() => {
     loadPackageCards()
@@ -93,26 +122,19 @@ export function PackageBrowseRail() {
 
   if (!cards || !cards.length) return null;
 
-  if (reduceMotion) {
-    // Same manually-scrollable pattern as PackagesRow — no duplicated track,
-    // since without the animation a doubled list would just look like every
-    // package appearing twice.
+  const heading = (
+    <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--text)" }}>
+      All packages
+    </p>
+  );
+
+  if (reduceMotion || manualDir) {
+    // No duplicated track: without the animation a doubled list would just
+    // look like every package appearing twice.
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--text)" }}>
-          All packages
-        </p>
-        <div className="flex items-center gap-2">
-          <ScrollArrowButton dir="left" onClick={() => nudge(-1)} disabled={atStart} label="Scroll packages left" />
-          <div ref={scrollerRef} className="no-scrollbar flex flex-1 gap-4 overflow-x-auto scroll-smooth pb-2" role="list">
-            {cards.map((pkg) => (
-              <div key={pkg.id} role="listitem" className="contents">
-                <Card pkg={pkg} />
-              </div>
-            ))}
-          </div>
-          <ScrollArrowButton dir="right" onClick={() => nudge(1)} disabled={atEnd} label="Scroll packages right" />
-        </div>
+        {heading}
+        <ManualRail cards={cards} startNudge={manualDir ?? undefined} />
       </div>
     );
   }
@@ -121,30 +143,32 @@ export function PackageBrowseRail() {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--text)" }}>
-        All packages
-      </p>
-      <div className="overflow-hidden">
-        <div
-          className="marquee-track flex w-max gap-4 pb-2"
-          style={{ "--marquee-duration": `${duration}s` } as React.CSSProperties}
-          role="list"
-          aria-label="All packages"
-        >
-          {/* The track is rendered twice back-to-back and slid by exactly one
-              copy's width (translateX(-50%)), which is what makes the loop
-              seamless — the second copy is aria-hidden so the list isn't
-              announced twice to assistive tech. */}
-          {[0, 1].map((copy) => (
-            <div key={copy} className="flex gap-4" aria-hidden={copy === 1 ? true : undefined}>
-              {cards.map((pkg) => (
-                <div key={`${copy}-${pkg.id}`} role={copy === 0 ? "listitem" : undefined} className="contents">
-                  <Card pkg={pkg} inert={copy === 1} />
-                </div>
-              ))}
-            </div>
-          ))}
+      {heading}
+      <div className="flex items-center gap-2">
+        <ScrollArrowButton dir="left" onClick={() => setManualDir(-1)} disabled={false} label="Scroll packages left" />
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <div
+            className="marquee-track flex w-max gap-4 pb-2"
+            style={{ "--marquee-duration": `${duration}s` } as React.CSSProperties}
+            role="list"
+            aria-label="All packages"
+          >
+            {/* The track is rendered twice back-to-back and slid by exactly one
+                copy's width (translateX(-50%)), which is what makes the loop
+                seamless — the second copy is aria-hidden so the list isn't
+                announced twice to assistive tech. */}
+            {[0, 1].map((copy) => (
+              <div key={copy} className="flex gap-4" aria-hidden={copy === 1 ? true : undefined}>
+                {cards.map((pkg) => (
+                  <div key={`${copy}-${pkg.id}`} role={copy === 0 ? "listitem" : undefined} className="contents">
+                    <Card pkg={pkg} inert={copy === 1} />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
+        <ScrollArrowButton dir="right" onClick={() => setManualDir(1)} disabled={false} label="Scroll packages right" />
       </div>
     </div>
   );
