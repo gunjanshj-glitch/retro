@@ -16,7 +16,8 @@ export type ViewBox = [number, number, number, number];
 export type Box = { x0: number; y0: number; x1: number; y1: number };
 
 export const ZOOM_MIN = 1;
-export const ZOOM_MAX = 40;
+/** Deepest zoom. Past it the wheel stops zooming and scrolls the page instead. */
+export const ZOOM_MAX = 5.8;
 const BUTTON_FACTOR = 1.5;
 const WHEEL_FACTOR = 1.0018;
 
@@ -131,6 +132,9 @@ export function useZoomPan(base: ViewBox, resetKey: string) {
     const el = svgEl;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
+      // Already fully zoomed in and still zooming in: let the page scroll
+      // rather than trapping the wheel over the map.
+      if (e.deltaY < 0 && navRef.current.zoom >= ZOOM_MAX - 0.001) return;
       e.preventDefault();
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height) return;

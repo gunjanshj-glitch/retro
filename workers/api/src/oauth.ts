@@ -1,5 +1,5 @@
 /**
- * "Continue with Google" / "Continue with Facebook".
+ * "Continue with Google" / "Continue with Facebook" / "Continue with X".
  *
  * Standard OAuth 2.0 authorization-code redirect flow, run entirely by this
  * Worker so the browser never sees a client secret. Either provider is
@@ -17,7 +17,25 @@ import { badRequest, json, sessionCookie } from "./http";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const STATE_TTL_SECONDS = 60 * 10;
 
-export type Provider = "google" | "facebook";
+export type Provider = "google" | "facebook" | "x";
+
+const PROVIDER_LABEL: Record<Provider, string> = { google: "Google", facebook: "Facebook", x: "X" };
+
+/** X does not always return an email. Such accounts get this stand-in address
+ *  (the column is NOT NULL UNIQUE); it is never matched against real accounts. */
+const X_PLACEHOLDER_DOMAIN = "x.users.noreply.retroholidays.in";
+
+function base64Url(bytes: Uint8Array): string {
+  let bin = "";
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function pkcePair(): Promise<{ verifier: string; challenge: string }> {
+  const verifier = base64Url(crypto.getRandomValues(new Uint8Array(48)));
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  return { verifier, challenge: base64Url(new Uint8Array(digest)) };
+}
 
 type ProviderConfig = {
   clientId: string;
@@ -38,6 +56,17 @@ function configFor(provider: Provider, env: Env): ProviderConfig | null {
       tokenUrl: "https://oauth2.googleapis.com/token",
       userInfoUrl: "https://openidconnect.googleapis.com/v1/userinfo",
       scope: "openid email profile",
+    };
+  }
+  if (provider === "x") {
+    if (!env.X_CLIENT_ID || !env.X_CLIENT_SECRET) return null;
+    return {
+      clientId: env.X_CLIENT_ID,
+      clientSecret: env.X_CLIENT_SECRET,
+      authorizeUrl: "https://x.com/i/oauth2/authorize",
+      tokenUrl: "https://api.x.com/2/oauth2/token",
+      userInfoUrl: "https://api.x.com/2/users/me?user.fields=profile_image_url,confirmed_email",
+      scope: "users.read tweet.read users.email",
     };
   }
   if (!env.FACEBOOK_CLIENT_ID || !env.FACEBOOK_CLIENT_SECRET) return null;
@@ -71,7 +100,7 @@ export async function handleOAuthStart(
   const config = configFor(provider, env);
   if (!config) {
     return badRequest(
-      `Sign-in with ${provider === "google" ? "Google" : "Facebook"} is not configured on this deployment.`,
+      `Sign-in with ${PROVIDER_LABEL[provider]} is not configured on this deployment.`,
     );
   }
 
@@ -81,11 +110,20 @@ export async function handleOAuthStart(
   const redirectTo = url.searchParams.get("redirect") || "/plan";
 
   const state = crypto.randomUUID() + crypto.randomUUID();
-  await env.DB.prepare(
-    `INSERT INTO oauth_state (state, provider, created_at, redirect_to) VALUES (?, ?, ?, ?)`,
-  )
-    .bind(state, provider, new Date().toISOString(), redirectTo)
-    .run();
+  const pkce = provider === "x" ? await pkcePair() : null;
+  if (pkce) {
+    await env.DB.prepare(
+      `INSERT INTO oauth_state (state, provider, created_at, redirect_to, code_verifier) VALUES (?, ?, ?, ?, ?)`,
+    )
+      .bind(state, provider, new Date().toISOString(), redirectTo, pkce.verifier)
+      .run();
+  } else {
+    await env.DB.prepare(
+      `INSERT INTO oauth_state (state, provider, created_at, redirect_to) VALUES (?, ?, ?, ?)`,
+    )
+      .bind(state, provider, new Date().toISOString(), redirectTo)
+      .run();
+  }
 
   const authorize = new URL(config.authorizeUrl);
   authorize.searchParams.set("client_id", config.clientId);
@@ -99,10 +137,22 @@ export async function handleOAuthStart(
     authorize.searchParams.set("prompt", "select_account");
   }
 
+  if (pkce) {
+    authorize.searchParams.set("code_challenge", pkce.challenge);
+    authorize.searchParams.set("code_challenge_method", "S256");
+  }
+
   return Response.redirect(authorize.toString(), 302);
 }
 
 type GoogleUserInfo = { sub: string; email?: string; name?: string; picture?: string };
+type XUserInfo = {
+  id: string;
+  name?: string;
+  username?: string;
+  profile_image_url?: string;
+  confirmed_email?: string;
+};
 type FacebookUserInfo = {
   id: string;
   email?: string;
@@ -114,22 +164,30 @@ async function exchangeCode(
   provider: Provider,
   config: ProviderConfig,
   code: string,
+  codeVerifier: string | null,
   request: Request,
   env: Env,
 ): Promise<{ email: string | null; name: string | null; providerId: string; avatarUrl: string | null } | null> {
   const tokenBody = new URLSearchParams({
     client_id: config.clientId,
-    client_secret: config.clientSecret,
     code,
     redirect_uri: redirectUri(provider, request, env),
     grant_type: "authorization_code",
   });
+  const headers: Record<string, string> = {
+    "Content-Type": "application/x-www-form-urlencoded",
+    Accept: "application/json",
+  };
+  if (provider === "x") {
+    // X's confidential clients authenticate with HTTP Basic, and require PKCE.
+    headers.Authorization = `Basic ${btoa(`${config.clientId}:${config.clientSecret}`)}`;
+    if (!codeVerifier) return null;
+    tokenBody.set("code_verifier", codeVerifier);
+  } else {
+    tokenBody.set("client_secret", config.clientSecret);
+  }
 
-  const tokenRes = await fetch(config.tokenUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-    body: tokenBody,
-  });
+  const tokenRes = await fetch(config.tokenUrl, { method: "POST", headers, body: tokenBody });
   if (!tokenRes.ok) return null;
   const tokenJson = (await tokenRes.json()) as { access_token?: string };
   if (!tokenJson.access_token) return null;
@@ -146,6 +204,16 @@ async function exchangeCode(
       name: info.name ?? null,
       providerId: info.sub,
       avatarUrl: info.picture ?? null,
+    };
+  }
+  if (provider === "x") {
+    const info = ((await infoRes.json()) as { data?: XUserInfo }).data;
+    if (!info?.id) return null;
+    return {
+      email: info.confirmed_email ?? null,
+      name: info.name ?? info.username ?? null,
+      providerId: info.id,
+      avatarUrl: info.profile_image_url ?? null,
     };
   }
   const info = (await infoRes.json()) as FacebookUserInfo;
@@ -173,10 +241,10 @@ export async function handleOAuthCallback(
   if (!code || !state) return badRequest("Missing authorization code.");
 
   const stateRow = await env.DB.prepare(
-    `SELECT provider, created_at, redirect_to FROM oauth_state WHERE state = ?`,
+    `SELECT provider, created_at, redirect_to, code_verifier FROM oauth_state WHERE state = ?`,
   )
     .bind(state)
-    .first<{ provider: string; created_at: string; redirect_to: string | null }>();
+    .first<{ provider: string; created_at: string; redirect_to: string | null; code_verifier?: string | null }>();
   // One-shot: consumed whether or not it turns out to be valid, so a replayed
   // callback can never be honoured twice.
   await env.DB.prepare(`DELETE FROM oauth_state WHERE state = ?`).bind(state).run();
@@ -185,12 +253,15 @@ export async function handleOAuthCallback(
   const age = (Date.now() - new Date(stateRow.created_at).getTime()) / 1000;
   if (age > STATE_TTL_SECONDS) return badRequest("This sign-in link has expired. Please try again.");
 
-  const profile = await exchangeCode(provider, config, code, request, env);
-  if (!profile || !profile.email) {
+  const profile = await exchangeCode(provider, config, code, stateRow.code_verifier ?? null, request, env);
+  if (!profile || (!profile.email && provider !== "x")) {
     return badRequest("Could not complete sign-in with that provider.");
   }
 
-  const email = profile.email.trim().toLowerCase();
+  // An X account with no shared email gets a stand-in address keyed on its id,
+  // so it is never merged into someone else's account by email.
+  const hasRealEmail = Boolean(profile.email);
+  const email = hasRealEmail ? profile.email!.trim().toLowerCase() : `${profile.providerId}@${X_PLACEHOLDER_DOMAIN}`;
   const name = profile.name || email.split("@")[0];
 
   // Match an existing account by provider identity first, then by email —
@@ -203,7 +274,9 @@ export async function handleOAuthCallback(
     .first<{ id: string }>();
 
   if (!user) {
-    const byEmail = await env.DB.prepare(`SELECT id FROM user WHERE email = ?`).bind(email).first<{ id: string }>();
+    const byEmail = hasRealEmail
+      ? await env.DB.prepare(`SELECT id FROM user WHERE email = ?`).bind(email).first<{ id: string }>()
+      : null;
     if (byEmail) {
       await env.DB.prepare(
         `UPDATE user SET auth_provider = ?, provider_id = ?, avatar_url = COALESCE(avatar_url, ?) WHERE id = ?`,
@@ -247,5 +320,6 @@ export function handleOAuthProviders(env: Env): Response {
   return json({
     google: Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET),
     facebook: Boolean(env.FACEBOOK_CLIENT_ID && env.FACEBOOK_CLIENT_SECRET),
+    x: Boolean(env.X_CLIENT_ID && env.X_CLIENT_SECRET),
   });
 }

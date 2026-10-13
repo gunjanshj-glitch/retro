@@ -62,8 +62,8 @@ export default async function DestinationPage({
         <div className="relative max-w-2xl">
           <Link
             href="/destinations"
-            className="mb-6 inline-flex items-center gap-2 text-sm transition-colors hover:text-[var(--text)]"
-            style={{ color: "var(--muted)" }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg shadow-black/30 transition-[filter] hover:brightness-110"
+            style={{ background: "var(--accent)", color: "var(--deep)" }}
           >
             <span aria-hidden="true">←</span> All destinations
           </Link>

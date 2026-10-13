@@ -49,12 +49,22 @@ export type Env = {
   FACEBOOK_CLIENT_ID?: string;
   FACEBOOK_CLIENT_SECRET?: string;
 
+  /** X (Twitter) OAuth 2.0 app. Both unset hides the "Continue with X" button. */
+  X_CLIENT_ID?: string;
+  X_CLIENT_SECRET?: string;
+
   /** Mailbox a final-approval request's full JSON is sent to for manual
    *  review. Defaults to info@retroholidays.in when unset. */
   REVIEW_INBOX?: string;
   /** From-address for outgoing mail. MailChannels requires the sending
    *  domain to carry an SPF record authorising it; see email.ts. */
   MAIL_FROM?: string;
+  /** MailChannels API key, sent as `X-Api-Key` when set. */
+  MAILCHANNELS_API_KEY?: string;
+  /** Comma-separated emails allowed into /admin. Defaults to
+   *  info@retroholidays.in. Must also be a Google-signed-in account with no
+   *  password — see admin.ts. */
+  ADMIN_EMAILS?: string;
 };
 
 

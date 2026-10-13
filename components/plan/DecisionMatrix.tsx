@@ -7,6 +7,7 @@
  * no free-text input anywhere, which is a hard requirement: the engine can only
  * price options it has data for.
  */
+import { DEPARTURE_CITIES } from "@/lib/atlas/departure-cities";
 import { useEffect, useMemo, useState } from "react";
 import type { CoreBundle, HotelStar, TravellerType, TripStyle } from "@/lib/atlas/schema";
 import type { QuoteRequest } from "@/lib/atlas/engine/types";
@@ -58,14 +59,6 @@ const NATIONALITIES: { value: string; label: string }[] = [
   { value: "LKA", label: "Sri Lanka" }, { value: "BGD", label: "Bangladesh" },
   { value: "QAT", label: "Qatar" }, { value: "SAU", label: "Saudi Arabia" },
   { value: "KWT", label: "Kuwait" }, { value: "OMN", label: "Oman" },
-];
-
-const DEPARTURE_CITIES: { value: string; label: string }[] = [
-  { value: "DEL", label: "Delhi" }, { value: "BOM", label: "Mumbai" },
-  { value: "MAA", label: "Chennai" }, { value: "BLR", label: "Bengaluru" },
-  { value: "HYD", label: "Hyderabad" }, { value: "CCU", label: "Kolkata" },
-  { value: "COK", label: "Kochi" }, { value: "AMD", label: "Ahmedabad" },
-  { value: "PNQ", label: "Pune" }, { value: "GOI", label: "Goa" },
 ];
 
 const CHILD_AGES = Array.from({ length: 18 }, (_, i) => i);

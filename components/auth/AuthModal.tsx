@@ -11,6 +11,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import {
   fetchOAuthProviders,
+  forgotPassword,
   login,
   registerAccount,
   startOAuth,
@@ -18,22 +19,25 @@ import {
   type OAuthProviderAvailability,
 } from "@/lib/auth-client";
 
-type Mode = "login" | "register";
+type Mode = "login" | "register" | "forgot";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   onAuthenticated: (user: AuthUser) => void;
+  /** Where Google/Facebook sign-in returns to. Defaults to the current page. */
+  redirectTo?: string;
 };
 
 const fieldClassName =
   "mt-1.5 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-2.5 text-sm text-[var(--text)] outline-none transition placeholder:text-[rgba(155,179,180,0.55)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(253,191,0,0.12)]";
 
-export function AuthModal({ open, onClose, onAuthenticated }: Props) {
+export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirectOverride }: Props) {
   const [mode, setMode] = useState<Mode>("login");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [providers, setProviders] = useState<OAuthProviderAvailability>({ google: false, facebook: false });
+  const [notice, setNotice] = useState<string | null>(null);
+  const [providers, setProviders] = useState<OAuthProviderAvailability>({ google: false, facebook: false, x: false });
 
   useEffect(() => {
     if (open) fetchOAuthProviders().then(setProviders);
@@ -50,6 +54,7 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
     if (open) {
       setMode("login");
       setError(null);
+      setNotice(null);
       setSubmitting(false);
     }
   }
@@ -65,6 +70,14 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
     const email = String(data.get("email") ?? "").trim();
     const password = String(data.get("password") ?? "");
 
+    if (mode === "forgot") {
+      const sent = await forgotPassword(email);
+      setSubmitting(false);
+      if (!sent.ok) setError(sent.error);
+      else setNotice(sent.data.message);
+      return;
+    }
+
     const result =
       mode === "login"
         ? await login({ email, password })
@@ -78,13 +91,14 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
     onAuthenticated(result.data.user);
   }
 
-  const redirectTo = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/plan";
+  const redirectTo =
+    redirectOverride ?? (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/plan");
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={mode === "login" ? "Sign in" : "Create an account"}
+      aria-label={mode === "login" ? "Sign in" : mode === "forgot" ? "Reset password" : "Create an account"}
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
     >
       <button
@@ -108,16 +122,18 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
         </button>
 
         <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>
-          {mode === "login" ? "Welcome back" : "Create your account"}
+          {mode === "login" ? "Welcome back" : mode === "forgot" ? "Forgot password" : "Create your account"}
         </p>
         <h2 className="mt-2 font-display text-2xl">
-          {mode === "login" ? "Sign in to continue" : "Sign up to continue"}
+          {mode === "login" ? "Sign in to continue" : mode === "forgot" ? "Reset by email" : "Sign up to continue"}
         </h2>
         <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
-          Needed only to send your trip for a final, human-checked quotation.
+          {mode === "forgot"
+            ? "We'll email you a link to choose a new password."
+            : "Needed to send your request and keep track of the quotes we send back."}
         </p>
 
-        {(providers.google || providers.facebook) && (
+        {mode !== "forgot" && (providers.google || providers.facebook || providers.x) && (
           <div className="mt-6 flex flex-col gap-2.5">
             {providers.google && (
               <button
@@ -139,6 +155,16 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
                 <FacebookMark /> Continue with Facebook
               </button>
             )}
+            {providers.x && (
+              <button
+                type="button"
+                onClick={() => startOAuth("x", redirectTo)}
+                className="flex items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-medium transition hover:bg-white/5"
+                style={{ borderColor: "var(--hairline)" }}
+              >
+                <XMark /> Continue with X
+              </button>
+            )}
             <div className="my-1 flex items-center gap-3 text-xs" style={{ color: "var(--muted)" }}>
               <span className="h-px flex-1 bg-white/10" />
               or
@@ -158,6 +184,7 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
             Email address
             <input name="email" type="email" required autoComplete="email" placeholder="you@example.com" className={fieldClassName} />
           </label>
+          {mode !== "forgot" && (
           <label className="text-sm font-medium">
             Password
             <input
@@ -170,7 +197,27 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
               className={fieldClassName}
             />
           </label>
+          )}
+          {mode === "login" && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode("forgot");
+                setError(null);
+                setNotice(null);
+              }}
+              className="-mt-1.5 self-end text-xs font-semibold underline-offset-2 hover:underline"
+              style={{ color: "var(--accent)" }}
+            >
+              Forgot password?
+            </button>
+          )}
 
+          {notice && (
+            <p role="status" className="text-xs" style={{ color: "var(--accent)" }}>
+              {notice}
+            </p>
+          )}
           {error && (
             <p className="text-xs" style={{ color: "#f28b82" }}>
               {error}
@@ -182,22 +229,23 @@ export function AuthModal({ open, onClose, onAuthenticated }: Props) {
             disabled={submitting}
             className="mt-1 inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--accent)] px-6 py-2.5 text-sm font-semibold text-[var(--deep)] transition hover:-translate-y-0.5 disabled:opacity-60"
           >
-            {submitting ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
+            {submitting ? "Please wait…" : mode === "login" ? "Sign in" : mode === "forgot" ? "Email me a link" : "Create account"}
           </button>
         </form>
 
         <p className="mt-5 text-center text-xs" style={{ color: "var(--muted)" }}>
-          {mode === "login" ? "New here?" : "Already have an account?"}{" "}
+          {mode === "login" ? "New here?" : mode === "forgot" ? "Remembered it?" : "Already have an account?"}{" "}
           <button
             type="button"
             onClick={() => {
               setMode(mode === "login" ? "register" : "login");
               setError(null);
+              setNotice(null);
             }}
             className="font-semibold underline-offset-2 hover:underline"
             style={{ color: "var(--accent)" }}
           >
-            {mode === "login" ? "Create an account" : "Sign in instead"}
+            {mode === "login" ? "Create an account" : mode === "forgot" ? "Back to sign in" : "Sign in instead"}
           </button>
         </p>
       </div>
@@ -222,6 +270,17 @@ function FacebookMark() {
       <path
         fill="#1877F2"
         d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.09 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.25h3.32l-.53 3.49h-2.79V24C19.61 23.09 24 18.1 24 12.07z"
+      />
+    </svg>
+  );
+}
+
+function XMark() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
       />
     </svg>
   );
