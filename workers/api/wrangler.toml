@@ -21,12 +21,16 @@
 #   npx wrangler secret put GOOGLE_CLIENT_SECRET
 #   npx wrangler secret put FACEBOOK_CLIENT_ID
 #   npx wrangler secret put FACEBOOK_CLIENT_SECRET
+#   npx wrangler secret put X_CLIENT_ID          # X developer portal, OAuth 2.0
+#   npx wrangler secret put X_CLIENT_SECRET
 #
 #   # Outgoing mail for final-approval requests (src/email.ts). Requires an
 #   # SPF record on the sending domain authorising MailChannels — see
 #   # https://developers.cloudflare.com/email-routing/mailchannels/ — no API
 #   # key needed otherwise.
 #   npx wrangler secret put REVIEW_INBOX           # optional, defaults to info@retroholidays.in
+#   npx wrangler secret put MAILCHANNELS_API_KEY   # needed if MailChannels rejects keyless sends
+#   npx wrangler secret put ADMIN_EMAILS           # optional, defaults to info@retroholidays.in
 #   npx wrangler secret put MAIL_FROM              # optional, defaults to no-reply@retroholidays.in
 #
 # Deploy this Worker before the frontend: the frontend's service binding

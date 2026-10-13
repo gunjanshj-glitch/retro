@@ -22,8 +22,10 @@ import { corsHeaders, json, notFound } from "./http";
 import { handleLiveRates } from "./live-rates";
 import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
-import { handleLogin, handleLogout, handleMe, handleRegister } from "./auth";
+import { handleForgotPassword, handleLogin, handleLogout, handleMe, handleRegister, handleResetPassword } from "./auth";
 import { handleOAuthCallback, handleOAuthProviders, handleOAuthStart, type Provider } from "./oauth";
+import { handleCreatePackageRequest, handleListPackageRequests } from "./package-requests";
+import { handleAdminList, handleAdminQuote } from "./admin";
 import { handleCreateRequest, handleGetRequest, handleListRequests } from "./requests";
 
 async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -62,15 +64,17 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   // ---- auth ----
   if (path === "/auth/register" && method === "POST") return handleRegister(request, env);
   if (path === "/auth/login" && method === "POST") return handleLogin(request, env);
+  if (path === "/auth/forgot" && method === "POST") return handleForgotPassword(request, env, ctx);
+  if (path === "/auth/reset" && method === "POST") return handleResetPassword(request, env);
   if (path === "/auth/logout" && method === "POST") return handleLogout(request, env);
   if (path === "/auth/me" && method === "GET") return handleMe(request, env);
   if (path === "/auth/providers" && method === "GET") return handleOAuthProviders(env);
 
-  const oauthStart = /^\/auth\/(google|facebook)\/start$/.exec(path);
+  const oauthStart = /^\/auth\/(google|facebook|x)\/start$/.exec(path);
   if (oauthStart && method === "GET") {
     return handleOAuthStart(oauthStart[1] as Provider, request, env);
   }
-  const oauthCallback = /^\/auth\/(google|facebook)\/callback$/.exec(path);
+  const oauthCallback = /^\/auth\/(google|facebook|x)\/callback$/.exec(path);
   if (oauthCallback && method === "GET") {
     return handleOAuthCallback(oauthCallback[1] as Provider, request, env);
   }
@@ -78,6 +82,15 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   // ---- final-approval requests ----
   if (path === "/requests" && method === "POST") return handleCreateRequest(request, env);
   if (path === "/requests" && method === "GET") return handleListRequests(request, env);
+  // ---- package quote requests ----
+  if (path === "/package-requests" && method === "POST") return handleCreatePackageRequest(request, env, ctx);
+  if (path === "/package-requests" && method === "GET") return handleListPackageRequests(request, env);
+
+  // ---- admin (quotes for package requests) ----
+  if (path === "/admin/package-requests" && method === "GET") return handleAdminList(request, env);
+  const adminQuote = /^\/admin\/package-requests\/([A-Za-z0-9-]{1,64})\/(quote|close)$/.exec(path);
+  if (adminQuote && method === "POST") return handleAdminQuote(adminQuote[1], adminQuote[2] as "quote" | "close", request, env);
+
   const requestMatch = /^\/requests\/([A-Za-z0-9-]{1,64})$/.exec(path);
   if (requestMatch && method === "GET") return handleGetRequest(requestMatch[1], request, env);
 
