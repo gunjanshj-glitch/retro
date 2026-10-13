@@ -55,14 +55,14 @@ PUBLIC_SITE_URL = "https://retroholidays.in"
 [[d1_databases]]
 binding = "DB"
 database_name = "atlas"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "31d09e23-9e2d-4b9f-9562-3f6bb249a1e1"
 migrations_dir = "migrations"
 
 # Optional cross-request cache for upstream rate lookups. The Worker runs
 # without it; it just calls the upstreams more often.
 [[kv_namespaces]]
 binding = "RATE_CACHE"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "01dc3c3b027e4f75ad35c4a04894feb6"
 
 # ---------------------------------------------------------------------------
 # Preview environment
@@ -82,9 +82,9 @@ PUBLIC_SITE_URL = ""
 [[env.preview.d1_databases]]
 binding = "DB"
 database_name = "atlas-preview"
-database_id = "REPLACE_WITH_PREVIEW_D1_DATABASE_ID"
+database_id = "88e3ce9b-cd49-4b7c-a460-05503f5a11cf"
 migrations_dir = "migrations"
 
 [[env.preview.kv_namespaces]]
 binding = "RATE_CACHE"
-id = "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID"
+id = "1e9df8778eb947e68c2550e1b5036ae3"
