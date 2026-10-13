@@ -52,3 +52,61 @@ jobs:
 
       - name: Validate both Worker configs
         run: npm run cf:check
+
+  # Continuous deployment: only for pushes to main, and only after the tests
+  # and the Worker dry-run pass, so a red build never ships.
+  # Repository secrets needed: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID,
+  # GOOGLE_PLACES_API_KEY (read at build time). OAuth client IDs/secrets and
+  # other runtime keys live on the atlas-api Worker itself and persist across
+  # deploys, so CI does not touch them.
+  deploy:
+    needs: [test, workers]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+
+      - name: Build data, maps and the static export
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        run: |
+          npm run fetch-natural-earth
+          npm run build-maps
+          npm run build-atlas
+          npm run build-package-cards
+          npm run build
+          test -f out/index.html
+
+      - name: Apply D1 migrations
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/api
+          command: d1 migrations apply atlas --remote --env=""
+
+      # API first: the frontend's service binding resolves atlas-api by name.
+      - name: Deploy backend Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/api
+          command: deploy --env=""
+
+      - name: Deploy frontend Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env=""
