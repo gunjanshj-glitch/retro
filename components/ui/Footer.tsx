@@ -51,9 +51,9 @@ export function Footer() {
               <Image
                 src="/brand/logo-full.png"
                 alt="Retro Holidays"
-                width={1000}
-                height={258}
-                className="h-10 w-auto object-contain"
+                width={1080}
+                height={600}
+                className="h-14 w-auto object-contain"
               />
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-6 text-[var(--muted)]">
