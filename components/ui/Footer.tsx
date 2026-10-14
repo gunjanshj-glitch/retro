@@ -121,7 +121,13 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Retro Holidays. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Retro Holidays. All rights reserved.
+            <span className="mx-2 text-[var(--accent)]">•</span>
+            <Link href="/privacy" className="transition hover:text-[var(--accent)]">Privacy</Link>
+            <span className="mx-2 text-[var(--accent)]">•</span>
+            <Link href="/data-deletion" className="transition hover:text-[var(--accent)]">Data deletion</Link>
+          </p>
           <p>
             Kolkata, India <span className="mx-2 text-[var(--accent)]">•</span> 4.9 ★ from 77
             Google reviews
