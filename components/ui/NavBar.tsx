@@ -48,9 +48,9 @@ export function NavBar() {
         <img
           src="/brand/logo-full.png"
           alt="Retro Holidays"
-          width={1080}
-          height={600}
-          className="logo-glow h-[3.15rem] w-auto object-contain sm:h-14"
+          width={1000}
+          height={337}
+          className="logo-glow h-12 w-auto object-contain sm:h-14"
         />
       </Link>
 
