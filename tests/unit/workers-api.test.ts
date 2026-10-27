@@ -301,3 +301,13 @@ describe("cors", () => {
     expect(res.headers.get("Access-Control-Allow-Origin")).not.toBe("*");
   });
 });
+
+describe("hotel live-rate wiring", () => {
+  it("covers every country the catalogue prices", async () => {
+    const core = JSON.parse(
+      (await import("node:fs")).readFileSync("public/atlas/core.json", "utf8"),
+    ) as { countries: { iso3: string | null }[] };
+    const { ISO3_TO_ISO2 } = await import("@/lib/atlas/iso");
+    for (const c of core.countries) if (c.iso3) expect(ISO3_TO_ISO2[c.iso3]).toMatch(/^[A-Z]{2}$/);
+  });
+});
