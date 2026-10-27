@@ -107,7 +107,9 @@ export async function loadLiveRates(query: {
   const map = new Map<string, { component: "flight" | "hotel"; key: string; inr: number; fetchedAt: string }>();
   try {
     const params = new URLSearchParams(
-      Object.entries(query).filter(([, v]) => v != null) as [string, string][],
+      Object.entries(query)
+        .filter(([, v]) => v != null)
+        .map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : String(v)]),
     );
     const res = await fetch(`/api/live-rates?${params}`, { signal: AbortSignal.timeout(4000) });
     if (!res.ok) return map;
