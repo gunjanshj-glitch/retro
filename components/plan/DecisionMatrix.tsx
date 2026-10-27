@@ -13,6 +13,7 @@ import type { CoreBundle, HotelStar, TravellerType, TripStyle } from "@/lib/atla
 import type { QuoteRequest } from "@/lib/atlas/engine/types";
 import { STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
 import { computeNightsBounds, hotelStarForStyle, isHotelStarAvailable } from "@/lib/atlas/engine/bounds";
+import { resolvePax } from "@/lib/atlas/engine/pricing";
 import { onAccent, selectStyle } from "./theme";
 
 /** Pace nudged by trip style — pilgrimage itineraries plan gentler days by default. */
@@ -247,6 +248,13 @@ export function DecisionMatrix({ core, value, onChange }: Props) {
   );
 
   const isFamily = value.travellerType === "family";
+  // The smallest and largest room counts this party can physically take; the
+  // engine clamps to the same bounds, so the control never offers a dead end.
+  const autoRooms = resolvePax(value.adults, value.childAges).rooms;
+  const roomRange = {
+    min: resolvePax(value.adults, value.childAges, 1).rooms,
+    max: resolvePax(value.adults, value.childAges, 1000).rooms,
+  };
   // Who is travelling, and how, changes how long the same destinations take —
   // a family lingers, a stag party does not. Recomputed as those change so the
   // slider re-sizes live rather than only on the destinations.
@@ -361,6 +369,32 @@ export function DecisionMatrix({ core, value, onChange }: Props) {
         )}
       </Field>
 
+
+      <Field
+        label="Rooms"
+        hint="Choose a triple, family room or suite if you like — we adapt it if the hotel can't offer it"
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          <ChipGroup
+            ariaLabel="Room allocation"
+            options={[
+              { value: "auto", label: `Auto (${autoRooms})` },
+              { value: "custom", label: "I'll choose" },
+            ]}
+            value={value.rooms === undefined ? "auto" : "custom"}
+            onChange={(v) => set("rooms", v === "auto" ? undefined : Math.min(roomRange.max, Math.max(roomRange.min, autoRooms)))}
+          />
+          {value.rooms !== undefined && (
+            <Stepper
+              label="rooms"
+              value={Math.min(roomRange.max, Math.max(roomRange.min, value.rooms))}
+              min={roomRange.min}
+              max={roomRange.max}
+              onChange={(v) => set("rooms", v)}
+            />
+          )}
+        </div>
+      </Field>
 
       <Field label="Departure date">
         <input

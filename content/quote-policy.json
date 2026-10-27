@@ -3,7 +3,8 @@
 
   "occupancy": {
     "adultsPerRoom": 2,
-    "_comment": "Children are priced by age band. 'sharing' means no extra bed and no room charge; 'extraBed' bills a fraction of the room rate.",
+    "maxPerRoom": 4,
+    "_comment": "adultsPerRoom sizes the default allocation; maxPerRoom is the largest room on offer (a 3/4-bed room or suite) and bounds a traveller's own room count. Children are priced by age band. 'sharing' means no extra bed and no room charge; 'extraBed' bills a fraction of the room rate.",
     "childBands": [
       { "maxAge": 4, "label": "Infant", "roomPolicy": "sharing", "extraBedFactor": 0, "activityFactor": 0, "mealFactor": 0.3 },
       { "maxAge": 11, "label": "Child with bed", "roomPolicy": "extraBed", "extraBedFactor": 0.35, "activityFactor": 0.6, "mealFactor": 0.6 },

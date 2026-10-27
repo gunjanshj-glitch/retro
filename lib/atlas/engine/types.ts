@@ -42,6 +42,11 @@ export const QuoteRequest = z.object({
   adults: z.number().int().min(1).max(40),
   /** Ages drive room allocation, activity pricing and day-plan intensity. */
   childAges: z.array(z.number().int().min(0).max(17)),
+  /**
+   * Rooms the traveller wants. Absent means "work it out from the party".
+   * An impossible number is quietly adapted when pricing — see `resolvePax`.
+   */
+  rooms: z.number().int().min(1).max(40).optional(),
 
   travellerType: TravellerType,
   tripStyle: TripStyle,
