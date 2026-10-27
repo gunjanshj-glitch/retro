@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import worker from "@/workers/api/src/index";
 import type { Env } from "@/workers/api/src/http";
+import { occupanciesFor, partyFromQuery } from "@/workers/api/src/live-rates";
 
 /**
  * A stand-in for D1 that records what was bound, so the handlers can be tested
@@ -247,6 +248,31 @@ describe("live rates degrade without keys", () => {
   });
 });
 
+describe("hotel search party", () => {
+  it("puts three adults in one room when asked", () => {
+    expect(occupanciesFor({ adults: 3, childAges: [], rooms: 1 })).toEqual([{ adults: 3 }]);
+  });
+
+  it("keeps two adults and a child together in one room", () => {
+    expect(occupanciesFor({ adults: 2, childAges: [9], rooms: 1 })).toEqual([
+      { adults: 2, children: [9] },
+    ]);
+  });
+
+  it("gives every room an adult and never more rooms than adults", () => {
+    const rooms = occupanciesFor({ adults: 2, childAges: [4, 6], rooms: 5 });
+    expect(rooms).toHaveLength(2);
+    expect(rooms.every((r) => r.adults >= 1)).toBe(true);
+  });
+
+  it("defaults to a couple in a room, and reads the party from the query", () => {
+    expect(partyFromQuery(new URLSearchParams())).toEqual({ adults: 2, childAges: [], rooms: 1 });
+    expect(partyFromQuery(new URLSearchParams("adults=4&childAges=7,2&rooms=3"))).toEqual({
+      adults: 4, childAges: [7, 2], rooms: 3,
+    });
+  });
+});
+
 describe("cors", () => {
   it("does not echo an origin that was not allow-listed", async () => {
     const res = await worker.fetch(
@@ -273,5 +299,15 @@ describe("cors", () => {
       ctx,
     );
     expect(res.headers.get("Access-Control-Allow-Origin")).not.toBe("*");
+  });
+});
+
+describe("hotel live-rate wiring", () => {
+  it("covers every country the catalogue prices", async () => {
+    const core = JSON.parse(
+      (await import("node:fs")).readFileSync("public/atlas/core.json", "utf8"),
+    ) as { countries: { iso3: string | null }[] };
+    const { ISO3_TO_ISO2 } = await import("@/lib/atlas/iso");
+    for (const c of core.countries) if (c.iso3) expect(ISO3_TO_ISO2[c.iso3]).toMatch(/^[A-Z]{2}$/);
   });
 });

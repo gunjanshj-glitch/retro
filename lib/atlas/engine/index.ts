@@ -361,7 +361,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
 
   // --- 4. price -------------------------------------------------------------
   const referencePackage = matchReferencePackage(placeIds, core.packages);
-  const pax = resolvePax(request.adults, request.childAges);
+  const pax = resolvePax(request.adults, request.childAges, request.rooms);
   const { lineItems, totals } = priceQuotation({
     request,
     pax,

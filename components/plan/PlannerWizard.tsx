@@ -15,7 +15,8 @@ import { QuotationView } from "./QuotationView";
 import { ExplorePicker } from "./ExplorePicker";
 import { PackageBrowseRail } from "./PackageBrowseRail";
 import { onAccent } from "./theme";
-import { loadCore, loadDestinations, loadRoutes, loadVisaRules } from "@/lib/atlas/client";
+import { loadCore, loadDestinations, loadHotelLiveRates, loadRoutes, loadVisaRules } from "@/lib/atlas/client";
+import type { LiveRate } from "@/lib/atlas/engine/pricing";
 import { generateQuotation, STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
 import type { CoreBundle, DestinationBundle, Route, VisaRule } from "@/lib/atlas/schema";
 import type { Quotation, QuoteRequest } from "@/lib/atlas/engine/types";
@@ -90,7 +91,12 @@ export function PlannerWizard() {
     loadDestinations(slugs).then(setBundles);
   }, [core, request.placeIds]);
 
-  const quote: Quotation | null = useMemo(() => {
+  // Live hotel rates are a second pass: the compiled card prices the trip, which
+  // fixes the stays, nights and rooms; those are then searched live and the trip
+  // is priced again with whatever came back.
+  const [live, setLive] = useState<{ key: string; rates: Map<string, LiveRate> } | null>(null);
+
+  const baseQuote: Quotation | null = useMemo(() => {
     if (!core || !routes || !visaRules || !request.placeIds.length) return null;
     if (step !== "quote") return null;
     try {
@@ -99,6 +105,42 @@ export function PlannerWizard() {
       return null;
     }
   }, [core, routes, visaRules, bundles, request, step]);
+
+  // Everything the hotel search depends on. Live prices never feed back into it
+  // (stays and rooms do not move with price), so the second pass cannot loop.
+  const hotelSearchKey = baseQuote
+    ? JSON.stringify([
+        baseQuote.stays.map((s) => [s.placeId, s.nights, s.position]),
+        request.startDate, request.hotelStar, request.adults, request.childAges, baseQuote.pax.rooms,
+      ])
+    : null;
+
+  useEffect(() => {
+    if (!core || !baseQuote || !hotelSearchKey) return;
+    let cancelled = false;
+    loadHotelLiveRates(core, baseQuote).then((rates) => {
+      if (!cancelled) setLive({ key: hotelSearchKey, rates });
+    });
+    return () => {
+      cancelled = true;
+    };
+    // baseQuote is represented by hotelSearchKey: only a change to what is
+    // searched should trigger a new search.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [core, hotelSearchKey]);
+
+  // Rates found for a different search are ignored rather than cleared.
+  const liveRates = live && live.key === hotelSearchKey ? live.rates : null;
+
+  const quote: Quotation | null = useMemo(() => {
+    if (!baseQuote || !core || !routes || !visaRules) return baseQuote;
+    if (!liveRates?.size) return baseQuote;
+    try {
+      return generateQuotation(request, { core, routes, visaRules, bundles, liveRates });
+    } catch {
+      return baseQuote;
+    }
+  }, [baseQuote, liveRates, core, routes, visaRules, bundles, request]);
 
   // Human-readable place list for a final-approval request's subject/summary
   // line only — the engine and the stored snapshot both deal exclusively in

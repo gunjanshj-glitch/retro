@@ -92,15 +92,59 @@ async function fetchFlight(
   };
 }
 
-/** Lowest nightly rate for a city, used to sanity-check the compiled hotel card. */
+export type Party = { adults: number; childAges: number[]; rooms: number };
+
+type Occupancy = { adults: number; children?: number[] };
+
+/**
+ * Spreads the party over the rooms the traveller asked for, one adult in every
+ * room first (a child cannot hold a room alone), then the rest round-robin.
+ * Rooms are clamped to what the party can fill, so a bad query degrades to a
+ * sensible search rather than an upstream error.
+ */
+export function occupanciesFor({ adults, childAges, rooms }: Party): Occupancy[] {
+  const count = Math.max(1, Math.min(Math.floor(rooms) || 1, adults));
+  const out: { adults: number; children: number[] }[] = Array.from({ length: count }, () => ({
+    adults: 1,
+    children: [],
+  }));
+  for (let i = count; i < adults; i++) out[i % count].adults++;
+  childAges.forEach((age, i) => out[i % count].children.push(age));
+  return out.map((o) => (o.children.length ? o : { adults: o.adults }));
+}
+
+/** Reads the party from the query, defaulting to a couple in one room. */
+export function partyFromQuery(params: URLSearchParams): Party {
+  const adults = Math.max(1, Math.min(40, parseInt(params.get("adults") ?? "", 10) || 2));
+  const childAges = (params.get("childAges") ?? "")
+    .split(",")
+    .map((a) => parseInt(a, 10))
+    .filter((a) => Number.isFinite(a) && a >= 0 && a <= 17)
+    .slice(0, 10);
+  const requested = parseInt(params.get("rooms") ?? "", 10);
+  const rooms = Number.isFinite(requested) && requested > 0 ? requested : Math.ceil(adults / 2);
+  return { adults, childAges, rooms: Math.min(rooms, adults) };
+}
+
+/**
+ * Median per-room, per-night rate for a city, used to sanity-check the
+ * compiled hotel card. Searched for the traveller's actual party and rooms.
+ */
 async function fetchHotel(
   env: Env,
   cityName: string,
   countryCode: string,
   checkin: string,
   checkout: string,
+  party: Party,
+  key: string,
+  stars: number | null,
 ): Promise<LiveRate | null> {
   if (!env.LITEAPI_KEY) return null;
+
+  const nights = Math.round((Date.parse(checkout) - Date.parse(checkin)) / 86_400_000);
+  if (!Number.isFinite(nights) || nights < 1) return null;
+  const occupancies = occupanciesFor(party);
 
   const res = await fetch("https://api.liteapi.travel/v3.0/hotels/rates", {
     method: "POST",
@@ -113,20 +157,40 @@ async function fetchHotel(
       countryCode,
       checkin,
       checkout,
-      occupancies: [{ adults: 2 }],
+      occupancies,
       currency: "INR",
       guestNationality: "IN",
+      // Needed to know each hotel's category so the median can be taken over
+      // the star rating the traveller chose.
+      includeHotelData: true,
       limit: 25,
     }),
   });
   if (!res.ok) return null;
 
   const body = (await res.json()) as {
-    data?: { roomTypes?: { rates?: { retailRate?: { total?: { amount?: number }[] } }[] }[] }[];
+    hotels?: { id?: string; starRating?: number }[];
+    data?: {
+      hotelId?: string;
+      roomTypes?: { rates?: { retailRate?: { total?: { amount?: number }[] } }[] }[];
+    }[];
   };
 
+  // Restrict to the chosen category where the response says what each hotel
+  // is. If it carries no ratings, or none match, searching all categories is
+  // better than no live figure at all — the engine clamps the result anyway.
+  const starOf = new Map((body.hotels ?? []).map((h) => [h.id, h.starRating]));
+  const all = body.data ?? [];
+  const inCategory =
+    stars == null
+      ? all
+      : all.filter((h) => {
+          const rating = starOf.get(h.hotelId);
+          return typeof rating === "number" && Math.round(rating) === stars;
+        });
+
   const amounts: number[] = [];
-  for (const hotel of body.data ?? []) {
+  for (const hotel of inCategory.length ? inCategory : all) {
     for (const room of hotel.roomTypes ?? []) {
       for (const rate of room.rates ?? []) {
         for (const total of rate.retailRate?.total ?? []) {
@@ -138,13 +202,14 @@ async function fetchHotel(
   if (!amounts.length) return null;
 
   // Median rather than minimum: the cheapest listing is rarely comparable to a
-  // contracted category rate.
+  // contracted category rate. Upstream totals cover every room for the whole
+  // stay; the engine prices a room-night, so normalise to that.
   amounts.sort((a, b) => a - b);
-  const median = amounts[amounts.length >> 1];
+  const median = amounts[amounts.length >> 1] / (nights * occupancies.length);
 
   return {
     component: "hotel",
-    key: `${cityName}`,
+    key,
     inr: median,
     fetchedAt: new Date().toISOString(),
   };
@@ -164,8 +229,20 @@ export async function handleLiveRates(
   const countryCode = url.searchParams.get("countryCode") ?? "";
   const checkin = url.searchParams.get("checkin") ?? "";
   const checkout = url.searchParams.get("checkout") ?? "";
+  const party = partyFromQuery(url.searchParams);
+  // The engine looks hotel rates up as `${placeId}:${star}`, so echo the pair
+  // back as the key; the star number filters the search.
+  const placeId = url.searchParams.get("placeId") ?? "";
+  const star = url.searchParams.get("star") ?? "";
+  const stars = parseInt(star.match(/\d/)?.[0] ?? "", 10);
+  const hotelStars = Number.isFinite(stars) && stars >= 1 && stars <= 5 ? stars : null;
 
-  const cacheKey = `live:${origin}:${destinationIata}:${month}:${carrier}:${cityName}:${checkin}`;
+  // Everything that changes the upstream answer belongs in the key; the party
+  // in particular, or one traveller's room count is served to the next.
+  const partyKey = `${party.adults}:${party.childAges.join(",")}:${party.rooms}`;
+  const cacheKey =
+    `live:${origin}:${destinationIata}:${month}:${carrier}:` +
+    `${cityName}:${countryCode}:${checkin}:${checkout}:${partyKey}:${hotelStars ?? ""}:${placeId}:${star}`;
 
   const respond = (rates: LiveRate[], cached: boolean) =>
     json({ rates, cached }, {
@@ -180,7 +257,7 @@ export async function handleLiveRates(
       ? fetchFlight(env, origin, destinationIata, month, carrier)
       : Promise.resolve(null),
     cityName && countryCode && checkin && checkout
-      ? fetchHotel(env, cityName, countryCode, checkin, checkout)
+      ? fetchHotel(env, cityName, countryCode, checkin, checkout, party, `${placeId}:${star}`, hotelStars)
       : Promise.resolve(null),
   ]);
 

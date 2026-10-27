@@ -8,6 +8,8 @@
  * keeps the initial payload to roughly 140 KB gzipped.
  */
 import type { CoreBundle, DestinationBundle, Route, VisaRule } from "./schema";
+import type { Quotation } from "./engine/types";
+import { ISO3_TO_ISO2 } from "./iso";
 
 const BASE = "/atlas";
 
@@ -103,11 +105,21 @@ export async function loadLiveRates(query: {
   month?: string;
   cityName?: string;
   star?: string;
+  countryCode?: string;
+  placeId?: string;
+  checkin?: string;
+  checkout?: string;
+  /** The party to search hotels for; omitted means a couple in one room. */
+  adults?: number;
+  childAges?: number[];
+  rooms?: number;
 }): Promise<Map<string, { component: "flight" | "hotel"; key: string; inr: number; fetchedAt: string }>> {
   const map = new Map<string, { component: "flight" | "hotel"; key: string; inr: number; fetchedAt: string }>();
   try {
     const params = new URLSearchParams(
-      Object.entries(query).filter(([, v]) => v != null) as [string, string][],
+      Object.entries(query)
+        .filter(([, v]) => v != null)
+        .map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : String(v)]),
     );
     const res = await fetch(`/api/live-rates?${params}`, { signal: AbortSignal.timeout(4000) });
     if (!res.ok) return map;
@@ -117,6 +129,55 @@ export async function loadLiveRates(query: {
     // Live rates are an enhancement; the compiled card is always authoritative.
   }
   return map;
+}
+
+type LiveRateMap = Awaited<ReturnType<typeof loadLiveRates>>;
+
+/**
+ * Live hotel rates for each stay of a priced trip, searched for the traveller's
+ * own party and rooms. Keys come back as `hotel:${placeId}:${hotelStar}`, which
+ * is what the engine looks up. Any place that cannot be searched is skipped.
+ */
+export async function loadHotelLiveRates(
+  core: CoreBundle,
+  quote: Pick<Quotation, "stays" | "request" | "pax">,
+): Promise<LiveRateMap> {
+  const { request, pax } = quote;
+  const day = 86_400_000;
+  let cursor = Date.parse(`${request.startDate}T00:00:00Z`);
+  const searches: Promise<LiveRateMap>[] = [];
+
+  for (const stay of [...quote.stays].sort((a, b) => a.position - b.position)) {
+    const checkin = new Date(cursor);
+    cursor += stay.nights * day;
+    if (stay.nights < 1) continue;
+
+    const place = core.places.find((p) => p.id === stay.placeId);
+    const iso3 = core.countries.find((c) => c.id === place?.countryId)?.iso3;
+    const countryCode = iso3 ? ISO3_TO_ISO2[iso3] : undefined;
+    if (!place || !countryCode) continue;
+
+    searches.push(
+      loadLiveRates({
+        origin: request.departureCity,
+        cityName: place.name,
+        countryCode,
+        placeId: place.id,
+        star: request.hotelStar,
+        checkin: checkin.toISOString().slice(0, 10),
+        checkout: new Date(cursor).toISOString().slice(0, 10),
+        adults: request.adults,
+        childAges: request.childAges,
+        rooms: pax.rooms,
+      }),
+    );
+  }
+
+  const merged: LiveRateMap = new Map();
+  for (const found of await Promise.all(searches)) {
+    for (const [k, v] of found) if (v.component === "hotel") merged.set(k, v);
+  }
+  return merged;
 }
 
 // ---------------------------------------------------------------------------

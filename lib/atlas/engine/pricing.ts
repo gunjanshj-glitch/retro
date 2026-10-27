@@ -95,11 +95,18 @@ function bandFor(age: number) {
   return OCC.childBands.find((b) => age <= b.maxAge) ?? OCC.childBands[OCC.childBands.length - 1];
 }
 
-export function resolvePax(adults: number, childAges: number[]): PaxBreakdown {
+/**
+ * `requestedRooms` is the traveller's own choice (3 adults in one triple, a
+ * family in a suite). It is honoured wherever it is physically possible and
+ * otherwise adapted without complaint: never more rooms than there are adults
+ * to occupy them, never fewer than the largest room on offer can sleep.
+ */
+export function resolvePax(adults: number, childAges: number[], requestedRooms?: number): PaxBreakdown {
   let infants = 0;
   let children = 0;
   let extraBeds = 0;
   let adultEquivalents = adults;
+  let bedHeads = adults;
   let activityHeads = adults;
   let mealHeads = adults;
 
@@ -111,18 +118,28 @@ export function resolvePax(adults: number, childAges: number[]): PaxBreakdown {
     else if (band.roomPolicy === "extraBed") {
       children++;
       extraBeds++;
+      bedHeads++;
     } else {
       children++;
       adultEquivalents++;
+      bedHeads++;
     }
   }
+
+  const defaultRooms = Math.max(1, Math.ceil(adultEquivalents / OCC.adultsPerRoom));
+  const minRooms = Math.max(1, Math.ceil(bedHeads / OCC.maxPerRoom));
+  const maxRooms = Math.max(minRooms, adultEquivalents);
+  const rooms =
+    requestedRooms && Number.isFinite(requestedRooms)
+      ? Math.min(maxRooms, Math.max(minRooms, Math.floor(requestedRooms)))
+      : defaultRooms;
 
   return {
     adults,
     children,
     infants,
     total: adults + childAges.length,
-    rooms: Math.max(1, Math.ceil(adultEquivalents / OCC.adultsPerRoom)),
+    rooms,
     extraBeds,
     activityHeads,
     mealHeads,

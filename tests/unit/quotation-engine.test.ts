@@ -204,6 +204,22 @@ describe("pax resolution", () => {
     expect(resolvePax(2, [15]).rooms).toBe(2);
   });
 
+  it("respects a chosen room count: three adults in one room", () => {
+    expect(resolvePax(3, [], 1).rooms).toBe(1);
+  });
+
+  it("respects two adults and a child sharing one room", () => {
+    expect(resolvePax(2, [9], 1).rooms).toBe(1);
+  });
+
+  it("adds rooms when the chosen one cannot sleep the party", () => {
+    expect(resolvePax(6, [], 1).rooms).toBe(2);
+  });
+
+  it("never books more rooms than there are adults", () => {
+    expect(resolvePax(2, [3], 5).rooms).toBe(2);
+  });
+
   it("charges children a reduced share of activities", () => {
     expect(resolvePax(2, [9]).activityHeads).toBeCloseTo(2.6, 5);
   });
