@@ -11,7 +11,8 @@ import type { TransportMode } from "@/lib/atlas/schema";
 import { formatDuration, formatInr } from "@/lib/atlas/engine/text";
 import policy from "@/content/quote-policy.json";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { createFinalRequest } from "@/lib/auth-client";
+import { COMPONENT_LABEL } from "@/lib/quote-pricing";
+import { SendForApprovalModal } from "./SendForApprovalModal";
 import { onAccent } from "./theme";
 
 /** The hard ceiling on sightseeing in any one day; shown so the traveller can
@@ -31,19 +32,6 @@ const MARKUP_ALLOCATION = policy.markup.contingencyMarginAllocation as Record<st
  *  absent cost (e.g. no tourist tax on this route) reads as "included, none
  *  due" rather than looking like the line was dropped. */
 const ALWAYS_VISIBLE_COMPONENTS = ["city-tax"];
-
-const COMPONENT_LABEL: Record<string, string> = {
-  hotel: "Accommodation",
-  flight: "Flights",
-  "airport-transfer": "Airport transfers",
-  "local-transport": "Sightseeing transport",
-  "intercity-transport": "Intercity transport",
-  sightseeing: "Sightseeing & entrances",
-  meals: "Meals",
-  visa: "Visa support",
-  insurance: "Travel insurance",
-  "city-tax": "City & tourism tax",
-};
 
 /**
  * The optional side of the quote: everything a traveller can actually take out
@@ -84,14 +72,21 @@ type Props = {
   quote: Quotation;
   request: QuoteRequest;
   onChange: (next: QuoteRequest) => void;
-  onBack: () => void;
+  /** Absent in the admin editor, which has no earlier step to go back to. */
+  onBack?: () => void;
   /** Human-readable place list (e.g. "Kashmir, Ladakh"), used as the subject
    *  line/summary for a final-approval request and nowhere else — the
    *  engine itself only ever deals in place ids. */
   destinationSummary: string;
+  /**
+   * "traveller" is the planner. "admin" is the same view inside the quote
+   * editor: every lever still works, but there is nothing to send for approval
+   * and no earlier step to return to.
+   */
+  mode?: "traveller" | "admin";
 };
 
-export function QuotationView({ quote, request, onChange, onBack, destinationSummary }: Props) {
+export function QuotationView({ quote, request, onChange, onBack, destinationSummary, mode = "traveller" }: Props) {
   const grouped = useMemo(() => {
     const map = new Map<string, typeof quote.lineItems>();
     for (const item of quote.lineItems) {
@@ -151,28 +146,11 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
   // account purely so the agency has somewhere to send the confirmed figure
   // back to, and so the traveller has a page to track it from — nothing
   // else on the site needs one.
-  const { requireAuth } = useAuth();
-  const [submitState, setSubmitState] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { user, requireAuth } = useAuth();
+  const [approvalOpen, setApprovalOpen] = useState(false);
+  const [sentId, setSentId] = useState<string | null>(null);
 
-  const handleRequestFinalQuotation = () => {
-    requireAuth(async () => {
-      setSubmitState("sending");
-      setSubmitError(null);
-      const result = await createFinalRequest({
-        request,
-        quotation: quote,
-        destinationSummary,
-        totals: { total: quote.totals.total, perPerson: quote.totals.perPerson },
-      });
-      if (result.ok) {
-        setSubmitState("sent");
-      } else {
-        setSubmitState("error");
-        setSubmitError(result.error);
-      }
-    });
-  };
+  const handleRequestFinalQuotation = () => requireAuth(() => setApprovalOpen(true));
 
   const excludedClusters = new Set(request.excludedClusterIds);
 
@@ -644,55 +622,63 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
       </section>
 
       {/* ---- request a final, human-checked quotation ---- */}
-      <section
-        className="flex flex-col gap-3 rounded-2xl border p-5"
-        style={{ borderColor: "var(--hairline)", background: "color-mix(in srgb, var(--accent) 6%, transparent)" }}
-      >
-        <h3 className="font-display text-xl">Ready to lock this in?</h3>
-        <p className="text-sm" style={{ color: "var(--muted)" }}>
-          This is a live, adjustable estimate. Send it to us and a person on our team will check
-          every rate — including the flight approximation — and come back with a confirmed, final
-          quotation by email.
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={handleRequestFinalQuotation}
-            disabled={submitState === "sending" || submitState === "sent"}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-70"
-            style={{ background: "var(--accent)", color: onAccent }}
-          >
-            {submitState === "sending"
-              ? "Sending…"
-              : submitState === "sent"
-                ? "Sent for review ✓"
-                : "Send for final approval"}
-          </button>
-          {submitState === "sent" && (
-            <span className="text-sm" style={{ color: "var(--muted)" }}>
-              Track it any time from{" "}
-              <a href="/my-requests" className="underline" style={{ color: "var(--accent)" }}>
-                My requests
-              </a>
-              .
-            </span>
-          )}
-        </div>
-        {submitState === "error" && submitError && (
-          <p className="text-xs" style={{ color: "#f28b82" }}>
-            {submitError}
+      {mode === "traveller" && (
+        <section
+          className="flex flex-col gap-3 rounded-2xl border p-5"
+          style={{ borderColor: "var(--hairline)", background: "color-mix(in srgb, var(--accent) 6%, transparent)" }}
+        >
+          <h3 className="font-display text-xl">Ready to lock this in?</h3>
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            This is a live, adjustable estimate. Send it to us and a person on our team will check
+            every rate — including the flight approximation — adjust anything that needs it, and
+            email you a final quote. You then accept it and pay securely online.
           </p>
-        )}
-      </section>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleRequestFinalQuotation}
+              disabled={Boolean(sentId)}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-70"
+              style={{ background: "var(--accent)", color: onAccent }}
+            >
+              {sentId ? "Sent for review ✓" : "Send for final approval"}
+            </button>
+            {sentId && (
+              <span className="text-sm" style={{ color: "var(--muted)" }}>
+                <a href={`/my-requests/view?id=${encodeURIComponent(sentId)}`} className="underline" style={{ color: "var(--accent)" }}>
+                  Track this request
+                </a>{" "}
+                or see all in{" "}
+                <a href="/my-requests" className="underline" style={{ color: "var(--accent)" }}>
+                  My requests
+                </a>
+                .
+              </span>
+            )}
+          </div>
+        </section>
+      )}
+      {approvalOpen && user && (
+        <SendForApprovalModal
+          user={user}
+          request={request}
+          quote={quote}
+          destinationSummary={destinationSummary}
+          onClose={() => setApprovalOpen(false)}
+          onSent={setSentId}
+        />
+      )}
 
-      <button
-        type="button"
-        onClick={onBack}
-        className="self-start rounded-full border px-6 py-2"
-        style={{ borderColor: "var(--hairline)" }}
-      >
-        Change my choices
-      </button>
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="self-start rounded-full border px-6 py-2"
+          style={{ borderColor: "var(--hairline)" }}
+        >
+          Change my choices
+        </button>
+      )}
     </div>
   );
 }

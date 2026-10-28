@@ -9,6 +9,8 @@
  * cookie the backend sets; this module never touches it directly, only reacts
  * to what `/auth/me` reports.
  */
+import type { PublicQuote, QuoteAdjustments } from "./quote-pricing";
+import type { RequestEvent, RequestStatus } from "./quote-workflow";
 
 export type AuthUser = { id: string; name: string; email: string; avatarUrl: string | null };
 
@@ -88,29 +90,89 @@ export function startOAuth(provider: "google" | "facebook" | "x", redirectTo: st
 }
 
 // ---------------------------------------------------------------------------
-// Final-approval requests
+// Trip quote requests (planner → final quote → accept → pay)
 // ---------------------------------------------------------------------------
 
 export type RequestSummary = {
   id: string;
   createdAt: string;
-  status: string;
+  updatedAt: string;
+  status: RequestStatus;
+  /** True when the next move is the traveller's (review the quote, pay). */
+  needsAction: boolean;
+  destinationSummary: string;
+  nights: number;
+  startDate: string;
+  /** The estimate the traveller saw when they sent the request. */
+  totalInr: number;
+  perPersonInr: number;
+  /** The agency's final figure, once a quote has been sent. */
+  quotedTotalInr: number | null;
+  quoteValidUntil: string | null;
+  acceptedTotalInr: number | null;
+  paidInr: number;
+};
+
+export type SentQuote = {
+  revisionId: string;
+  version: number;
+  sentAt: string | null;
+  view: PublicQuote;
+  /** Total with nothing optional ticked. */
+  baseTotalInr: number;
+  /** False once a newer revision has replaced this one. */
+  current: boolean;
+};
+
+export type PaymentSummary = {
+  /** Whether online payment is switched on. */
+  configured: boolean;
+  totalInr: number | null;
+  paidInr: number;
+  balanceInr: number;
+  /** What the next payment will be (the deposit first, if one was set). */
+  nextInr: number;
+  payments: { id: string; amountInr: number; paidAt: string | null; method: string | null; kind: string }[];
+};
+
+export type RequestDetail = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  status: RequestStatus;
   destinationSummary: string;
   nights: number;
   startDate: string;
   totalInr: number;
   perPersonInr: number;
+  snapshot: unknown;
+  contact: { name: string; email: string; phone: string | null; note: string | null };
+  events: RequestEvent[];
+  quote: SentQuote | null;
+  acceptance: { acceptedAt: string; optionIds: string[]; totalInr: number | null } | null;
+  payment: PaymentSummary;
 };
 
-export type RequestDetail = RequestSummary & { snapshot: unknown };
+async function getJson<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`/api${path}`, { credentials: "include" });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
 
-/** Submits the full quotation snapshot for human review. Requires an active
- *  session — the caller is responsible for prompting sign-in first. */
+/** Submits the full quotation snapshot for the agency to finalise. Requires an
+ *  active session — the caller is responsible for prompting sign-in first. */
 export async function createFinalRequest(input: {
   request: unknown;
   quotation: unknown;
   destinationSummary: string;
   totals: { total: number; perPerson: number };
+  /** Where the agency reaches the traveller. Phone is optional. */
+  contact: { email: string; phone?: string };
+  note?: string;
 }): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   const result = await postJson<{ id: string }>("/requests", input);
   if (!result.ok) return result;
@@ -118,24 +180,46 @@ export async function createFinalRequest(input: {
 }
 
 export async function listFinalRequests(): Promise<RequestSummary[]> {
-  try {
-    const res = await fetch("/api/requests", { credentials: "include" });
-    if (!res.ok) return [];
-    const body = (await res.json()) as { requests: RequestSummary[] };
-    return body.requests;
-  } catch {
-    return [];
-  }
+  return (await getJson<{ requests: RequestSummary[] }>("/requests"))?.requests ?? [];
 }
 
 export async function getFinalRequest(id: string): Promise<RequestDetail | null> {
-  try {
-    const res = await fetch(`/api/requests/${encodeURIComponent(id)}`, { credentials: "include" });
-    if (!res.ok) return null;
-    return (await res.json()) as RequestDetail;
-  } catch {
-    return null;
-  }
+  return getJson<RequestDetail>(`/requests/${encodeURIComponent(id)}`);
+}
+
+const requestPath = (id: string, action: string) => `/requests/${encodeURIComponent(id)}/${action}`;
+
+export function acceptQuote(id: string, input: { revisionId: string; optionIds: string[] }) {
+  return postJson<{ ok: true; totalInr: number; dueNowInr: number }>(requestPath(id, "accept"), { ...input, agreed: true });
+}
+export function requestQuoteChanges(id: string, message: string) {
+  return postJson<{ ok: true }>(requestPath(id, "changes"), { message });
+}
+export function declineQuote(id: string, reason: string) {
+  return postJson<{ ok: true }>(requestPath(id, "decline"), { reason });
+}
+export function withdrawRequest(id: string) {
+  return postJson<{ ok: true }>(requestPath(id, "cancel"), {});
+}
+
+export type CheckoutOrder = {
+  keyId: string;
+  orderId: string;
+  amountPaise: number;
+  currency: string;
+  description: string;
+  prefill: { name: string; email: string; contact: string };
+};
+
+export function createPaymentOrder(id: string) {
+  return postJson<CheckoutOrder>(requestPath(id, "pay"), {});
+}
+
+export function verifyPayment(
+  id: string,
+  input: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string },
+) {
+  return postJson<{ ok: true; status: RequestStatus; paidInr: number; totalInr: number | null }>(requestPath(id, "pay/verify"), input);
 }
 
 // ---------------------------------------------------------------------------
@@ -226,3 +310,83 @@ export async function adminSendQuote(id: string, amountInr: number, note: string
 export async function adminCloseRequest(id: string) {
   return postJson<{ ok: true }>(`/admin/package-requests/${encodeURIComponent(id)}/close`, {});
 }
+
+// ---------------------------------------------------------------------------
+// Admin: trip quote requests
+// ---------------------------------------------------------------------------
+
+export type AdminRequestRow = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  status: RequestStatus;
+  userName: string;
+  contactEmail: string;
+  contactPhone: string | null;
+  destinationSummary: string;
+  nights: number;
+  startDate: string;
+  estimateInr: number;
+  quotedTotalInr: number | null;
+  quoteValidUntil: string | null;
+  acceptedTotalInr: number | null;
+  paidInr: number;
+};
+
+export type AdminWorkingCopy = {
+  kind: "draft" | "sent";
+  version: number;
+  request: unknown;
+  adjustments: QuoteAdjustments | null;
+  validUntil: string | null;
+  note: string | null;
+};
+
+export type AdminRequestDetail = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  status: RequestStatus;
+  destinationSummary: string;
+  nights: number;
+  startDate: string;
+  estimateInr: number;
+  perPersonInr: number;
+  contact: { name: string; accountEmail: string; email: string; phone: string | null; note: string | null };
+  snapshot: unknown;
+  events: RequestEvent[];
+  revisions: { id: string; version: number; status: string; sentAt: string | null; totalInr: number; validUntil: string | null; note: string | null }[];
+  workingCopy: AdminWorkingCopy | null;
+  defaultValidUntil: string;
+  quotedTotalInr: number | null;
+  quoteValidUntil: string | null;
+  acceptance: { acceptedAt: string; optionIds: string[]; totalInr: number | null } | null;
+  paidInr: number;
+  payments: { id: string; createdAt: string; amountInr: number; status: string; kind: string; reference: string | null; method: string | null; paidAt: string | null; failureReason: string | null }[];
+};
+
+export type AdminQuoteBody = {
+  request: unknown;
+  quotation: unknown;
+  adjustments: QuoteAdjustments;
+  validUntil: string;
+  note: string;
+};
+
+/** `null` means "not an admin" (the API answers 404 to everyone else). */
+export async function adminListTripRequests(): Promise<AdminRequestRow[] | null> {
+  return (await getJson<{ requests: AdminRequestRow[] }>("/admin/requests"))?.requests ?? null;
+}
+
+export function adminGetTripRequest(id: string) {
+  return getJson<AdminRequestDetail>(`/admin/requests/${encodeURIComponent(id)}`);
+}
+
+const adminPath = (id: string, action: string) => `/admin/requests/${encodeURIComponent(id)}/${action}`;
+
+export const adminStartReview = (id: string) => postJson<{ ok: true; status: RequestStatus }>(adminPath(id, "review"), {});
+export const adminSaveDraft = (id: string, body: AdminQuoteBody) => postJson<{ ok: true; savedAt: string }>(adminPath(id, "draft"), body);
+export const adminSendTripQuote = (id: string, body: AdminQuoteBody) =>
+  postJson<{ ok: true; version: number; totalInr: number; validUntil: string }>(adminPath(id, "send"), body);
+export const adminAddNote = (id: string, text: string) => postJson<{ ok: true }>(adminPath(id, "note"), { text });
+export const adminCloseTripRequest = (id: string, reason: string) => postJson<{ ok: true }>(adminPath(id, "close"), { reason });

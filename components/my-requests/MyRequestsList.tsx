@@ -2,10 +2,10 @@
 
 /**
  * My requests: one page, plain lists. Every package quote request and every
- * final-approval request the signed-in traveller has sent us, newest first,
- * with the quote we replied with — nothing else. Clicking one
- * opens its fixed summary (`RequestSummary`), which is a read-only record,
- * never the planner reopened with these choices pre-filled.
+ * trip request the signed-in traveller has sent us, most recently active
+ * first, with where each one stands and a prompt on any that wait for them.
+ * Clicking a trip request opens its tracker (`RequestSummary`), where they
+ * review the final quote, accept, pay or ask for changes.
  */
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -17,12 +17,7 @@ import {
   type RequestSummary as RequestSummaryRow,
 } from "@/lib/auth-client";
 import { formatInr } from "@/lib/atlas/engine/text";
-
-const STATUS_LABEL: Record<string, string> = {
-  pending: "Awaiting review",
-  approved: "Confirmed",
-  rejected: "Needs a new quote",
-};
+import { StatusBadge, daysLeft, daysLeftLabel, formatDate } from "./status";
 
 export function MyRequestsList() {
   const { user, loading } = useAuth();
@@ -146,35 +141,58 @@ function PackageRequestSection({ rows }: { rows: PackageRequestRow[] }) {
 }
 
 function FinalRequestList({ requests }: { requests: RequestSummaryRow[] }) {
+  const waiting = requests.filter((r) => r.needsAction).length;
   return (
-    <ul className="flex flex-col gap-3">
-      {requests.map((r) => (
-        <li key={r.id}>
-          <Link
-            href={`/my-requests/view?id=${encodeURIComponent(r.id)}`}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-5 transition hover:border-[var(--accent)]"
-            style={{ borderColor: "var(--hairline)" }}
-          >
-            <div>
-              <p className="font-display text-xl">{r.destinationSummary}</p>
-              <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-                {r.nights} nights · from {r.startDate} · sent {new Date(r.createdAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="tabular-nums font-semibold" style={{ color: "var(--accent)" }}>
-                {formatInr(r.totalInr)}
-              </p>
-              <p
-                className="mt-1 rounded-full border px-2.5 py-0.5 text-[11px] uppercase tracking-wide"
-                style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}
+    <div className="flex flex-col gap-3">
+      {waiting > 0 && (
+        <p
+          className="rounded-xl border px-4 py-3 text-sm"
+          style={{ borderColor: "var(--accent)", background: "color-mix(in srgb, var(--accent) 8%, transparent)" }}
+        >
+          {waiting === 1 ? "1 request needs" : `${waiting} requests need`} your attention.
+        </p>
+      )}
+      <ul className="flex flex-col gap-3">
+        {requests.map((r) => {
+          const hasQuote = r.quotedTotalInr != null;
+          const left = r.status === "quoted" ? daysLeft(r.quoteValidUntil) : null;
+          return (
+            <li key={r.id}>
+              <Link
+                href={`/my-requests/view?id=${encodeURIComponent(r.id)}`}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-5 transition hover:border-[var(--accent)]"
+                style={{ borderColor: r.needsAction ? "var(--accent)" : "var(--hairline)" }}
               >
-                {STATUS_LABEL[r.status] ?? r.status}
-              </p>
-            </div>
-          </Link>
-        </li>
-      ))}
-    </ul>
+                <div>
+                  <p className="font-display text-xl">{r.destinationSummary}</p>
+                  <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                    {r.nights} nights · from {formatDate(r.startDate)} · updated{" "}
+                    {new Date(r.updatedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                  </p>
+                  {r.needsAction && (
+                    <p className="mt-2 text-sm font-medium" style={{ color: "var(--accent)" }}>
+                      {r.status === "quoted"
+                        ? `Review your final quote${left != null ? ` — ${daysLeftLabel(left)}` : ""} →`
+                        : r.status === "part_paid"
+                          ? "Pay the balance →"
+                          : "Complete your payment →"}
+                    </p>
+                  )}
+                </div>
+                <div className="flex flex-col items-end gap-1.5">
+                  <p className="tabular-nums font-semibold" style={{ color: "var(--accent)" }}>
+                    {formatInr(r.acceptedTotalInr ?? r.quotedTotalInr ?? r.totalInr)}
+                  </p>
+                  <p className="text-[11px] uppercase tracking-wide" style={{ color: "var(--muted)" }}>
+                    {r.acceptedTotalInr != null ? "Agreed total" : hasQuote ? "Final quote" : "Estimate"}
+                  </p>
+                  <StatusBadge status={r.status} />
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

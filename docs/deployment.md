@@ -14,6 +14,8 @@ Two Cloudflare Workers and one D1 database.
                                       │  • /api/live-rates           │
                                       │  • /api/enquiries            │
                                       │  • /api/quotes[/:id]         │
+                                      │  • /api/requests, /api/admin │
+                                      │  • /api/webhooks/razorpay    │
                                       │  • /api/health               │
                                       └───────────┬──────────────────┘
                                                   │
@@ -70,6 +72,19 @@ rate card is used, which is a fully working site.
 cd workers/api
 npx wrangler secret put TRAVELPAYOUTS_TOKEN
 npx wrangler secret put LITEAPI_KEY
+```
+
+### 3b. Payments (optional until you take bookings)
+
+Accepted quotes are paid through Razorpay. Without these secrets the quote
+workflow still runs; only the pay button is off. Keys, the webhook and going
+live are covered in [quote-workflow.md](quote-workflow.md#switching-on-razorpay).
+
+```bash
+cd workers/api
+npx wrangler secret put RAZORPAY_KEY_ID
+npx wrangler secret put RAZORPAY_KEY_SECRET
+npx wrangler secret put RAZORPAY_WEBHOOK_SECRET
 ```
 
 ### 4. Deploy, backend first

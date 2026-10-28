@@ -19,6 +19,10 @@ export type ReviewEmailInput = {
   requestId: string;
   userName: string;
   userEmail: string;
+  /** Where to reach the traveller about this trip (may differ from the account email). */
+  contactEmail: string;
+  contactPhone: string | null;
+  travellerNote: string | null;
   destinationSummary: string;
   nights: number;
   startDate: string;
@@ -37,46 +41,42 @@ function toBase64(text: string): string {
   return btoa(binary);
 }
 
-function formatInr(amount: number): string {
+export function formatInr(amount: number): string {
   return `₹${Math.round(amount).toLocaleString("en-IN")}`;
 }
 
-/** Best-effort: returns whether the send succeeded. Never throws — a mail
+/** Tells the agency a traveller has sent a quotation for final approval.
+ *  Best-effort: returns whether the send succeeded. Never throws — a mail
  *  provider outage must never cost the traveller their submitted request. */
 export async function sendReviewEmail(env: Env, input: ReviewEmailInput): Promise<boolean> {
   const to = env.REVIEW_INBOX || DEFAULT_REVIEW_INBOX;
   const from = env.MAIL_FROM || DEFAULT_FROM;
+  const site = env.PUBLIC_SITE_URL || "https://retroholidays.in";
 
-  const subject = `Final quotation request — ${input.destinationSummary} (${formatInr(input.totalInr)})`;
-  const text = [
-    `A traveller has asked for a final, human-checked quotation.`,
-    ``,
+  const subject = `New quote request — ${input.destinationSummary} (${formatInr(input.totalInr)})`;
+  const lines = [
     `Request ID: ${input.requestId}`,
-    `Traveller: ${input.userName} <${input.userEmail}>`,
+    `Traveller: ${input.userName}`,
+    `Email: ${input.contactEmail}`,
+    `Phone: ${input.contactPhone ?? "not provided"}`,
     `Destinations: ${input.destinationSummary}`,
-    `Nights: ${input.nights}`,
-    `Start date: ${input.startDate}`,
-    `Quoted total: ${formatInr(input.totalInr)} (${formatInr(input.perPersonInr)} per person)`,
-    ``,
-    `The complete itinerary, every optional add-on, and the flight/visa/insurance`,
-    `figures as shown to the traveller are attached as JSON — review it, then`,
-    `reply directly to ${input.userEmail} with the confirmed, final quotation.`,
-  ].join("\n");
-
-  const html = text
-    .split("\n")
-    .map((line) => (line ? `<p style="margin:0 0 8px">${escapeHtml(line)}</p>` : "<br/>"))
-    .join("\n");
+    `Nights: ${input.nights} · Start date: ${input.startDate}`,
+    `Estimate shown to traveller: ${formatInr(input.totalInr)} (${formatInr(input.perPersonInr)} per person)`,
+    ...(input.travellerNote ? [``, `Their note: “${input.travellerNote}”`] : []),
+  ];
+  const adminUrl = `${site}/admin/request?id=${encodeURIComponent(input.requestId)}`;
 
   const payload = {
-    personalizations: [{ to: [{ email: to }] }],
-    from: { email: from, name: "Retro Holidays — Website" },
-    reply_to: { email: input.userEmail, name: input.userName },
-    subject,
-    content: [
-      { type: "text/plain", value: text },
-      { type: "text/html", value: html },
-    ],
+    ...notice({
+      to,
+      from,
+      fromName: "Retro Holidays — Website",
+      subject,
+      intro: "A traveller has asked for a final quotation. Open it in the quote editor to adjust the trip and prices, then send it back to them.",
+      lines,
+      cta: { label: "Open in quote editor", url: adminUrl },
+      replyTo: { email: input.contactEmail, name: input.userName },
+    }),
     attachments: [
       {
         content: toBase64(input.snapshotJson),
@@ -87,6 +87,54 @@ export async function sendReviewEmail(env: Env, input: ReviewEmailInput): Promis
   };
 
   return deliver(env, payload);
+}
+
+export type NoticeInput = {
+  to: string;
+  subject: string;
+  intro: string;
+  lines?: string[];
+  cta?: { label: string; url: string };
+  replyTo?: { email: string; name?: string };
+  fromName?: string;
+  from?: string;
+};
+
+/** Builds a plain + HTML MailChannels payload for a short transactional message. */
+function notice(input: NoticeInput) {
+  const text = [input.intro, "", ...(input.lines ?? []), ...(input.cta ? ["", `${input.cta.label}: ${input.cta.url}`] : [])].join("\n");
+  const html =
+    `<p style="margin:0 0 14px">${escapeHtml(input.intro)}</p>` +
+    (input.lines?.length
+      ? `<div style="margin:0 0 14px">${input.lines.map((l) => (l ? `<p style="margin:0 0 4px">${escapeHtml(l)}</p>` : "<br/>")).join("")}</div>`
+      : "") +
+    (input.cta
+      ? `<p style="margin:18px 0"><a href="${escapeHtml(input.cta.url)}" style="background:#c9a24a;color:#111;padding:10px 20px;border-radius:999px;text-decoration:none;font-weight:600">${escapeHtml(input.cta.label)}</a></p>`
+      : "");
+  return {
+    personalizations: [{ to: [{ email: input.to }] }],
+    from: { email: input.from ?? DEFAULT_FROM, name: input.fromName ?? "Retro Holidays" },
+    ...(input.replyTo ? { reply_to: input.replyTo } : {}),
+    subject: input.subject,
+    content: [
+      { type: "text/plain", value: text },
+      { type: "text/html", value: html },
+    ],
+  };
+}
+
+/** Sends a short transactional message (quote ready, payment receipt, …).
+ *  Best-effort like every send here: returns false rather than throwing. */
+export async function sendNotice(env: Env, input: NoticeInput): Promise<boolean> {
+  return deliver(env, notice({ ...input, from: env.MAIL_FROM || DEFAULT_FROM }));
+}
+
+export function agencyInbox(env: Env): string {
+  return env.REVIEW_INBOX || DEFAULT_REVIEW_INBOX;
+}
+
+export function siteUrl(env: Env): string {
+  return env.PUBLIC_SITE_URL || "https://retroholidays.in";
 }
 
 /** Posts one message to MailChannels; `MAILCHANNELS_API_KEY` is sent when set

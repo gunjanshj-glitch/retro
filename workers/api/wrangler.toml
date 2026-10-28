@@ -33,6 +33,13 @@
 #   npx wrangler secret put ADMIN_EMAILS           # optional, defaults to info@retroholidays.in
 #   npx wrangler secret put MAIL_FROM              # optional, defaults to no-reply@retroholidays.in
 #
+#   # Online payment for accepted quotes (src/razorpay.ts). All three unset
+#   # leaves the quote workflow working but disables the pay button. Setup,
+#   # including the webhook URL and events, is in docs/quote-workflow.md.
+#   npx wrangler secret put RAZORPAY_KEY_ID
+#   npx wrangler secret put RAZORPAY_KEY_SECRET
+#   npx wrangler secret put RAZORPAY_WEBHOOK_SECRET
+#
 # Deploy this Worker before the frontend: the frontend's service binding
 # resolves by name and will fail to deploy if `atlas-api` does not yet exist.
 

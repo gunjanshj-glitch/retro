@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { NavBar } from "@/components/ui/NavBar";
 import { Footer } from "@/components/ui/Footer";
-import { AdminRequests } from "@/components/admin/AdminRequests";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 
 export const metadata: Metadata = {
   title: "Admin — Retro Holidays",
@@ -16,9 +16,9 @@ export default function AdminPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--accent)" }}>
           Admin
         </p>
-        <h1 className="mt-3 font-display text-4xl md:text-5xl">Package requests</h1>
+        <h1 className="mt-3 font-display text-4xl md:text-5xl">Quote requests</h1>
         <div className="mt-10">
-          <AdminRequests />
+          <AdminDashboard />
         </div>
       </main>
       <Footer />

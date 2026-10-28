@@ -26,7 +26,25 @@ import { handleForgotPassword, handleLogin, handleLogout, handleMe, handleRegist
 import { handleOAuthCallback, handleOAuthProviders, handleOAuthStart, type Provider } from "./oauth";
 import { handleCreatePackageRequest, handleListPackageRequests } from "./package-requests";
 import { handleAdminList, handleAdminQuote } from "./admin";
-import { handleCreateRequest, handleGetRequest, handleListRequests } from "./requests";
+import {
+  handleAcceptQuote,
+  handleCancelRequest,
+  handleCreateRequest,
+  handleDeclineQuote,
+  handleGetRequest,
+  handleListRequests,
+  handleRequestChanges,
+} from "./requests";
+import { handleCreatePayment, handleRazorpayWebhook, handleVerifyPayment } from "./payments";
+import {
+  handleAdminClose,
+  handleAdminGetRequest,
+  handleAdminListRequests,
+  handleAdminNote,
+  handleAdminSaveDraft,
+  handleAdminSendQuote,
+  handleAdminStartReview,
+} from "./request-admin";
 
 async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const url = new URL(request.url);
@@ -80,7 +98,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   }
 
   // ---- final-approval requests ----
-  if (path === "/requests" && method === "POST") return handleCreateRequest(request, env);
+  if (path === "/requests" && method === "POST") return handleCreateRequest(request, env, ctx);
   if (path === "/requests" && method === "GET") return handleListRequests(request, env);
   // ---- package quote requests ----
   if (path === "/package-requests" && method === "POST") return handleCreatePackageRequest(request, env, ctx);
@@ -91,8 +109,37 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   const adminQuote = /^\/admin\/package-requests\/([A-Za-z0-9-]{1,64})\/(quote|close)$/.exec(path);
   if (adminQuote && method === "POST") return handleAdminQuote(adminQuote[1], adminQuote[2] as "quote" | "close", request, env);
 
+  // ---- admin (trip quote requests: review, edit, send) ----
+  if (path === "/admin/requests" && method === "GET") return handleAdminListRequests(request, env);
+  const adminRequest = /^\/admin\/requests\/([A-Za-z0-9-]{1,64})(?:\/(review|draft|send|note|close))?$/.exec(path);
+  if (adminRequest) {
+    const [, id, action] = adminRequest;
+    if (!action && method === "GET") return handleAdminGetRequest(id, request, env);
+    if (method === "POST") {
+      if (action === "review") return handleAdminStartReview(id, request, env);
+      if (action === "draft") return handleAdminSaveDraft(id, request, env);
+      if (action === "send") return handleAdminSendQuote(id, request, env, ctx);
+      if (action === "note") return handleAdminNote(id, request, env);
+      if (action === "close") return handleAdminClose(id, request, env, ctx);
+    }
+  }
+
+  // ---- the traveller's decisions on a sent quote, and payment ----
   const requestMatch = /^\/requests\/([A-Za-z0-9-]{1,64})$/.exec(path);
   if (requestMatch && method === "GET") return handleGetRequest(requestMatch[1], request, env);
+  const requestAction = /^\/requests\/([A-Za-z0-9-]{1,64})\/(accept|changes|decline|cancel|pay|pay\/verify)$/.exec(path);
+  if (requestAction && method === "POST") {
+    const [, id, action] = requestAction;
+    if (action === "accept") return handleAcceptQuote(id, request, env, ctx);
+    if (action === "changes") return handleRequestChanges(id, request, env, ctx);
+    if (action === "decline") return handleDeclineQuote(id, request, env, ctx);
+    if (action === "cancel") return handleCancelRequest(id, request, env, ctx);
+    if (action === "pay") return handleCreatePayment(id, request, env);
+    if (action === "pay/verify") return handleVerifyPayment(id, request, env, ctx);
+  }
+
+  // Razorpay calls this directly (server to server), not through a browser.
+  if (path === "/webhooks/razorpay" && method === "POST") return handleRazorpayWebhook(request, env, ctx);
 
   return notFound(`No route for ${method} ${path}`);
 }

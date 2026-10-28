@@ -8,7 +8,7 @@
  * price options it has data for.
  */
 import { DEPARTURE_CITIES } from "@/lib/atlas/departure-cities";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CoreBundle, HotelStar, TravellerType, TripStyle } from "@/lib/atlas/schema";
 import type { QuoteRequest } from "@/lib/atlas/engine/types";
 import { STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
@@ -75,6 +75,14 @@ type Props = {
    * rest; composing from the live request cannot.
    */
   onChange: (next: QuoteRequest | ((current: QuoteRequest) => QuoteRequest)) => void;
+  /**
+   * Take `value` exactly as given. The matrix normally nudges a fresh request
+   * towards its suggestions as soon as it mounts (length, hotel category,
+   * pace, style); when the request is someone else's finished choice — the
+   * admin quote editor — that would silently re-price it. With `adopt`, those
+   * suggestions only react to changes made after mounting.
+   */
+  adopt?: boolean;
 };
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
@@ -159,12 +167,24 @@ function Stepper({
   );
 }
 
-export function DecisionMatrix({ core, value, onChange }: Props) {
+export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) {
   const set = <K extends keyof QuoteRequest>(key: K, v: QuoteRequest[K]) =>
     onChange((r) => ({ ...r, [key]: v }));
 
+  // Remembers the inputs each suggestion effect last saw, so that under
+  // `adopt` an effect can tell "first look" (and React's dev-mode second look)
+  // from a real change. Without `adopt` it always says yes, as before.
+  const seen = useRef<Record<string, unknown[]>>({});
+  const shouldRun = (key: string, deps: unknown[]) => {
+    const prev = seen.current[key];
+    seen.current[key] = deps;
+    if (!adopt) return true;
+    return prev !== undefined && deps.some((d, i) => !Object.is(d, prev[i]));
+  };
+
   // Trip style follows the traveller type unless the traveller overrides it.
   useEffect(() => {
+    if (!shouldRun("style", [value.travellerType])) return;
     onChange((r) => {
       const suggested = STYLE_FOR_TRAVELLER[r.travellerType];
       return suggested && r.tripStyle !== suggested ? { ...r, tripStyle: suggested } : r;
@@ -178,6 +198,7 @@ export function DecisionMatrix({ core, value, onChange }: Props) {
   // travels without kids in this taxonomy, so clear any stale ages rather than
   // silently pricing a couple's trip as if children were coming.
   useEffect(() => {
+    if (!shouldRun("children", [value.travellerType])) return;
     onChange((r) =>
       r.travellerType !== "family" && r.childAges.length > 0 ? { ...r, childAges: [] } : r,
     );
@@ -199,6 +220,7 @@ export function DecisionMatrix({ core, value, onChange }: Props) {
   // trip could leave the luxury style still holding a Luxury 5 Star hotel that
   // was no longer even on offer.
   useEffect(() => {
+    if (!shouldRun("suggest", [value.travellerType, value.tripStyle, autoHotelStar, autoPace, core])) return;
     onChange((r) => {
       const patch: Partial<QuoteRequest> = {};
 
@@ -236,6 +258,7 @@ export function DecisionMatrix({ core, value, onChange }: Props) {
   // generation skips that combination), so downgrade rather than offer a
   // choice that would silently fall back to something else.
   useEffect(() => {
+    if (!shouldRun("cabin", [value.carrier])) return;
     onChange((r) =>
       r.carrier === "LCC" && r.cabin === "Business" ? { ...r, cabin: "Economy" } : r,
     );
@@ -277,6 +300,7 @@ export function DecisionMatrix({ core, value, onChange }: Props) {
   // the *request* is what gets priced, so write the clamped value back —
   // otherwise the quote silently bills a length the slider never showed.
   useEffect(() => {
+    if (!shouldRun("clamp", [nightsBounds.min, nightsBounds.max])) return;
     onChange((r) => {
       if (!r.placeIds.length) return r;
       const clamped = Math.min(Math.max(r.nights, nightsBounds.min), nightsBounds.max);

@@ -65,6 +65,16 @@ export type Env = {
    *  info@retroholidays.in. Must also be a Google-signed-in account with no
    *  password — see admin.ts. */
   ADMIN_EMAILS?: string;
+
+  /** Razorpay API key id (public; also handed to Checkout in the browser).
+   *  Unset disables online payment: the pay endpoints answer 503 and the UI
+   *  tells the traveller the agency will send payment details. */
+  RAZORPAY_KEY_ID?: string;
+  /** Razorpay API key secret. Signs order creation and verifies checkout
+   *  signatures. Never leaves the Worker. */
+  RAZORPAY_KEY_SECRET?: string;
+  /** Secret configured on the Razorpay webhook; verifies `X-Razorpay-Signature`. */
+  RAZORPAY_WEBHOOK_SECRET?: string;
 };
 
 
