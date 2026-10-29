@@ -19,6 +19,9 @@ const STATE_TTL_SECONDS = 60 * 10;
 
 export type Provider = "google" | "facebook" | "x";
 
+/** Facebook sign-in is switched off. Flip to true (and keep the secrets set) to restore it. */
+const FACEBOOK_ENABLED = false;
+
 const PROVIDER_LABEL: Record<Provider, string> = { google: "Google", facebook: "Facebook", x: "X" };
 
 /** X does not always return an email. Such accounts get this stand-in address
@@ -69,7 +72,7 @@ function configFor(provider: Provider, env: Env): ProviderConfig | null {
       scope: "users.read tweet.read users.email",
     };
   }
-  if (!env.FACEBOOK_CLIENT_ID || !env.FACEBOOK_CLIENT_SECRET) return null;
+  if (!FACEBOOK_ENABLED || !env.FACEBOOK_CLIENT_ID || !env.FACEBOOK_CLIENT_SECRET) return null;
   return {
     clientId: env.FACEBOOK_CLIENT_ID,
     clientSecret: env.FACEBOOK_CLIENT_SECRET,
@@ -319,7 +322,7 @@ export async function handleOAuthCallback(
 export function handleOAuthProviders(env: Env): Response {
   return json({
     google: Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET),
-    facebook: Boolean(env.FACEBOOK_CLIENT_ID && env.FACEBOOK_CLIENT_SECRET),
+    facebook: Boolean(FACEBOOK_ENABLED && env.FACEBOOK_CLIENT_ID && env.FACEBOOK_CLIENT_SECRET),
     x: Boolean(env.X_CLIENT_ID && env.X_CLIENT_SECRET),
   });
 }
