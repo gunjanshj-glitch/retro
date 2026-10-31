@@ -47,6 +47,12 @@ function adsConversion(label: string | undefined, value?: number, txn?: string) 
 /** Traveller sent a trip for final quote approval (lead). */
 export function trackQuoteRequested(requestId: string, valueInr?: number) {
   gtag("event", "generate_lead", { currency: "INR", value: valueInr ?? 0, transaction_id: requestId });
+  // Event name configured in Google Ads for the quote-request conversion.
+  gtag("event", "ads_conversion_request_quote", {
+    currency: "INR",
+    value: valueInr ?? 0,
+    transaction_id: requestId,
+  });
   adsConversion(process.env.NEXT_PUBLIC_ADS_LABEL_QUOTE, valueInr, requestId);
 }
 
