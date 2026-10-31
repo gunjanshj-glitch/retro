@@ -203,7 +203,10 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
               {submitting ? "Sending…" : "Send for final approval"}
             </button>
             <p className="text-center text-xs" style={{ color: "var(--muted)" }}>
-              Sending is free and commits you to nothing — you decide after you see the final quote.
+              Sending is free and commits you to nothing — you decide after you see the final quote. Bookings are subject to our{" "}
+              <a href="/terms" target="_blank" className="underline">Terms</a>,{" "}
+              <a href="/cancellation-policy" target="_blank" className="underline">Cancellation</a> and{" "}
+              <a href="/refund-policy" target="_blank" className="underline">Refund</a> policies.
             </p>
           </form>
         )}

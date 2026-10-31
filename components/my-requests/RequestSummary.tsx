@@ -438,7 +438,11 @@ function QuoteDecision({
               <span>
                 I have reviewed the itinerary, inclusions and price, and I accept this quote for{" "}
                 <strong className="tabular-nums">{formatInr(priced.totalInr)}</strong>
-                {left != null && <span style={{ color: "var(--muted)" }}> ({daysLeftLabel(left)} to accept)</span>}.
+                {left != null && <span style={{ color: "var(--muted)" }}> ({daysLeftLabel(left)} to accept)</span>}. I agree to the{" "}
+                <Link href="/terms" target="_blank" className="underline">Terms &amp; Conditions</Link>,{" "}
+                <Link href="/payment-policy" target="_blank" className="underline">Payment</Link>,{" "}
+                <Link href="/cancellation-policy" target="_blank" className="underline">Cancellation</Link> and{" "}
+                <Link href="/refund-policy" target="_blank" className="underline">Refund</Link> policies.
               </span>
             </label>
             <div className="flex flex-wrap items-center gap-3">

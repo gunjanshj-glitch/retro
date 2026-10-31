@@ -4,6 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const POLICY_LINKS = [
+  { href: "/terms", short: "Terms" },
+  { href: "/payment-policy", short: "Payments" },
+  { href: "/cancellation-policy", short: "Cancellation" },
+  { href: "/refund-policy", short: "Refunds" },
+  { href: "/privacy", short: "Privacy" },
+];
+
 const FOOTER_LINKS = [
   { href: "/destinations", label: "Destinations" },
   { href: "/plan", label: "Plan your trip" },
@@ -127,6 +135,12 @@ export function Footer() {
             <Link href="/privacy" className="transition hover:text-[var(--accent)]">Privacy</Link>
             <span className="mx-2 text-[var(--accent)]">•</span>
             <Link href="/data-deletion" className="transition hover:text-[var(--accent)]">Data deletion</Link>
+            {POLICY_LINKS.filter((l) => l.href !== "/privacy").map((l) => (
+              <span key={l.href}>
+                <span className="mx-2 text-[var(--accent)]">•</span>
+                <Link href={l.href} className="transition hover:text-[var(--accent)]">{l.short}</Link>
+              </span>
+            ))}
           </p>
           <p>
             Kolkata, India <span className="mx-2 text-[var(--accent)]">•</span> 4.9 ★ from 77
