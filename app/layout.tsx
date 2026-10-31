@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { display, interface_ } from "./fonts";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { RouteTracker } from "@/components/analytics/RouteTracker";
+import { ADS_ID, GA_ID } from "@/lib/analytics";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -36,6 +38,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${GTM_ID}');`}
         </Script>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());
+gtag('config','${GA_ID}');
+gtag('config','${ADS_ID}');`}
+        </Script>
+        <RouteTracker />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

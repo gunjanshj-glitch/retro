@@ -49,6 +49,8 @@ type Props = {
   onSent: (id: string) => void;
 };
 
+import { trackQuoteRequested } from "@/lib/analytics";
+
 export function SendForApprovalModal({ user, request, quote, destinationSummary, onClose, onSent }: Props) {
   const [sentId, setSentId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -94,6 +96,7 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
       return;
     }
     setSentId(result.id);
+    trackQuoteRequested(result.id, quote.totals.total);
     onSent(result.id);
   }
 

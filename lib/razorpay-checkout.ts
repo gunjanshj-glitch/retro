@@ -9,6 +9,7 @@
  * `handler` is a convenience — the Worker also settles from Razorpay's webhook,
  * so a closed tab does not lose a payment.
  */
+import { trackPaymentCompleted } from "./analytics";
 import { createPaymentOrder, verifyPayment, type CheckoutOrder } from "./auth-client";
 
 const SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
@@ -96,7 +97,10 @@ export async function payForRequest(requestId: string): Promise<PayOutcome> {
       modal: { confirm_close: true, ondismiss: () => resolve({ kind: "dismissed" }) },
       handler: async (response) => {
         const verified = await verifyPayment(requestId, response);
-        if (verified.ok) resolve({ kind: "paid", paidInr: verified.data.paidInr });
+        if (verified.ok) {
+          trackPaymentCompleted(requestId, verified.data.paidInr);
+          resolve({ kind: "paid", paidInr: verified.data.paidInr });
+        }
         else resolve({ kind: "failed", message: verified.error });
       },
     });
