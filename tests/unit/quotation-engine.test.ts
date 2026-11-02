@@ -1521,3 +1521,17 @@ describe("airport links on flight legs", () => {
     expect(leg.airportLinks).toBeUndefined();
   });
 });
+
+describe("airport transfers on a multi-city domestic trip", () => {
+  it("bills one pickup where the trip starts and one drop-off where it ends, not one pair per stay", () => {
+    const q = quote({ placeIds: ["jaipur", "bikaner", "jodhpur", "jaisalmer"], nights: 11 });
+    const transfers = q.lineItems.filter((l) => l.component === "airport-transfer");
+    expect(transfers).toHaveLength(2);
+    expect(transfers.map((l) => l.label)).toEqual([
+      "Airport to hotel — Jaipur",
+      "Hotel to airport — Jaisalmer",
+    ]);
+    // A chauffeured sedan to or from an Indian airport is a few thousand rupees at most.
+    for (const t of transfers) expect(t.totalInr).toBeLessThan(3000);
+  });
+});

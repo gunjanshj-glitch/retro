@@ -14,7 +14,10 @@
     "insurance": 1,
     "city-tax": 1
   },
-  "region": {},
+  "region": {
+    "_india": "Pricing_Rules.xlsx gives all ~200 Indian places the same template figures (airport transfer 6,496 and sightseeing car 5,315 per service), roughly 3-4x a chauffeured sedan in India. Scaled to about 1,600 per airport transfer and 2,900 per sightseeing day. Replace with contracted rates in the workbook and remove this entry.",
+    "india": { "airport-transfer": 0.25, "local-transport": 0.55 }
+  },
   "country": {},
   "package": {},
   "_fittedAt": "2026-09-08T13:55:06.153Z"

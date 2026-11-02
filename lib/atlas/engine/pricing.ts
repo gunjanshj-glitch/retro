@@ -476,11 +476,11 @@ export function priceQuotation(input: PricingInput): {
   }
 
   // --- airport transfers (structural, always included) ---------------------
-  // Every stay gets its own arrival pickup and departure drop-off — the
-  // agency's own policy is that these "land package" transfers are always
-  // included, whether the traveller is arriving from India at the first stop
-  // or moving on from a mid-trip city, so this is not special-cased to only
-  // the trip's absolute first arrival and last departure.
+  // The agency's calculation sheet counts two airport transfers per trip: one
+  // pickup where the traveller lands and one drop-off where they leave. Stays
+  // in between are reached overland (priced as intercity transport) or by a
+  // flight whose airport links are priced on the leg, so charging an airport
+  // transfer at every stay would bill the same journey twice.
   if (stays.length) {
     // Cruise destinations name their transfers Airport→Cruise rather than
     // Airport→Hotel, so accept either.
@@ -499,17 +499,17 @@ export function priceQuotation(input: PricingInput): {
       const regionId = regionOf.get(countryOf.get(placeId) ?? "");
       return regionId ? transferFallback.get(`${regionId}|${service}`) : undefined;
     };
-    for (const stay of stays) {
+    for (const [index, stay] of stays.entries()) {
       const arrive = pick(stay.placeId, ["Airport→Hotel", "Airport→Cruise"]);
       const depart = pick(stay.placeId, ["Hotel→Airport", "Cruise→Airport"]);
       const arriveInr = arrive?.inr ?? fallbackFor(stay.placeId, "Airport→Hotel");
       const departInr = depart?.inr ?? fallbackFor(stay.placeId, "Hotel→Airport");
-      if (arriveInr) {
+      if (arriveInr && index === 0) {
         push("airport-transfer", `Airport to hotel — ${placeName.get(stay.placeId)}`,
           `${vehicle.count} x ${vehicle.label}`, vehicle.count, "vehicle",
           arriveInr * vehicle.factor, true, arrive?.source ?? "estimated", stay.placeId);
       }
-      if (departInr) {
+      if (departInr && index === stays.length - 1) {
         push("airport-transfer", `Hotel to airport — ${placeName.get(stay.placeId)}`,
           `${vehicle.count} x ${vehicle.label}`, vehicle.count, "vehicle",
           departInr * vehicle.factor, true, depart?.source ?? "estimated", stay.placeId);
