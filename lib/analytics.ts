@@ -8,7 +8,7 @@
  * `AW-18370419970/<label>`). Without a label only the GA4 event is sent.
  */
 
-export const GA_ID = "G-MCWS0T7TCG";
+export const GA_ID = "G-MCWS0T7TCF";
 export const ADS_ID = "AW-18370419970";
 
 type GtagWindow = Window & {

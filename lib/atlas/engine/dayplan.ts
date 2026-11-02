@@ -280,7 +280,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       // Every viable mode, best-first for the trip's preference. The
       // traveller can pin a different one per leg; if the pinned mode is no
       // longer offered (they changed destinations), fall back to the best.
-      const choices = routes.options(previous.placeId, stay.placeId, transportPreference);
+      const choices = routes.options(previous.placeId, stay.placeId, transportPreference, group.paxTotal);
       const pinned = legModes[stay.placeId];
       const hop = (pinned && choices.find((c) => c.mode === pinned)) ?? choices[0] ?? null;
       transfer = {
@@ -298,8 +298,10 @@ export function planDays(input: DayPlanInput): DayPlanResult {
           minutes: c.minutes,
           priceInr: Math.round(c.priceInr),
           estimated: c.estimated,
+          car: c.car,
         })),
         userChosen: Boolean(pinned && hop && hop.mode === pinned),
+        car: hop?.car,
       };
     }
 

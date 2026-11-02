@@ -1438,3 +1438,30 @@ describe("guardrails", () => {
     );
   });
 });
+
+describe("private car on Indian legs", () => {
+  const indiaPlaces = ["cochin", "munnar", "alleppey"];
+
+  it("offers a private car on a drivable domestic leg that has authored flight/bus/train rates", () => {
+    const q = quote({ placeIds: indiaPlaces, nights: 5 });
+    const legs = q.days.filter((d) => d.isTransferDay && d.transfer?.alternatives.length);
+    expect(legs.length).toBeGreaterThan(0);
+    for (const d of legs) {
+      const cars = d.transfer!.alternatives.filter((a) => a.mode === "private_vehicle");
+      expect(cars.length).toBe(1);
+      expect(cars[0].car).toBeDefined();
+    }
+  });
+
+  it("prices a pinned car per vehicle, not per head", () => {
+    const base = quote({ placeIds: indiaPlaces, nights: 5 });
+    const leg = base.days.find((d) => d.isTransferDay && d.transfer?.alternatives.some((a) => a.mode === "private_vehicle"))!;
+    const pinned = quote({ placeIds: indiaPlaces, nights: 5, legModes: { [leg.placeId]: "private_vehicle" } });
+    const got = pinned.days.find((d) => d.placeId === leg.placeId)!.transfer!;
+    expect(got.mode).toBe("private_vehicle");
+    expect(got.car).toBeDefined();
+    const line = pinned.lineItems.find((i) => i.component === "intercity-transport" && i.label === `${got.from} to ${got.to}`)!;
+    expect(line.unit).toBe("vehicle");
+    expect(line.quantity).toBe(got.car!.vehicles);
+  });
+});

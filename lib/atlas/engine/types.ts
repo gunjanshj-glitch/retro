@@ -10,6 +10,7 @@ import {
   TripStyle,
 } from "../schema";
 import type { PlanningNote } from "./advisories";
+import type { CarEstimate } from "./roadcar";
 
 /**
  * Engine inputs and outputs.
@@ -141,6 +142,8 @@ export type TransferAlternative = {
   /** Per person, before calibration and markup. */
   priceInr: number;
   estimated: boolean;
+  /** Per-vehicle pricing detail, for private car options. */
+  car?: CarEstimate;
 };
 
 export type TransferLeg = {
@@ -168,6 +171,8 @@ export type TransferLeg = {
   alternatives: TransferAlternative[];
   /** True when the traveller pinned this leg's mode themselves. */
   userChosen: boolean;
+  /** Set when this leg is a chauffeur-driven private car (priced per vehicle). */
+  car?: CarEstimate;
 };
 
 export type PlannedDay = {

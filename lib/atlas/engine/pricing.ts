@@ -544,6 +544,14 @@ export function priceQuotation(input: PricingInput): {
     const onsite = leg.onsiteMode ? ` (${leg.onsiteMode.replace(/_/g, " ")})` : "";
     const time = leg.durationMinutes != null ? ` · ${formatDuration(leg.durationMinutes)}` : "";
     const distance = leg.distanceKm ? ` · ${leg.distanceKm} km` : "";
+    if (leg.car) {
+      // A car is billed per vehicle, not per head.
+      const car = leg.car;
+      push("intercity-transport", `${leg.from} to ${leg.to}`,
+        `private car — ${car.className}${time}${distance} · fuel, driver, tolls included`,
+        car.vehicles, "vehicle", car.perVehicleInr, true, "estimated", day.placeId);
+      continue;
+    }
     push("intercity-transport", `${leg.from} to ${leg.to}`,
       `${mode}${onsite}${time}${distance}`,
       pax.total, "person", leg.priceInr, true, leg.estimated ? "estimated" : "workbook", day.placeId);

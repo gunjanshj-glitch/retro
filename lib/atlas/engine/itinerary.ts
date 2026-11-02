@@ -11,6 +11,7 @@ import {
   plausibleModes,
   type GeoPoint,
 } from "./geo";
+import { driveMinutesFor, estimateCarTrip, type CarEstimate } from "./roadcar";
 
 // ---------------------------------------------------------------------------
 // Reference package matching
@@ -209,7 +210,7 @@ const HOUR_VALUE_INR: Record<TransportPreference, number> = {
 const MODE_COMFORT_MAX_MINUTES: Partial<Record<TransportMode, number>> = {
   bus: 360, // 6h
   train: 480, // 8h — we don't distinguish a seated day train from an overnight sleeper
-  private_vehicle: 240, // 4h
+  private_vehicle: 420, // 7h — a chauffeured car is the norm for Indian intercity legs
   shared_vehicle: 240,
   ferry: 360,
   seaplane: 180,
@@ -256,6 +257,8 @@ export type RouteChoice = {
    * because no direct route existed. Empty for a direct leg.
    */
   via?: string[];
+  /** Per-vehicle pricing detail, set on chauffeur-driven private car options. */
+  car?: CarEstimate;
 };
 
 export type RouteHit = RouteChoice & { route: Route | null };
@@ -265,9 +268,9 @@ export type RouteLookup = {
    * Every viable way to make this leg, best-first for the given preference.
    * Empty when the two places are not connected at any fallback tier.
    */
-  options(originId: string, destId: string, preference?: TransportPreference): RouteHit[];
+  options(originId: string, destId: string, preference?: TransportPreference, travellers?: number): RouteHit[];
   /** The single best option for the given preference, or null. */
-  best(originId: string, destId: string, preference?: TransportPreference): RouteHit | null;
+  best(originId: string, destId: string, preference?: TransportPreference, travellers?: number): RouteHit | null;
   /** Great-circle distance between two places, when both are located. */
   distanceKm(originId: string, destId: string): number | null;
 };
@@ -612,6 +615,8 @@ export function buildRouteLookup(
     const onOneIsland = islandA != null && islandA === islandB;
     const hits = plausibleModes(distanceKm, overland)
       .filter((mode) => !(onOneIsland && mode === "train"))
+      // A car is priced per vehicle by the road-car model, not on the per-person curve.
+      .filter((mode) => mode !== "private_vehicle")
       .map(
       (mode): RouteHit => ({
         route: null,
@@ -627,7 +632,7 @@ export function buildRouteLookup(
     return hits.sort((x, y) => scoreOf(x, preference) - scoreOf(y, preference));
   };
 
-  const optionsFor = (
+  const baseOptionsFor = (
     originId: string,
     destId: string,
     preference: TransportPreference,
@@ -677,11 +682,83 @@ export function buildRouteLookup(
     return [];
   };
 
+
+  /** Longest straight-line hop at which a chauffeur-driven car is still offered. */
+  const CAR_MAX_KM_DOMESTIC = 800;
+  const CAR_MAX_KM_CROSS_BORDER = 500;
+
+  /**
+   * Adds a chauffeur-driven private car to a leg's options when the road
+   * exists, priced per vehicle for the group by the road-car model.
+   *
+   * Source tables list only flight/train/bus for India, so without this a car
+   * (how most Indian intercity legs are really done) was never on the menu.
+   * A route that explicitly marks private_vehicle unavailable (an island, a
+   * trek) is respected, and a real authored car fare is never overwritten.
+   */
+  const withCar = (
+    originId: string,
+    destId: string,
+    base: RouteHit[],
+    preference: TransportPreference,
+    travellers: number,
+  ): RouteHit[] => {
+    const a = pointOfPlace.get(originId);
+    const b = pointOfPlace.get(destId);
+    if (!a || !b) return base;
+    if (base.some((h) => h.mode === "private_vehicle" && !h.estimated)) return base;
+    // localTransfer() already is a road leg; do not double up.
+    if (base.length === 1 && base[0].mode === "private_vehicle") return base;
+
+    const candidates = byPlacePair.get(`${originId}|${destId}`) ?? [];
+    const forbidden = candidates.some((r) =>
+      r.options.some((o) => o.mode === "private_vehicle" && !o.enabled),
+    );
+    if (forbidden) return base;
+
+    const straightKm = haversineKm(a, b);
+    if (!Number.isFinite(straightKm) || straightKm <= 0) return base;
+
+    const originCountry = countryOfPlace.get(originId);
+    const sameCountry = originCountry != null && originCountry === countryOfPlace.get(destId);
+    const islandA = islandOfPlace.get(originId) ?? null;
+    const islandB = islandOfPlace.get(destId) ?? null;
+    const sameLandmass = islandA || islandB ? islandA === islandB : true;
+    if (!sameLandmass) return base;
+    if (straightKm > (sameCountry ? CAR_MAX_KM_DOMESTIC : CAR_MAX_KM_CROSS_BORDER)) return base;
+
+    const regionId = originCountry ? (regionOfCountry.get(originCountry) ?? "") : "";
+    const car = estimateCarTrip(straightKm, travellers, regionId);
+    const hit: RouteHit = {
+      route: null,
+      mode: "private_vehicle",
+      minutes: driveMinutesFor(straightKm),
+      priceInr: car.perPersonInr,
+      estimated: true,
+      distanceKm: Math.round(straightKm),
+      onsiteMode: null,
+      car,
+    };
+    const rest = base.filter((h) => h.mode !== "private_vehicle");
+    return [...rest, hit].sort((x, y) => scoreOf(x, preference) - scoreOf(y, preference));
+  };
+
+  const optionsFor = (
+    originId: string,
+    destId: string,
+    preference: TransportPreference,
+    travellers: number,
+  ): RouteHit[] =>
+    withCar(originId, destId, baseOptionsFor(originId, destId, preference), preference, travellers);
+
+  /** Group size assumed when a caller (e.g. the visiting-order search) has none. */
+  const DEFAULT_TRAVELLERS = 2;
+
   return {
-    options: (originId, destId, preference = DEFAULT_TRANSPORT_PREFERENCE) =>
-      optionsFor(originId, destId, preference),
-    best: (originId, destId, preference = DEFAULT_TRANSPORT_PREFERENCE) =>
-      optionsFor(originId, destId, preference)[0] ?? null,
+    options: (originId, destId, preference = DEFAULT_TRANSPORT_PREFERENCE, travellers = DEFAULT_TRAVELLERS) =>
+      optionsFor(originId, destId, preference, travellers),
+    best: (originId, destId, preference = DEFAULT_TRANSPORT_PREFERENCE, travellers = DEFAULT_TRAVELLERS) =>
+      optionsFor(originId, destId, preference, travellers)[0] ?? null,
     distanceKm: (originId, destId) => {
       const a = pointOfPlace.get(originId);
       const b = pointOfPlace.get(destId);

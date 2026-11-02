@@ -15,6 +15,13 @@ import { COMPONENT_LABEL } from "@/lib/quote-pricing";
 import { SendForApprovalModal } from "./SendForApprovalModal";
 import { onAccent } from "./theme";
 
+/** Traveller-facing mode names; the raw enum reads like a database column. */
+const MODE_LABEL: Partial<Record<TransportMode, string>> = {
+  private_vehicle: "Private car",
+  shared_vehicle: "Shared cab",
+};
+const modeLabel = (mode: string) => MODE_LABEL[mode as TransportMode] ?? mode.replace(/_/g, " ");
+
 /** The hard ceiling on sightseeing in any one day; shown so the traveller can
  *  see why an outing will not fit rather than just finding that it does not. */
 const maxSightseeingHours = policy.dayPlanning.maxSightseeingHoursPerDay;
@@ -363,10 +370,16 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                                 : { borderColor: "var(--hairline)" }
                             }
                           >
-                            <div className="font-medium capitalize">{alt.mode.replace(/_/g, " ")}</div>
+                            <div className="font-medium capitalize">{modeLabel(alt.mode)}</div>
                             <div className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
                               {formatInr(alt.priceInr)} pp · {formatDuration(alt.minutes)}
                             </div>
+                            {alt.car && (
+                              <div className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
+                                {formatInr(alt.car.totalInr)} total · {alt.car.vehicles > 1 ? `${alt.car.vehicles} × ` : ""}
+                                {alt.car.className.split(" (")[0]}
+                              </div>
+                            )}
                             {!isChosen && (deltaInr !== 0 || deltaMin !== 0) && (
                               <div className="text-xs tabular-nums" style={{ color: "var(--accent)" }}>
                                 {deltaInr === 0
@@ -384,9 +397,21 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                     </div>
                   ) : (
                     <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
-                      <span className="capitalize">{leg.mode.replace(/_/g, " ")}</span>
+                      <span className="capitalize">{modeLabel(leg.mode)}</span>
                       {leg.durationMinutes != null && ` · ${formatDuration(leg.durationMinutes)}`}
                       {" — the only service on this route."}
+                    </p>
+                  )}
+
+                  {leg.car && (
+                    <p className="mt-3 rounded-lg px-3 py-2 text-xs leading-relaxed" style={{ background: "var(--surface)", color: "var(--muted)" }}>
+                      Chauffeur-driven {leg.car.vehicles > 1 ? `${leg.car.vehicles} × ` : ""}
+                      {leg.car.className} for {leg.car.roadKm} road km
+                      {leg.car.drivingDays > 1 ? ` over ${leg.car.drivingDays} days` : ""}:{" "}
+                      fuel {formatInr(leg.car.breakdown.fuelInr)} · vehicle {formatInr(leg.car.breakdown.vehicleInr)} · driver{" "}
+                      {formatInr(leg.car.breakdown.driverInr)} · tolls {formatInr(leg.car.breakdown.tollsInr)} ={" "}
+                      <span className="tabular-nums" style={{ color: "var(--accent)" }}>{formatInr(leg.car.totalInr)}</span>
+                      {" "}for the whole group. Estimate — the final quote confirms the exact vehicle.
                     </p>
                   )}
                 </div>
