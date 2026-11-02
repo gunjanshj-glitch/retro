@@ -12,9 +12,8 @@
  * The Worker never trusts a total sent by a browser: it recomputes from the
  * stored revision with `priceQuote`.
  *
- * Imports are type-only (plus the policy JSON) so this bundles into the Worker.
+ * Imports are type-only so this bundles into the Worker.
  */
-import policy from "../content/quote-policy.json";
 import type { Quotation } from "./atlas/engine/types";
 
 export const COMPONENT_LABEL: Record<string, string> = {
@@ -30,8 +29,21 @@ export const COMPONENT_LABEL: Record<string, string> = {
   "city-tax": "City & tourism tax",
 };
 
-/** Same fixed shares the planner uses to fold contingency + margin into categories. */
-const MARKUP_ALLOCATION = policy.markup.contingencyMarginAllocation as Record<string, number>;
+/**
+ * Shares out the hidden contingency + agent margin across categories in
+ * proportion to each category's own cost, so no single row carries a
+ * disproportionate loading (a fixed split once piled ~55% of it onto
+ * Sightseeing transport, making that row look twice its real cost).
+ */
+export function allocateMarkup(base: ReadonlyMap<string, number>, hidden: number): Map<string, number> {
+  const total = [...base.values()].reduce((a, b) => a + (b > 0 ? b : 0), 0);
+  const out = new Map<string, number>();
+  if (total <= 0) return out;
+  for (const [component, amount] of base) {
+    if (amount > 0) out.set(component, hidden * (amount / total));
+  }
+  return out;
+}
 
 // ---------------------------------------------------------------------------
 // Adjustments
@@ -170,7 +182,7 @@ export type BreakdownRow = { key: string; label: string; amountInr: number };
 
 /**
  * The category breakdown a traveller sees. Contingency and agency margin are
- * folded into the categories at the policy's fixed shares and never shown on
+ * folded into the categories pro rata to their cost and never shown on
  * their own; the remainder (GST and fees) is its own row. Rows always sum to
  * `packageInr`, scaled proportionally when the package price has been pinned.
  */
@@ -183,13 +195,7 @@ export function componentBreakdown(quotation: Quotation, packageInr: number): Br
     base.set(item.component, (base.get(item.component) ?? 0) + item.totalInr);
   }
 
-  const share = new Map<string, number>();
-  const weightSum = Object.entries(MARKUP_ALLOCATION).reduce((s, [c, w]) => s + (base.get(c) ? w : 0), 0);
-  const baseSum = [...base.values()].reduce((a, b) => a + b, 0);
-  for (const component of base.keys()) {
-    const weight = weightSum > 0 ? (base.get(component) ? (MARKUP_ALLOCATION[component] ?? 0) / weightSum : 0) : base.get(component)! / (baseSum || 1);
-    share.set(component, hidden * weight);
-  }
+  const share = allocateMarkup(base, hidden);
 
   const raw = [...base.entries()]
     .map(([component, amount]) => ({ component, amount: amount + (share.get(component) ?? 0) }))

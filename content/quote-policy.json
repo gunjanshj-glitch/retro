@@ -68,14 +68,7 @@
     "lowSeasonMarkup": 0.1,
     "_contingencyMarginRangeComment": "Contingency + agent margin, combined, is clamped to this share of direct cost regardless of the regressive bands or luxury rate above.",
     "contingencyMarginRange": { "min": 0.1, "max": 0.15 },
-    "_contingencyMarginAllocationComment": "How the combined contingency + agent margin is folded into the traveller-facing totals for each category, rather than shown as its own line. Weights sum to 1 and are re-scaled across whichever of these categories are actually present in a given quote.",
-    "contingencyMarginAllocation": {
-      "flight": 0.1,
-      "airport-transfer": 0.025,
-      "hotel": 0.2,
-      "local-transport": 0.65,
-      "intercity-transport": 0.025
-    },
+    "_contingencyMarginAllocationComment": "Contingency + agent margin is folded into the traveller-facing categories in proportion to each category's cost; it is never shown as its own line.",
     "_gstComment": "GST is a flat rate on the post-margin subtotal. Payment gateway and FX fees are folded into it rather than itemised separately.",
     "salesVat": 0.05,
     "paymentGatewayFee": 0,

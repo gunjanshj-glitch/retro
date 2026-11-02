@@ -11,7 +11,7 @@ import type { TransportMode } from "@/lib/atlas/schema";
 import { formatDuration, formatInr } from "@/lib/atlas/engine/text";
 import policy from "@/content/quote-policy.json";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { COMPONENT_LABEL } from "@/lib/quote-pricing";
+import { allocateMarkup, COMPONENT_LABEL } from "@/lib/quote-pricing";
 import { SendForApprovalModal } from "./SendForApprovalModal";
 import { onAccent } from "./theme";
 
@@ -25,15 +25,6 @@ const modeLabel = (mode: string) => MODE_LABEL[mode as TransportMode] ?? mode.re
 /** The hard ceiling on sightseeing in any one day; shown so the traveller can
  *  see why an outing will not fit rather than just finding that it does not. */
 const maxSightseeingHours = policy.dayPlanning.maxSightseeingHoursPerDay;
-
-/**
- * Contingency and agent margin are never shown as their own line — they are
- * folded straight into the categories below, at these fixed shares, so the
- * traveller only ever sees what a category costs, not how the agency arrived
- * at it. Weights are re-scaled across whichever of these categories are
- * actually present in a given quote.
- */
-const MARKUP_ALLOCATION = policy.markup.contingencyMarginAllocation as Record<string, number>;
 
 /** Structural components kept visible even when they price to zero, so an
  *  absent cost (e.g. no tourist tax on this route) reads as "included, none
@@ -123,26 +114,14 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
   }, [quote, request]);
 
   // Contingency + agent margin are computed by the engine but never shown on
-  // their own — they are folded into the categories the policy assigns them
-  // to, scaled up across only the categories actually present in this quote.
+  // their own — they are folded into each category in proportion to its cost.
   const markupAllocation = useMemo(() => {
     const hiddenMarkup = quote.totals.contingency + quote.totals.agentMarkup;
     const baseByComponent = new Map<string, number>();
     for (const item of quote.lineItems) {
       baseByComponent.set(item.component, (baseByComponent.get(item.component) ?? 0) + item.totalInr);
     }
-    const presentWeightSum = Object.entries(MARKUP_ALLOCATION).reduce(
-      (sum, [component, weight]) => sum + (baseByComponent.get(component) ? weight : 0),
-      0,
-    );
-    const map = new Map<string, number>();
-    if (presentWeightSum > 0) {
-      for (const [component, weight] of Object.entries(MARKUP_ALLOCATION)) {
-        if (!baseByComponent.get(component)) continue;
-        map.set(component, hiddenMarkup * (weight / presentWeightSum));
-      }
-    }
-    return map;
+    return allocateMarkup(baseByComponent, hiddenMarkup);
   }, [quote]);
 
   // The flight fare is a same-day approximation, not a fixed price — this

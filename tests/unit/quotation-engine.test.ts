@@ -16,6 +16,7 @@ import {
   hotelStarForStyle,
   isHotelStarAvailable,
 } from "@/lib/atlas/engine/bounds";
+import { componentBreakdown } from "@/lib/quote-pricing";
 import policy from "@/content/quote-policy.json";
 
 const DIR = path.join("public", "atlas");
@@ -1554,5 +1555,17 @@ describe("admin switching off individual price lines", () => {
     const q = quote({ placeIds: places, nights: 11 });
     const keys = q.lineItems.map((l) => l.key);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe("margin allocation across traveller-facing categories", () => {
+  it("loads margin pro rata, so Sightseeing transport is not inflated beyond the quote-wide markup", () => {
+    const q = quote({ placeIds: ["jaipur", "jodhpur", "jaisalmer", "bikaner"], nights: 11 });
+    const rows = componentBreakdown(q, q.totals.total);
+    const row = rows.find((r) => r.key === "local-transport")!;
+    const base = q.lineItems.filter((l) => l.component === "local-transport").reduce((a, l) => a + l.totalInr, 0);
+    const wholeQuoteLoading = (q.totals.total - q.totals.directCost) / q.totals.directCost;
+    // The row may exceed base by the quote-wide loading, not by double it.
+    expect(row.amountInr / base).toBeLessThan(1 + wholeQuoteLoading + 0.02);
   });
 });
