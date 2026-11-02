@@ -146,6 +146,31 @@ export type TransferAlternative = {
   car?: CarEstimate;
 };
 
+/**
+ * The ground link at either end of a flight: Interlaken has no airport, so
+ * flying there means landing at Zurich and travelling on. Not part of the
+ * trip's itinerary, but part of the journey — and priced, with its own mode
+ * choice (train, bus, private car…).
+ */
+export type AirportLink = {
+  /** Stable key, also the `legModes` key used to pin this link's mode. */
+  key: string;
+  direction: "to-airport" | "from-airport";
+  from: string;
+  to: string;
+  airportIata: string;
+  airportName: string;
+  distanceKm: number;
+  mode: TransportMode;
+  minutes: number;
+  /** Per person, before calibration and markup. */
+  priceInr: number;
+  estimated: boolean;
+  alternatives: TransferAlternative[];
+  userChosen: boolean;
+  car?: CarEstimate;
+};
+
 export type TransferLeg = {
   from: string;
   to: string;
@@ -173,6 +198,8 @@ export type TransferLeg = {
   userChosen: boolean;
   /** Set when this leg is a chauffeur-driven private car (priced per vehicle). */
   car?: CarEstimate;
+  /** Ground links to and from the airports, when this leg is a flight. */
+  airportLinks?: AirportLink[];
 };
 
 export type PlannedDay = {

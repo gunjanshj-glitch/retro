@@ -8,7 +8,7 @@
  */
 import type { Cluster, DestinationBundle, PurposeActivity, TransportMode, TripStyle } from "../schema";
 import policy from "../../../content/quote-policy.json";
-import type { PlaceStay, PlannedActivity, PlannedDay, TransferLeg, TransportPreference } from "./types";
+import type { AirportLink, PlaceStay, PlannedActivity, PlannedDay, TransferLeg, TransportPreference } from "./types";
 import type { RouteLookup } from "./itinerary";
 import { formatDuration } from "./text";
 
@@ -303,6 +303,50 @@ export function planDays(input: DayPlanInput): DayPlanResult {
         userChosen: Boolean(pinned && hop && hop.mode === pinned),
         car: hop?.car,
       };
+    }
+
+    // A flight lands at an airport, not at the hotel. Attach the ground link at
+    // each end — place -> its airport, airport -> the arrival place — each with
+    // its own mode choice, so a destination without an airport of its own
+    // (Interlaken is served by Zurich) is never left with a missing leg.
+    if (!isFirst && transfer?.mode === "flight") {
+      const previous = stays[stayIndex - 1];
+      const out = routes.airportAccess(previous.placeId, transportPreference, group.paxTotal);
+      const inn = routes.airportAccess(stay.placeId, transportPreference, group.paxTotal);
+      const links: AirportLink[] = [];
+      const build = (
+        key: string,
+        direction: AirportLink["direction"],
+        access: NonNullable<typeof out>,
+        placeName: string,
+      ) => {
+        const pinned = legModes[key];
+        const hop = (pinned && access.options.find((c) => c.mode === pinned)) ?? access.options[0];
+        links.push({
+          key,
+          direction,
+          from: direction === "to-airport" ? placeName : access.name,
+          to: direction === "to-airport" ? access.name : placeName,
+          airportIata: access.iata,
+          airportName: access.name,
+          distanceKm: access.distanceKm,
+          mode: hop.mode,
+          minutes: hop.minutes,
+          priceInr: Math.round(hop.priceInr),
+          estimated: hop.estimated,
+          alternatives: access.options.map((c) => ({
+            mode: c.mode, minutes: c.minutes, priceInr: Math.round(c.priceInr), estimated: c.estimated, car: c.car,
+          })),
+          userChosen: Boolean(pinned && hop.mode === pinned),
+          car: hop.car,
+        });
+      };
+      // Same airport at both ends means there is no flight to take.
+      if (!(out && inn && out.iata === inn.iata)) {
+        if (out) build(`air-out:${stay.placeId}`, "to-airport", out, previous.placeName);
+        if (inn) build(`air-in:${stay.placeId}`, "from-airport", inn, stay.placeName);
+      }
+      if (links.length) transfer = { ...transfer, airportLinks: links };
     }
 
     // Days spent at this place. The final stay gets one extra day for departure.

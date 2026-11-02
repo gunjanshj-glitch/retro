@@ -269,6 +269,25 @@ function overlapReason(
   return null;
 }
 
+
+/**
+ * A "container" place is a whole country (France, Germany…) that exists in the
+ * catalogue only as the parent of its cities. Nobody travels to "Germany" — they
+ * go to Munich or Hamburg, and the nights, hotel, transfers and legs all depend
+ * on which one — so a container can never be picked as a destination.
+ */
+export function containerPlaceIds(core: Pick<CoreBundle, "places">): Set<string> {
+  const ids = new Set<string>();
+  const parents = new Set<string>();
+  for (const p of core.places) if (p.parentPlaceId) parents.add(p.parentPlaceId);
+  for (const p of core.places) if (parents.has(p.id)) ids.add(p.id);
+  return ids;
+}
+
+export function containerReason(name: string): string {
+  return `${name} is a whole country — zoom in and pick a city in it`;
+}
+
 /** Every place the traveller could still add, factoring in all three caps
  *  plus the pairwise compatibility graph — computed once per render so both
  *  pickers can look up a single place's status in O(1). */
@@ -290,8 +309,16 @@ export function evaluatePlaceSelectability(
 ): Map<string, PlaceSelectability> {
   const result = new Map<string, PlaceSelectability>();
   for (const id of selectedPlaceIds) result.set(id, { allowed: true, reason: null });
+  // Whole countries are never offered; one already in a saved or package-built
+  // selection stays removable (it is in `selectedPlaceIds`, so allowed above).
+  const containers = containerPlaceIds(core);
   if (!selectedPlaceIds.length) {
-    for (const p of core.places) result.set(p.id, { allowed: true, reason: null });
+    for (const p of core.places) {
+      result.set(
+        p.id,
+        containers.has(p.id) ? { allowed: false, reason: containerReason(p.name) } : { allowed: true, reason: null },
+      );
+    }
     return result;
   }
 
@@ -321,7 +348,7 @@ export function evaluatePlaceSelectability(
 
     const overlap = overlapReason(core, selectedPlaceIds, p.id);
     if (overlap) {
-      result.set(p.id, { allowed: false, reason: overlap });
+      result.set(p.id, { allowed: false, reason: containers.has(p.id) ? containerReason(p.name) : overlap });
       continue;
     }
     if (atPlaceCap) {
@@ -344,7 +371,10 @@ export function evaluatePlaceSelectability(
       result.set(p.id, { allowed: false, reason: "Not realistically combinable with your other destinations" });
       continue;
     }
-    result.set(p.id, { allowed: true, reason: null });
+    result.set(
+      p.id,
+      containers.has(p.id) ? { allowed: false, reason: containerReason(p.name) } : { allowed: true, reason: null },
+    );
   }
   return result;
 }

@@ -114,8 +114,9 @@ function priceOneVehicle(
   drivingDays: number,
   fuelInrPerLitre: number,
   costFactor: number,
+  minBillableKm: number,
 ) {
-  const billableKm = Math.max(roadKm, MIN_BILLABLE_KM);
+  const billableKm = Math.max(roadKm, minBillableKm);
   const fuelInr = (billableKm / cls.kmPerLitre) * fuelInrPerLitre;
   const vehicleInr = billableKm * cls.vehicleInrPerKm * costFactor;
   const tollsInr = billableKm * cls.tollInrPerKm * costFactor;
@@ -128,7 +129,13 @@ function priceOneVehicle(
  * Prices a chauffeur-driven private car for `pax` travellers over a straight-line
  * distance. Returns the cheapest vehicle class (and count) that seats the group.
  */
-export function estimateCarTrip(straightLineKm: number, pax: number, regionId = ""): CarEstimate {
+export function estimateCarTrip(
+  straightLineKm: number,
+  pax: number,
+  regionId = "",
+  /** Operators' billing floor; a metered airport taxi has a far lower one. */
+  minBillableKm = MIN_BILLABLE_KM,
+): CarEstimate {
   const travellers = Math.max(1, Math.round(pax));
   const roadKm = roadKmFor(straightLineKm);
   const driveHours = driveMinutesFor(straightLineKm) / 60;
@@ -142,7 +149,7 @@ export function estimateCarTrip(straightLineKm: number, pax: number, regionId = 
     // Do not fill a 26-seater for a couple: only consider a class once the group
     // would not fit in the next size down by more than a seat's worth of slack.
     if (vehicles === 1 && cls.seats >= 2 * travellers + 4) continue;
-    const one = priceOneVehicle(cls, roadKm, drivingDays, fuel, factor);
+    const one = priceOneVehicle(cls, roadKm, drivingDays, fuel, factor, minBillableKm);
     const totalInr = Math.round(one.total * vehicles);
     if (!best || totalInr < best.totalInr) {
       best = {
@@ -166,12 +173,12 @@ export function estimateCarTrip(straightLineKm: number, pax: number, regionId = 
     }
   }
   // Unreachable (the smallest class always qualifies), but keeps the type honest.
-  return best ?? estimateFallback(roadKm, travellers);
+  return best ?? estimateFallback(roadKm, travellers, minBillableKm);
 }
 
-function estimateFallback(roadKm: number, travellers: number): CarEstimate {
+function estimateFallback(roadKm: number, travellers: number, minBillableKm: number): CarEstimate {
   const cls = CAR_CLASSES[0];
-  const one = priceOneVehicle(cls, roadKm, 1, DEFAULT_FUEL_INR_PER_LITRE, DEFAULT_ROAD_COST_FACTOR);
+  const one = priceOneVehicle(cls, roadKm, 1, DEFAULT_FUEL_INR_PER_LITRE, DEFAULT_ROAD_COST_FACTOR, minBillableKm);
   const vehicles = Math.max(1, Math.ceil(travellers / cls.seats));
   const totalInr = Math.round(one.total * vehicles);
   return {

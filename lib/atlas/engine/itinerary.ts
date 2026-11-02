@@ -273,6 +273,20 @@ export type RouteLookup = {
   best(originId: string, destId: string, preference?: TransportPreference, travellers?: number): RouteHit | null;
   /** Great-circle distance between two places, when both are located. */
   distanceKm(originId: string, destId: string): number | null;
+  /**
+   * The airport that serves a place and the ways to cover the ground between
+   * the two, best-first. Null when the place has no airport on record or sits
+   * right at it (nothing worth showing).
+   */
+  airportAccess(placeId: string, preference?: TransportPreference, travellers?: number): AirportAccess | null;
+};
+
+export type AirportAccess = {
+  iata: string;
+  name: string;
+  distanceKm: number;
+  /** Ground options between the place and its airport (same either direction). */
+  options: RouteHit[];
 };
 
 /**
@@ -398,6 +412,7 @@ export function buildRouteLookup(
   routes: Route[],
   places?: CoreBundle["places"],
   countries?: CoreBundle["countries"],
+  airports: CoreBundle["placeAirports"] = {},
 ): RouteLookup {
   const byPlacePair = new Map<string, Route[]>();
   const byCountryPair = new Map<string, Route[]>();
@@ -754,7 +769,59 @@ export function buildRouteLookup(
   /** Group size assumed when a caller (e.g. the visiting-order search) has none. */
   const DEFAULT_TRAVELLERS = 2;
 
+
+  /** Below this the airport is effectively in town; no separate link is shown. */
+  const AIRPORT_AT_PLACE_KM = 5;
+
+  const airportAccess = (
+    placeId: string,
+    preference: TransportPreference,
+    travellers: number,
+  ): AirportAccess | null => {
+    const airport = airports[placeId];
+    const point = pointOfPlace.get(placeId);
+    if (!airport || !point) return null;
+    const km = haversineKm(point, airport);
+    if (!Number.isFinite(km) || km < AIRPORT_AT_PLACE_KM) return null;
+    const distanceKm = Math.round(km);
+
+    const country = countryOfPlace.get(placeId);
+    const regionId = country ? (regionOfCountry.get(country) ?? "") : "";
+    // An island place is reached from its airport by water unless it is close.
+    const onIsland = islandOfPlace.has(placeId);
+    const modes: TransportMode[] = ["private_vehicle"];
+    if (onIsland && distanceKm > 25) {
+      modes.length = 0;
+      modes.push("ferry");
+    } else {
+      if (distanceKm < 40) modes.push("shared_vehicle");
+      if (distanceKm >= 8 && distanceKm <= 300) modes.push("bus");
+      if (distanceKm >= 20 && distanceKm <= 300) modes.push("train");
+    }
+
+    const options = modes.map((mode): RouteHit => {
+      if (mode === "private_vehicle") {
+        // A metered airport taxi, not an outstation hire: low billing floor.
+        const car = estimateCarTrip(km, travellers, regionId, 20);
+        return {
+          route: null, mode, minutes: driveMinutesFor(km), priceInr: car.perPersonInr,
+          estimated: true, distanceKm, onsiteMode: null, car,
+        };
+      }
+      return {
+        route: null, mode,
+        minutes: deriveDurationMinutes(mode, km, regionId),
+        priceInr: deriveFareInr(mode, km, regionId),
+        estimated: true, distanceKm, onsiteMode: null,
+      };
+    });
+    options.sort((x, y) => scoreOf(x, preference) - scoreOf(y, preference));
+    return { iata: airport.iata, name: airport.name, distanceKm, options };
+  };
+
   return {
+    airportAccess: (placeId, preference = DEFAULT_TRANSPORT_PREFERENCE, travellers = DEFAULT_TRAVELLERS) =>
+      airportAccess(placeId, preference, travellers),
     options: (originId, destId, preference = DEFAULT_TRANSPORT_PREFERENCE, travellers = DEFAULT_TRAVELLERS) =>
       optionsFor(originId, destId, preference, travellers),
     best: (originId, destId, preference = DEFAULT_TRANSPORT_PREFERENCE, travellers = DEFAULT_TRAVELLERS) =>

@@ -555,6 +555,19 @@ export function priceQuotation(input: PricingInput): {
     push("intercity-transport", `${leg.from} to ${leg.to}`,
       `${mode}${onsite}${time}${distance}`,
       pax.total, "person", leg.priceInr, true, leg.estimated ? "estimated" : "workbook", day.placeId);
+
+    // The ground link at each end of a flight (e.g. Zurich Airport -> Interlaken).
+    for (const link of leg.airportLinks ?? []) {
+      const linkMode = link.mode.replace(/_/g, " ");
+      const detail = `${link.car ? `private car — ${link.car.className}` : linkMode} · ${formatDuration(link.minutes)} · ${link.distanceKm} km`;
+      if (link.car) {
+        push("intercity-transport", `${link.from} to ${link.to}`, detail,
+          link.car.vehicles, "vehicle", link.car.perVehicleInr, true, "estimated", day.placeId);
+      } else {
+        push("intercity-transport", `${link.from} to ${link.to}`, detail,
+          pax.total, "person", link.priceInr, true, "estimated", day.placeId);
+      }
+    }
   }
 
   // --- sightseeing ----------------------------------------------------------

@@ -584,6 +584,23 @@ export const CoreBundle = z.object({
    * the traveller ever reaches a broken quote.
    */
   countryCompatibility: z.record(z.string(), z.array(z.string())),
+  /**
+   * The airport that serves each place — the one a traveller flying there
+   * actually lands at (Interlaken -> Zurich). Taken from the destination's own
+   * primary airport, else the nearest sizeable airport within reach.
+   */
+  placeAirports: z
+    .record(
+      z.string(),
+      z.object({
+        iata: z.string(),
+        name: z.string(),
+        lat: z.number(),
+        lon: z.number(),
+        source: z.enum(["primary", "nearest"]),
+      }),
+    )
+    .default({}),
   /** Min/ideal/max nights + cost level for every place, for allocation. */
   placeSummaries: z.array(
     z.object({

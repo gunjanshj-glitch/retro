@@ -403,6 +403,77 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                     </p>
                   )}
 
+                  {leg.airportLinks && leg.airportLinks.length > 0 && (
+                    <div className="mt-3 flex flex-col gap-3 border-t pt-3" style={{ borderColor: "var(--hairline)" }}>
+                      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--muted)" }}>
+                        Getting to and from the airports
+                      </p>
+                      {leg.airportLinks.map((link) => {
+                        const chosenLink = link.alternatives.find((a) => a.mode === link.mode);
+                        return (
+                          <div key={link.key}>
+                            <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                              <span>
+                                {link.from} → {link.to}
+                              </span>
+                              <span className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
+                                {link.distanceKm} km · {link.airportIata}
+                              </span>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label={`Transport from ${link.from} to ${link.to}`}>
+                              {link.alternatives.map((alt) => {
+                                const isChosen = alt.mode === link.mode;
+                                const deltaInr = chosenLink ? alt.priceInr - chosenLink.priceInr : 0;
+                                return (
+                                  <button
+                                    key={alt.mode}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={isChosen}
+                                    onClick={() => setLegMode(link.key, alt.mode)}
+                                    className="rounded-xl border px-3 py-2 text-left text-sm transition"
+                                    style={
+                                      isChosen
+                                        ? { borderColor: "var(--accent)", background: "color-mix(in srgb, var(--accent) 14%, transparent)" }
+                                        : { borderColor: "var(--hairline)" }
+                                    }
+                                  >
+                                    <div className="font-medium capitalize">
+                                      {modeLabel(alt.mode)}
+                                      {isChosen && (
+                                        <span className="ml-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--accent)" }}>
+                                          {link.userChosen ? "your pick" : "suggested"}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
+                                      {formatInr(alt.priceInr)} pp · {formatDuration(alt.minutes)}
+                                    </div>
+                                    {alt.car && (
+                                      <div className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
+                                        {formatInr(alt.car.totalInr)} total · {alt.car.vehicles > 1 ? `${alt.car.vehicles} × ` : ""}
+                                        {alt.car.className.split(" (")[0]}
+                                      </div>
+                                    )}
+                                    {!isChosen && deltaInr !== 0 && (
+                                      <div className="text-xs tabular-nums" style={{ color: "var(--accent)" }}>
+                                        {deltaInr > 0 ? "+" : "−"}
+                                        {formatInr(Math.abs(deltaInr))}
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      <p className="text-xs" style={{ color: "var(--muted)" }}>
+                        These links sit outside your itinerary but are part of the journey, so they are included in the total.
+                      </p>
+                    </div>
+                  )}
+
                   {leg.car && (
                     <p className="mt-3 rounded-lg px-3 py-2 text-xs leading-relaxed" style={{ background: "var(--surface)", color: "var(--muted)" }}>
                       Chauffeur-driven {leg.car.vehicles > 1 ? `${leg.car.vehicles} × ` : ""}

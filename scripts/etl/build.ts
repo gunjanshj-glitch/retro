@@ -27,7 +27,7 @@ import {
   type Estimate,
 } from "./estimate";
 import { DEPARTURE_CITIES, deriveFlightBands, fetchLiveFlights } from "./enrich";
-import { fetchAirports, parseAirports } from "./vendor-airports";
+import { fetchAirports, haversineKm, parseAirports } from "./vendor-airports";
 import { buildVisaRules, fetchVisaMatrix, SUPPORTED_NATIONALITIES } from "./vendor-visa";
 import { emitSchemaSql, emitSeedSql } from "./emit-sql";
 import { writeWorkbook, type SheetSpec } from "./xlsx-write";
@@ -164,6 +164,34 @@ async function main() {
         ? `; ${placeCoords.pendingGeocode} awaiting a --geocode pass`
         : ""),
   );
+
+  // The airport each place is actually reached through. Flight legs land
+  // there, so the road/rail link from that airport to the place is a real part
+  // of the journey (Interlaken's airport is Zurich, 130 km away).
+  const placeAirports: CoreBundle["placeAirports"] = {};
+  const NEAREST_AIRPORT_MAX_KM = 250;
+  for (const place of geo.places) {
+    const primary = airportsByPlace.get(place.id)?.[0];
+    const own = primary ? airports.get(primary) : undefined;
+    if (own) {
+      placeAirports[place.id] = { iata: own.iata, name: own.name, lat: own.lat, lon: own.lon, source: "primary" };
+      continue;
+    }
+    const point = placeCoords.points.get(place.id);
+    if (!point) continue;
+    let best: { a: ReturnType<typeof airports.get>; km: number } | null = null;
+    for (const a of airports.values()) {
+      if (a.size === "small") continue;
+      const km = haversineKm(point, a);
+      if (km <= NEAREST_AIRPORT_MAX_KM && (!best || km < best.km)) best = { a, km };
+    }
+    if (best?.a) {
+      placeAirports[place.id] = {
+        iata: best.a.iata, name: best.a.name, lat: best.a.lat, lon: best.a.lon, source: "nearest",
+      };
+    }
+  }
+  console.log(`  airports    ${Object.keys(placeAirports).length}/${geo.places.length} places have a serving airport`);
 
   // The source data prices most legs but times almost none of them, which
   // made every mode look the same length and handed 84% of routes to a bus.
@@ -331,6 +359,7 @@ async function main() {
       };
     }),
     countryCompatibility,
+    placeAirports,
     placeSummaries,
   };
   CoreBundle.parse(core);

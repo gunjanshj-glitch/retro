@@ -177,7 +177,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   }
 
   // --- 1-2. allocate and sequence ------------------------------------------
-  const routeLookup = buildRouteLookup(data.routes, core.places, core.countries);
+  const routeLookup = buildRouteLookup(data.routes, core.places, core.countries, core.placeAirports);
 
   // The order places are visited in depends on where the traveller enters and
   // leaves the trip, not just on the hops between them.

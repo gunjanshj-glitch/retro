@@ -1465,3 +1465,59 @@ describe("private car on Indian legs", () => {
     expect(line.quantity).toBe(got.car!.vehicles);
   });
 });
+
+describe("whole countries are not destinations", () => {
+  it("never offers a whole country, only its cities", () => {
+    const empty = evaluatePlaceSelectability(core, []);
+    for (const id of ["germany", "france", "switzerland", "spain"]) {
+      expect(empty.get(id)?.allowed).toBe(false);
+      expect(empty.get(id)?.reason).toMatch(/pick a city/);
+    }
+    expect(empty.get("munich")?.allowed).toBe(true);
+  });
+
+  it("keeps the country disabled while a city is chosen, and a pre-selected one removable", () => {
+    expect(evaluatePlaceSelectability(core, ["munich"]).get("germany")?.allowed).toBe(false);
+    expect(evaluatePlaceSelectability(core, ["germany"]).get("germany")?.allowed).toBe(true);
+  });
+});
+
+describe("airport links on flight legs", () => {
+  const placeIds = ["munich", "interlaken"];
+
+  it("adds the missing ground link between the landing airport and the city", () => {
+    const base = quote({ placeIds, nights: 6, legModes: { interlaken: "flight" } });
+    const leg = base.days.find((d) => d.isTransferDay && d.placeId === "interlaken")!.transfer!;
+    expect(leg.mode).toBe("flight");
+    const inbound = leg.airportLinks?.find((l) => l.direction === "from-airport");
+    expect(inbound).toBeDefined();
+    expect(inbound!.airportIata).toBe("ZRH");
+    expect(inbound!.to).toBe("Interlaken");
+    expect(inbound!.distanceKm).toBeGreaterThan(80);
+    // Several ways to make it, with a suggested one.
+    const modes = inbound!.alternatives.map((a) => a.mode);
+    expect(modes).toContain("train");
+    expect(modes).toContain("private_vehicle");
+    expect(modes).toContain(inbound!.mode);
+    // And it is priced.
+    expect(base.lineItems.some((i) => /Z(ü|u)rich Airport to Interlaken/.test(i.label))).toBe(true);
+  });
+
+  it("lets the traveller pin the link's mode", () => {
+    const base = quote({ placeIds, nights: 6, legModes: { interlaken: "flight" } });
+    const link = base.days.find((d) => d.placeId === "interlaken" && d.transfer?.airportLinks)!
+      .transfer!.airportLinks!.find((l) => l.direction === "from-airport")!;
+    const other = link.alternatives.find((a) => a.mode !== link.mode)!;
+    const pinned = quote({ placeIds, nights: 6, legModes: { interlaken: "flight", [link.key]: other.mode } });
+    const got = pinned.days.find((d) => d.placeId === "interlaken" && d.transfer?.airportLinks)!
+      .transfer!.airportLinks!.find((l) => l.key === link.key)!;
+    expect(got.mode).toBe(other.mode);
+    expect(got.userChosen).toBe(true);
+  });
+
+  it("adds no airport links to a train leg", () => {
+    const q = quote({ placeIds, nights: 6, legModes: { interlaken: "train" } });
+    const leg = q.days.find((d) => d.isTransferDay && d.placeId === "interlaken")!.transfer!;
+    expect(leg.airportLinks).toBeUndefined();
+  });
+});
