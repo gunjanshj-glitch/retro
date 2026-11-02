@@ -33,7 +33,7 @@ function quote(ids: string[], nights: number) {
       hotelStar: "4 Star", hotelZone: "Central", carrier: "FSC", cabin: "Economy", mealPlan: "breakfast",
       food: "no-preference", pace: "balanced", includeVisa: true, includeInsurance: false, includeFlight: true,
       interests: [], firstTimeVisitor: true, transportPreference: "balanced", legModes: {},
-      excludedActivityCodes: [], excludedClusterIds: [], addedActivityCodes: [], pinnedClusterIds: [], nightOverrides: {},
+      excludedActivityCodes: [], excludedClusterIds: [], excludedLineKeys: [], addedActivityCodes: [], pinnedClusterIds: [], nightOverrides: {},
     },
     { core, routes, visaRules, bundles },
   );

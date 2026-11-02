@@ -103,6 +103,11 @@ export const QuoteRequest = z.object({
   /** Traveller adjustments made on the quotation page. */
   excludedActivityCodes: z.array(z.string()).default([]),
   excludedClusterIds: z.array(z.string()).default([]),
+  /**
+   * Individual price lines an admin has switched off in the quote editor (see
+   * `LineItem.key`). The trip itself is unchanged; the charge is just not billed.
+   */
+  excludedLineKeys: z.array(z.string()).default([]),
   addedActivityCodes: z.array(z.string()).default([]),
   /**
    * Clusters the traveller explicitly asked to include from the "you could
@@ -250,6 +255,8 @@ export const CostComponent = z.enum([
 export type CostComponent = z.infer<typeof CostComponent>;
 
 export type LineItem = {
+  /** Stable id for this charge (component + label), so an admin can switch it off and on. */
+  key: string;
   component: CostComponent;
   label: string;
   detail: string;
@@ -295,6 +302,8 @@ export type Quotation = {
   stays: PlaceStay[];
   days: PlannedDay[];
   lineItems: LineItem[];
+  /** Lines an admin switched off. Not in `lineItems` or any total; kept so they can be switched back on. */
+  excludedLineItems?: LineItem[];
   totals: QuoteTotals;
   /** Head counts after applying the child age bands. */
   pax: { adults: number; children: number; infants: number; total: number; rooms: number };

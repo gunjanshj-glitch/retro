@@ -362,7 +362,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   // --- 4. price -------------------------------------------------------------
   const referencePackage = matchReferencePackage(placeIds, core.packages);
   const pax = resolvePax(request.adults, request.childAges, request.rooms);
-  const { lineItems, totals } = priceQuotation({
+  const { lineItems, excludedLineItems, totals } = priceQuotation({
     request,
     pax,
     stays,
@@ -500,6 +500,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     stays,
     days: plan.days,
     lineItems,
+    excludedLineItems,
     totals,
     pax: {
       adults: pax.adults, children: pax.children, infants: pax.infants,

@@ -279,10 +279,15 @@ function buildRegionalTransferFallback(
 
 export function priceQuotation(input: PricingInput): {
   lineItems: LineItem[];
+  excludedLineItems: LineItem[];
   totals: QuoteTotals;
 } {
   const { request, pax, stays, days, core, summaries, visaRules, liveRates, activityPrices } = input;
   const items: LineItem[] = [];
+  // Lines an admin switched off: priced as usual but kept out of every total.
+  const skipped: LineItem[] = [];
+  const keyCount = new Map<string, number>();
+  const switchedOff = new Set(request.excludedLineKeys);
 
   const hotels = index<HotelRate>(core.hotelRates);
   const transfers = index<TransferRate>(core.transferRates);
@@ -360,12 +365,18 @@ export function priceQuotation(input: PricingInput): {
     // whatever priced it.
     const calibrated = unitPriceInr * calibrationFactor(component, scope);
     if (quantity <= 0 || calibrated <= 0) return;
-    items.push({
-      component, label, detail, quantity, unit,
+    // Same label twice (rare) gets a counter so each line has its own switch.
+    const base = `${component}|${label}`;
+    const seen = (keyCount.get(base) ?? 0) + 1;
+    keyCount.set(base, seen);
+    const key = seen === 1 ? base : `${base}#${seen}`;
+    const line: LineItem = {
+      key, component, label, detail, quantity, unit,
       unitPriceInr: Math.round(calibrated),
       totalInr: Math.round(quantity * calibrated),
       locked, source, placeId,
-    });
+    };
+    (switchedOff.has(key) ? skipped : items).push(line);
   };
 
   // --- hotel ---------------------------------------------------------------
@@ -663,6 +674,7 @@ export function priceQuotation(input: PricingInput): {
 
   return {
     lineItems: items,
+    excludedLineItems: skipped,
     totals: {
       directCost: Math.round(directCost),
       contingency: Math.round(contingency),

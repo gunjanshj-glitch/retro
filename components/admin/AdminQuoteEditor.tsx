@@ -25,6 +25,7 @@ import { adminSaveDraft, adminSendTripQuote, type AdminRequestDetail } from "@/l
 import { buildPublicQuote, emptyAdjustments, priceQuote, type QuoteAdjustments } from "@/lib/quote-pricing";
 import type { RequestStatus } from "@/lib/quote-workflow";
 import { PricingPanel } from "./PricingPanel";
+import { PriceSplitPanel } from "./PriceSplitPanel";
 
 const primaryBtn = "inline-flex min-h-11 items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold transition disabled:opacity-50";
 const ghostBtn = "inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2.5 text-sm transition hover:border-[var(--accent)] disabled:opacity-50";
@@ -249,7 +250,11 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         )}
       </Section>
 
-      <Section title="4 · Pricing & terms" hint="Fixed price, discounts, optional extras, deposit, validity" open>
+      <Section title="4 · Price split" hint="Every charge behind each category; untick to remove (admin only)" open>
+        {quote ? <PriceSplitPanel quote={quote} onChange={editRequest} /> : <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>}
+      </Section>
+
+      <Section title="5 · Pricing & terms" hint="Fixed price, discounts, optional extras, deposit, validity" open>
         <PricingPanel
           engineTotalInr={quote?.totals.total ?? 0}
           adjustments={adjustments}
@@ -267,7 +272,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         />
       </Section>
 
-      <Section title="5 · Preview as the traveller will see it" hint="Exactly what the quote page will show">
+      <Section title="6 · Preview as the traveller will see it" hint="Exactly what the quote page will show">
         {publicPreview ? <QuoteOffer quote={publicPreview} selected={[]} version={undefined} /> : <p style={{ color: "var(--muted)" }}>Nothing to preview yet.</p>}
       </Section>
 

@@ -53,6 +53,7 @@ function defaultRequest(): QuoteRequest {
     legModes: {},
     excludedActivityCodes: [],
     excludedClusterIds: [],
+    excludedLineKeys: [],
     addedActivityCodes: [],
     pinnedClusterIds: [],
     nightOverrides: {},

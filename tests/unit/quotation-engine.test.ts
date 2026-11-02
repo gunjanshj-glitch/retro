@@ -1535,3 +1535,24 @@ describe("airport transfers on a multi-city domestic trip", () => {
     for (const t of transfers) expect(t.totalInr).toBeLessThan(3000);
   });
 });
+
+describe("admin switching off individual price lines", () => {
+  const places = ["jaipur", "bikaner", "jodhpur", "jaisalmer"];
+  it("drops a switched-off line from the totals but keeps it listed so it can come back", () => {
+    const full = quote({ placeIds: places, nights: 11 });
+    const target = full.lineItems.find((l) => l.component === "airport-transfer")!;
+    expect(target.key).toBe("airport-transfer|Airport to hotel — Jaipur");
+
+    const cut = quote({ placeIds: places, nights: 11, excludedLineKeys: [target.key] });
+    expect(cut.lineItems.some((l) => l.key === target.key)).toBe(false);
+    expect(cut.excludedLineItems?.map((l) => l.key)).toEqual([target.key]);
+    expect(cut.totals.directCost).toBe(full.totals.directCost - target.totalInr);
+    expect(cut.totals.total).toBeLessThan(full.totals.total);
+  });
+
+  it("gives every line a unique key", () => {
+    const q = quote({ placeIds: places, nights: 11 });
+    const keys = q.lineItems.map((l) => l.key);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+});
