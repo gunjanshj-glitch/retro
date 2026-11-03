@@ -20,6 +20,7 @@
 import type { Env } from "./http";
 import { corsHeaders, json, notFound } from "./http";
 import { withIdempotency } from "./idempotency";
+import { handleAppConfig } from "./app-config";
 import { handleLiveRates } from "./live-rates";
 import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
@@ -35,11 +36,14 @@ import {
   handleGetRequest,
   handleListRequests,
   handleRequestChanges,
+  handleTravellerMessage,
 } from "./requests";
 import { handleCreatePayment, handleRazorpayWebhook, handleVerifyPayment } from "./payments";
 import {
   handleAdminClose,
   handleAdminGetRequest,
+  handleAdminListEnquiries,
+  handleAdminMessage,
   handleAdminListRequests,
   handleAdminNote,
   handleAdminSaveDraft,
@@ -62,6 +66,8 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
       time: new Date().toISOString(),
     });
   }
+
+  if (path === "/app-config" && method === "GET") return handleAppConfig(request, env);
 
   if (path === "/live-rates" && method === "GET") {
     return handleLiveRates(request, env, ctx);
@@ -111,8 +117,9 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   if (adminQuote && method === "POST") return handleAdminQuote(adminQuote[1], adminQuote[2] as "quote" | "close", request, env);
 
   // ---- admin (trip quote requests: review, edit, send) ----
+  if (path === "/admin/enquiries" && method === "GET") return handleAdminListEnquiries(request, env);
   if (path === "/admin/requests" && method === "GET") return handleAdminListRequests(request, env);
-  const adminRequest = /^\/admin\/requests\/([A-Za-z0-9-]{1,64})(?:\/(review|draft|send|note|close))?$/.exec(path);
+  const adminRequest = /^\/admin\/requests\/([A-Za-z0-9-]{1,64})(?:\/(review|draft|send|note|close|messages))?$/.exec(path);
   if (adminRequest) {
     const [, id, action] = adminRequest;
     if (!action && method === "GET") return handleAdminGetRequest(id, request, env);
@@ -122,19 +129,21 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
       if (action === "send") return handleAdminSendQuote(id, request, env, ctx);
       if (action === "note") return handleAdminNote(id, request, env);
       if (action === "close") return handleAdminClose(id, request, env, ctx);
+      if (action === "messages") return handleAdminMessage(id, request, env, ctx);
     }
   }
 
   // ---- the traveller's decisions on a sent quote, and payment ----
   const requestMatch = /^\/requests\/([A-Za-z0-9-]{1,64})$/.exec(path);
   if (requestMatch && method === "GET") return handleGetRequest(requestMatch[1], request, env);
-  const requestAction = /^\/requests\/([A-Za-z0-9-]{1,64})\/(accept|changes|decline|cancel|pay|pay\/verify)$/.exec(path);
+  const requestAction = /^\/requests\/([A-Za-z0-9-]{1,64})\/(accept|changes|decline|cancel|pay|pay\/verify|messages)$/.exec(path);
   if (requestAction && method === "POST") {
     const [, id, action] = requestAction;
     if (action === "accept") return handleAcceptQuote(id, request, env, ctx);
     if (action === "changes") return handleRequestChanges(id, request, env, ctx);
     if (action === "decline") return handleDeclineQuote(id, request, env, ctx);
     if (action === "cancel") return handleCancelRequest(id, request, env, ctx);
+    if (action === "messages") return handleTravellerMessage(id, request, env, ctx);
     if (action === "pay") return handleCreatePayment(id, request, env);
     if (action === "pay/verify") return handleVerifyPayment(id, request, env, ctx);
   }

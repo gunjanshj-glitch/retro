@@ -438,3 +438,36 @@ export async function handleCancelRequest(id: string, request: Request, env: Env
   if (!ctx) await agency;
   return json({ ok: true, status: "cancelled" });
 }
+
+/**
+ * A free-form line from the traveller to the agency (B10). It changes nothing
+ * about the quote: no status move, so it can never accidentally decline or
+ * accept anything. It is how a question is asked without the "request
+ * changes" button, which does move the status.
+ */
+export async function handleTravellerMessage(id: string, request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
+  const owned = await ownedRequest(request, env, id);
+  if (owned.response) return owned.response;
+  const { user, row } = owned;
+
+  const body = await readJson<{ text?: unknown }>(request, 8 * 1024);
+  const text = field(body?.text, 1000);
+  if (!text) return badRequest("Write a message first.");
+
+  const status = statusOf(row);
+  if (status === "closed" || status === "cancelled") return conflict("This request is closed. Please contact us on WhatsApp to reopen it.");
+
+  // Per-request flood guard: a stuck retry loop or a script cannot bury the thread.
+  const since = new Date(Date.now() - 3600_000).toISOString();
+  const recent = await env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM request_event WHERE request_id = ? AND type = 'message' AND actor = 'traveller' AND created_at > ?`,
+  )
+    .bind(row.id, since)
+    .first<{ n: number }>();
+  if ((recent?.n ?? 0) >= 20) return json({ error: "That is a lot of messages in an hour. Please wait a little, or message us on WhatsApp." }, { status: 429 });
+
+  await addEvent(env, row.id, { actor: "traveller", actorName: user.name, type: "message", summary: text });
+  const agency = notifyAgency(env, ctx, row, `New message — ${row.destination_summary}`, "The traveller sent a message on their request.", [`Message: “${text}”`]);
+  if (!ctx) await agency;
+  return json({ ok: true }, { status: 201 });
+}

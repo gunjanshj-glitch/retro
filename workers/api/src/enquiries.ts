@@ -24,7 +24,7 @@ type EnquiryBody = {
   company?: unknown;
 };
 
-const SOURCES = new Set(["contact-form", "quote", "planner"]);
+const SOURCES = new Set(["contact-form", "quote", "planner", "app-chat", "web-chat"]);
 
 export async function handleEnquiry(request: Request, env: Env): Promise<Response> {
   const body = await readJson<EnquiryBody>(request);

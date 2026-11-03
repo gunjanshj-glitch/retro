@@ -461,3 +461,55 @@ export async function handleAdminClose(id: string, request: Request, env: Env, c
   return json({ ok: true, status: "closed" });
 }
 
+
+/** A reply to the traveller that does not move the quote (B10). Visible to them, unlike a note. */
+export async function handleAdminMessage(id: string, request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
+  const admin = await getAdminUser(request, env);
+  if (!admin) return forbidden();
+  const row = await loadRequest(env, id);
+  if (!row) return notFound("No such request.");
+  const body = await readJson<{ text?: unknown }>(request, 8 * 1024);
+  const text = field(body?.text, 1000);
+  if (!text) return badRequest("Write a message first.");
+
+  await addEvent(env, id, { actor: "agency", actorName: admin.email, type: "message", summary: text });
+  const email = sendNotice(env, {
+    to: row.contact_email ?? row.user_email,
+    subject: `A message about your trip — ${row.destination_summary}`,
+    intro: "Our team has replied on your request.",
+    lines: [`“${text}”`],
+    cta: { label: "Open the conversation", url: `${siteUrl(env)}/my-requests/view?id=${encodeURIComponent(id)}` },
+  });
+  if (ctx) ctx.waitUntil(email);
+  else await email;
+  return json({ ok: true }, { status: 201 });
+}
+
+/** Chat/contact leads for the staff Leads screen (B10). Newest first, optionally one status. */
+export async function handleAdminListEnquiries(request: Request, env: Env): Promise<Response> {
+  if (!(await getAdminUser(request, env))) return forbidden();
+  const status = new URL(request.url).searchParams.get("status");
+  const where = status && /^[a-z_]{1,20}$/.test(status) ? "WHERE status = ?" : "";
+  const stmt = env.DB.prepare(
+    `SELECT id, created_at, name, email, phone, destination, travel_window, travellers, notes, source, quote_id, status, country
+       FROM enquiry ${where} ORDER BY created_at DESC LIMIT 200`,
+  );
+  const { results } = await (where ? stmt.bind(status) : stmt).all<Record<string, string | null>>();
+  return json({
+    enquiries: results.map((e) => ({
+      id: e.id,
+      createdAt: e.created_at,
+      name: e.name,
+      email: e.email,
+      phone: e.phone,
+      destination: e.destination,
+      travelWindow: e.travel_window,
+      travellers: e.travellers,
+      notes: e.notes,
+      source: e.source,
+      quoteId: e.quote_id,
+      status: e.status,
+      country: e.country,
+    })),
+  });
+}

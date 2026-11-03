@@ -75,6 +75,18 @@ export type Env = {
   RAZORPAY_KEY_SECRET?: string;
   /** Secret configured on the Razorpay webhook; verifies `X-Razorpay-Signature`. */
   RAZORPAY_WEBHOOK_SECRET?: string;
+
+  /** Mobile app gate (B5). Below `APP_MIN_VERSION` the app shows a blocking
+   *  update screen. All optional; see app-config.ts. */
+  APP_MIN_VERSION?: string;
+  APP_LATEST_VERSION?: string;
+  /** "1" switches the app to a holding page. */
+  APP_MAINTENANCE?: string;
+  APP_MAINTENANCE_MESSAGE?: string;
+  /** Comma-separated feature flags, e.g. "chat=1,apple=0". */
+  APP_FLAGS?: string;
+  /** Version of the bundled catalogue the app should be running. */
+  CATALOGUE_VERSION?: string;
 };
 
 
