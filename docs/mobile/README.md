@@ -1,6 +1,6 @@
 # Retro Holidays mobile app: plan
 
-Status: **proposal, awaiting your approval of the mockup and plan.** No mobile code exists yet. Implementation starts only after you approve.
+Status: **final plan, ready for implementation.** No mobile code exists yet. Implementation starts when you say go; the first step is the Phase 0 spike (doc 06).
 
 Confidence tags used throughout: **[Certain]** verified in this repo, by a test I ran, or from an official source; **[Likely]** strong inference; **[Guessing]** assumption to confirm.
 
@@ -62,9 +62,16 @@ The audit is in [09-gap-review.md](09-gap-review.md). The ones that would have h
 - **No backend or app code.** The changes touch production sign-in and payments; they begin in Phase 0 after you approve.
 - Unverified until the spike: engine speed on Hermes, map frame rate, `@expo/ui` in Expo Go, whether the web timeline renders the new `message` event type.
 
-## Questions that remain
+## Decisions closed
 
-1. **Is Retro Holidays a registered company?** If yes, enrol both stores as an organisation (D-U-N-S): faster and it removes Google's 12-testers-for-14-days rule.
-2. **A) Staff list:** which email addresses are staff today (`ADMIN_EMAILS`)? **B) Refunds and cancellations after payment:** the system has no path. Is it handled outside (Razorpay dashboard and WhatsApp) and should the app just hand off? **C) Balance due dates:** should part-paid bookings have a deadline and reminders?
-3. When do you want to start Apple/Google enrolment? Recommended: at milestone M3 (doc 08).
-4. iPad: iPhone-only is the default; say if you need a tablet layout.
+| Topic | Decision |
+|---|---|
+| Staff access | Unchanged. Anyone who can sign in to the existing web admin sees all requests in the app; no separate staff list |
+| Refunds, cancellations after payment | Out of v1: WhatsApp hand-off with the booking reference |
+| Balance due dates | Out of v1: manual follow-up |
+| iPad, languages | iPhone-only, English only |
+| Company status and enrolment | Not needed to start. Decide at milestone M3 (doc 08); a registered company makes the Apple/Google accounts faster and removes Google's 12-testers-for-14-days rule |
+
+## Where implementation starts
+
+Phase 0 (doc 06): the 1 to 2 day device spike, then the three-commit `readSession()` refactor on the preview Worker, then backend changes B1 to B10, then `packages/*` extraction, the Expo skeleton and the seed script.

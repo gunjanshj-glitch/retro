@@ -59,7 +59,7 @@
 | Admin calls silently fail on mobile because session reading lives in two places | high without fix | staff mode dead | single `readSession()`, source-grep test |
 | Deferring store accounts moves the schedule risk to the end (doc 08) | high | launch date | start enrolment at M3; one signed iPhone build at M3 |
 | Apple objects to staff features in the public app | low to medium | resubmission | review notes; fallback internal-only variant |
-| Paid-booking cancellation/refund not modelled | medium | customer service | decision needed (question B); WhatsApp handoff meanwhile |
+| Paid-booking cancellation/refund not modelled | medium | customer service | decided: out of v1; WhatsApp handoff |
 | WhatsApp number disrupted by API registration | medium | high | Phase 1 uses click-to-chat only; plan coexistence before Phase 2 |
 
 ## Decision log

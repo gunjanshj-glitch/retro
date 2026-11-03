@@ -42,7 +42,7 @@ Severity: **S1** breaks the product or loses money/data, **S2** breaks a promise
 | G25 | S3 | Chat leads: spam, duplicates, retention, consent | design | rate limits, Turnstile on web, dedupe, retention, consent text, staff push coalescing | 04 |
 | G26 | S3 | Catalogue/engine version skew between phone, web, staff | static JSON, client engine | version stamp on every quote; staff warning | 01 O10 |
 | G27 | S3 | Client-computed totals can be forged | `quotation` posted by client | staff review today; server-side engine check later | 01 O11 |
-| G28 | S2 | Paid bookings have no cancel/refund transition; no balance due date | `TRANSITIONS`; `payment` table | **decision needed**; WhatsApp handoff with booking ref meanwhile | 07 N8/N9 |
+| G28 | S2 | Paid bookings have no cancel/refund transition; no balance due date | `TRANSITIONS`; `payment` table | **decided: out of v1**; WhatsApp handoff with booking ref | 07 N8/N9 |
 | G29 | S3 | Offline behaviour for writes was unspecified | design | online-only except queued chat leads with idempotency key | 02 |
 | G30 | S3 | Local test pitfalls (firewall, cleartext, LAN isolation, HTTPS return) would burn days | experience | documented, plus seed script and scripted staff actor | 05 |
 | G31 | S3 | No way to test a two-sided flow with one phone | design | `mobile:act` script plays the other side | 05 |
@@ -67,10 +67,14 @@ Severity: **S1** breaks the product or loses money/data, **S2** breaks a promise
 | UPI app switching from the in-app browser on iOS | needs a real device and test mode | M3 |
 | Calendar estimates in doc 06 | judgement | re-estimate after the spike |
 
-## Decisions needed from you (they change scope, not just detail)
+## Decisions (closed for the plan)
 
-1. Is the business a registered company? (store account type, Play testing rule)
-2. Refunds and cancellations after payment: leave outside the system, or model them?
-3. Balance due dates and reminders for part-paid bookings?
-4. Staff email list for `ADMIN_EMAILS`, and who may be added later?
-5. When to start Apple/Google enrolment (recommended: at M3).
+| # | Decision | Outcome |
+|---|---|---|
+| 1 | Staff access | No new list. Anyone who can sign in to the existing web admin sees all requests in the app; access stays managed as today |
+| 2 | Refunds and cancellations after payment | Out of v1. "Need to change or cancel?" opens WhatsApp with the booking reference; refunds stay in Razorpay |
+| 3 | Balance due dates and reminders | Out of v1. Manual follow-up; revisit after launch |
+| 4 | iPad | iPhone-only for v1 |
+| 5 | Languages | English only |
+| 6 | Enrolment timing | Recommended at M3; your call when M3 is reached |
+| 7 | Registered company or not | Does not block development. Needed at Gate A, because it decides the account type and Google's 14-day test rule |
