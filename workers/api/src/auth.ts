@@ -88,7 +88,22 @@ async function createSession(env: Env, userId: string): Promise<string> {
  * once. A test greps the Worker source to keep it that way.
  */
 export function readSessionToken(request: Request): string | null {
+  const auth = request.headers.get("Authorization");
+  if (auth) {
+    const m = /^Bearer\s+(\S+)$/i.exec(auth.trim());
+    if (m) return m[1];
+  }
   return parseCookies(request)[SESSION_COOKIE] || null;
+}
+
+/** The mobile app opts in to receiving its session token in the JSON body. */
+export function isMobileClient(request: Request): boolean {
+  return request.headers.get("X-Client") === "mobile";
+}
+
+/** `{ token }` for the mobile app, nothing for the web (which uses the cookie). */
+function tokenFor(request: Request, token: string): { token?: string } {
+  return isMobileClient(request) ? { token } : {};
 }
 
 /** Resolves the signed-in user from the request's session, or null. */
@@ -154,7 +169,7 @@ export async function handleRegister(request: Request, env: Env): Promise<Respon
 
   const token = await createSession(env, id);
   return json(
-    { user: { id, name, email, avatarUrl: null } },
+    { user: { id, name, email, avatarUrl: null }, ...tokenFor(request, token) },
     { status: 201, headers: { "Set-Cookie": sessionCookie(token, SESSION_TTL_SECONDS) } },
   );
 }
@@ -191,7 +206,7 @@ export async function handleLogin(request: Request, env: Env): Promise<Response>
 
   const token = await createSession(env, row.id);
   return json(
-    { user: { id: row.id, name: row.name, email: row.email, avatarUrl: row.avatar_url } },
+    { user: { id: row.id, name: row.name, email: row.email, avatarUrl: row.avatar_url }, ...tokenFor(request, token) },
     { headers: { "Set-Cookie": sessionCookie(token, SESSION_TTL_SECONDS) } },
   );
 }
@@ -312,6 +327,7 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
     {
       user: { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatar_url },
       admin: adminEmails(env).includes(user.email),
+      ...tokenFor(request, session),
     },
     { headers: { "Set-Cookie": sessionCookie(session, SESSION_TTL_SECONDS) } },
   );
