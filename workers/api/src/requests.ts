@@ -29,6 +29,7 @@ import {
   type RequestRow,
 } from "./request-core";
 import { razorpayConfigured } from "./razorpay";
+import { after, notifyStaff } from "./push";
 import { isValidEmail, normalisePhone, TRAVELLER_TURN, type RequestStatus } from "@retro/core/quote-workflow";
 import { nextPaymentInr, parseAdjustments, priceQuote, type PublicQuote } from "@retro/core/quote-pricing";
 
@@ -168,6 +169,7 @@ export async function handleCreateRequest(request: Request, env: Env, ctx?: Exec
   });
   if (ctx) ctx.waitUntil(ack);
   else await ack;
+  await after(ctx, notifyStaff(env, "request_new", id));
 
   return json({ ok: true, id, emailSent }, { status: 201 });
 }
@@ -389,6 +391,7 @@ export async function handleAcceptQuote(id: string, request: Request, env: Env, 
     `Agreed total: ${formatInr(priced.totalInr)}`,
   ]);
   if (!ctx) await agency;
+  await after(ctx, notifyStaff(env, "accepted", row.id));
 
   return json({ ok: true, status: "accepted", totalInr: priced.totalInr, dueNowInr: nextPaymentInr(priced.totalInr, 0, revision.deposit_inr) });
 }
@@ -416,6 +419,7 @@ export async function handleRequestChanges(id: string, request: Request, env: En
   });
   const agency = notifyAgency(env, ctx, row, `Changes requested — ${row.destination_summary}`, "The traveller asked for changes to the quote.", [`Their message: “${message}”`]);
   if (!ctx) await agency;
+  await after(ctx, notifyStaff(env, "changes_requested", row.id));
   return json({ ok: true, status: "changes_requested" });
 }
 
@@ -437,6 +441,7 @@ export async function handleDeclineQuote(id: string, request: Request, env: Env,
   });
   const agency = notifyAgency(env, ctx, row, `Quote declined — ${row.destination_summary}`, "The traveller declined the final quote.", reason ? [`Reason: “${reason}”`] : []);
   if (!ctx) await agency;
+  await after(ctx, notifyStaff(env, "declined", row.id));
   return json({ ok: true, status: "declined" });
 }
 
@@ -453,6 +458,7 @@ export async function handleCancelRequest(id: string, request: Request, env: Env
   await addEvent(env, row.id, { actor: "traveller", actorName: user.name, type: "withdrawn", summary: "You withdrew this request." });
   const agency = notifyAgency(env, ctx, row, `Request withdrawn — ${row.destination_summary}`, "The traveller withdrew their request.");
   if (!ctx) await agency;
+  await after(ctx, notifyStaff(env, "withdrawn", row.id));
   return json({ ok: true, status: "cancelled" });
 }
 
@@ -486,5 +492,6 @@ export async function handleTravellerMessage(id: string, request: Request, env: 
   await addEvent(env, row.id, { actor: "traveller", actorName: user.name, type: "message", summary: text });
   const agency = notifyAgency(env, ctx, row, `New message — ${row.destination_summary}`, "The traveller sent a message on their request.", [`Message: “${text}”`]);
   if (!ctx) await agency;
+  await after(ctx, notifyStaff(env, "message", row.id));
   return json({ ok: true }, { status: 201 });
 }

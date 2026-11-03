@@ -15,6 +15,13 @@ import { badRequest, field, json, readJson, parseCookies, sessionCookie, clearSe
 import { limitByIp, overLimit, tooManyRequests } from "./rate-limit";
 
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+/** Staff sessions are shorter: they can see every traveller's details. */
+const STAFF_SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+/** How long a session for this address lasts. */
+export function sessionTtlFor(env: Env, email: string): number {
+  return adminEmails(env).includes(email.trim().toLowerCase()) ? STAFF_SESSION_TTL_SECONDS : SESSION_TTL_SECONDS;
+}
 /** PBKDF2 cost grows with input length; nobody needs a longer password, and a megabyte of one is an attack. */
 const MAX_PASSWORD_LENGTH = 200;
 // Workers' Web Crypto rejects PBKDF2 above 100,000 iterations (NotSupportedError),
@@ -91,11 +98,11 @@ export async function sessionIdCandidates(token: string): Promise<[string, strin
   return [hashed, token.startsWith("h:") ? hashed : token];
 }
 
-export async function createSession(env: Env, userId: string): Promise<string> {
+export async function createSession(env: Env, userId: string, ttlSeconds = SESSION_TTL_SECONDS): Promise<string> {
   const token = crypto.randomUUID() + crypto.randomUUID();
   const id = await hashToken(token);
   const now = new Date();
-  const expires = new Date(now.getTime() + SESSION_TTL_SECONDS * 1000);
+  const expires = new Date(now.getTime() + ttlSeconds * 1000);
   await env.DB.prepare(`INSERT INTO session (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`)
     .bind(id, userId, now.toISOString(), expires.toISOString())
     .run();
@@ -242,10 +249,11 @@ export async function handleLogin(request: Request, env: Env): Promise<Response>
   const { hash } = await hashPassword(password.slice(0, MAX_PASSWORD_LENGTH), row.password_salt);
   if (!timingSafeEqual(hash, row.password_hash)) return invalid();
 
-  const token = await createSession(env, row.id);
+  const ttl = sessionTtlFor(env, row.email);
+  const token = await createSession(env, row.id, ttl);
   return json(
     { user: { id: row.id, name: row.name, email: row.email, avatarUrl: row.avatar_url }, ...tokenFor(request, token) },
-    { headers: { "Set-Cookie": sessionCookie(token, SESSION_TTL_SECONDS) } },
+    { headers: { "Set-Cookie": sessionCookie(token, ttl) } },
   );
 }
 
@@ -368,13 +376,94 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
     user = { id, name, email: row.email, avatar_url: null };
   }
 
-  const session = await createSession(env, user.id);
+  const ttl = sessionTtlFor(env, user.email);
+  const session = await createSession(env, user.id, ttl);
   return json(
     {
       user: { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatar_url },
       admin: adminEmails(env).includes(user.email),
       ...tokenFor(request, session),
     },
-    { headers: { "Set-Cookie": sessionCookie(session, SESSION_TTL_SECONDS) } },
+    { headers: { "Set-Cookie": sessionCookie(session, ttl) } },
   );
+}
+
+// ---------------------------------------------------------------------------
+// Delete account (B3)
+// ---------------------------------------------------------------------------
+
+/**
+ * `DELETE /auth/account { password? }` — App Store 5.1.1(v) and Google Play both require deleting the account
+ * from inside the app.
+ *
+ * What "delete" means here: the person is erased, the business record is kept. The user row can't simply go,
+ * because requests, payments and quote revisions reference it and the agency has to keep the money trail, so it
+ * becomes a tombstone (no name, email, password, provider or avatar) and every request they made is stripped of
+ * contact details and free text. Amounts, dates, destinations and payment rows stay for accounting.
+ *
+ * Re-authentication: a password account must send its password; a social account (no password) must have signed
+ * in within the last 10 minutes, so a stolen but idle session can't erase it. A booking in progress blocks
+ * deletion, since erasing the contact for someone who has paid a deposit would strand them.
+ */
+export async function handleDeleteAccount(request: Request, env: Env): Promise<Response> {
+  const user = await getSessionUser(request, env);
+  const unauthorised = requireAuth(user);
+  if (unauthorised) return unauthorised;
+  const me = user!;
+
+  if (adminEmails(env).includes(me.email.toLowerCase())) {
+    return json({ error: "Staff accounts are managed by the agency and can't be deleted here.", code: "STAFF_ACCOUNT" }, { status: 403 });
+  }
+  if (await overLimit(env, "delete-account", me.id, 5, 3600)) return tooManyRequests(3600);
+
+  const row = await env.DB.prepare(`SELECT password_hash, password_salt FROM user WHERE id = ?`).bind(me.id).first<{ password_hash: string | null; password_salt: string | null }>();
+  if (row?.password_hash && row.password_salt) {
+    const body = await readJson<{ password?: unknown }>(request, 4 * 1024);
+    const password = typeof body?.password === "string" ? body.password.slice(0, MAX_PASSWORD_LENGTH) : "";
+    const { hash } = await hashPassword(password, row.password_salt);
+    if (!password || !timingSafeEqual(hash, row.password_hash)) return json({ error: "That password is not correct.", code: "REAUTH_FAILED" }, { status: 403 });
+  } else {
+    const token = readSessionToken(request);
+    const session = token
+      ? await env.DB.prepare(`SELECT created_at FROM session WHERE id IN (?, ?)`).bind(...(await sessionIdCandidates(token))).first<{ created_at: string }>()
+      : null;
+    if (!session || Date.now() - new Date(session.created_at).getTime() > 10 * 60_000) {
+      return json({ error: "Please sign in again, then delete your account.", code: "REAUTH_REQUIRED" }, { status: 403 });
+    }
+  }
+
+  const open = await env.DB.prepare(`SELECT COUNT(*) AS n FROM quotation_request WHERE user_id = ? AND status IN ('accepted', 'part_paid')`).bind(me.id).first<{ n: number }>();
+  if ((open?.n ?? 0) > 0) {
+    return json({ error: "You have a booking in progress. Please contact us to settle it before deleting your account.", code: "OPEN_BOOKING" }, { status: 409 });
+  }
+
+  const now = new Date().toISOString();
+  const gone = `deleted-${me.id}@deleted.invalid`;
+  await env.DB.batch([
+    // The traveller's own words and contact details, on every request they made.
+    env.DB.prepare(
+      `UPDATE quotation_request SET user_name = 'Deleted traveller', user_email = ?, contact_email = NULL, contact_phone = NULL, traveller_note = NULL,
+              snapshot = json_remove(json_remove(json_remove(snapshot, '$.user'), '$.contact'), '$.note'), updated_at = ? WHERE user_id = ?`,
+    ).bind(gone, now, me.id),
+    env.DB.prepare(`UPDATE request_event SET actor_name = NULL, summary = '[message removed]' WHERE type = 'message' AND actor = 'traveller' AND request_id IN (SELECT id FROM quotation_request WHERE user_id = ?)`).bind(me.id),
+    env.DB.prepare(`UPDATE request_event SET actor_name = NULL WHERE actor = 'traveller' AND request_id IN (SELECT id FROM quotation_request WHERE user_id = ?)`).bind(me.id),
+    env.DB.prepare(`UPDATE package_request SET user_name = 'Deleted traveller', user_email = ?, notes = NULL WHERE user_id = ?`).bind(gone, me.id),
+    env.DB.prepare(`DELETE FROM enquiry WHERE lower(email) = ?`).bind(me.email.toLowerCase()),
+    env.DB.prepare(`DELETE FROM password_reset WHERE email = ?`).bind(me.email.toLowerCase()),
+    env.DB.prepare(`DELETE FROM device WHERE user_id = ?`).bind(me.id),
+    env.DB.prepare(`DELETE FROM auth_code WHERE user_id = ?`).bind(me.id),
+    env.DB.prepare(`DELETE FROM session WHERE user_id = ?`).bind(me.id),
+    env.DB.prepare(
+      `UPDATE user SET name = 'Deleted traveller', email = ?, password_hash = NULL, password_salt = NULL, password_verified_at = NULL,
+              auth_provider = NULL, provider_id = NULL, avatar_url = NULL WHERE id = ?`,
+    ).bind(gone, me.id),
+  ]);
+  // One internal line per request, so staff opening it later know why the traveller is gone.
+  const { results } = await env.DB.prepare(`SELECT id FROM quotation_request WHERE user_id = ?`).bind(me.id).all<{ id: string }>();
+  for (const { id } of results) {
+    await env.DB.prepare(`INSERT INTO request_event (id, request_id, created_at, actor, actor_name, type, internal, summary) VALUES (?, ?, ?, 'system', NULL, 'note', 1, ?)`)
+      .bind(crypto.randomUUID(), id, now, "The traveller deleted their account; their personal details were removed.")
+      .run();
+  }
+  return json({ ok: true }, { headers: { "Set-Cookie": clearSessionCookie() } });
 }

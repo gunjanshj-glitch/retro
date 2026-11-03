@@ -97,3 +97,23 @@ Add `POST /requests/:id/messages` (traveller) and `POST /admin/requests/:id/mess
 7. Deploy to **preview** first; the first mobile builds point at `atlas-api-preview`. Production only after M3 passes on preview.
 
 Acceptance: web regression suite unchanged and green, plus per-endpoint tests that run each **under both cookie and bearer**: expired bearer → 401; another user's request → 404; non-staff token on `/admin/*` → 404; replayed exchange code → 400; code without the matching verifier → 400; `exp://` redirect rejected when `ALLOW_EXPO_GO_REDIRECTS` is unset; replayed idempotency key returns the stored response and creates nothing; stale draft → 409; account deletion removes PII but keeps payment records.
+
+
+## Backend status (updated as work lands)
+
+| Item | State | Notes |
+|---|---|---|
+| B1 bearer + hashed sessions, single reader | done, tested | staff sessions 7 days, others 30 |
+| B2 social return for the app | done, tested | PKCE-bound one-time code, exact redirect allow-list, `/auth/mobile/exchange`; `POST /auth/apple` behind `APPLE_BUNDLE_ID` (tested with a generated key; not against Apple) |
+| B3 delete account | done, tested | user row becomes a tombstone (requests reference it); requests anonymised, money trail kept; blocked while a booking is `accepted`/`part_paid`; staff blocked |
+| B4 hosted pay page | done, tested with a mocked Razorpay | `POST /requests/:id/pay` with `X-Client: mobile` returns `payUrl`; page CSP is a best guess for Checkout.js and **needs one real test-mode payment** |
+| B5 `/app-config` | done | |
+| B6 push | done, tested with a mocked Expo | generic payloads, 2-minute coalescing, receipts; needs an Expo project id and a real phone to see a push arrive |
+| B7 idempotency, B8 draft lock | done | |
+| B9 cron | purge + expiry + reminders + receipts | every 15 minutes |
+| B10 messages, `/admin/enquiries` | done | |
+| O3 `/api/v1`, O9 error `code` | done | |
+| O1 manifest, O2 image variants, O4 contracts, O5 CF rules, O6 cache, O7 Sentry, O8 well-known | not started | most need the app or the store accounts |
+
+Deploy order: `npm run cf:d1:migrate` (applies 0007 and 0008) **before** deploying the Worker.
+New settings: `ALLOW_EXPO_GO_REDIRECTS` (preview only), `APPLE_BUNDLE_ID`, `EXPO_ACCESS_TOKEN`, `PAY_TOKEN_SECRET` (all optional).

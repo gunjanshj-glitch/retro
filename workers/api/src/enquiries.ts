@@ -10,6 +10,7 @@
 import type { Env } from "./http";
 import { badRequest, field, json, readJson } from "./http";
 import { limitByIp } from "./rate-limit";
+import { after, notifyStaff } from "./push";
 
 type EnquiryBody = {
   name?: unknown;
@@ -27,7 +28,7 @@ type EnquiryBody = {
 
 const SOURCES = new Set(["contact-form", "quote", "planner", "app-chat", "web-chat"]);
 
-export async function handleEnquiry(request: Request, env: Env): Promise<Response> {
+export async function handleEnquiry(request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
   const body = await readJson<EnquiryBody>(request);
   if (!body) return badRequest("Malformed or oversized request body.");
 
@@ -75,5 +76,6 @@ export async function handleEnquiry(request: Request, env: Env): Promise<Respons
     )
     .run();
 
+  await after(ctx, notifyStaff(env, "lead", null));
   return json({ ok: true, id }, { status: 201 });
 }

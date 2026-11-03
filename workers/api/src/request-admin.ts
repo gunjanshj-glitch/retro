@@ -13,6 +13,7 @@
 import type { Env } from "./http";
 import { badRequest, field, json, notFound, readJson } from "./http";
 import { getAdminUser } from "./admin";
+import { after, notifyUser } from "./push";
 import { formatInr, sendNotice, siteUrl } from "./email";
 import {
   addEvent,
@@ -428,6 +429,7 @@ export async function handleAdminSendQuote(id: string, request: Request, env: En
   });
   if (ctx) ctx.waitUntil(email);
   else await email;
+  await after(ctx, notifyUser(env, row.user_id, "quote_ready", id));
 
   return json({ ok: true, version, totalInr: priced.totalInr, validUntil: validDate });
 }
@@ -465,6 +467,7 @@ export async function handleAdminClose(id: string, request: Request, env: Env, c
   });
   if (ctx) ctx.waitUntil(email);
   else await email;
+  await after(ctx, notifyUser(env, row.user_id, "closed", id));
   return json({ ok: true, status: "closed" });
 }
 
@@ -489,6 +492,7 @@ export async function handleAdminMessage(id: string, request: Request, env: Env,
   });
   if (ctx) ctx.waitUntil(email);
   else await email;
+  await after(ctx, notifyUser(env, row.user_id, "message", id));
   return json({ ok: true }, { status: 201 });
 }
 

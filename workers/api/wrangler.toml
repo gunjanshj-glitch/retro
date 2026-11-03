@@ -93,6 +93,8 @@ workers_dev = true
 ENVIRONMENT = "preview"
 ALLOWED_ORIGINS = ""
 PUBLIC_SITE_URL = ""
+# Expo Go returns to the app on exp://, which production must never accept (src/app-links.ts).
+ALLOW_EXPO_GO_REDIRECTS = "1"
 
 [[env.preview.d1_databases]]
 binding = "DB"

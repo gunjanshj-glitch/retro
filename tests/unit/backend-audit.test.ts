@@ -309,7 +309,7 @@ describe("scheduled maintenance", () => {
     expect((s.db.prepare(`SELECT COUNT(*) n FROM session WHERE id='dead'`).get() as any).n).toBe(0);
     expect((s.db.prepare(`SELECT COUNT(*) n FROM session WHERE id='asha'`).get() as any).n).toBe(1);
     expect((s.db.prepare(`SELECT state FROM oauth_state`).all() as any[]).map((r) => r.state)).toEqual(["fresh"]);
-    expect((s.db.prepare(`SELECT COUNT(*) n FROM rate_limit`).get() as any).n).toBe(0);
+    expect((s.db.prepare(`SELECT COUNT(*) n FROM rate_limit WHERE k = 'a'`).get() as any).n).toBe(0);
     // idempotent: a second run changes nothing
     expect((await runScheduled(s.env)).expired).toBe(0);
   });

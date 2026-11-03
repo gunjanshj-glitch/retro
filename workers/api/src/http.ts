@@ -87,6 +87,16 @@ export type Env = {
   APP_FLAGS?: string;
   /** Version of the bundled catalogue the app should be running. */
   CATALOGUE_VERSION?: string;
+
+  /** "1" lets Expo Go's `exp://` return links through the sign-in and payment allow-list. Set on dev and
+   *  preview only; absent in production (app-links.ts). */
+  ALLOW_EXPO_GO_REDIRECTS?: string;
+  /** The app's bundle id, the audience of Sign in with Apple tokens. Unset disables Apple sign-in. */
+  APPLE_BUNDLE_ID?: string;
+  /** Optional Expo push security token (sent as a bearer token to Expo's push API). */
+  EXPO_ACCESS_TOKEN?: string;
+  /** Optional dedicated secret for hosted-payment-page tokens; falls back to one derived from the Razorpay secret. */
+  PAY_TOKEN_SECRET?: string;
 };
 
 
@@ -160,7 +170,7 @@ export function corsHeaders(request: Request, env: Env): Record<string, string> 
 
   return {
     "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, Idempotency-Key, X-Client",
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Max-Age": "86400",

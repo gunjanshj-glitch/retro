@@ -58,7 +58,8 @@ export function handleAppConfig(request: Request, env: Env): Response {
       // One source of truth shared with the site and the app (packages/core/contact.ts).
       whatsapp: WHATSAPP_NUMBER,
       phone: PHONE_E164,
-      flags: flagsOf(env),
+      // `appleSignIn` follows whether the Apple audience is configured, so the app can't offer a button that 503s.
+      flags: { ...flagsOf(env), appleSignIn: Boolean(env.APPLE_BUNDLE_ID) },
       catalogueVersion: env.CATALOGUE_VERSION ?? null,
     },
     { headers: { "Cache-Control": "public, max-age=300" } },

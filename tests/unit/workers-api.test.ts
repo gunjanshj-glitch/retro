@@ -106,9 +106,10 @@ describe("enquiries", () => {
     expect(body.ok).toBe(true);
     expect(body.id).toBeTruthy();
 
-    expect(db.executed).toHaveLength(1);
-    expect(db.executed[0].sql).toContain("INSERT INTO enquiry");
-    expect(db.executed[0].values).toContain("Asha");
+    // The lead is written once; the staff push that follows only reads devices.
+    const writes = db.executed.filter((q) => q.sql.includes("INSERT INTO enquiry"));
+    expect(writes).toHaveLength(1);
+    expect(writes[0].values).toContain("Asha");
   });
 
   it("requires a name", async () => {

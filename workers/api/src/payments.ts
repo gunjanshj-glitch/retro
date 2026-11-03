@@ -17,6 +17,10 @@ import { getSessionUser, requireAuth } from "./auth";
 import { agencyInbox, formatInr, sendNotice, siteUrl } from "./email";
 import { addEvent, loadRequest, loadRevision, refreshExpiry, statusOf } from "./request-core";
 import { createOrder, razorpayConfigured, verifyCheckoutSignature, verifyWebhookSignature } from "./razorpay";
+import { allowedAppRedirect, APP_PAY_REDIRECT } from "./app-links";
+import { isMobileClient } from "./auth";
+import { signPayToken } from "./pay-page";
+import { after, notifyStaff, notifyUser } from "./push";
 import { nextPaymentInr } from "@retro/core/quote-pricing";
 
 type PaymentRow = {
@@ -92,7 +96,19 @@ export async function handleCreatePayment(id: string, request: Request, env: Env
       .run();
   }
 
+  // The app has no Checkout.js. It opens this hosted page in the system browser instead (pay-page.ts). The link
+  // carries a signed, ten-minute token bound to this request, this person and this order, NOT their session.
+  let payUrl: string | undefined;
+  if (isMobileClient(request)) {
+    const wanted = (await readJson<{ returnUrl?: unknown }>(request, 2 * 1024))?.returnUrl;
+    const ret = allowedAppRedirect(typeof wanted === "string" ? wanted : APP_PAY_REDIRECT, env, "pay");
+    if (!ret) return badRequest("That return link is not allowed.");
+    const token = await signPayToken(env, { r: row.id, u: user!.id, o: orderId, b: ret });
+    if (token) payUrl = `${siteUrl(env)}/api/pay/${encodeURIComponent(row.id)}?t=${token}`;
+  }
+
   return json({
+    ...(payUrl ? { payUrl } : {}),
     keyId: env.RAZORPAY_KEY_ID,
     orderId,
     amountPaise,
@@ -109,18 +125,31 @@ export async function handleVerifyPayment(id: string, request: Request, env: Env
 
   const row = await loadRequest(env, id);
   if (!row || row.user_id !== user!.id) return notFound("No request with that id.");
+  return verifyCheckoutPayload(env, ctx, row.id, await readJson(request, 4 * 1024), null);
+}
 
-  const body = await readJson<{ razorpay_order_id?: unknown; razorpay_payment_id?: unknown; razorpay_signature?: unknown }>(request, 4 * 1024);
+/**
+ * Checks Checkout's signature and settles. Used by the signed-in route above and by the hosted page's route
+ * (which authenticates by pay token instead). `onlyOrderId` pins the hosted page to the order its token names.
+ */
+export async function verifyCheckoutPayload(
+  env: Env,
+  ctx: ExecutionContext | undefined,
+  requestId: string,
+  body: { razorpay_order_id?: unknown; razorpay_payment_id?: unknown; razorpay_signature?: unknown } | null,
+  onlyOrderId: string | null,
+): Promise<Response> {
   const orderId = typeof body?.razorpay_order_id === "string" ? body.razorpay_order_id : "";
   const paymentId = typeof body?.razorpay_payment_id === "string" ? body.razorpay_payment_id : "";
   const signature = typeof body?.razorpay_signature === "string" ? body.razorpay_signature : "";
   if (!orderId || !paymentId || !signature) return badRequest("Payment details are missing.");
+  if (onlyOrderId && orderId !== onlyOrderId) return notFound("No such payment.");
 
   const order = await env.DB.prepare(`SELECT id, request_id FROM payment WHERE razorpay_order_id = ?`).bind(orderId).first<{ id: string; request_id: string }>();
-  if (!order || order.request_id !== row.id) return notFound("No such payment.");
+  if (!order || order.request_id !== requestId) return notFound("No such payment.");
 
   if (!(await verifyCheckoutSignature(env, { orderId, paymentId, signature }))) {
-    console.error("Razorpay checkout signature mismatch", { requestId: row.id, orderId });
+    console.error("Razorpay checkout signature mismatch", { requestId, orderId });
     return badRequest("We could not verify that payment. If money left your account, contact us with your request ID and we will sort it out.");
   }
 
@@ -252,6 +281,8 @@ export async function settlePayment(
     ]);
     if (ctx) ctx.waitUntil(receipts);
     else await receipts;
+    // Generic push to both sides; the amount stays behind the tap.
+    await after(ctx, Promise.all([notifyUser(env, row.user_id, "payment", row.id), notifyStaff(env, "payment", row.id)]));
   }
 
   return { status, paidInr, totalInr: total };

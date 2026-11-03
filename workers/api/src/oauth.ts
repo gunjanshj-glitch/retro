@@ -12,9 +12,11 @@
  * Google" using the same address gets one account, not two.
  */
 import type { Env } from "./http";
-import { badRequest, json, readCookie, sessionCookie } from "./http";
-import { createSession, SESSION_TTL_SECONDS } from "./auth";
-import { limitByIp } from "./rate-limit";
+import { badRequest, json, readCookie, readJson, sessionCookie } from "./http";
+import { createSession, sessionTtlFor } from "./auth";
+import { allowedAppRedirect, withParams } from "./app-links";
+import { signInWithProfile, type ProviderProfile } from "./identity";
+import { limitByIp, overLimit, tooManyRequests } from "./rate-limit";
 
 const STATE_TTL_SECONDS = 60 * 10;
 
@@ -25,9 +27,6 @@ const FACEBOOK_ENABLED = false;
 
 const PROVIDER_LABEL: Record<Provider, string> = { google: "Google", facebook: "Facebook", x: "X" };
 
-/** X does not always return an email. Such accounts get this stand-in address
- *  (the column is NOT NULL UNIQUE); it is never matched against real accounts. */
-const X_PLACEHOLDER_DOMAIN = "x.users.noreply.retroholidays.in";
 
 /** Binds a sign-in attempt to the browser that began it, so a link carrying someone else's code is useless. */
 const STATE_COOKIE = "atlas_oauth_state";
@@ -126,25 +125,27 @@ export async function handleOAuthStart(
   }
 
   const url = new URL(request.url);
-  // Where to send the traveller back to once signed in — the planner page
-  // they were on, so asking them to sign in never loses their place.
-  const redirectTo = safeRedirect(url.searchParams.get("redirect"));
+  const mobile = url.searchParams.get("client") === "mobile";
+  let redirectTo = safeRedirect(url.searchParams.get("redirect"));
+  let appChallenge: string | null = null;
+  if (mobile) {
+    // The app's return link is an exact allow-list entry (app-links.ts), and the app must commit to a PKCE
+    // challenge now so that only it can redeem the one-time code later.
+    const back = allowedAppRedirect(url.searchParams.get("redirect"), env);
+    const challenge = url.searchParams.get("code_challenge") ?? "";
+    if (!back) return badRequest("That return link is not allowed.");
+    if (!/^[A-Za-z0-9_-]{43}$/.test(challenge)) return badRequest("A valid code_challenge (S256) is required.");
+    redirectTo = back;
+    appChallenge = challenge;
+  }
 
   const state = crypto.randomUUID() + crypto.randomUUID();
   const pkce = provider === "x" ? await pkcePair() : null;
-  if (pkce) {
-    await env.DB.prepare(
-      `INSERT INTO oauth_state (state, provider, created_at, redirect_to, code_verifier) VALUES (?, ?, ?, ?, ?)`,
-    )
-      .bind(state, provider, new Date().toISOString(), redirectTo, pkce.verifier)
-      .run();
-  } else {
-    await env.DB.prepare(
-      `INSERT INTO oauth_state (state, provider, created_at, redirect_to) VALUES (?, ?, ?, ?)`,
-    )
-      .bind(state, provider, new Date().toISOString(), redirectTo)
-      .run();
-  }
+  await env.DB.prepare(
+    `INSERT INTO oauth_state (state, provider, created_at, redirect_to, code_verifier, client, app_challenge) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(state, provider, new Date().toISOString(), redirectTo, pkce?.verifier ?? null, mobile ? "mobile" : "web", appChallenge)
+    .run();
 
   const authorize = new URL(config.authorizeUrl);
   authorize.searchParams.set("client_id", config.clientId);
@@ -191,7 +192,7 @@ async function exchangeCode(
   codeVerifier: string | null,
   request: Request,
   env: Env,
-): Promise<{ email: string | null; emailVerified: boolean; name: string | null; providerId: string; avatarUrl: string | null } | null> {
+): Promise<ProviderProfile | null> {
   const tokenBody = new URLSearchParams({
     client_id: config.clientId,
     code,
@@ -273,96 +274,121 @@ export async function handleOAuthCallback(
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  if (url.searchParams.get("error") && state) {
-    // The traveller pressed Cancel on the provider's screen. Send them back to the site, not to a JSON error.
-    await env.DB.prepare(`DELETE FROM oauth_state WHERE state = ?`).bind(state).run();
-    return new Response(null, { status: 302, headers: { Location: new URL("/plan?signin=cancelled", siteOrigin(request, env)).toString(), "Set-Cookie": stateCookie("", 0) } });
-  }
-  if (!code || !state) return badRequest("Missing authorization code.");
+  if (!state) return badRequest("Missing authorization code.");
+
+  const stateRow = await env.DB.prepare(
+    `SELECT provider, created_at, redirect_to, code_verifier, client, app_challenge FROM oauth_state WHERE state = ?`,
+  )
+    .bind(state)
+    .first<{ provider: string; created_at: string; redirect_to: string | null; code_verifier?: string | null; client?: string | null; app_challenge?: string | null }>();
+  // One-shot: consumed whether or not it turns out to be valid, so a replayed callback can never be honoured twice.
+  await env.DB.prepare(`DELETE FROM oauth_state WHERE state = ?`).bind(state).run();
+
+  const mobile = stateRow?.client === "mobile";
+  // A failed or cancelled attempt goes back to wherever it began: the app for a phone, a page for the web.
+  const fail = (message: string, reason: string): Response =>
+    mobile && stateRow?.redirect_to
+      ? new Response(null, { status: 302, headers: { Location: withParams(stateRow.redirect_to, { error: reason }), "Set-Cookie": stateCookie("", 0) } })
+      : reason === "cancelled"
+        ? new Response(null, { status: 302, headers: { Location: new URL("/plan?signin=cancelled", siteOrigin(request, env)).toString(), "Set-Cookie": stateCookie("", 0) } })
+        : badRequest(message);
+
+  if (url.searchParams.get("error")) return fail("Sign-in was cancelled.", "cancelled");
+  if (!code) return badRequest("Missing authorization code.");
   // Login-CSRF guard: the browser finishing the flow must be the one that began it.
   if (readCookie(request, STATE_COOKIE) !== state) return badRequest("This sign-in link has expired. Please try again.");
 
-  const stateRow = await env.DB.prepare(
-    `SELECT provider, created_at, redirect_to, code_verifier FROM oauth_state WHERE state = ?`,
-  )
-    .bind(state)
-    .first<{ provider: string; created_at: string; redirect_to: string | null; code_verifier?: string | null }>();
-  // One-shot: consumed whether or not it turns out to be valid, so a replayed
-  // callback can never be honoured twice.
-  await env.DB.prepare(`DELETE FROM oauth_state WHERE state = ?`).bind(state).run();
-
   if (!stateRow || stateRow.provider !== provider) return badRequest("This sign-in link has expired. Please try again.");
   const age = (Date.now() - new Date(stateRow.created_at).getTime()) / 1000;
-  if (age > STATE_TTL_SECONDS) return badRequest("This sign-in link has expired. Please try again.");
+  if (age > STATE_TTL_SECONDS) return fail("This sign-in link has expired. Please try again.", "expired");
 
   const profile = await exchangeCode(provider, config, code, stateRow.code_verifier ?? null, request, env);
-  if (!profile || (!profile.email && provider !== "x")) {
-    return badRequest("Could not complete sign-in with that provider.");
-  }
+  if (!profile || (!profile.email && provider !== "x")) return fail("Could not complete sign-in with that provider.", "failed");
 
-  // An X account with no shared email gets a stand-in address keyed on its id,
-  // so it is never merged into someone else's account by email.
-  const hasRealEmail = Boolean(profile.email);
-  const email = hasRealEmail ? profile.email!.trim().toLowerCase() : `${profile.providerId}@${X_PLACEHOLDER_DOMAIN}`;
-  const name = profile.name || email.split("@")[0];
+  const result = await signInWithProfile(env, provider, profile);
+  if (!result.ok) return fail(result.message, "failed");
 
-  // Match an existing account by provider identity first, then by email.
-  let user = await env.DB.prepare(`SELECT id FROM user WHERE auth_provider = ? AND provider_id = ?`)
-    .bind(provider, profile.providerId)
-    .first<{ id: string }>();
-
-  if (!user) {
-    const byEmail = hasRealEmail
-      ? await env.DB.prepare(`SELECT id, password_hash, password_verified_at FROM user WHERE email = ?`)
-          .bind(email)
-          .first<{ id: string; password_hash: string | null; password_verified_at: string | null }>()
-      : null;
-    if (byEmail) {
-      // Merging hands this account to whoever the provider says owns the address, so the provider must
-      // vouch for that address. An unverified claim could otherwise take over someone else's account.
-      if (!profile.emailVerified) {
-        return badRequest(`An account with ${email} already exists. Sign in with your password, or use Google.`);
-      }
-      // Sign-up never verified this address, so a password on it may have been set by someone else
-      // (pre-registration takeover). Now that the provider has proved ownership, drop that password and
-      // any session made with it; the owner can set a new one by email.
-      if (byEmail.password_hash && !byEmail.password_verified_at) {
-        await env.DB.batch([
-          env.DB.prepare(`UPDATE user SET password_hash = NULL, password_salt = NULL WHERE id = ?`).bind(byEmail.id),
-          env.DB.prepare(`DELETE FROM session WHERE user_id = ?`).bind(byEmail.id),
-        ]);
-      }
-      await env.DB.prepare(
-        `UPDATE user SET auth_provider = ?, provider_id = ?, avatar_url = COALESCE(avatar_url, ?) WHERE id = ?`,
-      )
-        .bind(provider, profile.providerId, profile.avatarUrl, byEmail.id)
-        .run();
-      user = byEmail;
-    } else {
-      const id = crypto.randomUUID();
-      try {
-        await env.DB.prepare(
-          `INSERT INTO user (id, created_at, name, email, auth_provider, provider_id, avatar_url)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        )
-          .bind(id, new Date().toISOString(), name, email, provider, profile.providerId, profile.avatarUrl)
-          .run();
-      } catch {
-        // Lost a race with another sign-in for the same address; ask for a retry rather than a 500.
-        return badRequest("Could not complete sign-in. Please try again.");
-      }
-      user = { id };
-    }
+  if (mobile) {
+    // The phone never receives a session in a URL. It receives a one-time code, good for 60 seconds, that only
+    // the holder of the PKCE verifier can turn into a session (handleMobileExchange).
+    const oneTime = toHexString(crypto.getRandomValues(new Uint8Array(32)));
+    const now = new Date();
+    await env.DB.prepare(`INSERT INTO auth_code (code_hash, user_id, challenge, created_at, expires_at) VALUES (?, ?, ?, ?, ?)`)
+      .bind(await sha256Hex(oneTime), result.userId, stateRow.app_challenge ?? "", now.toISOString(), new Date(now.getTime() + 60_000).toISOString())
+      .run();
+    return new Response(null, {
+      status: 302,
+      headers: { Location: withParams(stateRow.redirect_to ?? "", { code: oneTime }), "Set-Cookie": stateCookie("", 0) },
+    });
   }
 
   // Same hashed-at-rest session as email login (the previous inline insert stored the raw token).
-  const token = await createSession(env, user.id);
+  const email = (await env.DB.prepare(`SELECT email FROM user WHERE id = ?`).bind(result.userId).first<{ email: string }>())?.email ?? "";
+  const ttl = sessionTtlFor(env, email);
+  const token = await createSession(env, result.userId, ttl);
 
   const destination = new URL(safeRedirect(stateRow.redirect_to), siteOrigin(request, env));
   const headers = new Headers({ Location: destination.toString() });
-  headers.append("Set-Cookie", sessionCookie(token, SESSION_TTL_SECONDS));
+  headers.append("Set-Cookie", sessionCookie(token, ttl));
   headers.append("Set-Cookie", stateCookie("", 0));
   return new Response(null, { status: 302, headers });
+}
+
+function toHexString(bytes: Uint8Array): string {
+  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(text: string): Promise<string> {
+  return toHexString(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))));
+}
+
+/**
+ * `POST /auth/mobile/exchange { code, code_verifier }` — the app trades the one-time code for a bearer token.
+ *
+ * Redeemable once, within 60 seconds, and only by whoever holds the verifier whose SHA-256 the app committed to
+ * when it started sign-in. A different app that registered the same `retro://` scheme and intercepted the code
+ * cannot produce the verifier, so the code is worthless to it (RFC 7636 / RFC 8252).
+ */
+export async function handleMobileExchange(request: Request, env: Env): Promise<Response> {
+  const limited = await limitByIp(request, env, "mobile-exchange", 30, 600);
+  if (limited) return limited;
+  const body = await readJson<{ code?: unknown; code_verifier?: unknown }>(request, 4 * 1024);
+  const code = typeof body?.code === "string" ? body.code : "";
+  const verifier = typeof body?.code_verifier === "string" ? body.code_verifier : "";
+  const invalid = () => badRequest("This sign-in code is invalid or has expired. Please try again.");
+  if (!/^[0-9a-f]{64}$/.test(code) || !/^[A-Za-z0-9._~-]{43,128}$/.test(verifier)) return invalid();
+  // Guessing a code is pointless (256 random bits) but a verifier-guessing loop on one code is still bounded.
+  if (await overLimit(env, "mobile-exchange-code", code, 5, 120)) return tooManyRequests(120);
+
+  const codeHash = await sha256Hex(code);
+  const row = await env.DB.prepare(`SELECT user_id, challenge, expires_at, used_at FROM auth_code WHERE code_hash = ?`)
+    .bind(codeHash)
+    .first<{ user_id: string; challenge: string; expires_at: string; used_at: string | null }>();
+  if (!row || row.used_at || row.expires_at < new Date().toISOString()) return invalid();
+
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  const computed = base64Url(new Uint8Array(digest));
+  if (!timingSafe(computed, row.challenge)) return invalid();
+
+  // Claim it atomically: of two simultaneous redemptions only one gets a session.
+  const claim = await env.DB.prepare(`UPDATE auth_code SET used_at = ? WHERE code_hash = ? AND used_at IS NULL`)
+    .bind(new Date().toISOString(), codeHash)
+    .run();
+  if (!Number(claim.meta?.changes ?? 0)) return invalid();
+
+  const user = await env.DB.prepare(`SELECT id, name, email, avatar_url FROM user WHERE id = ?`)
+    .bind(row.user_id)
+    .first<{ id: string; name: string; email: string; avatar_url: string | null }>();
+  if (!user) return invalid();
+  const token = await createSession(env, user.id, sessionTtlFor(env, user.email));
+  return json({ user: { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatar_url }, token });
+}
+
+function timingSafe(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
 }
 
 /** Tells the frontend which social providers are actually usable, so it can
@@ -372,5 +398,6 @@ export function handleOAuthProviders(env: Env): Response {
     google: Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET),
     facebook: Boolean(FACEBOOK_ENABLED && env.FACEBOOK_CLIENT_ID && env.FACEBOOK_CLIENT_SECRET),
     x: Boolean(env.X_CLIENT_ID && env.X_CLIENT_SECRET),
+    apple: Boolean(env.APPLE_BUNDLE_ID),
   });
 }

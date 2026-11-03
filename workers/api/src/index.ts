@@ -25,8 +25,11 @@ import { runScheduled } from "./cron";
 import { handleLiveRates } from "./live-rates";
 import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
-import { handleForgotPassword, handleLogin, handleLogout, handleMe, handleRegister, handleResetPassword } from "./auth";
-import { handleOAuthCallback, handleOAuthProviders, handleOAuthStart, type Provider } from "./oauth";
+import { handleDeleteAccount, handleForgotPassword, handleLogin, handleLogout, handleMe, handleRegister, handleResetPassword } from "./auth";
+import { handleMobileExchange, handleOAuthCallback, handleOAuthProviders, handleOAuthStart, type Provider } from "./oauth";
+import { handleAppleSignIn } from "./apple";
+import { handlePayPage, handlePayPageVerify } from "./pay-page";
+import { handleDeleteDevice, handleRegisterDevice } from "./push";
 import { handleCreatePackageRequest, handleListPackageRequests } from "./package-requests";
 import { handleAdminList, handleAdminQuote } from "./admin";
 import {
@@ -70,7 +73,7 @@ const ROUTES: Route[] = [
   { method: "GET", pattern: /^\/live-rates$/, handle: (r, env, ctx) => handleLiveRates(r, env, ctx) },
 
   // ---- public capture ----
-  { method: "POST", pattern: /^\/enquiries$/, handle: (r, env) => handleEnquiry(r, env) },
+  { method: "POST", pattern: /^\/enquiries$/, handle: (r, env, ctx) => handleEnquiry(r, env, ctx) },
   { method: "POST", pattern: /^\/quotes$/, handle: (r, env) => handleSaveQuote(r, env) },
   { method: "GET", pattern: new RegExp(`^/quotes/${ID}$`), handle: (_r, env, _c, [id]) => handleGetQuote(id, env) },
 
@@ -80,6 +83,9 @@ const ROUTES: Route[] = [
   { method: "POST", pattern: /^\/auth\/forgot$/, handle: (r, env, ctx) => handleForgotPassword(r, env, ctx) },
   { method: "POST", pattern: /^\/auth\/reset$/, handle: (r, env) => handleResetPassword(r, env) },
   { method: "POST", pattern: /^\/auth\/logout$/, handle: (r, env) => handleLogout(r, env) },
+  { method: "DELETE", pattern: /^\/auth\/account$/, handle: (r, env) => handleDeleteAccount(r, env) },
+  { method: "POST", pattern: /^\/auth\/mobile\/exchange$/, handle: (r, env) => handleMobileExchange(r, env) },
+  { method: "POST", pattern: /^\/auth\/apple$/, handle: (r, env) => handleAppleSignIn(r, env) },
   { method: "GET", pattern: /^\/auth\/me$/, handle: (r, env) => handleMe(r, env) },
   { method: "GET", pattern: /^\/auth\/providers$/, handle: (_r, env) => handleOAuthProviders(env) },
   { method: "GET", pattern: /^\/auth\/(google|facebook|x)\/start$/, handle: (r, env, _c, [p]) => handleOAuthStart(p as Provider, r, env) },
@@ -111,6 +117,14 @@ const ROUTES: Route[] = [
   { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/note$`), handle: (r, env, _c, [id]) => handleAdminNote(id, r, env) },
   { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/close$`), handle: (r, env, ctx, [id]) => handleAdminClose(id, r, env, ctx) },
   { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/messages$`), handle: (r, env, ctx, [id]) => handleAdminMessage(id, r, env, ctx) },
+
+  // ---- devices (push) ----
+  { method: "POST", pattern: /^\/devices$/, handle: (r, env) => handleRegisterDevice(r, env) },
+  { method: "DELETE", pattern: new RegExp(`^/devices/${ID}$`), handle: (r, env, _c, [id]) => handleDeleteDevice(id, r, env) },
+
+  // ---- hosted payment page for the app (authenticated by a signed pay token, not the session) ----
+  { method: "GET", pattern: new RegExp(`^/pay/${ID}$`), handle: (r, env, _c, [id]) => handlePayPage(id, r, env) },
+  { method: "POST", pattern: new RegExp(`^/pay/${ID}/verify$`), handle: (r, env, ctx, [id]) => handlePayPageVerify(id, r, env, ctx) },
 
   // Razorpay calls this directly (server to server), not through a browser.
   { method: "POST", pattern: /^\/webhooks\/razorpay$/, handle: (r, env, ctx) => handleRazorpayWebhook(r, env, ctx) },
