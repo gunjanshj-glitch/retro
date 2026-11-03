@@ -6,7 +6,7 @@ import {
   nextPaymentInr,
   parseAdjustments,
   priceQuote,
-} from "@/lib/quote-pricing";
+} from "@retro/core/quote-pricing";
 import { fakeQuotation } from "../helpers/quotation";
 
 describe("priceQuote", () => {

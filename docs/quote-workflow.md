@@ -28,7 +28,7 @@ step, and what you need to switch on Razorpay.
 
 Exits: `expired` (the quote's validity date passed; the agency can send a fresh
 one), `cancelled` (traveller withdrew), `closed` (agency closed it). The rules
-live in one place, `lib/quote-workflow.ts`, and the Worker refuses any move not
+live in one place, `packages/core/quote-workflow.ts`, and the Worker refuses any move not
 in its transition table.
 
 ## What the traveller sees
@@ -67,7 +67,7 @@ Internal notes are never shown to the traveller.
 
 * The browser never decides a price. At acceptance the Worker recomputes the
   total from the stored revision and the extras ticked (`priceQuote` in
-  `lib/quote-pricing.ts`), and it computes every payment amount itself.
+  `packages/core/quote-pricing.ts`), and it computes every payment amount itself.
 * A **deposit** (optional, set per quote) is charged first; the balance is a
   second Razorpay order after the first payment settles.
 * Contingency and agency margin are never shown: the traveller receives a

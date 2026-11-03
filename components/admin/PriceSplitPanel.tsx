@@ -7,9 +7,9 @@
  * dropped from the total, with contingency, margin and tax recomputed. The
  * traveller's quote page only ever shows the category rows, never this.
  */
-import { formatInr } from "@/lib/atlas/engine/text";
-import type { LineItem, QuoteRequest, Quotation } from "@/lib/atlas/engine/types";
-import { COMPONENT_LABEL, componentBreakdown } from "@/lib/quote-pricing";
+import { formatInr } from "@retro/core/atlas/engine/text";
+import type { LineItem, QuoteRequest, Quotation } from "@retro/core/atlas/engine/types";
+import { COMPONENT_LABEL, componentBreakdown } from "@retro/core/quote-pricing";
 
 type Props = {
   quote: Quotation;

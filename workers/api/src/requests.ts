@@ -29,8 +29,8 @@ import {
   type RequestRow,
 } from "./request-core";
 import { razorpayConfigured } from "./razorpay";
-import { isValidEmail, normalisePhone, TRAVELLER_TURN, type RequestStatus } from "../../../lib/quote-workflow";
-import { nextPaymentInr, parseAdjustments, priceQuote, type PublicQuote } from "../../../lib/quote-pricing";
+import { isValidEmail, normalisePhone, TRAVELLER_TURN, type RequestStatus } from "@retro/core/quote-workflow";
+import { nextPaymentInr, parseAdjustments, priceQuote, type PublicQuote } from "@retro/core/quote-pricing";
 
 /** A full quotation snapshot is itinerary-sized; generous but still bounded. */
 const MAX_BODY_BYTES = 256 * 1024;

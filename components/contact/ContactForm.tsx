@@ -2,7 +2,7 @@
 
 import type { FormEvent } from "react";
 import { submitEnquiry } from "@/lib/atlas/client";
-import { WHATSAPP_NUMBER } from "@/lib/contact";
+import { WHATSAPP_NUMBER } from "@retro/core/contact";
 
 
 const fieldClassName =

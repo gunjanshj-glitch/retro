@@ -1,22 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { CoreBundle, type DestinationBundle, type Route, type TravellerType, type TripStyle, type VisaRule } from "@/lib/atlas/schema";
-import { generateQuotation, STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
-import { QuoteRequest } from "@/lib/atlas/engine/types";
-import { allocateNights, matchReferencePackage, sequencePlaces, buildRouteLookup } from "@/lib/atlas/engine/itinerary";
-import { dayBudget } from "@/lib/atlas/engine/dayplan";
-import { plausibleModes } from "@/lib/atlas/engine/geo";
-import { evaluateRule, type RuleFacts } from "@/lib/atlas/engine/rules";
-import { resolvePax, resolveRate, seasonMultiplier, vehiclePlan } from "@/lib/atlas/engine/pricing";
+import { CoreBundle, type DestinationBundle, type Route, type TravellerType, type TripStyle, type VisaRule } from "@retro/core/atlas/schema";
+import { generateQuotation, STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
+import { QuoteRequest } from "@retro/core/atlas/engine/types";
+import { allocateNights, matchReferencePackage, sequencePlaces, buildRouteLookup } from "@retro/core/atlas/engine/itinerary";
+import { dayBudget } from "@retro/core/atlas/engine/dayplan";
+import { plausibleModes } from "@retro/core/atlas/engine/geo";
+import { evaluateRule, type RuleFacts } from "@retro/core/atlas/engine/rules";
+import { resolvePax, resolveRate, seasonMultiplier, vehiclePlan } from "@retro/core/atlas/engine/pricing";
 import {
   computeNightsBounds,
   evaluatePlaceSelectability,
   filterRealisticSelection,
   hotelStarForStyle,
   isHotelStarAvailable,
-} from "@/lib/atlas/engine/bounds";
-import { componentBreakdown } from "@/lib/quote-pricing";
+} from "@retro/core/atlas/engine/bounds";
+import { componentBreakdown } from "@retro/core/quote-pricing";
 import policy from "@/content/quote-policy.json";
 
 const DIR = path.join("public", "atlas");

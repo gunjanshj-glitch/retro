@@ -10,7 +10,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { Matcher, normalise, slugify } from "./normalise";
-import { parseDecisionRules } from "../../lib/atlas/engine/rules";
+import { parseDecisionRules } from "@retro/core/atlas/engine/rules";
 import type {
   Activity,
   Area,
@@ -27,7 +27,7 @@ import type {
   SuitabilityScore,
   TripStyle,
   WalkingIntensity,
-} from "../../lib/atlas/schema";
+} from "@retro/core/atlas/schema";
 
 // ---------------------------------------------------------------------------
 // Generic markdown helpers

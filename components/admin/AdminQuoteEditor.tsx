@@ -18,12 +18,12 @@ import { WorldMapPicker } from "@/components/plan/WorldMapPicker";
 import { QuoteOffer } from "@/components/my-requests/QuoteOffer";
 import { onAccent } from "@/components/plan/theme";
 import { useQuotation } from "@/lib/atlas/use-quotation";
-import { formatInr } from "@/lib/atlas/engine/text";
-import { QuoteRequest } from "@/lib/atlas/engine/types";
-import type { Quotation } from "@/lib/atlas/engine/types";
+import { formatInr } from "@retro/core/atlas/engine/text";
+import { QuoteRequest } from "@retro/core/atlas/engine/types";
+import type { Quotation } from "@retro/core/atlas/engine/types";
 import { adminSaveDraft, adminSendTripQuote, type AdminRequestDetail } from "@/lib/auth-client";
-import { buildPublicQuote, emptyAdjustments, priceQuote, type QuoteAdjustments } from "@/lib/quote-pricing";
-import type { RequestStatus } from "@/lib/quote-workflow";
+import { buildPublicQuote, emptyAdjustments, priceQuote, type QuoteAdjustments } from "@retro/core/quote-pricing";
+import type { RequestStatus } from "@retro/core/quote-workflow";
 import { PricingPanel } from "./PricingPanel";
 import { PriceSplitPanel } from "./PriceSplitPanel";
 

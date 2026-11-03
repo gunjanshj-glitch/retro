@@ -21,10 +21,10 @@
  * so the engine can apply exactly the same curves at runtime to pairs that
  * have no authored route at all.
  */
-import type { Route, RouteOption } from "../../lib/atlas/schema";
+import type { Route, RouteOption } from "@retro/core/atlas/schema";
 import type { GeoPoint } from "./vendor-geocode";
 import { haversineKm } from "./vendor-airports";
-import { deriveDurationMinutes, deriveFareInr } from "../../lib/atlas/engine/geo";
+import { deriveDurationMinutes, deriveFareInr } from "@retro/core/atlas/engine/geo";
 
 /** Spread around the mid fare, so a derived option still has a low and high. */
 const BAND_SPREAD = 0.25;

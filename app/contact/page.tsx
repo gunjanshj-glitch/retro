@@ -3,7 +3,7 @@ import Image from "next/image";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { Footer } from "@/components/ui/Footer";
 import { NavBar } from "@/components/ui/NavBar";
-import { PHONE_DISPLAY, PHONE_E164, WHATSAPP_DISPLAY, whatsappLink } from "@/lib/contact";
+import { PHONE_DISPLAY, PHONE_E164, WHATSAPP_DISPLAY, whatsappLink } from "@retro/core/contact";
 
 export const metadata: Metadata = {
   title: "Contact | Retro Holidays",

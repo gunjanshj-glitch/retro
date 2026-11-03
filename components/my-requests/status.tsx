@@ -13,7 +13,7 @@ import {
   type RequestEvent,
   type RequestStatus,
   type StatusCopy,
-} from "@/lib/quote-workflow";
+} from "@retro/core/quote-workflow";
 import { onAccent } from "@/components/plan/theme";
 
 const TONE_STYLE: Record<StatusCopy["tone"], { color: string; border: string; background: string }> = {

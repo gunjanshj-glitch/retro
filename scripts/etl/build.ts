@@ -16,7 +16,7 @@ import {
   type DestinationBundle,
   type DestinationGuidance,
   type Place,
-} from "../../lib/atlas/schema";
+} from "@retro/core/atlas/schema";
 import { parseMaster, parseTransport } from "./parse-master";
 import { parsePricing } from "./parse-pricing";
 import { parseDestinations } from "./parse-destinations";

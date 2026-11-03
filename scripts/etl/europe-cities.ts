@@ -28,7 +28,7 @@ import type {
   Country,
   Place,
   WalkingIntensity,
-} from "../../lib/atlas/schema";
+} from "@retro/core/atlas/schema";
 import type { DestinationContent } from "./parse-destinations";
 import { normalise, slugify } from "./normalise";
 

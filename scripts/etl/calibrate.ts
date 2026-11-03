@@ -25,9 +25,9 @@ import {
   type Route,
   type TripStyle,
   type VisaRule,
-} from "../../lib/atlas/schema";
-import { generateQuotation } from "../../lib/atlas/engine";
-import { QuoteRequest, type CostComponent, type Quotation } from "../../lib/atlas/engine/types";
+} from "@retro/core/atlas/schema";
+import { generateQuotation } from "@retro/core/atlas/engine";
+import { QuoteRequest, type CostComponent, type Quotation } from "@retro/core/atlas/engine/types";
 import { writeWorkbook, type SheetSpec } from "./xlsx-write";
 import { Workbook, cell, num } from "./xlsx-read";
 

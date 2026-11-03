@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { whatsappLink } from "@/lib/contact";
+import { whatsappLink } from "@retro/core/contact";
 
 export const POLICY_LINKS = [
   { href: "/terms", label: "Terms & Conditions" },

@@ -5,7 +5,7 @@
  * sells; this derives a general rule from that data plus geography, rather
  * than hand-listing every pair, so it stays correct as the catalogue grows.
  */
-import type { Country, Package, Route } from "../../lib/atlas/schema";
+import type { Country, Package, Route } from "@retro/core/atlas/schema";
 
 // ---------------------------------------------------------------------------
 // Country compatibility

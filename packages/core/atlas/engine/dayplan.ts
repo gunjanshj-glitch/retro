@@ -7,7 +7,7 @@
  * is filled as fully as it can be without breaching the rest requirement.
  */
 import type { Cluster, DestinationBundle, PurposeActivity, TransportMode, TripStyle } from "../schema";
-import policy from "../../../content/quote-policy.json";
+import policy from "../../../../content/quote-policy.json";
 import type { AirportLink, PlaceStay, PlannedActivity, PlannedDay, TransferLeg, TransportPreference } from "./types";
 import type { RouteLookup } from "./itinerary";
 import { formatDuration } from "./text";

@@ -6,12 +6,12 @@
  * locked; everything else can be dropped or added, and the price recomputes.
  */
 import { useMemo, useState } from "react";
-import type { Quotation, QuoteRequest } from "@/lib/atlas/engine/types";
-import type { TransportMode } from "@/lib/atlas/schema";
-import { formatDuration, formatInr } from "@/lib/atlas/engine/text";
+import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
+import type { TransportMode } from "@retro/core/atlas/schema";
+import { formatDuration, formatInr } from "@retro/core/atlas/engine/text";
 import policy from "@/content/quote-policy.json";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { allocateMarkup, COMPONENT_LABEL } from "@/lib/quote-pricing";
+import { allocateMarkup, COMPONENT_LABEL } from "@retro/core/quote-pricing";
 import { SendForApprovalModal } from "./SendForApprovalModal";
 import { onAccent } from "./theme";
 

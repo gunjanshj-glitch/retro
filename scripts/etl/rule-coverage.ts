@@ -6,8 +6,8 @@
  */
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { evaluateRule, type RuleFacts } from "../../lib/atlas/engine/rules";
-import type { DestinationBundle } from "../../lib/atlas/schema";
+import { evaluateRule, type RuleFacts } from "@retro/core/atlas/engine/rules";
+import type { DestinationBundle } from "@retro/core/atlas/schema";
 
 const dir = path.join("public", "atlas", "destinations");
 

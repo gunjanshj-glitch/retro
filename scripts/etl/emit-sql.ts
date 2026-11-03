@@ -11,7 +11,7 @@ import type {
   DestinationGuidance,
   Route,
   VisaRule,
-} from "../../lib/atlas/schema";
+} from "@retro/core/atlas/schema";
 
 const DDL = `
 PRAGMA foreign_keys = ON;

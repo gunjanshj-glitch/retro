@@ -32,7 +32,7 @@ import type {
   State,
   Subregion,
   TransportMode,
-} from "../../lib/atlas/schema";
+} from "@retro/core/atlas/schema";
 
 type MasterPackage = {
   name: string;

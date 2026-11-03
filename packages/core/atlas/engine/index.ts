@@ -5,7 +5,7 @@
  * compiled data always yields the same quotation. No model, no network — live
  * rates, when present, are supplied by the caller as plain data.
  */
-import policy from "../../../content/quote-policy.json";
+import policy from "../../../../content/quote-policy.json";
 import type {
   Cluster,
   CoreBundle,

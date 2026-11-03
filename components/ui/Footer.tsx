@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { whatsappLink } from "@/lib/contact";
+import { whatsappLink } from "@retro/core/contact";
 
 const POLICY_LINKS = [
   { href: "/terms", short: "Terms" },

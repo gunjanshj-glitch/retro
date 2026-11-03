@@ -21,7 +21,7 @@ import type {
   Place,
   TransferRate,
   TransferService,
-} from "../../lib/atlas/schema";
+} from "@retro/core/atlas/schema";
 
 export const META_SHEETS = new Set([
   "Markup_Tax_Rules",

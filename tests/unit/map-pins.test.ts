@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { layoutPins, pinHitRadius, MIN_PIN_GAP } from "@/lib/atlas/map-pins";
+import { layoutPins, pinHitRadius, MIN_PIN_GAP } from "@retro/core/atlas/map-pins";
 
 describe("region map pin layout", () => {
   it("pushes pins that share a pixel at least the minimum gap apart", () => {

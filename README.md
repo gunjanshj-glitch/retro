@@ -27,7 +27,7 @@ output — run both once before `dev` or the planner will have nothing to load.
 
 In short: `input_files/` (the agency's spreadsheets, JSON and destination
 markdown) is compiled by `scripts/etl/` into static JSON bundles, which the
-browser loads and prices with `lib/atlas/engine/`. The engine is pure — the
+browser loads and prices with `packages/core/atlas/engine/`. The engine is pure — the
 same request against the same data always yields the same quotation — which is
 why it runs client-side and re-prices instantly.
 

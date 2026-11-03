@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { daysLeft, daysLeftLabel } from "@/components/my-requests/status";
-import { canTransition, normalisePhone, isFinished } from "@/lib/quote-workflow";
+import { canTransition, normalisePhone, isFinished } from "@retro/core/quote-workflow";
 
 describe("daysLeft", () => {
   afterEach(() => vi.useRealTimers());

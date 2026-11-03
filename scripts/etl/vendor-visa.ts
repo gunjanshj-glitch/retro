@@ -8,7 +8,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import type { Country, VisaRule } from "../../lib/atlas/schema";
+import type { Country, VisaRule } from "@retro/core/atlas/schema";
 import { VISA_FEE_INR } from "./estimate";
 
 const SOURCE_URL =

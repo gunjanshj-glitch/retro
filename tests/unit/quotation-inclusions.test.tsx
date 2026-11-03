@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { render, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { CoreBundle, type DestinationBundle, type Route, type VisaRule } from "@/lib/atlas/schema";
-import { generateQuotation, STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
-import { QuoteRequest } from "@/lib/atlas/engine/types";
+import { CoreBundle, type DestinationBundle, type Route, type VisaRule } from "@retro/core/atlas/schema";
+import { generateQuotation, STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
+import { QuoteRequest } from "@retro/core/atlas/engine/types";
 import { QuotationView } from "@/components/plan/QuotationView";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 

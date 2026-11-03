@@ -23,7 +23,7 @@ import type {
   Region,
   TransferRate,
   TransferService,
-} from "../../lib/atlas/schema";
+} from "@retro/core/atlas/schema";
 
 export type Estimate = {
   table: string;

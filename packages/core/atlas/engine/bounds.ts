@@ -11,7 +11,7 @@
  * request that reaches the engine by any path other than the two pickers
  * below is still held to the same standard.
  */
-import policy from "../../../content/quote-policy.json";
+import policy from "../../../../content/quote-policy.json";
 import type { CoreBundle, HotelStar, TravellerType, TripStyle } from "../schema";
 
 export type NightsBounds = {

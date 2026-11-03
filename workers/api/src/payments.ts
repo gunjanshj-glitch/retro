@@ -17,7 +17,7 @@ import { getSessionUser, requireAuth } from "./auth";
 import { agencyInbox, formatInr, sendNotice, siteUrl } from "./email";
 import { addEvent, loadRequest, loadRevision, refreshExpiry, statusOf } from "./request-core";
 import { createOrder, razorpayConfigured, verifyCheckoutSignature, verifyWebhookSignature } from "./razorpay";
-import { nextPaymentInr } from "../../../lib/quote-pricing";
+import { nextPaymentInr } from "@retro/core/quote-pricing";
 
 type PaymentRow = {
   id: string;

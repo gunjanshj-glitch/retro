@@ -10,10 +10,10 @@
  */
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import type { Quotation, QuoteRequest } from "@/lib/atlas/engine/types";
-import { formatInr } from "@/lib/atlas/engine/text";
+import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
+import { formatInr } from "@retro/core/atlas/engine/text";
 import { createFinalRequest, type AuthUser } from "@/lib/auth-client";
-import { isValidEmail, normalisePhone } from "@/lib/quote-workflow";
+import { isValidEmail, normalisePhone } from "@retro/core/quote-workflow";
 import { onAccent } from "./theme";
 
 const inputClass =

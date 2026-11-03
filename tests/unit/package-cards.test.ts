@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { CoreBundle } from "@/lib/atlas/schema";
+import { CoreBundle } from "@retro/core/atlas/schema";
 import type { PackageCard } from "@/lib/atlas/client";
 
 const DIR = path.join("public", "atlas");

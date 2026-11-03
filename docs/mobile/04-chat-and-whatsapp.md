@@ -56,6 +56,6 @@ Rules: any step skippable except name and one contact; "Plan it myself" jumps to
 Spam and privacy: honeypot field, per-IP and per-phone rate limit, a Cloudflare Turnstile check on the **web** chat (the app has no browser challenge; it relies on rate limits and a dedupe on phone + day), phone validated as E.164, consent line ("Retro will contact you on this number"), listed in the privacy policy and the Play Data Safety / App Privacy declarations. Staff pushes are coalesced so a spam burst produces one alert, not fifty. Unconverted leads are deleted after a retention period you choose (suggest 12 months [Guessing]); India's data protection law expects notice, purpose limits and deletion on request [Likely, confirm with counsel].
 
 ## Website changes (to ship with Phase 1)
-- Floating "Talk to us" button (WhatsApp / chat / call) site-wide, replacing ad hoc links. `lib/contact.ts` is the single source of numbers (done).
+- Floating "Talk to us" button (WhatsApp / chat / call) site-wide, replacing ad hoc links. `packages/core/contact.ts` is the single source of numbers (done).
 - Contact form keeps working; it already stores the enquiry before the WhatsApp handoff.
 - Link text and `aria-label`s name the number so it can be verified.

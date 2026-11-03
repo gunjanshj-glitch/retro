@@ -7,13 +7,13 @@
  * no free-text input anywhere, which is a hard requirement: the engine can only
  * price options it has data for.
  */
-import { DEPARTURE_CITIES } from "@/lib/atlas/departure-cities";
+import { DEPARTURE_CITIES } from "@retro/core/atlas/departure-cities";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CoreBundle, HotelStar, TravellerType, TripStyle } from "@/lib/atlas/schema";
-import type { QuoteRequest } from "@/lib/atlas/engine/types";
-import { STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
-import { computeNightsBounds, hotelStarForStyle, isHotelStarAvailable } from "@/lib/atlas/engine/bounds";
-import { resolvePax } from "@/lib/atlas/engine/pricing";
+import type { CoreBundle, HotelStar, TravellerType, TripStyle } from "@retro/core/atlas/schema";
+import type { QuoteRequest } from "@retro/core/atlas/engine/types";
+import { STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
+import { computeNightsBounds, hotelStarForStyle, isHotelStarAvailable } from "@retro/core/atlas/engine/bounds";
+import { resolvePax } from "@retro/core/atlas/engine/pricing";
 import { onAccent, selectStyle } from "./theme";
 
 /** Pace nudged by trip style — pilgrimage itineraries plan gentler days by default. */

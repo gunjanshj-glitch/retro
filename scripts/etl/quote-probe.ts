@@ -6,9 +6,9 @@
  */
 import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import { generateQuotation, STYLE_FOR_TRAVELLER } from "../../lib/atlas/engine";
-import { QuoteRequest } from "../../lib/atlas/engine/types";
-import type { CoreBundle, DestinationBundle, Route, VisaRule } from "../../lib/atlas/schema";
+import { generateQuotation, STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
+import { QuoteRequest } from "@retro/core/atlas/engine/types";
+import type { CoreBundle, DestinationBundle, Route, VisaRule } from "@retro/core/atlas/schema";
 
 const OUT = path.join("public", "atlas");
 const core = JSON.parse(readFileSync(path.join(OUT, "core.json"), "utf8")) as CoreBundle;

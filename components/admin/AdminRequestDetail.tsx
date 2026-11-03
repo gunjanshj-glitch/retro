@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ProgressTracker, StatusBadge, Timeline, formatDate } from "@/components/my-requests/status";
 import { onAccent } from "@/components/plan/theme";
-import { formatInr } from "@/lib/atlas/engine/text";
+import { formatInr } from "@retro/core/atlas/engine/text";
 import {
   adminAddNote,
   adminCloseTripRequest,
@@ -19,7 +19,7 @@ import {
   adminStartReview,
   type AdminRequestDetail as Detail,
 } from "@/lib/auth-client";
-import { canTransition, STATUS_COPY } from "@/lib/quote-workflow";
+import { canTransition, STATUS_COPY } from "@retro/core/quote-workflow";
 import { AdminQuoteEditor, isEditable, type EditorActions, type EditorSummary } from "./AdminQuoteEditor";
 
 const primaryBtn = "inline-flex min-h-11 w-full items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold transition disabled:opacity-50";

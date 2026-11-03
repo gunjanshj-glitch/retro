@@ -8,8 +8,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { StatusBadge, formatDate } from "@/components/my-requests/status";
 import { adminListTripRequests, type AdminRequestRow } from "@/lib/auth-client";
-import { formatInr } from "@/lib/atlas/engine/text";
-import { AGENCY_TURN, TRAVELLER_TURN, type RequestStatus } from "@/lib/quote-workflow";
+import { formatInr } from "@retro/core/atlas/engine/text";
+import { AGENCY_TURN, TRAVELLER_TURN, type RequestStatus } from "@retro/core/quote-workflow";
 
 type FilterKey = "action" | "waiting" | "paid" | "closed" | "all";
 

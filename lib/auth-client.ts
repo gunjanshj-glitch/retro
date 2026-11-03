@@ -9,8 +9,8 @@
  * cookie the backend sets; this module never touches it directly, only reacts
  * to what `/auth/me` reports.
  */
-import type { PublicQuote, QuoteAdjustments } from "./quote-pricing";
-import type { RequestEvent, RequestStatus } from "./quote-workflow";
+import type { PublicQuote, QuoteAdjustments } from "@retro/core/quote-pricing";
+import type { RequestEvent, RequestStatus } from "@retro/core/quote-workflow";
 
 export type AuthUser = { id: string; name: string; email: string; avatarUrl: string | null };
 

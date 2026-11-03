@@ -308,7 +308,7 @@ describe("hotel live-rate wiring", () => {
     const core = JSON.parse(
       (await import("node:fs")).readFileSync("public/atlas/core.json", "utf8"),
     ) as { countries: { iso3: string | null }[] };
-    const { ISO3_TO_ISO2 } = await import("@/lib/atlas/iso");
+    const { ISO3_TO_ISO2 } = await import("@retro/core/atlas/iso");
     for (const c of core.countries) if (c.iso3) expect(ISO3_TO_ISO2[c.iso3]).toMatch(/^[A-Z]{2}$/);
   });
 });

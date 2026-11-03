@@ -6,8 +6,8 @@
  * payment fees. Every line records where its rate came from so a quote can be
  * audited back to the workbook, an estimate, or a live lookup.
  */
-import policy from "../../../content/quote-policy.json";
-import calibration from "../../../content/pricing-calibration.json";
+import policy from "../../../../content/quote-policy.json";
+import calibration from "../../../../content/pricing-calibration.json";
 import type {
   CityTax,
   CoreBundle,

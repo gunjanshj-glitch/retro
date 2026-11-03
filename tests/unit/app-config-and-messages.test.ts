@@ -72,7 +72,7 @@ describe("B5 /app-config", () => {
     const s = setup();
     const r = await s.call(null, "GET", "/app-config?platform=ios&version=1.0.3");
     expect(r.status).toBe(200);
-    expect(r.json).toMatchObject({ updateRequired: false, maintenance: false, whatsapp: "916290855027", flags: {} });
+    expect(r.json).toMatchObject({ updateRequired: false, maintenance: false, whatsapp: "916290855027", phone: "+919804786498", flags: {} });
     expect(r.headers.get("Cache-Control")).toBe("public, max-age=300");
   });
 

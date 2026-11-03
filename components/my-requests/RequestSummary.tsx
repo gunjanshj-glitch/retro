@@ -25,10 +25,10 @@ import {
   type RequestDetail,
 } from "@/lib/auth-client";
 import { payForRequest } from "@/lib/razorpay-checkout";
-import { formatInr } from "@/lib/atlas/engine/text";
-import type { Quotation } from "@/lib/atlas/engine/types";
-import { priceQuote } from "@/lib/quote-pricing";
-import { STATUS_COPY } from "@/lib/quote-workflow";
+import { formatInr } from "@retro/core/atlas/engine/text";
+import type { Quotation } from "@retro/core/atlas/engine/types";
+import { priceQuote } from "@retro/core/quote-pricing";
+import { STATUS_COPY } from "@retro/core/quote-workflow";
 import { onAccent } from "@/components/plan/theme";
 import { QuoteOffer } from "./QuoteOffer";
 import { daysLeft, daysLeftLabel, formatDate, ProgressTracker, StatusBadge, Timeline } from "./status";

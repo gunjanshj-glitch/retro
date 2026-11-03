@@ -1,0 +1,9 @@
+{
+  "name": "@retro/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform-neutral domain code shared by the web app, the API Worker and the mobile app: the quotation engine, catalogue schema, quote pricing and workflow, contact details. No DOM, no React, no Node built-ins.",
+  "peerDependencies": {
+    "zod": "*"
+  }
+}

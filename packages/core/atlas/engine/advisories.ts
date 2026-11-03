@@ -16,7 +16,7 @@
  * and is entitled to take it. They make sure the trip is never quoted
  * *silently* against the destination's own documented advice.
  */
-import policy from "../../../content/quote-policy.json";
+import policy from "../../../../content/quote-policy.json";
 import type { DestinationBundle, MonthlyScore, TravellerType, TripStyle } from "../schema";
 import type { PlaceStay, PlannedDay, QuoteWarning } from "./types";
 

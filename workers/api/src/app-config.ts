@@ -9,6 +9,7 @@
  */
 import type { Env } from "./http";
 import { json } from "./http";
+import { PHONE_E164, WHATSAPP_NUMBER } from "@retro/core/contact";
 
 /** Compares dotted numeric versions. Non-numeric parts read as 0, so junk never throws. */
 export function compareVersions(a: string, b: string): number {
@@ -54,8 +55,9 @@ export function handleAppConfig(request: Request, env: Env): Response {
       updateAvailable: version ? compareVersions(version, latestVersion) < 0 : false,
       maintenance,
       maintenanceMessage: maintenance ? (env.APP_MAINTENANCE_MESSAGE ?? "We are making improvements and will be back shortly.").slice(0, 300) : null,
-      whatsapp: "916290855027",
-      phone: "+916290855027",
+      // One source of truth shared with the site and the app (packages/core/contact.ts).
+      whatsapp: WHATSAPP_NUMBER,
+      phone: PHONE_E164,
       flags: flagsOf(env),
       catalogueVersion: env.CATALOGUE_VERSION ?? null,
     },

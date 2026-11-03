@@ -8,9 +8,9 @@
  * ratings already compiled into the core bundle. Still no free text.
  */
 import { useMemo, useState } from "react";
-import type { CoreBundle, TripStyle } from "@/lib/atlas/schema";
-import { styleScore } from "@/lib/atlas/engine";
-import { evaluatePlaceSelectability } from "@/lib/atlas/engine/bounds";
+import type { CoreBundle, TripStyle } from "@retro/core/atlas/schema";
+import { styleScore } from "@retro/core/atlas/engine";
+import { evaluatePlaceSelectability } from "@retro/core/atlas/engine/bounds";
 
 import { onAccent, selectStyle } from "./theme";
 

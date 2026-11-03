@@ -7,9 +7,9 @@
  * content is fetched only for the places a traveller actually selects, which
  * keeps the initial payload to roughly 140 KB gzipped.
  */
-import type { CoreBundle, DestinationBundle, Route, VisaRule } from "./schema";
-import type { Quotation } from "./engine/types";
-import { ISO3_TO_ISO2 } from "./iso";
+import type { CoreBundle, DestinationBundle, Route, VisaRule } from "@retro/core/atlas/schema";
+import type { Quotation } from "@retro/core/atlas/engine/types";
+import { ISO3_TO_ISO2 } from "@retro/core/atlas/iso";
 
 const BASE = "/atlas";
 

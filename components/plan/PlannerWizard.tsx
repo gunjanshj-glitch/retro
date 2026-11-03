@@ -16,8 +16,8 @@ import { ExplorePicker } from "./ExplorePicker";
 import { PackageBrowseRail } from "./PackageBrowseRail";
 import { onAccent } from "./theme";
 import { useQuotation } from "@/lib/atlas/use-quotation";
-import { STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
-import type { QuoteRequest } from "@/lib/atlas/engine/types";
+import { STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
+import type { QuoteRequest } from "@retro/core/atlas/engine/types";
 
 type Step = "mode" | "where" | "options" | "quote";
 type Mode = "known" | "explore";

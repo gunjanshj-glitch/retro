@@ -1,4 +1,4 @@
-import type { Quotation } from "@/lib/atlas/engine/types";
+import type { Quotation } from "@retro/core/atlas/engine/types";
 
 /** Just enough of a Quotation for the commercial layer; the engine is not under test here. */
 export function fakeQuotation(total = 100_000): Quotation {

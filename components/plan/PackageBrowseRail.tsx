@@ -19,7 +19,7 @@ import { loadPackageCards, type PackageCard } from "@/lib/atlas/client";
 import { usePrefersReducedMotion } from "@/lib/reduced-motion";
 import { useHorizontalScroll } from "@/lib/use-horizontal-scroll";
 import { ScrollArrowButton } from "@/components/ui/ScrollArrowButton";
-import { formatInr } from "@/lib/atlas/engine/text";
+import { formatInr } from "@retro/core/atlas/engine/text";
 
 /** Roughly 4.5s per card keeps the loop leisurely enough to read a card in
  *  passing without the row feeling static. */

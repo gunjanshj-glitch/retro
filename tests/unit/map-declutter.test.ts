@@ -7,7 +7,7 @@ import {
   selectVisiblePins,
   spacingPx,
   type DeclutterPin,
-} from "@/lib/map-declutter";
+} from "@retro/core/map-declutter";
 
 function country(name: string, x: number, y: number): DeclutterPin {
   return { id: `c:${name}`, x, y, country: name, level: 0, rank: 0 };
@@ -156,7 +156,7 @@ describe("selectVisiblePins", () => {
   });
 });
 
-import { placePinLabels } from "@/lib/map-declutter";
+import { placePinLabels } from "@retro/core/map-declutter";
 
 describe("placePinLabels", () => {
   it("never lets a label cover another pin or another label", () => {
@@ -181,7 +181,7 @@ describe("placePinLabels", () => {
   });
 });
 
-import { PLACE_ZOOM } from "@/lib/map-declutter";
+import { PLACE_ZOOM } from "@retro/core/map-declutter";
 
 describe("country-first disclosure", () => {
   it("shows only countries below the place zoom, however far apart the places are", () => {

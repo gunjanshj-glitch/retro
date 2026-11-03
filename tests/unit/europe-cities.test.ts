@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { CoreBundle, type DestinationBundle, type Route, type VisaRule } from "@/lib/atlas/schema";
-import { generateQuotation, STYLE_FOR_TRAVELLER } from "@/lib/atlas/engine";
-import { evaluatePlaceSelectability } from "@/lib/atlas/engine/bounds";
+import { CoreBundle, type DestinationBundle, type Route, type VisaRule } from "@retro/core/atlas/schema";
+import { generateQuotation, STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
+import { evaluatePlaceSelectability } from "@retro/core/atlas/engine/bounds";
 
 const ATLAS = path.join("public", "atlas");
 const read = (p: string) => JSON.parse(readFileSync(path.join(ATLAS, p), "utf8"));

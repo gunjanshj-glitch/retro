@@ -53,7 +53,7 @@ The audit is in [09-gap-review.md](09-gap-review.md). The ones that would have h
 
 ## Already done in this change
 
-- Website WhatsApp links point to **+91 62908 55027**; the phone line stays +91 98047 86498 (`lib/contact.ts`).
+- Website WhatsApp links point to **+91 62908 55027**; the phone line stays +91 98047 86498 (`packages/core/contact.ts`).
 - `.claude/skills/` holds the vetted Expo skills.
 - Margin allocation fix (pro rata) from the previous request.
 

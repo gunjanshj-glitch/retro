@@ -1,5 +1,5 @@
 import { z } from "zod";
-import policy from "../../../content/quote-policy.json";
+import policy from "../../../../content/quote-policy.json";
 import {
   CarrierType,
   FoodPreference,

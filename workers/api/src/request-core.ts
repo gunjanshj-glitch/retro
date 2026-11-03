@@ -5,7 +5,7 @@
  * rules in lib/quote-workflow.ts are enforced in exactly one place.
  */
 import type { Env } from "./http";
-import { canTransition, isRequestStatus, type EventType, type RequestEvent, type RequestStatus } from "../../../lib/quote-workflow";
+import { canTransition, isRequestStatus, type EventType, type RequestEvent, type RequestStatus } from "@retro/core/quote-workflow";
 
 export type RequestRow = {
   id: string;

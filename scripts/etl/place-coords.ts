@@ -20,7 +20,7 @@
  */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import path from "node:path";
-import type { Country, Place } from "../../lib/atlas/schema";
+import type { Country, Place } from "@retro/core/atlas/schema";
 import type { Airport } from "./vendor-airports";
 import { geocodePlaces, type GeoPoint } from "./vendor-geocode";
 import { normalise } from "./normalise";

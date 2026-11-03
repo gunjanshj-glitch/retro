@@ -6,7 +6,7 @@ Confidence tags: **[Certain]** read in the repo or reproduced by a test I ran, *
 
 ## Good news first: the backend already runs the whole negotiation [Certain]
 
-`lib/quote-workflow.ts`, `workers/api/src/request-admin.ts`, `requests.ts`, `payments.ts` implement a complete loop. The app is a new **client** for it, not a new backend:
+`packages/core/quote-workflow.ts`, `workers/api/src/request-admin.ts`, `requests.ts`, `payments.ts` implement a complete loop. The app is a new **client** for it, not a new backend:
 
 - 11 statuses with an enforced transition table, each change a compare-and-swap (`UPDATE … WHERE status = ?`), so two simultaneous taps cannot both win.
 - Every quote is a numbered `quote_revision`; a new send supersedes the old one but keeps it. The traveller only ever receives `public_view`, never engine internals.

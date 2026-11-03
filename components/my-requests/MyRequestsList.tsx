@@ -16,7 +16,7 @@ import {
   type PackageRequestRow,
   type RequestSummary as RequestSummaryRow,
 } from "@/lib/auth-client";
-import { formatInr } from "@/lib/atlas/engine/text";
+import { formatInr } from "@retro/core/atlas/engine/text";
 import { StatusBadge, daysLeft, daysLeftLabel, formatDate } from "./status";
 
 export function MyRequestsList() {

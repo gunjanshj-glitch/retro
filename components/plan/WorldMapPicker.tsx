@@ -10,10 +10,10 @@
  * where individual places become selectable pins.
  */
 import { useEffect, useMemo, useState } from "react";
-import type { CoreBundle } from "@/lib/atlas/schema";
-import { evaluatePlaceSelectability, type PlaceSelectability } from "@/lib/atlas/engine/bounds";
+import type { CoreBundle } from "@retro/core/atlas/schema";
+import { evaluatePlaceSelectability, type PlaceSelectability } from "@retro/core/atlas/engine/bounds";
 import { useZoomPan, ZOOM_MAX, ZOOM_MIN } from "@/lib/use-zoom-pan";
-import { pinMetrics, placePinLabels, selectVisiblePins, type DeclutterPin } from "@/lib/map-declutter";
+import { pinMetrics, placePinLabels, selectVisiblePins, type DeclutterPin } from "@retro/core/map-declutter";
 import { countryBox, markerKey, type MapMarker, type RegionMarkers } from "@/lib/map-svg";
 
 type WorldRegion = {

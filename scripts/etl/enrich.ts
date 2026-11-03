@@ -13,7 +13,7 @@
  * Both are optional: with no network and no keys the build still completes, and
  * every value reports which method produced it.
  */
-import type { Country, FlightBand, Place, Region } from "../../lib/atlas/schema";
+import type { Country, FlightBand, Place, Region } from "@retro/core/atlas/schema";
 import { type Airport, haversineKm } from "./vendor-airports";
 
 /** Indian departure metros offered in the planner, with their airports. */

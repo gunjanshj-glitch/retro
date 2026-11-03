@@ -7,8 +7,8 @@
  * `QuoteAdjustments` — the maths lives in lib/quote-pricing.ts.
  */
 import { useState } from "react";
-import { formatInr } from "@/lib/atlas/engine/text";
-import { priceQuote, type CustomLine, type QuoteAdjustments } from "@/lib/quote-pricing";
+import { formatInr } from "@retro/core/atlas/engine/text";
+import { priceQuote, type CustomLine, type QuoteAdjustments } from "@retro/core/quote-pricing";
 
 const inputClass =
   "w-full rounded-lg border border-white/10 bg-[rgba(7,26,31,0.72)] px-3 py-2 text-sm text-[var(--text)] outline-none transition focus:border-[var(--accent)]";

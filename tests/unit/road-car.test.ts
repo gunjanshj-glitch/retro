@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimateCarTrip, roadKmFor, driveMinutesFor } from "@/lib/atlas/engine/roadcar";
+import { estimateCarTrip, roadKmFor, driveMinutesFor } from "@retro/core/atlas/engine/roadcar";
 
 describe("estimateCarTrip", () => {
   it("scales with distance", () => {

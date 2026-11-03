@@ -10,8 +10,8 @@
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import type { CoreBundle, Route } from "../../lib/atlas/schema";
-import { buildRouteLookup } from "../../lib/atlas/engine/itinerary";
+import type { CoreBundle, Route } from "@retro/core/atlas/schema";
+import { buildRouteLookup } from "@retro/core/atlas/engine/itinerary";
 
 const DATA = "public/atlas";
 const core = JSON.parse(readFileSync(path.join(DATA, "core.json"), "utf8")) as CoreBundle;

@@ -11,10 +11,10 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { loadCore, loadDestinations, loadHotelLiveRates, loadRoutes, loadVisaRules } from "./client";
-import { generateQuotation } from "./engine";
-import type { LiveRate } from "./engine/pricing";
-import type { CoreBundle, DestinationBundle, Route, VisaRule } from "./schema";
-import type { Quotation, QuoteRequest } from "./engine/types";
+import { generateQuotation } from "@retro/core/atlas/engine";
+import type { LiveRate } from "@retro/core/atlas/engine/pricing";
+import type { CoreBundle, DestinationBundle, Route, VisaRule } from "@retro/core/atlas/schema";
+import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
 
 export type QuotationEngine = {
   core: CoreBundle | null;

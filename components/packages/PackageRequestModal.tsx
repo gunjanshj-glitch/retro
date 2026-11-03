@@ -11,7 +11,7 @@
  */
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { DEPARTURE_CITIES } from "@/lib/atlas/departure-cities";
+import { DEPARTURE_CITIES } from "@retro/core/atlas/departure-cities";
 import { createPackageRequest } from "@/lib/auth-client";
 import { formatPrice } from "@/lib/trips";
 

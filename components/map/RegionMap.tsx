@@ -9,7 +9,7 @@
  * Used by every region map on the destination pages.
  */
 import { useMemo, type ReactNode } from "react";
-import { pinMetrics, placePinLabels, selectVisiblePins, type DeclutterPin } from "@/lib/map-declutter";
+import { pinMetrics, placePinLabels, selectVisiblePins, type DeclutterPin } from "@retro/core/map-declutter";
 import { countryBox, markerKey, parseRegionSvg, type MapMarker, type RegionMarkers } from "@/lib/map-svg";
 import { useZoomPan, ZOOM_MAX, ZOOM_MIN } from "@/lib/use-zoom-pan";
 

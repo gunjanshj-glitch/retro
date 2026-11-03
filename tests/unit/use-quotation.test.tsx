@@ -1,11 +1,11 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { QuoteRequest } from "@/lib/atlas/engine/types";
+import type { QuoteRequest } from "@retro/core/atlas/engine/types";
 
 const generate = vi.fn((request: QuoteRequest) => ({ totals: { total: request.placeIds.length * 1000 }, stays: [], pax: { rooms: 1 } }));
 let release: (() => void) | null = null;
 
-vi.mock("@/lib/atlas/engine", () => ({ generateQuotation: (...a: [QuoteRequest]) => generate(...a) }));
+vi.mock("@retro/core/atlas/engine", () => ({ generateQuotation: (...a: [QuoteRequest]) => generate(...a) }));
 vi.mock("@/lib/atlas/client", () => ({
   loadCore: async () => ({ places: [{ id: "a", slug: "a" }, { id: "b", slug: "b" }] }),
   loadRoutes: async () => [],

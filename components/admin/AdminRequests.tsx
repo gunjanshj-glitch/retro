@@ -13,7 +13,7 @@ import {
   adminSendQuote,
   type AdminPackageRequest,
 } from "@/lib/auth-client";
-import { formatInr } from "@/lib/atlas/engine/text";
+import { formatInr } from "@retro/core/atlas/engine/text";
 
 export function AdminRequests() {
   const { user, loading, openLogin } = useAuth();

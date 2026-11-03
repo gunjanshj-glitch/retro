@@ -10,8 +10,8 @@
  * same function the Worker uses when the quote is accepted and charged.
  */
 import { useMemo } from "react";
-import { formatDuration, formatInr } from "@/lib/atlas/engine/text";
-import { priceQuote, type PublicQuote } from "@/lib/quote-pricing";
+import { formatDuration, formatInr } from "@retro/core/atlas/engine/text";
+import { priceQuote, type PublicQuote } from "@retro/core/quote-pricing";
 import { daysLeft, daysLeftLabel, formatDate } from "./status";
 
 const MEAL_PLAN: Record<string, string> = {
