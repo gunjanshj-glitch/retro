@@ -1569,3 +1569,16 @@ describe("margin allocation across traveller-facing categories", () => {
     expect(row.amountInr / base).toBeLessThan(1 + wholeQuoteLoading + 0.02);
   });
 });
+
+describe("Indian hotel rates", () => {
+  it("prices a Rajasthan room-night at a realistic Indian level, not the shared USD template", () => {
+    const bands = { "3 Star": [3000, 6000], "4 Star": [5000, 9500], "5 Star": [9000, 15000] } as const;
+    for (const [star, [lo, hi]] of Object.entries(bands)) {
+      const q = quote({ placeIds: ["jaipur", "jodhpur", "jaisalmer"], nights: 9, hotelStar: star as "3 Star" });
+      for (const h of q.lineItems.filter((l) => l.component === "hotel")) {
+        expect(h.unitPriceInr).toBeGreaterThanOrEqual(lo);
+        expect(h.unitPriceInr).toBeLessThanOrEqual(hi);
+      }
+    }
+  });
+});

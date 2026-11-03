@@ -16,7 +16,8 @@
   },
   "region": {
     "_india": "Pricing_Rules.xlsx gives all ~200 Indian places the same template figures (airport transfer 6,496 and sightseeing car 5,315 per service), roughly 3-4x a chauffeured sedan in India. Scaled to about 1,600 per airport transfer and 2,900 per sightseeing day. Replace with contracted rates in the workbook and remove this entry.",
-    "india": { "airport-transfer": 0.25, "local-transport": 0.55 }
+    "_indiaHotel": "The same workbook template (USD 112.5 / 168.75 / 275 / 425 per room-night for 3 / 4 / 5 / Luxury 5 Star, about INR 10,630 / 15,945 / 25,985 / 40,158) is repeated for 203 of the 207 Indian places, and the gap-fill copies it to the rest. That is roughly 2.5x what Indian hotels charge in these categories (3 Star about 4,000 to 5,000, 4 Star about 6,000 to 8,000, 5 Star about 10,000 to 13,000). 0.4 brings it to that range. Replace with contracted per-city rates in the workbook and remove the hotel entry.",
+    "india": { "airport-transfer": 0.25, "local-transport": 0.55, "hotel": 0.4 }
   },
   "country": {},
   "package": {},
