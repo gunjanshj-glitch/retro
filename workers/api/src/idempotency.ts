@@ -22,7 +22,7 @@
  * both run; the in-progress marker closes the common case, not every race.
  */
 import type { Env } from "./http";
-import { json } from "./http";
+import { json, normalisePath } from "./http";
 import { readSessionToken } from "./auth";
 
 const TTL_SECONDS = 24 * 60 * 60;
@@ -48,7 +48,7 @@ export async function withIdempotency(request: Request, env: Env, run: () => Pro
   const key = request.headers.get("Idempotency-Key");
   if (!key || request.method.toUpperCase() !== "POST" || !env.RATE_CACHE) return run();
 
-  const path = new URL(request.url).pathname.replace(/^\/api(?=\/|$)/, "") || "/";
+  const path = normalisePath(request.url);
   if (!IDEMPOTENT.some((re) => re.test(path))) return run();
   if (!KEY_RE.test(key)) {
     return json({ error: "Idempotency-Key must be 8 to 128 letters, digits, dashes or underscores.", code: "BAD_IDEMPOTENCY_KEY" }, { status: 400 });

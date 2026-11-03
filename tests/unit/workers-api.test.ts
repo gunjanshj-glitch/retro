@@ -83,7 +83,8 @@ describe("backend worker routing", () => {
 
   it("rejects a write on the wrong method", async () => {
     const res = await worker.fetch(new Request("https://example.com/api/enquiries"), env(), ctx);
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(405);
+    expect(((await res.json()) as { code: string }).code).toBe("METHOD_NOT_ALLOWED");
   });
 });
 

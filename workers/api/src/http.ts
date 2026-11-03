@@ -100,6 +100,39 @@ export function json(body: unknown, init: ResponseInit = {}): Response {
   });
 }
 
+/**
+ * The path a route table matches against: no `/api` mount prefix and no `/v1` version segment.
+ * `/api/v1/x` and `/api/x` are the same route, so a future breaking change can ship as `/v2`
+ * while installed apps keep calling `/v1` for months.
+ */
+export function normalisePath(url: string): string {
+  return new URL(url).pathname.replace(/^\/api(?:\/v1)?(?=\/|$)/, "") || "/";
+}
+
+const CODE_BY_STATUS: Record<number, string> = {
+  400: "BAD_REQUEST", 401: "AUTH_REQUIRED", 403: "FORBIDDEN", 404: "NOT_FOUND", 405: "METHOD_NOT_ALLOWED",
+  409: "CONFLICT", 413: "TOO_LARGE", 422: "UNPROCESSABLE", 429: "RATE_LIMITED", 500: "INTERNAL", 502: "UPSTREAM_ERROR", 503: "UNAVAILABLE",
+};
+
+/**
+ * Every JSON error carries a machine-readable `code` next to the human `error`, so a client reacts to
+ * `AUTH_REQUIRED` or `DRAFT_CHANGED` rather than matching English. Handlers that know a more specific
+ * code set their own and are left alone.
+ */
+export async function withErrorCode(response: Response): Promise<Response> {
+  if (response.status < 400 || !(response.headers.get("Content-Type") ?? "").includes("application/json")) return response;
+  try {
+    const body = (await response.clone().json()) as Record<string, unknown>;
+    if (!body || typeof body !== "object" || Array.isArray(body) || "code" in body) return response;
+    const code = CODE_BY_STATUS[response.status] ?? (response.status >= 500 ? "INTERNAL" : "ERROR");
+    const headers = new Headers(response.headers);
+    headers.delete("Content-Length");
+    return new Response(JSON.stringify({ ...body, code }), { status: response.status, statusText: response.statusText, headers });
+  } catch {
+    return response;
+  }
+}
+
 export function badRequest(message: string): Response {
   return json({ error: message }, { status: 400 });
 }

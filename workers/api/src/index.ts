@@ -18,7 +18,7 @@
  * `next dev`.
  */
 import type { Env } from "./http";
-import { corsHeaders, json, notFound } from "./http";
+import { corsHeaders, json, normalisePath, notFound, withErrorCode } from "./http";
 import { withIdempotency } from "./idempotency";
 import { handleAppConfig } from "./app-config";
 import { runScheduled } from "./cron";
@@ -52,107 +52,88 @@ import {
   handleAdminStartReview,
 } from "./request-admin";
 
-async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-  const url = new URL(request.url);
-  // Tolerate being mounted with or without the `/api` prefix, so the same
-  // Worker works behind the frontend's service binding and on its own
-  // `workers.dev` URL during development.
-  const path = url.pathname.replace(/^\/api(?=\/|$)/, "") || "/";
-  const method = request.method.toUpperCase();
+type Params = string[];
+type Handler = (request: Request, env: Env, ctx: ExecutionContext, params: Params) => Response | Promise<Response>;
+type Route = { method: string; pattern: RegExp; handle: Handler };
 
-  if (path === "/health") {
-    return json({
-      ok: true,
-      environment: env.ENVIRONMENT ?? "unknown",
-      time: new Date().toISOString(),
-    });
-  }
+const ID = "([A-Za-z0-9-]{1,64})";
 
-  if (path === "/app-config" && method === "GET") return handleAppConfig(request, env);
+/**
+ * Every endpoint, in one place. A route is a method, an anchored pattern and a handler;
+ * capture groups become `params`. Adding an endpoint is one line here plus its handler, and
+ * the list doubles as the API's table of contents.
+ */
+const ROUTES: Route[] = [
+  // ---- platform ----
+  { method: "GET", pattern: /^\/health$/, handle: (_r, env) => json({ ok: true, environment: env.ENVIRONMENT ?? "unknown", time: new Date().toISOString() }) },
+  { method: "GET", pattern: /^\/app-config$/, handle: (r, env) => handleAppConfig(r, env) },
+  { method: "GET", pattern: /^\/live-rates$/, handle: (r, env, ctx) => handleLiveRates(r, env, ctx) },
 
-  if (path === "/live-rates" && method === "GET") {
-    return handleLiveRates(request, env, ctx);
-  }
-
-  if (path === "/enquiries" && method === "POST") {
-    return handleEnquiry(request, env);
-  }
-
-  if (path === "/quotes" && method === "POST") {
-    return handleSaveQuote(request, env);
-  }
-
-  const quoteMatch = /^\/quotes\/([A-Za-z0-9-]{1,64})$/.exec(path);
-  if (quoteMatch && method === "GET") {
-    return handleGetQuote(quoteMatch[1], env);
-  }
+  // ---- public capture ----
+  { method: "POST", pattern: /^\/enquiries$/, handle: (r, env) => handleEnquiry(r, env) },
+  { method: "POST", pattern: /^\/quotes$/, handle: (r, env) => handleSaveQuote(r, env) },
+  { method: "GET", pattern: new RegExp(`^/quotes/${ID}$`), handle: (_r, env, _c, [id]) => handleGetQuote(id, env) },
 
   // ---- auth ----
-  if (path === "/auth/register" && method === "POST") return handleRegister(request, env);
-  if (path === "/auth/login" && method === "POST") return handleLogin(request, env);
-  if (path === "/auth/forgot" && method === "POST") return handleForgotPassword(request, env, ctx);
-  if (path === "/auth/reset" && method === "POST") return handleResetPassword(request, env);
-  if (path === "/auth/logout" && method === "POST") return handleLogout(request, env);
-  if (path === "/auth/me" && method === "GET") return handleMe(request, env);
-  if (path === "/auth/providers" && method === "GET") return handleOAuthProviders(env);
+  { method: "POST", pattern: /^\/auth\/register$/, handle: (r, env) => handleRegister(r, env) },
+  { method: "POST", pattern: /^\/auth\/login$/, handle: (r, env) => handleLogin(r, env) },
+  { method: "POST", pattern: /^\/auth\/forgot$/, handle: (r, env, ctx) => handleForgotPassword(r, env, ctx) },
+  { method: "POST", pattern: /^\/auth\/reset$/, handle: (r, env) => handleResetPassword(r, env) },
+  { method: "POST", pattern: /^\/auth\/logout$/, handle: (r, env) => handleLogout(r, env) },
+  { method: "GET", pattern: /^\/auth\/me$/, handle: (r, env) => handleMe(r, env) },
+  { method: "GET", pattern: /^\/auth\/providers$/, handle: (_r, env) => handleOAuthProviders(env) },
+  { method: "GET", pattern: /^\/auth\/(google|facebook|x)\/start$/, handle: (r, env, _c, [p]) => handleOAuthStart(p as Provider, r, env) },
+  { method: "GET", pattern: /^\/auth\/(google|facebook|x)\/callback$/, handle: (r, env, _c, [p]) => handleOAuthCallback(p as Provider, r, env) },
 
-  const oauthStart = /^\/auth\/(google|facebook|x)\/start$/.exec(path);
-  if (oauthStart && method === "GET") {
-    return handleOAuthStart(oauthStart[1] as Provider, request, env);
-  }
-  const oauthCallback = /^\/auth\/(google|facebook|x)\/callback$/.exec(path);
-  if (oauthCallback && method === "GET") {
-    return handleOAuthCallback(oauthCallback[1] as Provider, request, env);
-  }
+  // ---- traveller: requests and package requests ----
+  { method: "POST", pattern: /^\/requests$/, handle: (r, env, ctx) => handleCreateRequest(r, env, ctx) },
+  { method: "GET", pattern: /^\/requests$/, handle: (r, env) => handleListRequests(r, env) },
+  { method: "GET", pattern: new RegExp(`^/requests/${ID}$`), handle: (r, env, _c, [id]) => handleGetRequest(id, r, env) },
+  { method: "POST", pattern: new RegExp(`^/requests/${ID}/accept$`), handle: (r, env, ctx, [id]) => handleAcceptQuote(id, r, env, ctx) },
+  { method: "POST", pattern: new RegExp(`^/requests/${ID}/changes$`), handle: (r, env, ctx, [id]) => handleRequestChanges(id, r, env, ctx) },
+  { method: "POST", pattern: new RegExp(`^/requests/${ID}/decline$`), handle: (r, env, ctx, [id]) => handleDeclineQuote(id, r, env, ctx) },
+  { method: "POST", pattern: new RegExp(`^/requests/${ID}/cancel$`), handle: (r, env, ctx, [id]) => handleCancelRequest(id, r, env, ctx) },
+  { method: "POST", pattern: new RegExp(`^/requests/${ID}/messages$`), handle: (r, env, ctx, [id]) => handleTravellerMessage(id, r, env, ctx) },
+  { method: "POST", pattern: new RegExp(`^/requests/${ID}/pay$`), handle: (r, env, _c, [id]) => handleCreatePayment(id, r, env) },
+  { method: "POST", pattern: new RegExp(`^/requests/${ID}/pay/verify$`), handle: (r, env, ctx, [id]) => handleVerifyPayment(id, r, env, ctx) },
+  { method: "POST", pattern: /^\/package-requests$/, handle: (r, env, ctx) => handleCreatePackageRequest(r, env, ctx) },
+  { method: "GET", pattern: /^\/package-requests$/, handle: (r, env) => handleListPackageRequests(r, env) },
 
-  // ---- final-approval requests ----
-  if (path === "/requests" && method === "POST") return handleCreateRequest(request, env, ctx);
-  if (path === "/requests" && method === "GET") return handleListRequests(request, env);
-  // ---- package quote requests ----
-  if (path === "/package-requests" && method === "POST") return handleCreatePackageRequest(request, env, ctx);
-  if (path === "/package-requests" && method === "GET") return handleListPackageRequests(request, env);
-
-  // ---- admin (quotes for package requests) ----
-  if (path === "/admin/package-requests" && method === "GET") return handleAdminList(request, env);
-  const adminQuote = /^\/admin\/package-requests\/([A-Za-z0-9-]{1,64})\/(quote|close)$/.exec(path);
-  if (adminQuote && method === "POST") return handleAdminQuote(adminQuote[1], adminQuote[2] as "quote" | "close", request, env);
-
-  // ---- admin (trip quote requests: review, edit, send) ----
-  if (path === "/admin/enquiries" && method === "GET") return handleAdminListEnquiries(request, env);
-  if (path === "/admin/requests" && method === "GET") return handleAdminListRequests(request, env);
-  const adminRequest = /^\/admin\/requests\/([A-Za-z0-9-]{1,64})(?:\/(review|draft|send|note|close|messages))?$/.exec(path);
-  if (adminRequest) {
-    const [, id, action] = adminRequest;
-    if (!action && method === "GET") return handleAdminGetRequest(id, request, env);
-    if (method === "POST") {
-      if (action === "review") return handleAdminStartReview(id, request, env);
-      if (action === "draft") return handleAdminSaveDraft(id, request, env);
-      if (action === "send") return handleAdminSendQuote(id, request, env, ctx);
-      if (action === "note") return handleAdminNote(id, request, env);
-      if (action === "close") return handleAdminClose(id, request, env, ctx);
-      if (action === "messages") return handleAdminMessage(id, request, env, ctx);
-    }
-  }
-
-  // ---- the traveller's decisions on a sent quote, and payment ----
-  const requestMatch = /^\/requests\/([A-Za-z0-9-]{1,64})$/.exec(path);
-  if (requestMatch && method === "GET") return handleGetRequest(requestMatch[1], request, env);
-  const requestAction = /^\/requests\/([A-Za-z0-9-]{1,64})\/(accept|changes|decline|cancel|pay|pay\/verify|messages)$/.exec(path);
-  if (requestAction && method === "POST") {
-    const [, id, action] = requestAction;
-    if (action === "accept") return handleAcceptQuote(id, request, env, ctx);
-    if (action === "changes") return handleRequestChanges(id, request, env, ctx);
-    if (action === "decline") return handleDeclineQuote(id, request, env, ctx);
-    if (action === "cancel") return handleCancelRequest(id, request, env, ctx);
-    if (action === "messages") return handleTravellerMessage(id, request, env, ctx);
-    if (action === "pay") return handleCreatePayment(id, request, env);
-    if (action === "pay/verify") return handleVerifyPayment(id, request, env, ctx);
-  }
+  // ---- staff ----
+  { method: "GET", pattern: /^\/admin\/package-requests$/, handle: (r, env) => handleAdminList(r, env) },
+  { method: "POST", pattern: new RegExp(`^/admin/package-requests/${ID}/(quote|close)$`), handle: (r, env, _c, [id, a]) => handleAdminQuote(id, a as "quote" | "close", r, env) },
+  { method: "GET", pattern: /^\/admin\/enquiries$/, handle: (r, env) => handleAdminListEnquiries(r, env) },
+  { method: "GET", pattern: /^\/admin\/requests$/, handle: (r, env) => handleAdminListRequests(r, env) },
+  { method: "GET", pattern: new RegExp(`^/admin/requests/${ID}$`), handle: (r, env, _c, [id]) => handleAdminGetRequest(id, r, env) },
+  { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/review$`), handle: (r, env, _c, [id]) => handleAdminStartReview(id, r, env) },
+  { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/draft$`), handle: (r, env, _c, [id]) => handleAdminSaveDraft(id, r, env) },
+  { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/send$`), handle: (r, env, ctx, [id]) => handleAdminSendQuote(id, r, env, ctx) },
+  { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/note$`), handle: (r, env, _c, [id]) => handleAdminNote(id, r, env) },
+  { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/close$`), handle: (r, env, ctx, [id]) => handleAdminClose(id, r, env, ctx) },
+  { method: "POST", pattern: new RegExp(`^/admin/requests/${ID}/messages$`), handle: (r, env, ctx, [id]) => handleAdminMessage(id, r, env, ctx) },
 
   // Razorpay calls this directly (server to server), not through a browser.
-  if (path === "/webhooks/razorpay" && method === "POST") return handleRazorpayWebhook(request, env, ctx);
+  { method: "POST", pattern: /^\/webhooks\/razorpay$/, handle: (r, env, ctx) => handleRazorpayWebhook(r, env, ctx) },
+];
 
-  return notFound(`No route for ${method} ${path}`);
+async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  // Tolerate being mounted with or without `/api`, and with or without a `/v1` segment, so the same
+  // Worker works behind the frontend's service binding, on its own `workers.dev` URL, and for apps
+  // pinned to a version.
+  const path = normalisePath(request.url);
+  const method = request.method.toUpperCase();
+
+  let pathMatched = false;
+  for (const r of ROUTES) {
+    const m = r.pattern.exec(path);
+    if (!m) continue;
+    pathMatched = true;
+    if (r.method === method) return r.handle(request, env, ctx, m.slice(1));
+  }
+  // Staff routes keep answering 404, so a probe cannot learn which admin paths exist.
+  return pathMatched && !path.startsWith("/admin")
+    ? json({ error: `${method} is not allowed on ${path}`, code: "METHOD_NOT_ALLOWED" }, { status: 405 })
+    : notFound(`No route for ${method} ${path}`);
 }
 
 const worker = {
@@ -165,7 +146,7 @@ const worker = {
 
     let response: Response;
     try {
-      response = await withIdempotency(request, env, () => route(request, env, ctx));
+      response = await withErrorCode(await withIdempotency(request, env, () => route(request, env, ctx)));
     } catch (error) {
       // Never leak an internal message to the caller; the detail goes to the
       // Worker's own logs, which `[observability]` keeps.
