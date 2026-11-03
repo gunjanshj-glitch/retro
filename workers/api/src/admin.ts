@@ -11,7 +11,7 @@
  */
 import type { Env } from "./http";
 import { badRequest, field, json, notFound, readJson } from "./http";
-import { readSessionToken } from "./auth";
+import { readSessionToken, sessionIdCandidates } from "./auth";
 
 const DEFAULT_ADMINS = "info@retroholidays.in";
 
@@ -31,9 +31,9 @@ export async function getAdminUser(request: Request, env: Env): Promise<AdminUse
     `SELECT u.id AS id, u.email AS email, u.auth_provider AS auth_provider, u.password_hash AS password_hash,
            u.password_verified_at AS password_verified_at
        FROM session s JOIN user u ON u.id = s.user_id
-      WHERE s.id = ? AND s.expires_at > ?`,
+      WHERE s.id IN (?, ?) AND s.expires_at > ?`,
   )
-    .bind(token, new Date().toISOString())
+    .bind(...(await sessionIdCandidates(token)), new Date().toISOString())
     .first<{ id: string; email: string; auth_provider: string | null; password_hash: string | null; password_verified_at: string | null }>();
   if (!row) return null;
 

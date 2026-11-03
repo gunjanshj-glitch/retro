@@ -12,7 +12,7 @@ function db(email = "t@example.com") {
         return st;
       },
       async first() {
-        if (sql.includes("FROM session s JOIN user u") && v[0] === "good")
+        if (sql.includes("FROM session s JOIN user u") && (v[0] === "good" || v[1] === "good"))
           return { id: "u1", name: "T", email, avatar_url: null, auth_provider: null, password_hash: "x", password_verified_at: "2026-01-01" };
         return null;
       },
@@ -52,5 +52,24 @@ describe("session via cookie or bearer", () => {
   it("staff bearer reaches /admin", async () => {
     const r = await get("/admin/requests", { Authorization: "Bearer good" }, env("t@example.com", "t@example.com"));
     expect(r.status).toBe(200);
+  });
+});
+
+describe("session ids are stored hashed", () => {
+  it("never replays a stored hash as a login, but still honours legacy plaintext", async () => {
+    const seen: unknown[][] = [];
+    const spy = {
+      prepare(sql: string) {
+        let v: unknown[] = [];
+        const st = { bind: (...a: unknown[]) => ((v = a), st), first: async () => (seen.push(v), null) };
+        return sql.includes("FROM session") ? st : st;
+      },
+    } as unknown as D1Database;
+    await get("/auth/me", { Authorization: "Bearer legacy-uuid" }, { DB: spy } as unknown as Env);
+    expect(seen[0][0]).toMatch(/^h:[0-9a-f]{64}$/);
+    expect(seen[0][1]).toBe("legacy-uuid");
+    seen.length = 0;
+    await get("/auth/me", { Authorization: "Bearer h:abc" }, { DB: spy } as unknown as Env);
+    expect(seen[0][1]).toBe(seen[0][0]); // plaintext path closed for h:-prefixed tokens
   });
 });

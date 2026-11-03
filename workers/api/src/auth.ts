@@ -71,14 +71,31 @@ type UserRow = {
   avatar_url: string | null;
 };
 
+async function hashToken(token: string): Promise<string> {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  return "h:" + [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Stored session ids to try for a presented token: the hash (current rows),
+ * then the token itself (legacy plaintext rows, which age out within the 30-day
+ * TTL). A token that already looks like a stored hash is never tried as
+ * plaintext, so a leaked `session` table cannot be replayed as logins.
+ */
+export async function sessionIdCandidates(token: string): Promise<[string, string]> {
+  const hashed = await hashToken(token);
+  return [hashed, token.startsWith("h:") ? hashed : token];
+}
+
 async function createSession(env: Env, userId: string): Promise<string> {
-  const id = crypto.randomUUID() + crypto.randomUUID();
+  const token = crypto.randomUUID() + crypto.randomUUID();
+  const id = await hashToken(token);
   const now = new Date();
   const expires = new Date(now.getTime() + SESSION_TTL_SECONDS * 1000);
   await env.DB.prepare(`INSERT INTO session (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`)
     .bind(id, userId, now.toISOString(), expires.toISOString())
     .run();
-  return id;
+  return token;
 }
 
 /**
@@ -114,9 +131,9 @@ export async function getSessionUser(request: Request, env: Env): Promise<Sessio
   const row = await env.DB.prepare(
     `SELECT u.id as id, u.name as name, u.email as email, u.avatar_url as avatar_url
        FROM session s JOIN user u ON u.id = s.user_id
-      WHERE s.id = ? AND s.expires_at > ?`,
+      WHERE s.id IN (?, ?) AND s.expires_at > ?`,
   )
-    .bind(token, new Date().toISOString())
+    .bind(...(await sessionIdCandidates(token)), new Date().toISOString())
     .first<{ id: string; name: string; email: string; avatar_url: string | null }>();
 
   if (!row) return null;
@@ -217,7 +234,9 @@ export async function handleLogin(request: Request, env: Env): Promise<Response>
 
 export async function handleLogout(request: Request, env: Env): Promise<Response> {
   const token = readSessionToken(request);
-  if (token) await env.DB.prepare(`DELETE FROM session WHERE id = ?`).bind(token).run();
+  if (token) {
+    await env.DB.prepare(`DELETE FROM session WHERE id IN (?, ?)`).bind(...(await sessionIdCandidates(token))).run();
+  }
   return json({ ok: true }, { headers: { "Set-Cookie": clearSessionCookie() } });
 }
 
