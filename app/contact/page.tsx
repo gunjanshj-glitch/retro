@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { Footer } from "@/components/ui/Footer";
 import { NavBar } from "@/components/ui/NavBar";
+import { PHONE_DISPLAY, PHONE_E164, WHATSAPP_DISPLAY, whatsappLink } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Contact | Retro Holidays",
@@ -12,9 +13,14 @@ export const metadata: Metadata = {
 
 const CONTACT_DETAILS = [
   {
-    label: "Call or WhatsApp",
-    value: "+91 98047 86498",
-    href: "https://wa.me/919804786498",
+    label: "Call us",
+    value: PHONE_DISPLAY,
+    href: `tel:${PHONE_E164}`,
+  },
+  {
+    label: "WhatsApp",
+    value: WHATSAPP_DISPLAY,
+    href: whatsappLink(),
   },
   {
     label: "Write to us",

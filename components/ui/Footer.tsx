@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { whatsappLink } from "@/lib/contact";
 
 const POLICY_LINKS = [
   { href: "/terms", short: "Terms" },
@@ -104,7 +105,7 @@ export function Footer() {
                 info@retroholidays.in
               </a>
               <a
-                href="https://wa.me/919804786498"
+                href={whatsappLink()}
                 target="_blank"
                 rel="noreferrer"
                 className="transition hover:text-[var(--accent)]"

@@ -2,8 +2,8 @@
 
 import type { FormEvent } from "react";
 import { submitEnquiry } from "@/lib/atlas/client";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 
-const WHATSAPP_NUMBER = "919804786498";
 
 const fieldClassName =
   "mt-2 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-3 text-sm text-[var(--text)] outline-none transition placeholder:text-[rgba(155,179,180,0.55)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(253,191,0,0.12)]";

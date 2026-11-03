@@ -36,7 +36,7 @@ describe("ContactForm", () => {
 
     expect(open).toHaveBeenCalledOnce();
     const [url, target, features] = open.mock.calls[0];
-    expect(url).toContain("https://wa.me/919804786498?text=");
+    expect(url).toContain("https://wa.me/916290855027?text=");
     expect(decodeURIComponent(String(url))).toContain("Destination: Japan");
     expect(decodeURIComponent(String(url))).toContain("A slower food and culture trip.");
     expect(target).toBe("_blank");

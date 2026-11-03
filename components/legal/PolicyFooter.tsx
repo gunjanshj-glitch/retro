@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { whatsappLink } from "@/lib/contact";
 
 export const POLICY_LINKS = [
   { href: "/terms", label: "Terms & Conditions" },
@@ -26,7 +27,7 @@ export function PolicyFooter({ current }: { current: string }) {
         <br />
         Tel: <a href="tel:+919804786498">+91 98047 86498</a>
         <br />
-        WhatsApp: <a href="https://wa.me/916290855027">+91 62908 55027</a>
+        WhatsApp: <a href={whatsappLink()}>+91 62908 55027</a>
         <br />
         Email: <a href="mailto:info@retroholidays.in">info@retroholidays.in</a>
         <br />
