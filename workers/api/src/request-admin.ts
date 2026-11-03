@@ -101,6 +101,9 @@ function workingCopyOf(draft: RevisionRow | null, sent: RevisionRow | null) {
   return {
     kind: draft ? ("draft" as const) : ("sent" as const),
     version: rev.version,
+    /** Echo this back as `baseUpdatedAt` when saving or sending; null when there is no draft. */
+    updatedAt: draft ? draft.updated_at : null,
+    savedBy: draft ? draft.created_by : null,
     request: payload.request ?? null,
     adjustments: adjustments.ok ? adjustments.value : null,
     validUntil: rev.valid_until ? istDateOf(rev.valid_until) : null,
@@ -248,6 +251,29 @@ async function nextVersion(env: Env, requestId: string): Promise<number> {
   return (row?.v ?? 0) + 1;
 }
 
+/**
+ * Optimistic lock for staff edits (B8). `baseUpdatedAt` is the `updatedAt` of the
+ * draft the client loaded (null if it loaded none). If the stored draft is
+ * different, a colleague saved or sent in the meantime and we refuse rather than
+ * silently overwrite. Omitted entirely = the web editor's old behaviour.
+ */
+function baseOf(raw: unknown): { ok: true; base: string | null | undefined } | { ok: false } {
+  if (!isRecord(raw) || !("baseUpdatedAt" in raw)) return { ok: true, base: undefined };
+  const b = raw.baseUpdatedAt;
+  return b === null || typeof b === "string" ? { ok: true, base: b } : { ok: false };
+}
+
+function draftChanged(draft: RevisionRow | null): Response {
+  return json(
+    {
+      error: "A colleague changed this quote while you were editing. Reload the page to see their version.",
+      code: "DRAFT_CHANGED",
+      draft: draft ? { updatedAt: draft.updated_at, savedBy: draft.created_by, version: draft.version } : null,
+    },
+    { status: 409 },
+  );
+}
+
 /** Saves work in progress. At most one draft per request; saving replaces it. */
 export async function handleAdminSaveDraft(id: string, request: Request, env: Env): Promise<Response> {
   const admin = await getAdminUser(request, env);
@@ -256,8 +282,11 @@ export async function handleAdminSaveDraft(id: string, request: Request, env: En
   if (!row) return notFound("No such request.");
   if (!isQuotable(statusOf(row))) return conflict("This request can no longer be edited.");
 
-  const parsed = parseQuoteBody(await readJson<unknown>(request, MAX_BODY_BYTES));
+  const raw = await readJson<unknown>(request, MAX_BODY_BYTES);
+  const parsed = parseQuoteBody(raw);
   if (!parsed.ok) return badRequest(parsed.error);
+  const base = baseOf(raw);
+  if (!base.ok) return badRequest("baseUpdatedAt must be a timestamp or null.");
   const { request: req, quotation, adjustments, validUntil, note } = parsed.value;
 
   const priced = priceQuote(quotation.totals.total, adjustments);
@@ -266,13 +295,17 @@ export async function handleAdminSaveDraft(id: string, request: Request, env: En
   const validIso = validUntil ? endOfDayIst(validUntil) : null;
 
   const draft = await loadDraft(env, id);
+  if (base.base !== undefined && (draft?.updated_at ?? null) !== base.base) return draftChanged(draft);
   if (draft) {
-    await env.DB.prepare(
+    // Conditional on the stamp we just checked, so two saves racing each other
+    // cannot both win (the check above alone has a gap between read and write).
+    const res = await env.DB.prepare(
       `UPDATE quote_revision SET updated_at = ?, created_by = ?, payload = ?, adjustments = ?, engine_total_inr = ?, package_inr = ?,
-              total_inr = ?, deposit_inr = ?, valid_until = ?, note = ? WHERE id = ?`,
+              total_inr = ?, deposit_inr = ?, valid_until = ?, note = ? WHERE id = ? AND updated_at = ?`,
     )
-      .bind(now, admin.email, payload, JSON.stringify(adjustments), quotation.totals.total, priced.packageInr, priced.totalInr, adjustments.depositInr, validIso, note, draft.id)
+      .bind(now, admin.email, payload, JSON.stringify(adjustments), quotation.totals.total, priced.packageInr, priced.totalInr, adjustments.depositInr, validIso, note, draft.id, draft.updated_at)
       .run();
+    if (!res.meta?.changes) return draftChanged(await loadDraft(env, id));
   } else {
     await env.DB.prepare(
       `INSERT INTO quote_revision (id, request_id, version, status, created_at, updated_at, created_by, payload, adjustments,
@@ -302,9 +335,18 @@ export async function handleAdminSendQuote(id: string, request: Request, env: En
   const from = statusOf(row);
   if (!isQuotable(from)) return conflict("A quote cannot be sent for this request in its current state.");
 
-  const parsed = parseQuoteBody(await readJson<unknown>(request, MAX_BODY_BYTES));
+  const raw = await readJson<unknown>(request, MAX_BODY_BYTES);
+  const parsed = parseQuoteBody(raw);
   if (!parsed.ok) return badRequest(parsed.error);
+  const base = baseOf(raw);
+  if (!base.ok) return badRequest("baseUpdatedAt must be a timestamp or null.");
   const { request: req, quotation, adjustments, validUntil, note } = parsed.value;
+  if (base.base !== undefined) {
+    // A send consumes the draft, so a stale or already-used base means someone
+    // else saved or sent first.
+    const current = await loadDraft(env, id);
+    if ((current?.updated_at ?? null) !== base.base) return draftChanged(current);
+  }
 
   const validDate = validUntil ?? new Date(Date.now() + DEFAULT_QUOTE_VALIDITY_DAYS * 86400_000).toISOString().slice(0, 10);
   if (validDate < todayIst()) return badRequest("The quote's validity date is in the past.");

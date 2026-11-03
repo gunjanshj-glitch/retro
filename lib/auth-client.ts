@@ -340,6 +340,8 @@ export type AdminWorkingCopy = {
   adjustments: QuoteAdjustments | null;
   validUntil: string | null;
   note: string | null;
+  /** Stamp of the draft as loaded; send it back as `baseUpdatedAt` (null if none). */
+  updatedAt?: string | null;
 };
 
 export type AdminRequestDetail = {
@@ -371,6 +373,8 @@ export type AdminQuoteBody = {
   adjustments: QuoteAdjustments;
   validUntil: string;
   note: string;
+  /** Optimistic lock: the draft stamp this edit started from. Omitted = no check. */
+  baseUpdatedAt?: string | null;
 };
 
 /** `null` means "not an admin" (the API answers 404 to everyone else). */

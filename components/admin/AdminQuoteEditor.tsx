@@ -11,7 +11,7 @@
  * deposit) sit on top. Drafts are saved server-side as the agency works; sending
  * creates a new numbered revision and emails the traveller.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DecisionMatrix } from "@/components/plan/DecisionMatrix";
 import { QuotationView } from "@/components/plan/QuotationView";
 import { WorldMapPicker } from "@/components/plan/WorldMapPicker";
@@ -99,6 +99,9 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
 
   const [dirty, setDirty] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  // The draft stamp this editor last saw. A colleague saving or sending changes
+  // it on the server, which then refuses our write instead of overwriting theirs.
+  const baseRef = useRef<string | null>(detail.workingCopy?.updatedAt ?? null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   const [confirmSend, setConfirmSend] = useState(false);
@@ -146,7 +149,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
 
   const body = useCallback(() => {
     if (!request || !quote) return null;
-    return { request, quotation: slimQuotation(quote), adjustments, validUntil, note };
+    return { request, quotation: slimQuotation(quote), adjustments, validUntil, note, baseUpdatedAt: baseRef.current };
   }, [request, quote, adjustments, validUntil, note]);
 
   const saveDraft = useCallback(async () => {
@@ -158,6 +161,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
     setBusy(false);
     if (res.ok) {
       setDirty(false);
+      baseRef.current = res.data.savedAt;
       setSavedAt(res.data.savedAt);
       setMessage({ tone: "ok", text: "Draft saved. The traveller can't see it yet." });
     } else {

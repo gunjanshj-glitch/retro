@@ -19,6 +19,7 @@
  */
 import type { Env } from "./http";
 import { corsHeaders, json, notFound } from "./http";
+import { withIdempotency } from "./idempotency";
 import { handleLiveRates } from "./live-rates";
 import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
@@ -154,7 +155,7 @@ const worker = {
 
     let response: Response;
     try {
-      response = await route(request, env, ctx);
+      response = await withIdempotency(request, env, () => route(request, env, ctx));
     } catch (error) {
       // Never leak an internal message to the caller; the detail goes to the
       // Worker's own logs, which `[observability]` keeps.
