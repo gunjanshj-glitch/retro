@@ -81,9 +81,19 @@ async function createSession(env: Env, userId: string): Promise<string> {
   return id;
 }
 
-/** Resolves the signed-in user from the request's session cookie, or null. */
+/**
+ * The ONLY place a request's session credential is read. Everything that needs
+ * to know who is calling (travellers, staff, logout) goes through here, so a
+ * new way of presenting a session (bearer token for the mobile app) is added
+ * once. A test greps the Worker source to keep it that way.
+ */
+export function readSessionToken(request: Request): string | null {
+  return parseCookies(request)[SESSION_COOKIE] || null;
+}
+
+/** Resolves the signed-in user from the request's session, or null. */
 export async function getSessionUser(request: Request, env: Env): Promise<SessionUser | null> {
-  const token = parseCookies(request)[SESSION_COOKIE];
+  const token = readSessionToken(request);
   if (!token) return null;
 
   const row = await env.DB.prepare(
@@ -191,7 +201,7 @@ export async function handleLogin(request: Request, env: Env): Promise<Response>
 // ---------------------------------------------------------------------------
 
 export async function handleLogout(request: Request, env: Env): Promise<Response> {
-  const token = parseCookies(request)[SESSION_COOKIE];
+  const token = readSessionToken(request);
   if (token) await env.DB.prepare(`DELETE FROM session WHERE id = ?`).bind(token).run();
   return json({ ok: true }, { headers: { "Set-Cookie": clearSessionCookie() } });
 }

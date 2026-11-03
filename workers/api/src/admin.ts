@@ -10,7 +10,8 @@
  * password alone is never enough.
  */
 import type { Env } from "./http";
-import { badRequest, field, json, notFound, parseCookies, readJson, SESSION_COOKIE } from "./http";
+import { badRequest, field, json, notFound, readJson } from "./http";
+import { readSessionToken } from "./auth";
 
 const DEFAULT_ADMINS = "info@retroholidays.in";
 
@@ -24,7 +25,7 @@ export function adminEmails(env: Env): string[] {
 type AdminUser = { id: string; email: string };
 
 export async function getAdminUser(request: Request, env: Env): Promise<AdminUser | null> {
-  const token = parseCookies(request)[SESSION_COOKIE];
+  const token = readSessionToken(request);
   if (!token) return null;
   const row = await env.DB.prepare(
     `SELECT u.id AS id, u.email AS email, u.auth_provider AS auth_provider, u.password_hash AS password_hash,
