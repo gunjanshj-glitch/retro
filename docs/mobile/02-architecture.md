@@ -58,17 +58,18 @@ retro/
 │   │   ├── package/[slug].tsx
 │   │   ├── plan/{where,when,who,style,quote}.tsx
 │   │   ├── map.tsx               # full-screen map modal
-│   │   ├── trip/[id].tsx         # quote offer, accept, pay
+│   │   ├── trip/[id].tsx         # quote offer, thread, accept, pay (doc 07)
+│   │   ├── (staff)/              # role-gated, lazy: queue, request/[id], editor/[id], leads (doc 07)
 │   │   ├── auth.tsx              # sheet route
 │   │   ├── chat.tsx              # sheet route
 │   │   └── legal/[doc].tsx
 │   ├── src/
-│   │   ├── features/{explore,destinations,packages,planner,quote,trips,auth,chat,map}/
+│   │   ├── features/{explore,destinations,packages,planner,quote,trips,auth,chat,map,staff}/
 │   │   ├── ui/               # design-system components (Button, Card, Sheet, PriceBar, Chip…)
 │   │   ├── theme/            # tokens: colour, type, spacing, radius, motion
 │   │   ├── data/             # catalogue loader, cache, manifest sync
 │   │   ├── platform/         # ios.ts / android.ts adaptations (haptics, share, back, permissions)
-│   │   └── lib/{secure-store,analytics,push,deeplinks,env}.ts
+│   │   └── lib/{secure-store,analytics,push,deeplinks,env}.ts   # push + deeplinks + auth are provider adapters (doc 08)
 │   ├── assets/               # fonts, icon, splash, bundled portrait posters + clips, catalogue snapshot
 │   ├── app.config.ts         # bundle ids, scheme, associated domains, per-env config
 │   ├── eas.json              # build profiles: development / preview / production
@@ -81,6 +82,8 @@ retro/
 Monorepo mechanics [Likely, verify in spike]: npm workspaces; Expo's Metro auto-detects workspaces in current SDKs; the web keeps `@/lib/...` aliases that re-export from `@retro/core`. Because `content/*.json` is imported by the engine, `packages/core` imports it by relative path or the JSON moves into the package with a re-export. Decide in the spike.
 
 ### iOS vs Android adaptation
+**Tablets:** v1 is **iPhone-only** (`supportsTablet: false`), which avoids iPad screenshots and layouts; iPad runs it in compatibility mode. Android tablets get a centred column. This was an open question you did not answer; say so if you want a true tablet layout.
+
 One codebase; platform differences live in `src/platform/` and in file suffixes (`Thing.ios.tsx`, `Thing.android.tsx`) only where genuinely different:
 
 | Concern | iOS | Android |
@@ -88,7 +91,7 @@ One codebase; platform differences live in `src/platform/` and in file suffixes 
 | Navigation chrome | large titles, swipe-back, native tab bar | Material top bar, system back gesture/button |
 | Sheets, pickers, toggles | SwiftUI via `@expo/ui` | Jetpack Compose via `@expo/ui` |
 | Haptics | light impact on select | `Haptics` selection |
-| Sign-in extras | Sign in with Apple (required) | Google first |
+| Sign-in extras | Sign in with Apple, only if Google is offered (doc 01, B2) | Google |
 | Payments | UPI app switch, test on device | UPI intent |
 | Permissions | notifications ask at a meaningful moment, never on launch | Android 13+ notification permission, same rule |
 | Updates | App Store + EAS Update | Play + EAS Update |
@@ -98,7 +101,9 @@ One codebase; platform differences live in `src/platform/` and in file suffixes 
 - **Catalogue**: bundle a snapshot (core, routes, visa, package-cards ≈ 4.7 MB raw JSON, far less compressed [Likely]) so the first launch works offline. Per-place bundles (11 MB) and guidance (11 MB) download on demand into the file system and are cached; the manifest (doc 01, O1) says what is stale. Parsing 2.9 MB of JSON on Hermes should take on the order of 100 to 300 ms [Guessing: measure in the spike, this is the key performance number].
 - **Engine** runs off the JS thread's critical path: wrap `generateQuotation` in a debounced call so dragging a slider never blocks; show the previous price dimmed until the new one lands.
 - **State**: TanStack Query for server data (requests, auth, config); Zustand (or Context) for the planner draft; draft persisted to MMKV/AsyncStorage so a sign-in redirect or app kill loses nothing.
-- **Secrets**: bearer token in `expo-secure-store` (Keychain / Keystore). Never AsyncStorage.
+- **Secrets**: bearer token in `expo-secure-store` (Keychain / Keystore). Never AsyncStorage. Staff screens add a biometric re-lock and block screenshots (doc 07).
+- **Writes**: online-only with a clear error, except chat leads, which queue locally under a client-generated `Idempotency-Key` and retry. Every create/send carries a key (doc 01, B7).
+- **Catalogue version** is stamped on every quote the app produces and shown on the quote screen (doc 01, O10).
 - **Images**: `expo-image` with disk cache; variants chosen by screen width.
 
 ## Spike to run before committing (one to two days)
@@ -106,4 +111,5 @@ One codebase; platform differences live in `src/platform/` and in file suffixes 
 2. 20 golden `QuoteRequest` fixtures → identical totals on Node and Hermes.
 3. Render `india.svg` with 54 pins at 60 fps with pinch/pan using `react-native-svg` + Reanimated + Gesture Handler. If it stutters, switch the base map layer to Skia (kept as a drop-in).
 4. Confirm `@expo/ui` components run in Expo Go for the target SDK.
+5. Check the web timeline renders an unknown event type (`message`) by its summary, and that the staff editor's controls are all reachable in the planner's expert mode (doc 07).
 If any fails, this document changes before code is written.

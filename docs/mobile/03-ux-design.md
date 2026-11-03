@@ -39,12 +39,13 @@ Keep brand continuity with the site, translated to native, not skinned:
 
 ## Information architecture
 
-Four tabs plus a global "Talk to us" button.
+Four tabs (a fifth, **Staff**, appears only for staff accounts, doc 07) plus a global "Talk to us" button.
 
 ```
 Explore   ─ Hero → Themes → Featured packages → Regions → Why Retro → Footer
 Plan      ─ Where → When → Who → Style → Quote  (guest OK)
-Trips     ─ My requests (sign-in) → Request → Quote offer → Accept / Changes / Decline → Pay
+Trips     ─ My requests (sign-in) → Request → Quote offer → Ask / Changes / Accept / Decline → Pay
+Staff     ─ (staff only) Queue → Request → Quote editor → Send · Leads
 More      ─ Account, contact, WhatsApp, policies, delete account, language
 (global)  ─ Talk to us: Chat questionnaire · WhatsApp · Call
 ```
@@ -78,13 +79,23 @@ Header summary, big price with "for 2 adults · 11 nights", Itinerary timeline, 
 ### 7. Sign-in sheet
 Over the current screen. "Continue with Apple" (iOS), "Continue with Google", email + password with show/hide, forgot password. Explains *why*: "So Retro can send your final quote here." Draft preserved.
 
-### 8. Trips
-Segmented list: Pending, Quoted, Confirmed. Status chips use the web's existing states. Quote offer screen mirrors `QuoteOffer`: price, optional extras (tickable), deposit, **Accept**, **Ask for changes**, **Decline**; Pay opens the secure browser.
+### 8. Trips and the quote conversation
+Segmented list: **Needs you**, **With Retro**, **Confirmed**. The first segment is the ones where the move is the traveller's (quoted, accepted, part_paid), so the answer to "what do I do next?" is always the top row. Each trip is a single **conversation screen**, not a form:
+- A progress strip (Request sent · Being prepared · Final quote · Payment · Confirmed) and a status sentence from the existing `STATUS_COPY`.
+- A **thread**: events and messages in time order, newest at the bottom, with a message box pinned above the keyboard (**Ask Retro a question** never changes the quote's status).
+- The current **quote card**: total, validity countdown ("open for 3 days"), optional extras (tickable), deposit, and when it is a revision, a **What changed since v1** card (total, per-category deltas, the agency's note).
+- One primary action for the state: **Accept and pay** when quoted; **Pay balance** when part-paid. Secondary, quieter: **Request changes** (with chips Dates · Hotels · Activities · Budget · Other), **Decline**. In `changes_requested` and `in_review` the card says whose move it is and when they last looked.
+- Payment opens the secure browser; on return, a "Confirming your payment" state until the server confirms (doc 01, B4).
+- "Need to change or cancel this booking?" opens WhatsApp prefilled with the booking reference once money has moved (doc 07, N8).
+Quote offer mirrors the web `QuoteOffer`; the web has no thread or diff, so these are additions.
 
 ### 9. Talk to us (chat)
 A sheet: greeting, quick-reply chips, one question at a time; ends with phone number, then **Send on WhatsApp** and **Call me instead**. Detail in doc 04.
 
-### 10. More
+### 10. Staff
+Specified in doc 07: Queue (Your move / Waiting / Done), Request detail with Call · WhatsApp · Email, Quote editor (Trip · Pricing · Price split with per-line checkboxes), Leads. Same dark design language, denser rows, `expo-screen-capture` and biometric re-lock.
+
+### 11. More
 Profile, WhatsApp/phone/email rows, policies (privacy, terms, refund, cancellation, payment), **Delete my account**, app version, sign out.
 
 ## Empty, error and edge states (each designed, not left to chance)
@@ -96,3 +107,6 @@ Offline banner with cached content, "couldn't load" with retry, no results with 
 - Map is never mandatory and never traps the scroll.
 - Killing the app mid-planner and relaunching restores the draft.
 - First launch works in airplane mode (bundled catalogue) with a clear "you're offline" note on live-only items.
+- From any Trips row the traveller can say what happens next and whose move it is in under 2 seconds of looking.
+- A revision always shows what changed from the previous version.
+- A dropped connection never loses a typed message, a draft, or a chat lead, and never creates a duplicate.
