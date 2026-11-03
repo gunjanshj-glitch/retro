@@ -62,6 +62,10 @@ ALLOWED_ORIGINS = ""
 # production domain before configuring either provider.
 PUBLIC_SITE_URL = "https://retroholidays.in"
 
+# Maintenance job (src/cron.ts): purges dead sessions/tokens/counters and applies quote expiry.
+[triggers]
+crons = ["*/15 * * * *"]
+
 # Enquiries and saved quotes. Create with `wrangler d1 create atlas`.
 [[d1_databases]]
 binding = "DB"

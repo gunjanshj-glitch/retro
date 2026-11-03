@@ -396,7 +396,14 @@ export async function handleAdminSendQuote(id: string, request: Request, env: En
                                      engine_total_inr, package_inr, total_inr, deposit_inr, valid_until, note)
          VALUES (?, ?, ?, 'sent', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       ).bind(revisionId, id, version, now, now, now, admin.email, payload, publicView, JSON.stringify(adjustments), quotation.totals.total, priced.packageInr, priced.totalInr, adjustments.depositInr, validIso, note);
-  await env.DB.batch([supersede, write]);
+  try {
+    await env.DB.batch([supersede, write]);
+  } catch (error) {
+    // The status already moved to 'quoted'; without a revision the traveller would see a quote that does not exist.
+    console.error("Writing the quote revision failed; restoring the request", error);
+    await env.DB.prepare(`UPDATE quotation_request SET status = ?, updated_at = ? WHERE id = ? AND status = 'quoted'`).bind(from, new Date().toISOString(), id).run();
+    return json({ error: "The quote could not be saved. Nothing was sent. Please try again." }, { status: 500 });
+  }
 
   const reopened = from === "accepted";
   await addEvent(env, id, {

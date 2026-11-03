@@ -69,10 +69,16 @@ export async function handleCreateRequest(request: Request, env: Env, ctx?: Exec
   if (!placeIds.length || nights == null || !startDate) {
     return badRequest("The quote request must carry placeIds, nights and startDate.");
   }
+  // These end up in staff lists and emails, so they have to be what they claim to be.
+  if (placeIds.length > 40 || !placeIds.every((p) => typeof p === "string" && p.length > 0 && p.length <= 80)) {
+    return badRequest("The destinations in this request are not valid.");
+  }
+  if (!Number.isInteger(nights) || nights < 1 || nights > 120) return badRequest("Nights must be a whole number from 1 to 120.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || Number.isNaN(Date.parse(startDate))) return badRequest("The start date is not valid.");
 
   const total = Number(body.totals?.total ?? 0);
   const perPerson = Number(body.totals?.perPerson ?? 0);
-  if (!Number.isFinite(total) || !Number.isFinite(perPerson)) {
+  if (!Number.isFinite(total) || !Number.isFinite(perPerson) || total < 0 || perPerson < 0 || total > 1e9) {
     return badRequest("Totals must be numeric.");
   }
 
@@ -199,6 +205,17 @@ export async function handleListRequests(request: Request, env: Env): Promise<Re
   });
 }
 
+/** A stored quote that cannot be parsed reads as "no quote" rather than taking the whole page down with a 500. */
+function parseStoredQuote(revision: { public_view: string | null; adjustments: string } | null) {
+  if (!revision?.public_view) return null;
+  try {
+    return { view: JSON.parse(revision.public_view) as PublicQuote, adjustments: parseAdjustments(JSON.parse(revision.adjustments)) };
+  } catch (error) {
+    console.error("Stored quote revision is unreadable", error);
+    return null;
+  }
+}
+
 /** What is owed next, and whether online payment is available. */
 async function paymentState(env: Env, row: RequestRow, status: RequestStatus) {
   const { results } = await env.DB.prepare(
@@ -253,9 +270,9 @@ export async function handleGetRequest(id: string, request: Request, env: Env): 
   // engine payload, which carries margins and internal notes.
   const revision = row.accepted_revision_id ? await loadRevision(env, row.accepted_revision_id) : await loadLatestSent(env, row.id);
   let quote: unknown = null;
-  if (revision?.public_view) {
-    const view = JSON.parse(revision.public_view) as PublicQuote;
-    const adjustments = parseAdjustments(JSON.parse(revision.adjustments));
+  const stored = parseStoredQuote(revision);
+  if (revision && stored) {
+    const { view, adjustments } = stored;
     quote = {
       revisionId: revision.id,
       version: revision.version,

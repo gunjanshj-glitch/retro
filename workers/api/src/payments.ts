@@ -178,12 +178,34 @@ export async function settlePayment(
 
   // Only an accepted/part-paid/paid request moves; money arriving on one the
   // agency has since closed is still recorded on the payment, and flagged.
-  await env.DB.prepare(
+  const applied = await env.DB.prepare(
     `UPDATE quotation_request SET paid_inr = ?, status = ?, updated_at = ?
       WHERE id = ? AND status IN ('accepted', 'part_paid', 'paid')`,
   )
     .bind(paidInr, status, new Date().toISOString(), row.id)
     .run();
+
+  if (firstTime && !Number(applied.meta?.changes ?? 0)) {
+    // Real money arrived for a request that is no longer payable (the agency re-quoted or closed it while the
+    // traveller was in Checkout). Recorded on the payment row above; the traveller is NOT told "booking
+    // confirmed", and the agency is told to look, because someone owes this person an answer or a refund.
+    await addEvent(env, row.id, {
+      actor: "system",
+      type: "payment_received",
+      summary: `A payment of ${formatInr(payment.amount_paise / 100)} arrived after this request changed. Our team has been alerted and will contact you.`,
+    });
+    const alert = sendNotice(env, {
+      to: agencyInbox(env),
+      subject: `ATTENTION: payment on a request that is no longer payable — ${row.destination_summary}`,
+      intro: "A payment was captured for a request whose status no longer accepts payment. Contact the traveller and confirm the booking or refund it.",
+      lines: [`Amount: ${formatInr(payment.amount_paise / 100)}`, `Request status: ${row.status}`, `Razorpay payment: ${input.paymentId}`, `Request ID: ${row.id}`],
+      cta: { label: "Open request", url: `${siteUrl(env)}/admin/request?id=${encodeURIComponent(row.id)}` },
+      fromName: "Retro Holidays — Website",
+    });
+    if (ctx) ctx.waitUntil(alert);
+    else await alert;
+    return { status: row.status, paidInr, totalInr: total };
+  }
 
   if (firstTime) {
     const amountInr = payment.amount_paise / 100;

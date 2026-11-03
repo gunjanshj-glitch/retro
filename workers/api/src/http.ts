@@ -176,6 +176,11 @@ export function parseCookies(request: Request): Record<string, string> {
   return out;
 }
 
+/** One named cookie, or null. Everything that is not the session credential reads cookies through this. */
+export function readCookie(request: Request, name: string): string | null {
+  return parseCookies(request)[name] ?? null;
+}
+
 /**
  * Builds a `Set-Cookie` header value for the session cookie.
  *

@@ -12,9 +12,10 @@
  * Google" using the same address gets one account, not two.
  */
 import type { Env } from "./http";
-import { badRequest, json, sessionCookie } from "./http";
+import { badRequest, json, readCookie, sessionCookie } from "./http";
+import { createSession, SESSION_TTL_SECONDS } from "./auth";
+import { limitByIp } from "./rate-limit";
 
-const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const STATE_TTL_SECONDS = 60 * 10;
 
 export type Provider = "google" | "facebook" | "x";
@@ -27,6 +28,21 @@ const PROVIDER_LABEL: Record<Provider, string> = { google: "Google", facebook: "
 /** X does not always return an email. Such accounts get this stand-in address
  *  (the column is NOT NULL UNIQUE); it is never matched against real accounts. */
 const X_PLACEHOLDER_DOMAIN = "x.users.noreply.retroholidays.in";
+
+/** Binds a sign-in attempt to the browser that began it, so a link carrying someone else's code is useless. */
+const STATE_COOKIE = "atlas_oauth_state";
+const stateCookie = (value: string, maxAge: number) => `${STATE_COOKIE}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
+
+/**
+ * Where to send the traveller after sign-in. Only a same-site path is honoured:
+ * `new URL("https://evil.example", origin)` yields evil.example, so an unchecked
+ * `?redirect=` turned our own sign-in link into an open redirect.
+ */
+export function safeRedirect(raw: string | null | undefined): string {
+  if (!raw || raw.length > 500) return "/plan";
+  if (!raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\") || /[\u0000-\u001f\\]/.test(raw)) return "/plan";
+  return raw;
+}
 
 function base64Url(bytes: Uint8Array): string {
   let bin = "";
@@ -100,6 +116,8 @@ export async function handleOAuthStart(
   request: Request,
   env: Env,
 ): Promise<Response> {
+  const limited = await limitByIp(request, env, "oauth-start", 60, 900);
+  if (limited) return limited;
   const config = configFor(provider, env);
   if (!config) {
     return badRequest(
@@ -110,7 +128,7 @@ export async function handleOAuthStart(
   const url = new URL(request.url);
   // Where to send the traveller back to once signed in — the planner page
   // they were on, so asking them to sign in never loses their place.
-  const redirectTo = url.searchParams.get("redirect") || "/plan";
+  const redirectTo = safeRedirect(url.searchParams.get("redirect"));
 
   const state = crypto.randomUUID() + crypto.randomUUID();
   const pkce = provider === "x" ? await pkcePair() : null;
@@ -145,10 +163,13 @@ export async function handleOAuthStart(
     authorize.searchParams.set("code_challenge_method", "S256");
   }
 
-  return Response.redirect(authorize.toString(), 302);
+  return new Response(null, {
+    status: 302,
+    headers: { Location: authorize.toString(), "Set-Cookie": stateCookie(state, STATE_TTL_SECONDS) },
+  });
 }
 
-type GoogleUserInfo = { sub: string; email?: string; name?: string; picture?: string };
+type GoogleUserInfo = { sub: string; email?: string; email_verified?: boolean; name?: string; picture?: string };
 type XUserInfo = {
   id: string;
   name?: string;
@@ -170,7 +191,7 @@ async function exchangeCode(
   codeVerifier: string | null,
   request: Request,
   env: Env,
-): Promise<{ email: string | null; name: string | null; providerId: string; avatarUrl: string | null } | null> {
+): Promise<{ email: string | null; emailVerified: boolean; name: string | null; providerId: string; avatarUrl: string | null } | null> {
   const tokenBody = new URLSearchParams({
     client_id: config.clientId,
     code,
@@ -190,20 +211,28 @@ async function exchangeCode(
     tokenBody.set("client_secret", config.clientSecret);
   }
 
-  const tokenRes = await fetch(config.tokenUrl, { method: "POST", headers, body: tokenBody });
-  if (!tokenRes.ok) return null;
-  const tokenJson = (await tokenRes.json()) as { access_token?: string };
-  if (!tokenJson.access_token) return null;
-
-  const infoRes = await fetch(config.userInfoUrl, {
-    headers: { Authorization: `Bearer ${tokenJson.access_token}` },
-  });
+  let infoRes: Response;
+  try {
+    const tokenRes = await fetch(config.tokenUrl, { method: "POST", headers, body: tokenBody, signal: AbortSignal.timeout(8000) });
+    if (!tokenRes.ok) return null;
+    const tokenJson = (await tokenRes.json()) as { access_token?: string };
+    if (!tokenJson.access_token) return null;
+    infoRes = await fetch(config.userInfoUrl, {
+      headers: { Authorization: `Bearer ${tokenJson.access_token}` },
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (error) {
+    // A provider outage or timeout is a failed sign-in, not a 500 and a stack trace.
+    console.error("OAuth exchange failed", provider, error);
+    return null;
+  }
   if (!infoRes.ok) return null;
 
   if (provider === "google") {
     const info = (await infoRes.json()) as GoogleUserInfo;
     return {
       email: info.email ?? null,
+      emailVerified: info.email_verified === true,
       name: info.name ?? null,
       providerId: info.sub,
       avatarUrl: info.picture ?? null,
@@ -214,6 +243,7 @@ async function exchangeCode(
     if (!info?.id) return null;
     return {
       email: info.confirmed_email ?? null,
+      emailVerified: Boolean(info.confirmed_email),
       name: info.name ?? info.username ?? null,
       providerId: info.id,
       avatarUrl: info.profile_image_url ?? null,
@@ -222,6 +252,8 @@ async function exchangeCode(
   const info = (await infoRes.json()) as FacebookUserInfo;
   return {
     email: info.email ?? null,
+    // Facebook does not say whether the address is verified, so it is never trusted to merge accounts.
+    emailVerified: false,
     name: info.name ?? null,
     providerId: info.id,
     avatarUrl: info.picture?.data?.url ?? null,
@@ -241,7 +273,14 @@ export async function handleOAuthCallback(
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
+  if (url.searchParams.get("error") && state) {
+    // The traveller pressed Cancel on the provider's screen. Send them back to the site, not to a JSON error.
+    await env.DB.prepare(`DELETE FROM oauth_state WHERE state = ?`).bind(state).run();
+    return new Response(null, { status: 302, headers: { Location: new URL("/plan?signin=cancelled", siteOrigin(request, env)).toString(), "Set-Cookie": stateCookie("", 0) } });
+  }
   if (!code || !state) return badRequest("Missing authorization code.");
+  // Login-CSRF guard: the browser finishing the flow must be the one that began it.
+  if (readCookie(request, STATE_COOKIE) !== state) return badRequest("This sign-in link has expired. Please try again.");
 
   const stateRow = await env.DB.prepare(
     `SELECT provider, created_at, redirect_to, code_verifier FROM oauth_state WHERE state = ?`,
@@ -267,20 +306,32 @@ export async function handleOAuthCallback(
   const email = hasRealEmail ? profile.email!.trim().toLowerCase() : `${profile.providerId}@${X_PLACEHOLDER_DOMAIN}`;
   const name = profile.name || email.split("@")[0];
 
-  // Match an existing account by provider identity first, then by email —
-  // the latter is what lets a password account and a social login converge
-  // on one user rather than silently forking into two.
-  let user = await env.DB.prepare(
-    `SELECT id FROM user WHERE auth_provider = ? AND provider_id = ?`,
-  )
+  // Match an existing account by provider identity first, then by email.
+  let user = await env.DB.prepare(`SELECT id FROM user WHERE auth_provider = ? AND provider_id = ?`)
     .bind(provider, profile.providerId)
     .first<{ id: string }>();
 
   if (!user) {
     const byEmail = hasRealEmail
-      ? await env.DB.prepare(`SELECT id FROM user WHERE email = ?`).bind(email).first<{ id: string }>()
+      ? await env.DB.prepare(`SELECT id, password_hash, password_verified_at FROM user WHERE email = ?`)
+          .bind(email)
+          .first<{ id: string; password_hash: string | null; password_verified_at: string | null }>()
       : null;
     if (byEmail) {
+      // Merging hands this account to whoever the provider says owns the address, so the provider must
+      // vouch for that address. An unverified claim could otherwise take over someone else's account.
+      if (!profile.emailVerified) {
+        return badRequest(`An account with ${email} already exists. Sign in with your password, or use Google.`);
+      }
+      // Sign-up never verified this address, so a password on it may have been set by someone else
+      // (pre-registration takeover). Now that the provider has proved ownership, drop that password and
+      // any session made with it; the owner can set a new one by email.
+      if (byEmail.password_hash && !byEmail.password_verified_at) {
+        await env.DB.batch([
+          env.DB.prepare(`UPDATE user SET password_hash = NULL, password_salt = NULL WHERE id = ?`).bind(byEmail.id),
+          env.DB.prepare(`DELETE FROM session WHERE user_id = ?`).bind(byEmail.id),
+        ]);
+      }
       await env.DB.prepare(
         `UPDATE user SET auth_provider = ?, provider_id = ?, avatar_url = COALESCE(avatar_url, ?) WHERE id = ?`,
       )
@@ -289,32 +340,29 @@ export async function handleOAuthCallback(
       user = byEmail;
     } else {
       const id = crypto.randomUUID();
-      await env.DB.prepare(
-        `INSERT INTO user (id, created_at, name, email, auth_provider, provider_id, avatar_url)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      )
-        .bind(id, new Date().toISOString(), name, email, provider, profile.providerId, profile.avatarUrl)
-        .run();
+      try {
+        await env.DB.prepare(
+          `INSERT INTO user (id, created_at, name, email, auth_provider, provider_id, avatar_url)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        )
+          .bind(id, new Date().toISOString(), name, email, provider, profile.providerId, profile.avatarUrl)
+          .run();
+      } catch {
+        // Lost a race with another sign-in for the same address; ask for a retry rather than a 500.
+        return badRequest("Could not complete sign-in. Please try again.");
+      }
       user = { id };
     }
   }
 
-  const token = crypto.randomUUID() + crypto.randomUUID();
-  const now = new Date();
-  const expires = new Date(now.getTime() + SESSION_TTL_SECONDS * 1000);
-  await env.DB.prepare(`INSERT INTO session (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`)
-    .bind(token, user.id, now.toISOString(), expires.toISOString())
-    .run();
+  // Same hashed-at-rest session as email login (the previous inline insert stored the raw token).
+  const token = await createSession(env, user.id);
 
-  const redirectTo = stateRow.redirect_to || "/plan";
-  const destination = new URL(redirectTo, siteOrigin(request, env));
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: destination.toString(),
-      "Set-Cookie": sessionCookie(token, SESSION_TTL_SECONDS),
-    },
-  });
+  const destination = new URL(safeRedirect(stateRow.redirect_to), siteOrigin(request, env));
+  const headers = new Headers({ Location: destination.toString() });
+  headers.append("Set-Cookie", sessionCookie(token, SESSION_TTL_SECONDS));
+  headers.append("Set-Cookie", stateCookie("", 0));
+  return new Response(null, { status: 302, headers });
 }
 
 /** Tells the frontend which social providers are actually usable, so it can

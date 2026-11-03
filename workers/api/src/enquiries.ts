@@ -9,6 +9,7 @@
  */
 import type { Env } from "./http";
 import { badRequest, field, json, readJson } from "./http";
+import { limitByIp } from "./rate-limit";
 
 type EnquiryBody = {
   name?: unknown;
@@ -35,6 +36,9 @@ export async function handleEnquiry(request: Request, env: Env): Promise<Respons
   if (field(body.company, 200)) {
     return json({ ok: true, id: null }, { status: 202 });
   }
+
+  const limited = await limitByIp(request, env, "enquiry", 10, 3600);
+  if (limited) return limited;
 
   const name = field(body.name, 120);
   if (!name) return badRequest("A name is required.");

@@ -21,6 +21,7 @@ import type { Env } from "./http";
 import { corsHeaders, json, notFound } from "./http";
 import { withIdempotency } from "./idempotency";
 import { handleAppConfig } from "./app-config";
+import { runScheduled } from "./cron";
 import { handleLiveRates } from "./live-rates";
 import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
@@ -181,6 +182,16 @@ const worker = {
       statusText: response.statusText,
       headers,
     });
+  },
+
+  /** Cron Trigger: purge dead rows and apply quote expiry (cron.ts). */
+  async scheduled(_controller: { scheduledTime: number; cron: string }, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(
+      runScheduled(env).then(
+        (result) => console.log("scheduled run", JSON.stringify(result)),
+        (error) => console.error("scheduled run failed", error),
+      ),
+    );
   },
 };
 

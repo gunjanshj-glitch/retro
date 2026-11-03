@@ -12,8 +12,11 @@ import type { Env } from "./http";
 import { adminEmails } from "./admin";
 import { sendPasswordResetEmail } from "./email";
 import { badRequest, field, json, readJson, parseCookies, sessionCookie, clearSessionCookie, SESSION_COOKIE } from "./http";
+import { limitByIp, overLimit, tooManyRequests } from "./rate-limit";
 
-const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+/** PBKDF2 cost grows with input length; nobody needs a longer password, and a megabyte of one is an attack. */
+const MAX_PASSWORD_LENGTH = 200;
 // Workers' Web Crypto rejects PBKDF2 above 100,000 iterations (NotSupportedError),
 // which made registration and login return a 500. 100,000 is the ceiling.
 const PBKDF2_ITERATIONS = 100_000;
@@ -60,6 +63,7 @@ function normaliseEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+const DUMMY_SALT = "00112233445566778899aabbccddeeff";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type UserRow = {
@@ -87,7 +91,7 @@ export async function sessionIdCandidates(token: string): Promise<[string, strin
   return [hashed, token.startsWith("h:") ? hashed : token];
 }
 
-async function createSession(env: Env, userId: string): Promise<string> {
+export async function createSession(env: Env, userId: string): Promise<string> {
   const token = crypto.randomUUID() + crypto.randomUUID();
   const id = await hashToken(token);
   const now = new Date();
@@ -165,6 +169,10 @@ export async function handleRegister(request: Request, env: Env): Promise<Respon
 
   const password = typeof body.password === "string" ? body.password : "";
   if (password.length < 8) return badRequest("Password must be at least 8 characters.");
+  if (password.length > MAX_PASSWORD_LENGTH) return badRequest(`Password must be at most ${MAX_PASSWORD_LENGTH} characters.`);
+
+  const limited = await limitByIp(request, env, "register", 10, 3600);
+  if (limited) return limited;
 
   // An unverified sign-up must never be able to claim an admin address; its
   // owner sets a password through the emailed link instead.
@@ -177,12 +185,17 @@ export async function handleRegister(request: Request, env: Env): Promise<Respon
 
   const { hash, salt } = await hashPassword(password);
   const id = crypto.randomUUID();
-  await env.DB.prepare(
-    `INSERT INTO user (id, created_at, name, email, password_hash, password_salt)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-  )
-    .bind(id, new Date().toISOString(), name, email, hash, salt)
-    .run();
+  try {
+    await env.DB.prepare(
+      `INSERT INTO user (id, created_at, name, email, password_hash, password_salt)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(id, new Date().toISOString(), name, email, hash, salt)
+      .run();
+  } catch {
+    // Two sign-ups for one address in the same instant: the unique index decides, the loser is told so.
+    return badRequest("An account with that email already exists. Try signing in instead.");
+  }
 
   const token = await createSession(env, id);
   return json(
@@ -206,6 +219,10 @@ export async function handleLogin(request: Request, env: Env): Promise<Response>
   if (!emailRaw || !password) return badRequest("Email and password are required.");
   const email = normaliseEmail(emailRaw);
 
+  // Per address as well as per network: a guessing run against one account is stopped even when it is spread over many IPs.
+  const limited = (await limitByIp(request, env, "login-ip", 60, 900)) ?? ((await overLimit(env, "login-email", email, 10, 900)) ? tooManyRequests(900) : null);
+  if (limited) return limited;
+
   const row = await env.DB.prepare(
     `SELECT id, name, email, password_hash, password_salt, avatar_url FROM user WHERE email = ?`,
   )
@@ -216,9 +233,13 @@ export async function handleLogin(request: Request, env: Env): Promise<Response>
   // failed attempt never confirms which account exists.
   const invalid = () => badRequest("Incorrect email or password.");
 
-  if (!row || !row.password_hash || !row.password_salt) return invalid();
+  if (!row || !row.password_hash || !row.password_salt) {
+    // Do the same work as a real check, so response time does not reveal whether the address has an account.
+    await hashPassword(password.slice(0, MAX_PASSWORD_LENGTH), DUMMY_SALT);
+    return invalid();
+  }
 
-  const { hash } = await hashPassword(password, row.password_salt);
+  const { hash } = await hashPassword(password.slice(0, MAX_PASSWORD_LENGTH), row.password_salt);
   if (!timingSafeEqual(hash, row.password_hash)) return invalid();
 
   const token = await createSession(env, row.id);
@@ -271,6 +292,9 @@ export async function handleForgotPassword(request: Request, env: Env, ctx?: Exe
   if (!emailRaw || !EMAIL_RE.test(emailRaw)) return badRequest("A valid email address is required.");
   const email = normaliseEmail(emailRaw);
 
+  const limited = await limitByIp(request, env, "forgot", 10, 3600);
+  if (limited) return limited;
+
   const existing = await env.DB.prepare(`SELECT id FROM user WHERE email = ?`).bind(email).first();
   if (!existing && !adminEmails(env).includes(email)) return json(FORGOT_REPLY);
 
@@ -301,6 +325,9 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
   const password = typeof body.password === "string" ? body.password : "";
   if (!/^[0-9a-f]{64}$/.test(token)) return badRequest("This reset link is invalid or has expired.");
   if (password.length < 8) return badRequest("Password must be at least 8 characters.");
+  if (password.length > MAX_PASSWORD_LENGTH) return badRequest(`Password must be at most ${MAX_PASSWORD_LENGTH} characters.`);
+  const limited = await limitByIp(request, env, "reset", 20, 3600);
+  if (limited) return limited;
 
   const tokenHash = await sha256Hex(token);
   const nowIso = new Date().toISOString();

@@ -13,6 +13,7 @@
  */
 import type { Env } from "./http";
 import { badRequest, json, notFound, readJson } from "./http";
+import { limitByIp } from "./rate-limit";
 
 type SaveQuoteBody = {
   request?: {
@@ -29,6 +30,9 @@ type SaveQuoteBody = {
 const MAX_BODY_BYTES = 32 * 1024;
 
 export async function handleSaveQuote(request: Request, env: Env): Promise<Response> {
+  // Public and unauthenticated, so bounded per network: otherwise a loop fills the database.
+  const limited = await limitByIp(request, env, "quote-save", 30, 3600);
+  if (limited) return limited;
   const body = await readJson<SaveQuoteBody>(request, MAX_BODY_BYTES);
   if (!body?.request) return badRequest("A quote request is required.");
 
@@ -41,6 +45,9 @@ export async function handleSaveQuote(request: Request, env: Env): Promise<Respo
 
   if (!placeIds.length || nights == null || !startDate) {
     return badRequest("The quote request must carry placeIds, nights and startDate.");
+  }
+  if (placeIds.length > 40 || !Number.isInteger(nights) || nights < 1 || nights > 120 || !/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+    return badRequest("The quote request is not valid.");
   }
 
   const total = Number(body.totals?.total ?? 0);

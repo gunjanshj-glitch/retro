@@ -13,6 +13,7 @@
  */
 import type { Env } from "./http";
 import { json } from "./http";
+import { limitByIp } from "./rate-limit";
 
 export type LiveRate = {
   component: "flight" | "hotel";
@@ -22,6 +23,9 @@ export type LiveRate = {
 };
 
 const CACHE_SECONDS = 6 * 60 * 60;
+/** An empty answer is remembered briefly, so a route with no data does not hit the paid upstream on every keystroke. */
+const EMPTY_CACHE_SECONDS = 15 * 60;
+const UPSTREAM_TIMEOUT_MS = 8000;
 
 /** Carriers that price as low-cost, so the engine can honour the LCC/FSC choice. */
 const LCC_CARRIERS = new Set([
@@ -39,7 +43,7 @@ async function fromCache(env: Env, key: string): Promise<LiveRate[] | null> {
 
 async function toCache(env: Env, key: string, rates: LiveRate[]): Promise<void> {
   if (env.RATE_CACHE) {
-    await env.RATE_CACHE.put(key, JSON.stringify(rates), { expirationTtl: CACHE_SECONDS });
+    await env.RATE_CACHE.put(key, JSON.stringify(rates), { expirationTtl: rates.length ? CACHE_SECONDS : EMPTY_CACHE_SECONDS });
   }
 }
 
@@ -67,6 +71,7 @@ async function fetchFlight(
 
   const res = await fetch(url.toString(), {
     headers: { "X-Access-Token": env.TRAVELPAYOUTS_TOKEN },
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
   });
   if (!res.ok) return null;
 
@@ -165,6 +170,7 @@ async function fetchHotel(
       includeHotelData: true,
       limit: 25,
     }),
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
   });
   if (!res.ok) return null;
 
@@ -237,6 +243,18 @@ export async function handleLiveRates(
   const stars = parseInt(star.match(/\d/)?.[0] ?? "", 10);
   const hotelStars = Number.isFinite(stars) && stars >= 1 && stars <= 5 ? stars : null;
 
+  // This is public and every distinct query is a billable upstream call plus a cache row, so anything
+  // that is not the shape of a real query gets the same answer as "no data": an empty result.
+  const none = () => json({ rates: [], cached: false }, { headers: { "Cache-Control": "public, max-age=300" } });
+  const wantsFlight = Boolean(origin && destinationIata && month);
+  const wantsHotel = Boolean(cityName && countryCode && checkin && checkout);
+  if (wantsFlight && !(/^[A-Z]{3}$/.test(origin) && /^[A-Z]{3}$/.test(destinationIata) && /^\d{4}-\d{2}$/.test(month) && (carrier === "LCC" || carrier === "FSC"))) return none();
+  if (wantsHotel) {
+    const stay = (Date.parse(checkout) - Date.parse(checkin)) / 86_400_000;
+    const validStay = /^\d{4}-\d{2}-\d{2}$/.test(checkin) && /^\d{4}-\d{2}-\d{2}$/.test(checkout) && stay >= 1 && stay <= 30;
+    if (!validStay || !/^[A-Za-z]{2}$/.test(countryCode) || cityName.length > 60 || placeId.length > 80 || star.length > 20) return none();
+  }
+
   // Everything that changes the upstream answer belongs in the key; the party
   // in particular, or one traveller's room count is served to the next.
   const partyKey = `${party.adults}:${party.childAges.join(",")}:${party.rooms}`;
@@ -252,6 +270,11 @@ export async function handleLiveRates(
   const cached = await fromCache(env, cacheKey);
   if (cached) return respond(cached, true);
 
+  // Only upstream-bound misses count against the caller, so ordinary browsing is never limited.
+  if (wantsFlight || wantsHotel) {
+    if (await limitByIp(request, env, "live-rates", 90, 600)) return none();
+  }
+
   const results = await Promise.allSettled([
     origin && destinationIata && month
       ? fetchFlight(env, origin, destinationIata, month, carrier)
@@ -266,7 +289,8 @@ export async function handleLiveRates(
     .map((r) => r.value)
     .filter((r): r is LiveRate => r != null);
 
-  if (rates.length) ctx.waitUntil(toCache(env, cacheKey, rates));
+  // Remember "nothing" only when an upstream was actually asked; with no keys configured it would just burn KV writes.
+  if (rates.length || env.TRAVELPAYOUTS_TOKEN || env.LITEAPI_KEY) ctx.waitUntil(toCache(env, cacheKey, rates));
 
   return respond(rates, false);
 }

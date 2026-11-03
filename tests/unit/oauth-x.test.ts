@@ -80,7 +80,7 @@ describe("Continue with X", () => {
     vi.stubGlobal("fetch", fetchMock);
     return {
       fetchMock,
-      res: worker.fetch(new Request("https://e.com/api/auth/x/callback?code=c&state=s"), env(db.database), ctx),
+      res: worker.fetch(new Request("https://e.com/api/auth/x/callback?code=c&state=s", { headers: { Cookie: "atlas_oauth_state=s" } }), env(db.database), ctx),
     };
   }
   const goodState = { provider: "x", created_at: new Date().toISOString(), redirect_to: "/plan", code_verifier: "ver" };
