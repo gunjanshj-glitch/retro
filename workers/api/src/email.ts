@@ -140,6 +140,11 @@ export function siteUrl(env: Env): string {
 /** Posts one message to MailChannels; `MAILCHANNELS_API_KEY` is sent when set
  *  (the keyless Workers integration has been withdrawn for new accounts). */
 async function deliver(env: Env, payload: unknown): Promise<boolean> {
+  if (env.RESEND_API_KEY) return deliverViaResend(env, payload as MailPayload);
+  if (!env.MAILCHANNELS_API_KEY) {
+    // MailChannels refuses keyless sends (401), so say why instead of failing quietly.
+    console.error("Mail not sent: set RESEND_API_KEY (or MAILCHANNELS_API_KEY) on atlas-api.");
+  }
   try {
     const res = await fetch(MAILCHANNELS_ENDPOINT, {
       method: "POST",
@@ -153,6 +158,43 @@ async function deliver(env: Env, payload: unknown): Promise<boolean> {
     return res.ok;
   } catch (error) {
     console.error("Mail send failed", error);
+    return false;
+  }
+}
+
+type MailPayload = {
+  personalizations: { to: { email: string }[] }[];
+  from: { email: string; name?: string };
+  reply_to?: { email: string; name?: string };
+  subject: string;
+  content: { type: string; value: string }[];
+  attachments?: { content: string; filename: string; type?: string }[];
+};
+
+const RESEND_ENDPOINT = "https://api.resend.com/emails";
+
+const named = (a: { email: string; name?: string }) => (a.name ? `${a.name.replace(/[<>"]/g, "")} <${a.email}>` : a.email);
+
+/** Same message through Resend (https://resend.com). The sending domain must be verified there. */
+async function deliverViaResend(env: Env, p: MailPayload): Promise<boolean> {
+  try {
+    const res = await fetch(RESEND_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.RESEND_API_KEY}` },
+      body: JSON.stringify({
+        from: named(p.from),
+        to: p.personalizations.flatMap((x) => x.to.map((t) => t.email)),
+        ...(p.reply_to ? { reply_to: named(p.reply_to) } : {}),
+        subject: p.subject,
+        text: p.content.find((c) => c.type === "text/plain")?.value,
+        html: p.content.find((c) => c.type === "text/html")?.value,
+        ...(p.attachments ? { attachments: p.attachments.map((a) => ({ filename: a.filename, content: a.content })) } : {}),
+      }),
+    });
+    if (!res.ok) console.error("Resend rejected the mail", res.status, (await res.text()).slice(0, 300));
+    return res.ok;
+  } catch (error) {
+    console.error("Resend send failed", error);
     return false;
   }
 }

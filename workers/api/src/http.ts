@@ -61,6 +61,8 @@ export type Env = {
   MAIL_FROM?: string;
   /** MailChannels API key, sent as `X-Api-Key` when set. */
   MAILCHANNELS_API_KEY?: string;
+  /** Preferred mail provider when set (src/email.ts). */
+  RESEND_API_KEY?: string;
   /** Comma-separated emails allowed into /admin. Defaults to
    *  info@retroholidays.in. Must also be a Google-signed-in account with no
    *  password — see admin.ts. */
