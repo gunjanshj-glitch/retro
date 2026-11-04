@@ -126,7 +126,7 @@
     "enforcePackageFloor": true,
     "packageFloorTolerance": 0.0,
     "maxFloorOverQuote": 3,
-    "_maxFloorOverQuote": "A published from-price more than 3x the bottom-up land quote is treated as a data error and is not used as a floor (Maharashtra is listed at Rs 5,00,000 against a quote near Rs 46,000).",
+    "_maxFloorOverQuote": "A published from-price more than 3x the bottom-up land quote is treated as a data error and is not used as a floor (Maharashtra was once keyed as Rs 5,00,000 against a quote near Rs 46,000; it is now Rs 50,000).",
     "minNightsPerPlace": 1,
     "maxPlacesPerTrip": 12,
     "maxNights": 28,

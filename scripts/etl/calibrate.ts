@@ -360,7 +360,12 @@ function applyCorrections(rows: Row[]): {
 // Run
 // ---------------------------------------------------------------------------
 
+// A package with no fixed length ("Flexible", 0 nights: Great Uttarakhand
+// Outdoors) has a price that covers no defined number of nights, so there is
+// nothing to compare a quote against. Say so rather than guess a length.
+const noFixedLength = core.packages.filter((p) => !p.nights);
 const rows = core.packages
+  .filter((p) => p.nights)
   .map(evaluate)
   .filter((r): r is Row => r !== null)
   .sort((a, b) => a.deltaPct - b.deltaPct);
@@ -372,6 +377,7 @@ const inr = (n: number) => Math.round(n).toLocaleString("en-IN");
 const pct = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
 
 console.log(`\nPricing calibration — ${rows.length} of ${core.packages.length} packages priced\n`);
+if (noFixedLength.length) console.log(`  not benchmarked (no fixed length): ${noFixedLength.map((p) => p.name).join(", ")}\n`);
 console.log(`  UNDER published : ${String(counts.UNDER).padStart(3)}   (a real problem — we would undercut the brochure)`);
 console.log(`  OK (0 to +${TOLERANCE.warnOverPct}%) : ${String(counts.OK).padStart(3)}`);
 console.log(`  HIGH (to +${TOLERANCE.failOverPct}%)  : ${String(counts.HIGH).padStart(3)}`);

@@ -300,10 +300,11 @@ describe("Island hops and bad published prices", () => {
     }
   });
 
-  it("ignores a published 'from' price that is several times the quote (Maharashtra is listed at Rs 5,00,000)", () => {
+  it("Maharashtra (11 nights) quotes near its Rs 50,000 brochure price, which was once mis-keyed as Rs 5,00,000", () => {
     const pkg = core.packages.find((p) => p.name === "Maharashtra")!;
     const q = quote({ placeIds: pkg.placeIds, nights: pkg.nights, adults: 2, startDate: "2027-03-10" });
-    expect(q.totals.flooredToPackage).toBeFalsy();
-    expect(q.totals.perPerson).toBeLessThan(150000);
+    expect(pkg.priceFromInr).toBe(50000);
+    expect(q.totals.perPerson).toBeGreaterThan(40000);
+    expect(q.totals.perPerson).toBeLessThan(75000);
   });
 });
