@@ -58,7 +58,7 @@ const ctx: ExecutionContext = { waitUntil() {}, passThroughOnException() {} };
 const call = (path: string, db: ReturnType<typeof fakeDb>, body: unknown) =>
   worker.fetch(
     new Request(`https://example.com/api${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }),
-    { DB: db.database, ENVIRONMENT: "test" } as Env,
+    { DB: db.database, ENVIRONMENT: "test", RESEND_API_KEY: "re_test" } as Env,
     ctx,
   );
 
@@ -69,7 +69,7 @@ function stubMail() {
     "fetch",
     vi.fn(async (_url: string, init: RequestInit) => {
       const p = JSON.parse(String(init.body));
-      sent.push({ to: p.personalizations[0].to[0].email, text: p.content[0].value });
+      sent.push({ to: p.to[0], text: p.text });
       return new Response("{}", { status: 202 });
     }),
   );

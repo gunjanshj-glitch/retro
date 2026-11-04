@@ -1,17 +1,11 @@
 /**
- * Outgoing mail for a final-approval request.
- *
- * Sent via MailChannels' Workers integration, which needs no API key for
- * Workers sending through Cloudflare — only an SPF record on the sending
- * domain authorising MailChannels (see
- * https://developers.cloudflare.com/email-routing/mailchannels/). That DNS
- * record is an infrastructure step outside this codebase; until it is in
- * place, sends will fail and the caller falls back to recording the request
- * without one (see requests.ts) rather than losing it.
+ * Outgoing mail, sent through Resend (https://resend.com) with the
+ * `RESEND_API_KEY` secret; the sending domain must be verified there.
+ * Every send is best-effort: a provider outage must never cost a traveller
+ * their request, so callers get `false` instead of an exception.
  */
 import type { Env } from "./http";
 
-const MAILCHANNELS_ENDPOINT = "https://api.mailchannels.net/tx/v1/send";
 const DEFAULT_REVIEW_INBOX = "info@retroholidays.in";
 const DEFAULT_FROM = "no-reply@retroholidays.in";
 
@@ -100,7 +94,7 @@ export type NoticeInput = {
   from?: string;
 };
 
-/** Builds a plain + HTML MailChannels payload for a short transactional message. */
+/** Builds a plain + HTML mail payload for a short transactional message. */
 function notice(input: NoticeInput) {
   const text = [input.intro, "", ...(input.lines ?? []), ...(input.cta ? ["", `${input.cta.label}: ${input.cta.url}`] : [])].join("\n");
   const html =
@@ -137,31 +131,7 @@ export function siteUrl(env: Env): string {
   return env.PUBLIC_SITE_URL || "https://retroholidays.in";
 }
 
-/** Posts one message to MailChannels; `MAILCHANNELS_API_KEY` is sent when set
- *  (the keyless Workers integration has been withdrawn for new accounts). */
-async function deliver(env: Env, payload: unknown): Promise<boolean> {
-  if (env.RESEND_API_KEY) return deliverViaResend(env, payload as MailPayload);
-  if (!env.MAILCHANNELS_API_KEY) {
-    // MailChannels refuses keyless sends (401), so say why instead of failing quietly.
-    console.error("Mail not sent: set RESEND_API_KEY (or MAILCHANNELS_API_KEY) on atlas-api.");
-  }
-  try {
-    const res = await fetch(MAILCHANNELS_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(env.MAILCHANNELS_API_KEY ? { "X-Api-Key": env.MAILCHANNELS_API_KEY } : {}),
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) console.error("Mail send rejected", res.status);
-    return res.ok;
-  } catch (error) {
-    console.error("Mail send failed", error);
-    return false;
-  }
-}
-
+/** Message shape the builders above produce. */
 type MailPayload = {
   personalizations: { to: { email: string }[] }[];
   from: { email: string; name?: string };
@@ -175,8 +145,12 @@ const RESEND_ENDPOINT = "https://api.resend.com/emails";
 
 const named = (a: { email: string; name?: string }) => (a.name ? `${a.name.replace(/[<>"]/g, "")} <${a.email}>` : a.email);
 
-/** Same message through Resend (https://resend.com). The sending domain must be verified there. */
-async function deliverViaResend(env: Env, p: MailPayload): Promise<boolean> {
+async function deliver(env: Env, payload: unknown): Promise<boolean> {
+  const p = payload as MailPayload;
+  if (!env.RESEND_API_KEY) {
+    console.error("Mail not sent: RESEND_API_KEY is not set on atlas-api.");
+    return false;
+  }
   try {
     const res = await fetch(RESEND_ENDPOINT, {
       method: "POST",

@@ -62,7 +62,7 @@ const valid = {
 };
 
 function call(method: "GET" | "POST", body: unknown, db: ReturnType<typeof fakeDb>, signedInCookie = true) {
-  const env: Env = { DB: db.database, ENVIRONMENT: "test" };
+  const env: Env = { DB: db.database, ENVIRONMENT: "test", RESEND_API_KEY: "re_test" };
   return worker.fetch(
     new Request("https://example.com/api/package-requests", {
       method,
@@ -88,7 +88,7 @@ describe("package requests", () => {
   it("emails the agency inbox when a request is created", async () => {
     const db = fakeDb({ signedIn: true });
     const waited: Promise<unknown>[] = [];
-    const env: Env = { DB: db.database, ENVIRONMENT: "test" };
+    const env: Env = { DB: db.database, ENVIRONMENT: "test", RESEND_API_KEY: "re_test" };
     const res = await worker.fetch(
       new Request("https://example.com/api/package-requests", {
         method: "POST",
@@ -102,7 +102,7 @@ describe("package requests", () => {
     await Promise.all(waited);
     expect(mailFetch).toHaveBeenCalledTimes(1);
     const sent = JSON.parse((mailFetch.mock.calls[0] as unknown as [string, RequestInit])[1].body as string);
-    expect(sent.personalizations[0].to[0].email).toBe("info@retroholidays.in");
+    expect(sent.to[0]).toBe("info@retroholidays.in");
     expect(sent.subject).toContain("Western Europe");
   });
 

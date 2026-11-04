@@ -4,8 +4,8 @@ import type { Env } from "../../workers/api/src/http";
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("mail provider selection", () => {
-  it("uses Resend when RESEND_API_KEY is set, with bearer auth and a flat payload", async () => {
+describe("mail delivery (Resend only)", () => {
+  it("posts to Resend with bearer auth and a flat payload", async () => {
     const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const ok = await sendPasswordResetEmail({ RESEND_API_KEY: "re_x", MAIL_FROM: "no-reply@retroholidays.in" } as Env, "a@b.com", "https://x/reset?token=t");
@@ -25,11 +25,12 @@ describe("mail provider selection", () => {
     expect(await sendPasswordResetEmail({ RESEND_API_KEY: "re_x" } as Env, "a@b.com", "https://x")).toBe(false);
   });
 
-  it("falls back to MailChannels without a Resend key", async () => {
-    const fetchMock = vi.fn(async () => new Response("", { status: 202 }));
+  it("sends nothing and says why when the key is missing", async () => {
+    const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
-    vi.spyOn(console, "error").mockImplementation(() => {});
-    await sendPasswordResetEmail({ MAILCHANNELS_API_KEY: "k" } as Env, "a@b.com", "https://x");
-    expect((fetchMock.mock.calls[0] as unknown as [string])[0]).toContain("mailchannels");
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(await sendPasswordResetEmail({} as Env, "a@b.com", "https://x")).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(log.mock.calls[0][0]).toContain("RESEND_API_KEY");
   });
 });

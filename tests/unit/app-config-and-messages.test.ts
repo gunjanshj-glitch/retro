@@ -33,7 +33,7 @@ function setup(withKv = true) {
     db.prepare(`INSERT INTO session (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`).run(tok, uid, now, later);
   }
   const kv = fakeKv();
-  const env = { DB: database, ENVIRONMENT: "test", PUBLIC_SITE_URL: "https://retroholidays.in", ADMIN_EMAILS: "info@retroholidays.in,two@retroholidays.in", ...(withKv ? { RATE_CACHE: kv as unknown as KVNamespace } : {}) } as Env;
+  const env = { DB: database, ENVIRONMENT: "test", RESEND_API_KEY: "re_test", PUBLIC_SITE_URL: "https://retroholidays.in", ADMIN_EMAILS: "info@retroholidays.in,two@retroholidays.in", ...(withKv ? { RATE_CACHE: kv as unknown as KVNamespace } : {}) } as Env;
   async function call(as: "asha" | "admin" | "admin2" | null, method: string, path: string, body?: unknown, headers: Record<string, string> = {}) {
     const res = await worker.fetch(
       new Request(`https://example.com/api${path}`, {

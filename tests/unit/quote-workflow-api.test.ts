@@ -29,8 +29,8 @@ function stubFetch(razorpayOk = true) {
   );
 }
 
-const mails = () => sent.filter((s) => s.url.includes("mailchannels"));
-const mailTo = (to: string) => mails().filter((m) => m.body.personalizations[0].to[0].email === to);
+const mails = () => sent.filter((s) => s.url.includes("api.resend.com"));
+const mailTo = (to: string) => mails().filter((m) => m.body.to.includes(to));
 
 const RZP = { RAZORPAY_KEY_ID: "rzp_test_key", RAZORPAY_KEY_SECRET: "secret123", RAZORPAY_WEBHOOK_SECRET: "whsec" };
 
@@ -44,7 +44,7 @@ function setup(env: Partial<Env> = {}) {
   for (const [tok, uid] of [["asha", "u1"], ["other", "u2"], ["admin", "a1"]]) {
     db.prepare(`INSERT INTO session (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`).run(tok, uid, now, later);
   }
-  const fullEnv: Env = { DB: database, ENVIRONMENT: "test", PUBLIC_SITE_URL: "https://retroholidays.in", ...env };
+  const fullEnv: Env = { DB: database, ENVIRONMENT: "test", PUBLIC_SITE_URL: "https://retroholidays.in", RESEND_API_KEY: "re_test", ...env };
 
   async function call(as: "asha" | "other" | "admin" | null, method: string, path: string, body?: unknown, headers: Record<string, string> = {}) {
     const res = await worker.fetch(
@@ -110,9 +110,9 @@ describe("submitting a request", () => {
 
     const admin = mailTo("info@retroholidays.in");
     expect(admin).toHaveLength(1);
-    expect(admin[0].body.content[0].value).toContain("+91 98765 43210");
-    expect(admin[0].body.content[0].value).toContain("asha.work@example.com");
-    expect(admin[0].body.content[0].value).toContain(`/admin/request?id=${res.json.id}`);
+    expect(admin[0].body.text).toContain("+91 98765 43210");
+    expect(admin[0].body.text).toContain("asha.work@example.com");
+    expect(admin[0].body.text).toContain(`/admin/request?id=${res.json.id}`);
     expect(mailTo("asha.work@example.com")).toHaveLength(1);
 
     const detail = await s.call("asha", "GET", `/requests/${res.json.id}`);
@@ -207,7 +207,7 @@ describe("agency side", () => {
 
     const mail = mailTo("asha.work@example.com").at(-1)!;
     expect(mail.body.subject).toContain("final quote is ready");
-    expect(mail.body.content[0].value).toContain(`/my-requests/view?id=${id}`);
+    expect(mail.body.text).toContain(`/my-requests/view?id=${id}`);
 
     const row = s.db.prepare(`SELECT quoted_total_inr FROM quotation_request WHERE id = ?`).get(id) as any;
     expect(row.quoted_total_inr).toBe(95_000);
@@ -277,7 +277,7 @@ describe("changes, decline and withdraw", () => {
     expect((await s.call("asha", "POST", `/requests/${id}/changes`, { message: "hi" })).status).toBe(400);
     const res = await s.call("asha", "POST", `/requests/${id}/changes`, { message: "Can we drop the spa and add a day in Rome?" });
     expect(res.json.status).toBe("changes_requested");
-    expect(mailTo("info@retroholidays.in").at(-1)!.body.content[0].value).toContain("add a day in Rome");
+    expect(mailTo("info@retroholidays.in").at(-1)!.body.text).toContain("add a day in Rome");
 
     expect((await s.call("admin", "POST", `/admin/requests/${id}/send`, sendBody())).json.version).toBe(2);
     const detail = await s.call("asha", "GET", `/requests/${id}`);

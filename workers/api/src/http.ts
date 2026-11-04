@@ -56,12 +56,10 @@ export type Env = {
   /** Mailbox a final-approval request's full JSON is sent to for manual
    *  review. Defaults to info@retroholidays.in when unset. */
   REVIEW_INBOX?: string;
-  /** From-address for outgoing mail. MailChannels requires the sending
-   *  domain to carry an SPF record authorising it; see email.ts. */
+  /** From-address for outgoing mail. Resend requires the sending
+   *  domain to be verified in Resend; see email.ts. */
   MAIL_FROM?: string;
-  /** MailChannels API key, sent as `X-Api-Key` when set. */
-  MAILCHANNELS_API_KEY?: string;
-  /** Preferred mail provider when set (src/email.ts). */
+  /** Resend API key; without it no mail is sent (src/email.ts). */
   RESEND_API_KEY?: string;
   /** Comma-separated emails allowed into /admin. Defaults to
    *  info@retroholidays.in. Must also be a Google-signed-in account with no
