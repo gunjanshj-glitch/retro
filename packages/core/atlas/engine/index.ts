@@ -28,7 +28,7 @@ import type {
   QuoteWarning,
 } from "./types";
 import { planDays, type GroupProfile } from "./dayplan";
-import { priceQuotation, resolvePax, type LiveRate } from "./pricing";
+import { indiaGroundApplies, indiaRoadFirst, priceQuotation, resolvePax, type LiveRate } from "./pricing";
 import { normaliseKey, formatDuration } from "./text";
 import { filterRealisticSelection } from "./bounds";
 
@@ -78,13 +78,73 @@ function buildActivityPricer(bundles: Map<string, DestinationBundle>) {
     byPlace.set(placeId, rows);
   }
 
+  // A paid rate is charged to one cluster only. Two clusters that both mention
+  // "Grand World" must not each bill its ticket.
+  const claimed = new Map<string, string>();
+  const cache = new Map<string, { code: string | null; price: number; source: RateSource }>();
+
+  /**
+   * Rates the cluster's own attractions name, summed.
+   *
+   * Cluster titles are area names ("NORTH ISLAND / VINPEARL") while the rate
+   * card is priced per ticket (VINWONDERS, SAFARI_PARK, GRAND_WORLD), so a
+   * title-only match found nothing and Vietnam's headline paid attractions were
+   * quoted at zero. The attraction lines inside the cluster do name them
+   * ("Vin-Wonders Theme Park + Water Park"), so match against those too.
+   */
+  const byAttractions = (
+    placeId: string,
+    rows: { key: string; code: string; inr: number; source: RateSource }[],
+    cluster: Cluster,
+  ) => {
+    const text = normaliseKey([cluster.name, ...(cluster.attractions ?? [])].join(" "));
+    if (!text) return [];
+    const compact = text.replace(/ /g, "");
+    const tokens = new Set(text.split(" "));
+    return rows.filter((row) => {
+      if (row.inr <= 0) return false;
+      const owner = claimed.get(`${placeId}|${row.code}`);
+      if (owner && owner !== cluster.id) return false;
+      const words = row.key.split(" ").filter((w) => w.length >= 4);
+      const rowCompact = row.key.replace(/ /g, "");
+      if (rowCompact.length >= 6 && compact.includes(rowCompact)) return true;
+      if (!words.length) return false;
+      const hit = words.filter((w) => tokens.has(w) || tokens.has(`${w}s`));
+      if (hit.length === words.length) return true;
+      // "SAFARI PARK" is "Vinpearl Safari Zoo": all but one word, and the one that
+      // names the thing (the longest) is among those present.
+      const longest = words.reduce((a, b) => (b.length > a.length ? b : a));
+      // At least six letters: "hills" alone must not turn "5 hills, caves, pagodas" into the Ba Na Hills cable-car ticket.
+      return words.length >= 2 && longest.length >= 6 && hit.length >= words.length - 1 && hit.includes(longest);
+    });
+  };
+
   return (placeId: string, cluster: Cluster): { code: string | null; price: number; source: RateSource } => {
+    const cached = cache.get(cluster.id);
+    if (cached) return cached;
+    const result = price(placeId, cluster);
+    cache.set(cluster.id, result);
+    return result;
+  };
+
+  function price(placeId: string, cluster: Cluster): { code: string | null; price: number; source: RateSource } {
     const rows = byPlace.get(placeId) ?? [];
     if (!rows.length) return { code: null, price: 0, source: "estimated" };
 
     const target = normaliseKey(cluster.name);
     const exact = rows.find((r) => r.key === target);
     if (exact) return { code: exact.code, price: exact.inr, source: exact.source };
+
+    const named = byAttractions(placeId, rows, cluster);
+    if (named.length) {
+      for (const row of named) claimed.set(`${placeId}|${row.code}`, cluster.id);
+      const top = named.reduce((a, b) => (b.inr > a.inr ? b : a));
+      return {
+        code: top.code,
+        price: Math.round(named.reduce((sum, r) => sum + r.inr, 0)),
+        source: named.every((r) => r.source === "workbook") ? "workbook" : "estimated",
+      };
+    }
 
     // Cluster names and area names overlap but are rarely identical
     // ("GIZA PYRAMIDS AND SPHINX" vs "GIZA_PYRAMIDS"); score on shared words.
@@ -101,7 +161,7 @@ function buildActivityPricer(bundles: Map<string, DestinationBundle>) {
     const sorted = rows.map((r) => r.inr).sort((a, b) => a - b);
     const median = sorted[sorted.length >> 1] ?? 0;
     return { code: null, price: median, source: "estimated" };
-  };
+  }
 }
 
 function groupProfile(request: QuoteRequest): GroupProfile {
@@ -241,6 +301,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     pinnedClusterIds: new Set(request.pinnedClusterIds),
     transportPreference: request.transportPreference,
     legModes: request.legModes,
+    roadFirst: indiaGroundApplies(core, stays.map((s) => s.placeId)) ? indiaRoadFirst() : null,
     clusterBiasFor: (placeId) => clusterBias(firedByPlace.get(placeId) ?? []),
     priceLookup: (placeId, cluster) => {
       const priced = pricer(placeId, cluster);

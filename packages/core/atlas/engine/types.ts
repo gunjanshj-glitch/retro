@@ -149,6 +149,11 @@ export type TransferAlternative = {
   estimated: boolean;
   /** Per-vehicle pricing detail, for private car options. */
   car?: CarEstimate;
+  /**
+   * The trip bills one all-in vehicle per day (see `groundTransport` in the quote
+   * policy), and this road option runs in it, so choosing it adds nothing.
+   */
+  includedInVehicle?: boolean;
 };
 
 /**
@@ -174,6 +179,7 @@ export type AirportLink = {
   alternatives: TransferAlternative[];
   userChosen: boolean;
   car?: CarEstimate;
+  includedInVehicle?: boolean;
 };
 
 export type TransferLeg = {
@@ -203,6 +209,8 @@ export type TransferLeg = {
   userChosen: boolean;
   /** Set when this leg is a chauffeur-driven private car (priced per vehicle). */
   car?: CarEstimate;
+  /** This road leg runs in the trip's daily vehicle and adds no fare of its own. */
+  includedInVehicle?: boolean;
   /** Ground links to and from the airports, when this leg is a flight. */
   airportLinks?: AirportLink[];
 };
@@ -245,6 +253,8 @@ export const CostComponent = z.enum([
   "flight",
   "airport-transfer",
   "local-transport",
+  /** All-in daily vehicle on an all-India trip: airport, intercity and sightseeing together. */
+  "ground-transport",
   "intercity-transport",
   "sightseeing",
   "meals",

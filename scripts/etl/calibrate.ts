@@ -353,7 +353,7 @@ for (const r of rows) {
 
 // --- workbook -------------------------------------------------------------
 const allComponents: CostComponent[] = [
-  "hotel", "flight", "airport-transfer", "local-transport", "intercity-transport",
+  "hotel", "flight", "airport-transfer", "local-transport", "ground-transport", "intercity-transport",
   "sightseeing", "meals", "visa", "insurance", "city-tax",
 ];
 

@@ -60,6 +60,11 @@ function loadEngine(local: Local) {
   return require("@retro/core/atlas/engine") as typeof import("@retro/core/atlas/engine");
 }
 let engineRevision = "";
+/** The trip-length rules (realistic range, recommended length). Needs the engine's policy applied first, hence via getEngine. */
+export function getBounds(local: Local) {
+  getEngine(local);
+  return require("@retro/core/atlas/engine/bounds") as typeof import("@retro/core/atlas/engine/bounds");
+}
 export function getEngine(local: Local) {
   if (!enginePromise || engineRevision !== local.manifest.revision) {
     enginePromise = loadEngine(local);

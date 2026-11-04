@@ -351,9 +351,9 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                           >
                             <div className="font-medium capitalize">{modeLabel(alt.mode)}</div>
                             <div className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
-                              {formatInr(alt.priceInr)} pp · {formatDuration(alt.minutes)}
+                              {alt.includedInVehicle ? "Included in your vehicle" : `${formatInr(alt.priceInr)} pp`} · {formatDuration(alt.minutes)}
                             </div>
-                            {alt.car && (
+                            {alt.car && !alt.includedInVehicle && (
                               <div className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
                                 {formatInr(alt.car.totalInr)} total · {alt.car.vehicles > 1 ? `${alt.car.vehicles} × ` : ""}
                                 {alt.car.className.split(" (")[0]}
@@ -453,7 +453,13 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                     </div>
                   )}
 
-                  {leg.car && (
+                  {leg.includedInVehicle && (
+                    <p className="mt-3 rounded-lg px-3 py-2 text-xs leading-relaxed" style={{ background: "var(--surface)", color: "var(--muted)" }}>
+                      This drive runs in your chauffeur-driven vehicle, which is billed per day for the whole trip — airport
+                      transfers, intercity drives and sightseeing together.
+                    </p>
+                  )}
+                  {leg.car && !leg.includedInVehicle && (
                     <p className="mt-3 rounded-lg px-3 py-2 text-xs leading-relaxed" style={{ background: "var(--surface)", color: "var(--muted)" }}>
                       Chauffeur-driven {leg.car.vehicles > 1 ? `${leg.car.vehicles} × ` : ""}
                       {leg.car.className} for {leg.car.roadKm} road km

@@ -7,6 +7,7 @@
     "flight": 1,
     "airport-transfer": 1,
     "local-transport": 1,
+    "ground-transport": 1,
     "intercity-transport": 1,
     "sightseeing": 1,
     "meals": 1,
@@ -19,7 +20,10 @@
     "_indiaHotel": "The same workbook template (USD 112.5 / 168.75 / 275 / 425 per room-night for 3 / 4 / 5 / Luxury 5 Star, about INR 10,630 / 15,945 / 25,985 / 40,158) is repeated for 203 of the 207 Indian places, and the gap-fill copies it to the rest. That is roughly 2.5x what Indian hotels charge in these categories (3 Star about 4,000 to 5,000, 4 Star about 6,000 to 8,000, 5 Star about 10,000 to 13,000). 0.4 brings it to that range. Replace with contracted per-city rates in the workbook and remove the hotel entry.",
     "india": { "airport-transfer": 0.25, "local-transport": 0.55, "hotel": 0.4 }
   },
-  "country": {},
+  "country": {
+    "_vietnam": "Agency check of a 3-adult, 10-night, 4-destination Vietnam trip (Ha Noi, Danang, Hochiminh, Phu Quoc, April 2027): decent 4 Star rooms in those cities cost about INR 7,500 per room-night, not the workbook template's INR 11,990-12,700 (a hotel total of 2.8 lakh against a real 1.5 lakh at most), the Vietnam e-visa service is INR 3,360 per person against the template's INR 2,800, and the agency's retrieved fares for that routing (CCU-HAN, HAN-DAD, DAD-PQC, PQC-SGN, SGN-BKK-CCU) came to about INR 59,000 per person against the template's roughly INR 37,000 once its three domestic legs are counted. 0.5 and 1.2 bring hotel and visa to those figures; 1.9 on the international fare brings the air total to within about 8% of the retrieved one. The airfare factor is fitted to ONE retrieved itinerary and is a stopgap until live fares are switched on. Replace with contracted per-city rates in the workbook and remove this entry.",
+    "south-east-asia-vietnam": { "hotel": 0.5, "visa": 1.2, "flight": 1.9 }
+  },
   "package": {},
   "_fittedAt": "2026-09-08T13:55:06.153Z"
 }

@@ -238,21 +238,33 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
         if (r.pace !== suggested) patch.pace = suggested;
       }
 
-      // Who is travelling changes how long the same destinations take, so the
-      // suggested length moves with it rather than leaving a family and a stag
-      // party both sitting on whatever number happened to be there before.
-      if (r.placeIds.length) {
-        const { recommended } = computeNightsBounds(core, r.placeIds, {
-          travellerType: r.travellerType,
-          tripStyle: r.tripStyle,
-        });
-        if (r.nights !== recommended) patch.nights = recommended;
-      }
-
       return Object.keys(patch).length ? { ...r, ...patch } : r;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.travellerType, value.tripStyle, autoHotelStar, autoPace, core]);
+
+  // Who is travelling changes how long the same destinations take, so the
+  // suggested length moves with it rather than leaving a family and a stag
+  // party both sitting on whatever number happened to be there before.
+  //
+  // This is deliberately its own effect, keyed on the traveller alone. It used
+  // to live inside the hotel/pace suggestion effect above, whose inputs include
+  // the "was this my own suggestion" flags: clicking Hotel category or Pace
+  // flipped a flag, re-ran that effect, and snapped the traveller's carefully
+  // chosen nights back to the recommendation. A trip style change only
+  // re-sizes the allowed range, which the clamp below already enforces.
+  useEffect(() => {
+    if (!shouldRun("nights", [value.travellerType])) return;
+    onChange((r) => {
+      if (!r.placeIds.length) return r;
+      const { recommended } = computeNightsBounds(core, r.placeIds, {
+        travellerType: r.travellerType,
+        tripStyle: r.tripStyle,
+      });
+      return r.nights !== recommended ? { ...r, nights: recommended } : r;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value.travellerType]);
 
   // Low-cost carriers never sell a business cabin (the engine's own fare
   // generation skips that combination), so downgrade rather than offer a

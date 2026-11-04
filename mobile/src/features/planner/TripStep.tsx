@@ -1,9 +1,9 @@
 import { ScrollView, View } from "react-native";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Chip, ChipRow, Text } from "@/ui";
 import { space, useTheme } from "@/theme";
 import { useCatalogueState } from "@/features/catalogue/CatalogueProvider";
-import { openCatalogue } from "@/features/catalogue/data";
+import { getBounds, openCatalogue } from "@/features/catalogue/data";
 import { Pick, Section, Stepper } from "./controls";
 import { usePlanner } from "./state";
 
@@ -23,6 +23,21 @@ export function TripStep() {
   const { local } = useCatalogueState();
   const { request, patch } = usePlanner();
   const catalogue = useMemo(() => (local ? openCatalogue(local) : null), [local]);
+
+  // How long these places realistically take for this kind of party: the same rules the website's slider uses.
+  const boundsFor = (travellerType: string, tripStyle: string) =>
+    local && catalogue && request.placeIds.length
+      ? getBounds(local).computeNightsBounds(catalogue.core, request.placeIds, { travellerType, tripStyle } as never)
+      : null;
+  const bounds = useMemo(() => boundsFor(request.travellerType, request.tripStyle), [local, catalogue, request.placeIds, request.travellerType, request.tripStyle]); // eslint-disable-line react-hooks/exhaustive-deps
+  const minNights = bounds?.min || 1;
+  const maxNights = Math.max(bounds?.max || 28, minNights);
+  const shownNights = Math.min(Math.max(request.nights, minNights), maxNights);
+  // Pricing bills the request, not the display, so write a clamped length back (never touched otherwise: the
+  // length changes only when the traveller changes it, or changes who is travelling).
+  useEffect(() => {
+    if (shownNights !== request.nights) patch({ nights: shownNights, nightOverrides: {} });
+  }, [shownNights, request.nights, patch]);
 
   const [y, m, d] = request.startDate.split("-").map(Number) as [number, number, number];
   const now = new Date();
@@ -60,11 +75,20 @@ export function TripStep() {
       </Section>
 
       <Section title="Length of trip">
-        <Stepper label="Nights" value={request.nights} min={1} max={60} suffix="nights" onChange={(n) => patch({ nights: n, nightOverrides: {} })} />
+        <Stepper label="Nights" value={shownNights} min={minNights} max={maxNights} suffix="nights" onChange={(n) => patch({ nights: n, nightOverrides: {} })} />
+        {bounds ? (
+          <Text variant="small" color={c.textDim}>
+            {bounds.min}–{bounds.max} is realistic for {request.placeIds.length} destination{request.placeIds.length === 1 ? "" : "s"} · {bounds.recommended} recommended.{bounds.profileNote ? ` ${bounds.profileNote}` : ""}
+          </Text>
+        ) : null}
       </Section>
 
       <Section title="Who is going">
-        <Pick options={WHO as unknown as { value: string; label: string }[]} value={request.travellerType} onChange={(t) => patch({ travellerType: t as typeof request.travellerType, tripStyle: STYLE_FOR[t] as typeof request.tripStyle })} />
+        <Pick options={WHO as unknown as { value: string; label: string }[]} value={request.travellerType} onChange={(t) => {
+          // Who is travelling changes how long the same places take: suggest the new length, as the website does.
+          const recommended = boundsFor(t, STYLE_FOR[t] as string)?.recommended;
+          patch({ travellerType: t as typeof request.travellerType, tripStyle: STYLE_FOR[t] as typeof request.tripStyle, ...(recommended ? { nights: recommended, nightOverrides: {} } : {}) });
+        }} />
         <Stepper label="Adults" value={request.adults} min={1} max={20} onChange={(n) => patch({ adults: n, rooms: undefined })} />
         <Stepper label="Children" value={children.length} min={0} max={8} onChange={(n) => patch({ childAges: n > children.length ? [...children, 8] : children.slice(0, n), rooms: undefined })} />
         {children.map((age, i) => (

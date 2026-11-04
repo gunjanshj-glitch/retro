@@ -56,6 +56,7 @@ Updated: 2026-11-04. **Done** = built, type-checked and covered by tests where l
 | App | Planner: where, when and who, style, live quote, send to Retro | Done in code | 4 steps with a live price bar; draft survives an app kill. Not run on a device. Live hotel rates (second pricing pass) and the explore questionnaire are Pending |
 | App | Map modal (pan, zoom, pins) | Done in code | Skia on one canvas, own hit-testing, 10 regions as chips. Not run on a device; the world-map zoom is replaced by region chips |
 | App | Launch data check: revision, download only what changed, waiting screen with a game, offline fallback | Done in code | Needs the website redeployed so `/atlas/manifest.json` exists. Price policy now comes from the backend too |
+| Both | Pricing fixes from the agency's Vietnam and Rajasthan test trips | Done in code, needs redeploy | One engine prices web and phone. India: one all-in vehicle per day (Sedan 4,500 / SUV 5,500 / Tempo 7,500 / Bus 9,000, long drives 2-3x) and meals at INR 650 a head at 3 Star. Vietnam: hotel 0.5x, visa 1.2x, air 1.9x (fitted to ONE retrieved itinerary), paid attractions now priced, Danang airport and island legs fixed. Nights slider no longer resets on unrelated clicks. 4/5 Star meal prices and the Vietnam air factor are agency-to-confirm |
 | App | Destination screens, region browsing | Pending | |
 | App | Staff S3: full quote editor, send revision | Pending | Largest staff item |
 | App | Biometric re-lock and screenshot block for staff | Pending | |

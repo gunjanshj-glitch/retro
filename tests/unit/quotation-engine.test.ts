@@ -1454,10 +1454,25 @@ describe("private car on Indian legs", () => {
     }
   });
 
-  it("prices a pinned car per vehicle, not per head", () => {
+  it("runs a pinned road leg inside the daily vehicle, with no fare of its own", () => {
+    // An all-India trip bills one vehicle per day for every road cost, so the
+    // road leg adds nothing on its own (see the groundTransport policy).
     const base = quote({ placeIds: indiaPlaces, nights: 5 });
     const leg = base.days.find((d) => d.isTransferDay && d.transfer?.alternatives.some((a) => a.mode === "private_vehicle"))!;
     const pinned = quote({ placeIds: indiaPlaces, nights: 5, legModes: { [leg.placeId]: "private_vehicle" } });
+    const got = pinned.days.find((d) => d.placeId === leg.placeId)!.transfer!;
+    expect(got.mode).toBe("private_vehicle");
+    expect(got.includedInVehicle).toBe(true);
+    expect(got.priceInr).toBe(0);
+    expect(pinned.lineItems.some((i) => i.component === "intercity-transport" && i.label === `${got.from} to ${got.to}`)).toBe(false);
+    expect(pinned.lineItems.some((i) => i.unit === "vehicle-day" && i.label.startsWith("Vehicle with driver"))).toBe(true);
+  });
+
+  it("still prices a pinned car per vehicle, not per head, on a trip outside India", () => {
+    const places = ["ha-noi", "danang"];
+    const base = quote({ placeIds: places, nights: 5 });
+    const leg = base.days.find((d) => d.isTransferDay && d.transfer?.alternatives.some((a) => a.mode === "private_vehicle"))!;
+    const pinned = quote({ placeIds: places, nights: 5, legModes: { [leg.placeId]: "private_vehicle" } });
     const got = pinned.days.find((d) => d.placeId === leg.placeId)!.transfer!;
     expect(got.mode).toBe("private_vehicle");
     expect(got.car).toBeDefined();
@@ -1525,26 +1540,27 @@ describe("airport links on flight legs", () => {
 
 describe("airport transfers on a multi-city domestic trip", () => {
   it("bills one pickup where the trip starts and one drop-off where it ends, not one pair per stay", () => {
-    const q = quote({ placeIds: ["jaipur", "bikaner", "jodhpur", "jaisalmer"], nights: 11 });
+    // Outside India: all-India trips fold airport runs into the daily vehicle instead.
+    const q = quote({ placeIds: ["ha-noi", "danang", "hochiminh", "phu-quoc"], nights: 10 });
     const transfers = q.lineItems.filter((l) => l.component === "airport-transfer");
     expect(transfers).toHaveLength(2);
     expect(transfers.map((l) => l.label)).toEqual([
-      "Airport to hotel — Jaipur",
-      "Hotel to airport — Jaisalmer",
+      "Airport to hotel — Ha Noi",
+      "Hotel to airport — Phu Quoc",
     ]);
-    // A chauffeured sedan to or from an Indian airport is a few thousand rupees at most.
-    for (const t of transfers) expect(t.totalInr).toBeLessThan(3000);
+    // A chauffeured car to or from a Vietnamese airport is a few thousand rupees at most.
+    for (const t of transfers) expect(t.totalInr).toBeLessThan(5000);
   });
 });
 
 describe("admin switching off individual price lines", () => {
-  const places = ["jaipur", "bikaner", "jodhpur", "jaisalmer"];
+  const places = ["ha-noi", "danang", "hochiminh", "phu-quoc"];
   it("drops a switched-off line from the totals but keeps it listed so it can come back", () => {
-    const full = quote({ placeIds: places, nights: 11 });
+    const full = quote({ placeIds: places, nights: 11, hotelStar: "5 Star" });
     const target = full.lineItems.find((l) => l.component === "airport-transfer")!;
-    expect(target.key).toBe("airport-transfer|Airport to hotel — Jaipur");
+    expect(target.key).toBe("airport-transfer|Airport to hotel — Ha Noi");
 
-    const cut = quote({ placeIds: places, nights: 11, excludedLineKeys: [target.key] });
+    const cut = quote({ placeIds: places, nights: 11, hotelStar: "5 Star", excludedLineKeys: [target.key] });
     expect(cut.lineItems.some((l) => l.key === target.key)).toBe(false);
     expect(cut.excludedLineItems?.map((l) => l.key)).toEqual([target.key]);
     expect(cut.totals.directCost).toBe(full.totals.directCost - target.totalInr);
@@ -1552,7 +1568,7 @@ describe("admin switching off individual price lines", () => {
   });
 
   it("gives every line a unique key", () => {
-    const q = quote({ placeIds: places, nights: 11 });
+    const q = quote({ placeIds: places, nights: 11, hotelStar: "5 Star" });
     const keys = q.lineItems.map((l) => l.key);
     expect(new Set(keys).size).toBe(keys.length);
   });
@@ -1560,7 +1576,8 @@ describe("admin switching off individual price lines", () => {
 
 describe("margin allocation across traveller-facing categories", () => {
   it("loads margin pro rata, so Sightseeing transport is not inflated beyond the quote-wide markup", () => {
-    const q = quote({ placeIds: ["jaipur", "jodhpur", "jaisalmer", "bikaner"], nights: 11 });
+    // Outside India, where sightseeing transport is still its own line.
+    const q = quote({ placeIds: ["ha-noi", "danang", "hochiminh", "phu-quoc"], nights: 11, hotelStar: "5 Star" });
     const rows = componentBreakdown(q, q.totals.total);
     const row = rows.find((r) => r.key === "local-transport")!;
     const base = q.lineItems.filter((l) => l.component === "local-transport").reduce((a, l) => a + l.totalInr, 0);

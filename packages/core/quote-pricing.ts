@@ -21,6 +21,7 @@ export const COMPONENT_LABEL: Record<string, string> = {
   flight: "Flights",
   "airport-transfer": "Airport transfers",
   "local-transport": "Sightseeing transport",
+  "ground-transport": "Transport (vehicle with driver)",
   "intercity-transport": "Intercity transport",
   sightseeing: "Sightseeing & entrances",
   meals: "Meals",

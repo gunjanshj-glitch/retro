@@ -49,8 +49,33 @@
       "half-board": { "lunch": false, "dinner": true },
       "full-board": { "lunch": true, "dinner": true }
     },
+    "_regionPerMealComment": "Agency guidance for India: a meal is INR 500-800 per head at a 3 Star hotel, whatever the town, so it is priced at the INR 650 midpoint instead of the workbook's template figure (about INR 2,100 lunch and 2,950 dinner for every Indian place, 3-4x what a hotel or restaurant charges). Only the 3 Star figure came from the agency; the other classes are that figure scaled by the rate card's own 3 : 4 : 5 : Luxury hotel ratio (1 : 1.5 : 2.44 : 3.78) and should be confirmed.",
+    "regionPerMeal": {
+      "india": { "regionId": "india", "byStar": { "3 Star": 650, "4 Star": 975, "5 Star": 1590, "Luxury 5 Star": 2455 } }
+    },
     "_dietComment": "Multiplier on meal rates. Special diets carry a real supplement in most destinations.",
     "dietFactor": { "no-preference": 1.0, "non-veg": 1.0, "veg": 0.95, "vegan": 1.08, "jain": 1.12, "halal": 1.05 }
+  },
+
+  "groundTransport": {
+    "_comment": "India only. Agency practice: on an all-India trip every road cost, whatever it is called (airport transfer, intercity drive, sightseeing), is one chauffeur-driven vehicle billed per day. The day rate is the middle of the agency's range for the class: Sedan 4,000-5,000, SUV 5,000-6,000, Tempo Traveller (12-seater) 7,000-8,000, Bus (24-40 seater) 8,000-10,000. Trips that include anywhere outside India are priced the old way, leg by leg. A leg the traveller takes by train, bus or flight is still billed as that fare on top of the vehicle.",
+    "india": {
+      "enabled": true,
+      "regionId": "india",
+      "classes": [
+        { "maxPax": 3, "label": "Sedan", "dayRateInr": 4500 },
+        { "maxPax": 6, "label": "SUV (Innova / Ertiga)", "dayRateInr": 5500 },
+        { "maxPax": 12, "label": "Tempo Traveller (12-seater)", "dayRateInr": 7500 },
+        { "maxPax": 40, "label": "Bus (24-40 seater)", "dayRateInr": 9000 }
+      ],
+      "_longLegComment": "A drive that takes most of a day is not an ordinary day: Delhi to Shimla, Leh to Manali, Kathgodam to Haridwar. The agency doubles or triples the day rate for those. Measured on the leg's drive time.",
+      "longLegs": [
+        { "overDriveHours": 8, "dayMultiple": 2 },
+        { "overDriveHours": 14, "dayMultiple": 3 }
+      ],
+      "_roadFirstComment": "With the road already paid for, a drive up to this many hours is the default way to make a leg unless the traveller asks for the fastest trip (then the quickest mode wins as before). Cheapest accepts any drive the car model offers.",
+      "roadFirstMaxHours": 12
+    }
   },
 
   "markup": {

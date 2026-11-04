@@ -148,6 +148,12 @@ export type DayPlanInput = {
   transportPreference: TransportPreference;
   /** Per-leg mode the traveller pinned, keyed by the arriving place's id. */
   legModes: Record<string, TransportMode>;
+  /**
+   * Set when the trip bills one all-in vehicle per day (all-India trips). A road
+   * leg then adds no fare of its own, and is the default way to make any leg
+   * whose drive is at most `maxMinutes` (unless the traveller wants the fastest).
+   */
+  roadFirst?: { maxMinutes: number } | null;
   /** Resolves a cluster to its priced activity code and per-person price. */
   priceLookup: (placeId: string, cluster: Cluster) => { code: string | null; price: number };
   /**
@@ -217,7 +223,7 @@ export type TransitOverflow = {
 export function planDays(input: DayPlanInput): DayPlanResult {
   const {
     stays, startDate, style, pace, group, bundles, routes, mealPlan, excludedClusterIds,
-    pinnedClusterIds, transportPreference, legModes, priceLookup, clusterBiasFor,
+    pinnedClusterIds, transportPreference, legModes, priceLookup, clusterBiasFor, roadFirst,
   } = input;
 
   const days: PlannedDay[] = [];
@@ -282,26 +288,38 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       // longer offered (they changed destinations), fall back to the best.
       const choices = routes.options(previous.placeId, stay.placeId, transportPreference, group.paxTotal);
       const pinned = legModes[stay.placeId];
-      const hop = (pinned && choices.find((c) => c.mode === pinned)) ?? choices[0] ?? null;
+      const roadHop =
+        roadFirst && transportPreference !== "fastest"
+          ? choices.find(
+              (c) =>
+                c.mode === "private_vehicle" &&
+                (transportPreference === "cheapest" || c.minutes <= roadFirst.maxMinutes),
+            )
+          : undefined;
+      const hop = (pinned && choices.find((c) => c.mode === pinned)) ?? roadHop ?? choices[0] ?? null;
+      // A road leg on a day-rate trip runs in the vehicle already paid for.
+      const inVehicle = (mode: string | undefined) => Boolean(roadFirst) && mode === "private_vehicle";
       transfer = {
         from: previous.placeName,
         to: stay.placeName,
         mode: hop?.mode ?? "transfer",
         durationMinutes: hop?.minutes ?? null,
         onsiteMode: hop?.onsiteMode ?? null,
-        priceInr: hop?.priceInr ?? 0,
+        priceInr: inVehicle(hop?.mode) ? 0 : (hop?.priceInr ?? 0),
         estimated: hop?.estimated ?? false,
         distanceKm: hop?.distanceKm ?? null,
         via: hop?.via ?? [],
         alternatives: choices.map((c) => ({
           mode: c.mode,
           minutes: c.minutes,
-          priceInr: Math.round(c.priceInr),
+          priceInr: inVehicle(c.mode) ? 0 : Math.round(c.priceInr),
           estimated: c.estimated,
           car: c.car,
+          ...(inVehicle(c.mode) ? { includedInVehicle: true } : {}),
         })),
         userChosen: Boolean(pinned && hop && hop.mode === pinned),
         car: hop?.car,
+        ...(inVehicle(hop?.mode) ? { includedInVehicle: true } : {}),
       };
     }
 
@@ -309,7 +327,9 @@ export function planDays(input: DayPlanInput): DayPlanResult {
     // each end — place -> its airport, airport -> the arrival place — each with
     // its own mode choice, so a destination without an airport of its own
     // (Interlaken is served by Zurich) is never left with a missing leg.
-    if (!isFirst && transfer?.mode === "flight") {
+    // (On a day-rate trip the vehicle that runs the sightseeing also does the
+    // airport runs, so there are no separate links to bill.)
+    if (!isFirst && transfer?.mode === "flight" && !roadFirst) {
       const previous = stays[stayIndex - 1];
       const out = routes.airportAccess(previous.placeId, transportPreference, group.paxTotal);
       const inn = routes.airportAccess(stay.placeId, transportPreference, group.paxTotal);

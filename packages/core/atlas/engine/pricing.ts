@@ -153,6 +153,45 @@ export function vehiclePlan(pax: number): { count: number; factor: number; label
   return { count, factor: cls.rateFactor, label: cls.label };
 }
 
+/**
+ * The agency's all-in daily vehicle, for trips that stay entirely in India.
+ * Returns null for any other trip, which is priced leg by leg as before.
+ */
+const INDIA_GROUND = (policy as { groundTransport?: { india?: IndiaGround } }).groundTransport?.india;
+type IndiaGround = {
+  enabled: boolean;
+  regionId: string;
+  classes: { maxPax: number; label: string; dayRateInr: number }[];
+  longLegs: { overDriveHours: number; dayMultiple: number }[];
+  roadFirstMaxHours: number;
+};
+
+export function indiaGroundApplies(core: CoreBundle, placeIds: string[]): boolean {
+  if (!INDIA_GROUND?.enabled || !placeIds.length) return false;
+  const countryOf = new Map(core.places.map((p) => [p.id, p.countryId]));
+  const regionOf = new Map(core.countries.map((c) => [c.id, c.regionId]));
+  return placeIds.every((id) => regionOf.get(countryOf.get(id) ?? "") === INDIA_GROUND.regionId);
+}
+
+/** Road drive time (hours) is the only thing that decides the default for a leg. */
+export function indiaRoadFirst(): { maxMinutes: number } | null {
+  return INDIA_GROUND?.enabled ? { maxMinutes: INDIA_GROUND.roadFirstMaxHours * 60 } : null;
+}
+
+export function indiaVehicle(pax: number): { count: number; label: string; dayRateInr: number } | null {
+  if (!INDIA_GROUND?.enabled) return null;
+  const classes = INDIA_GROUND.classes;
+  const cls = classes.find((c) => pax <= c.maxPax) ?? classes[classes.length - 1];
+  return { count: Math.max(1, Math.ceil(pax / cls.maxPax)), label: cls.label, dayRateInr: cls.dayRateInr };
+}
+
+/** Day-rate multiple for a drive: 1 for an ordinary day, 2 or 3 for a very long one. */
+export function longLegMultiple(driveMinutes: number | null | undefined): number {
+  if (!INDIA_GROUND?.enabled || !driveMinutes) return 1;
+  const hours = driveMinutes / 60;
+  return INDIA_GROUND.longLegs.reduce((m, r) => (hours > r.overDriveHours ? Math.max(m, r.dayMultiple) : m), 1);
+}
+
 // ---------------------------------------------------------------------------
 // Seasonality
 // ---------------------------------------------------------------------------
@@ -360,10 +399,12 @@ export function priceQuotation(input: PricingInput): {
     locked: boolean,
     source: RateSource,
     placeId: string | null,
+    calibrate = true,
   ) => {
     // Calibration is applied here so every component is corrected the same way,
-    // whatever priced it.
-    const calibrated = unitPriceInr * calibrationFactor(component, scope);
+    // whatever priced it. An agency's own flat rate is already the real figure,
+    // so it opts out rather than being scaled a second time.
+    const calibrated = unitPriceInr * (calibrate ? calibrationFactor(component, scope) : 1);
     if (quantity <= 0 || calibrated <= 0) return;
     // Same label twice (rare) gets a counter so each line has its own switch.
     const base = `${component}|${label}`;
@@ -492,7 +533,19 @@ export function priceQuotation(input: PricingInput): {
   // in between are reached overland (priced as intercity transport) or by a
   // flight whose airport links are priced on the leg, so charging an airport
   // transfer at every stay would bill the same journey twice.
-  if (stays.length) {
+  const indiaDaily = indiaGroundApplies(core, stays.map((s) => s.placeId));
+  const dayVehicle = indiaDaily ? indiaVehicle(pax.total) : null;
+
+  if (dayVehicle) {
+    // One chauffeur-driven vehicle for the whole trip, billed per day: airport
+    // pick-up and drop, every intercity drive and all the sightseeing together.
+    const tripDays = days.length;
+    push("ground-transport", `Vehicle with driver — ${dayVehicle.label}`,
+      `${tripDays} day(s) x ${dayVehicle.count} x ${dayVehicle.label}: airport transfers, intercity drives and sightseeing, fuel, driver and tolls included`,
+      tripDays * dayVehicle.count, "vehicle-day", dayVehicle.dayRateInr, true, "estimated", null, false);
+  }
+
+  if (stays.length && !dayVehicle) {
     // Cruise destinations name their transfers Airport→Cruise rather than
     // Airport→Hotel, so accept either.
     const pick = (placeId: string, services: TransferRate["service"][]) => {
@@ -534,7 +587,7 @@ export function priceQuotation(input: PricingInput): {
     if (!day.activities.length) continue;
     activeDaysByPlace.set(day.placeId, (activeDaysByPlace.get(day.placeId) ?? 0) + 1);
   }
-  for (const [placeId, count] of activeDaysByPlace) {
+  for (const [placeId, count] of dayVehicle ? [] : activeDaysByPlace) {
     const rate =
       transfers.get(placeId)?.find((t) => t.service === "Hotel→Sightseeing") ??
       transfers.get(placeId)?.find((t) => t.service === "Cruise→Sightseeing");
@@ -555,6 +608,17 @@ export function priceQuotation(input: PricingInput): {
     const onsite = leg.onsiteMode ? ` (${leg.onsiteMode.replace(/_/g, " ")})` : "";
     const time = leg.durationMinutes != null ? ` · ${formatDuration(leg.durationMinutes)}` : "";
     const distance = leg.distanceKm ? ` · ${leg.distanceKm} km` : "";
+    if (dayVehicle && leg.includedInVehicle) {
+      // The road is already paid for by the daily vehicle. Only a drive that
+      // swallows most of a day costs more than an ordinary day.
+      const multiple = longLegMultiple(leg.durationMinutes);
+      if (multiple > 1) {
+        push("intercity-transport", `${leg.from} to ${leg.to}`,
+          `long drive${time}${distance} — ${multiple}x the day rate, so ${multiple - 1} extra vehicle day(s)`,
+          (multiple - 1) * dayVehicle.count, "vehicle-day", dayVehicle.dayRateInr, true, "estimated", day.placeId, false);
+      }
+      continue;
+    }
     if (leg.car) {
       // A car is billed per vehicle, not per head.
       const car = leg.car;
@@ -568,7 +632,8 @@ export function priceQuotation(input: PricingInput): {
       pax.total, "person", leg.priceInr, true, leg.estimated ? "estimated" : "workbook", day.placeId);
 
     // The ground link at each end of a flight (e.g. Zurich Airport -> Interlaken).
-    for (const link of leg.airportLinks ?? []) {
+    // On a day-rate trip the vehicle that drives the sightseeing does these too.
+    for (const link of dayVehicle ? [] : (leg.airportLinks ?? [])) {
       const linkMode = link.mode.replace(/_/g, " ");
       const detail = `${link.car ? `private car — ${link.car.className}` : linkMode} · ${formatDuration(link.minutes)} · ${link.distanceKm} km`;
       if (link.car) {
@@ -600,13 +665,29 @@ export function priceQuotation(input: PricingInput): {
     if (day.meals.lunch) lunchDays.set(day.placeId, (lunchDays.get(day.placeId) ?? 0) + 1);
     if (day.meals.dinner) dinnerDays.set(day.placeId, (dinnerDays.get(day.placeId) ?? 0) + 1);
   }
+  // Some regions are priced from the agency's own per-meal figure instead of the
+  // workbook template (India: INR 500-800 a head at a 3 Star hotel).
+  const perMealPolicy = (policy.meals as { regionPerMeal?: Record<string, { regionId: string; byStar: Record<string, number> }> })
+    .regionPerMeal ?? {};
+  const agencyMeal = (placeId: string): number | undefined => {
+    const regionId = regionOf.get(countryOf.get(placeId) ?? "");
+    for (const rule of Object.values(perMealPolicy)) {
+      if (rule.regionId === regionId && rule.byStar[request.hotelStar]) return rule.byStar[request.hotelStar];
+    }
+    return undefined;
+  };
   const mealLine = (map: Map<string, number>, meal: "Lunch" | "Dinner") => {
     for (const [placeId, count] of map) {
       const rate = meals.get(placeId)?.find((m) => m.meal === meal);
-      if (!rate) continue;
+      const agency = agencyMeal(placeId);
+      if (!rate && agency == null) continue;
       push("meals", `${meal} — ${placeName.get(placeId)}`,
         `${count} day(s) x ${pax.mealHeads.toFixed(1)} head(s), ${request.food}`,
-        count * pax.mealHeads, "person-meal", rate.inr * dietFactor, false, rate.source, placeId);
+        count * pax.mealHeads, "person-meal", (agency ?? rate!.inr) * dietFactor, false,
+        agency != null ? "estimated" : rate!.source, placeId,
+        // The agency's figure is already the real price; the region's meal
+        // calibration (if any) was fitted to the workbook template instead.
+        agency == null);
     }
   };
   mealLine(lunchDays, "Lunch");

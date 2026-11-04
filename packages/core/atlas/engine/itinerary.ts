@@ -763,8 +763,16 @@ export function buildRouteLookup(
     destId: string,
     preference: TransportPreference,
     travellers: number,
-  ): RouteHit[] =>
-    withCar(originId, destId, baseOptionsFor(originId, destId, preference), preference, travellers);
+  ): RouteHit[] => {
+    const all = withCar(originId, destId, baseOptionsFor(originId, destId, preference), preference, travellers);
+    // Only one end (or each end) is an island: no train or road crosses the sea.
+    // The authored tables still list a Ho Chi Minh City -> Phu Quoc "train".
+    const islandA = islandOfPlace.get(originId) ?? null;
+    const islandB = islandOfPlace.get(destId) ?? null;
+    if (islandA === islandB) return all;
+    const crossable = all.filter((h) => h.mode !== "train" && h.mode !== "private_vehicle");
+    return crossable.length ? crossable : all;
+  };
 
   /** Group size assumed when a caller (e.g. the visiting-order search) has none. */
   const DEFAULT_TRAVELLERS = 2;

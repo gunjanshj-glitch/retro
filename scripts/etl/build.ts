@@ -68,6 +68,26 @@ const OUT = {
   review: "data/atlas/Atlas_Rate_Review.xlsx",
 };
 
+/**
+ * Destinations outside Europe that stand on their own island, with no road or
+ * rail link to the mainland. Without this the router offered a train from Ho Chi
+ * Minh City to Phu Quoc. Two places sharing a value connect by road. (Bridged
+ * islands such as Phuket and Penang are deliberately absent: you can drive there.)
+ */
+const ASIA_ISLANDS: Record<string, string> = {
+  "phu-quoc": "Phu Quoc",
+  langkawi: "Langkawi",
+  bali: "Bali",
+  boracay: "Boracay",
+  bohol: "Bohol",
+  cebu: "Cebu",
+  palawan: "Palawan",
+  male: "Maldives",
+  "port-blair": "South Andaman",
+  "havelock-island": "Havelock",
+  "neil-island": "Neil",
+};
+
 const refresh = process.argv.includes("--refresh");
 const geocode = process.argv.includes("--geocode");
 
@@ -170,20 +190,50 @@ async function main() {
   // of the journey (Interlaken's airport is Zurich, 130 km away).
   const placeAirports: CoreBundle["placeAirports"] = {};
   const NEAREST_AIRPORT_MAX_KM = 250;
+  // The workbook names a serving airport for most places, and a number of those
+  // are simply wrong: Danang was listed against Hanoi's Noi Bai (628 km away,
+  // so a Hanoi -> Danang flight grew a 17,701 "airport link" that no traveller
+  // would ever take), Phuket and Krabi against Bangkok, Penang against Kuala
+  // Lumpur. A listed airport is trusted only while it is plausibly *serving*
+  // the place; beyond this distance, a clearly nearer airport takes over.
+  // Interlaken -> Zurich (130 km), Sapa -> Hanoi (238 km) and Petra -> Amman
+  // (190 km) are real-world cases this must keep, so the bar is set above them
+  // and the replacement must be in the same country as the one it replaces
+  // (unless the listing is absurd: Himachal villages were listed against Juba).
+  // Country-level pseudo-places ("France", "Spain") sit at a centroid, not a
+  // town, so their listed hub is always right and is never second-guessed.
+  const PRIMARY_AIRPORT_TRUST_KM = 300;
+  const ABSURD_AIRPORT_KM = 1000;
+  const COUNTRY_LEVEL_PLACES = new Set(["norway", "sweden", "finland", "denmark"]);
+  const countryNameById = new Map(geo.countries.map((c) => [c.id, c.name.trim().toLowerCase()]));
   for (const place of geo.places) {
     const primary = airportsByPlace.get(place.id)?.[0];
     const own = primary ? airports.get(primary) : undefined;
-    if (own) {
+    const point = placeCoords.points.get(place.id);
+    const ownKm = own && point ? haversineKm(point, own) : 0;
+    // "Norway" is filed under the Scandinavia country, so the name match alone misses it.
+    const countryLevel =
+      countryNameById.get(place.countryId) === place.name.trim().toLowerCase() || COUNTRY_LEVEL_PLACES.has(place.id);
+    if (own && !(point && !countryLevel && ownKm > PRIMARY_AIRPORT_TRUST_KM)) {
       placeAirports[place.id] = { iata: own.iata, name: own.name, lat: own.lat, lon: own.lon, source: "primary" };
       continue;
     }
-    const point = placeCoords.points.get(place.id);
     if (!point) continue;
     let best: { a: ReturnType<typeof airports.get>; km: number } | null = null;
     for (const a of airports.values()) {
       if (a.size === "small") continue;
       const km = haversineKm(point, a);
-      if (km <= NEAREST_AIRPORT_MAX_KM && (!best || km < best.km)) best = { a, km };
+      if (km > NEAREST_AIRPORT_MAX_KM || (best && km >= best.km)) continue;
+      // Keep a replacement inside the listed airport's own country, unless that
+      // listing is nonsense to begin with.
+      if (own && a.country !== own.country && ownKm <= ABSURD_AIRPORT_KM) continue;
+      best = { a, km };
+    }
+    // The listed airport was too far and nothing real is nearer: keep it
+    // rather than leave the place with no airport at all.
+    if (own && (!best || best.km >= ownKm)) {
+      placeAirports[place.id] = { iata: own.iata, name: own.name, lat: own.lat, lon: own.lon, source: "primary" };
+      continue;
     }
     if (best?.a) {
       placeAirports[place.id] = {
@@ -279,7 +329,7 @@ async function main() {
       // not just the ~1.4% that share an authored route.
       lat: point?.lat ?? null,
       lon: point?.lon ?? null,
-      island: supplement.islandOf.get(p.id) ?? null,
+      island: supplement.islandOf.get(p.id) ?? ASIA_ISLANDS[p.id] ?? null,
       parentPlaceId: supplement.parentOf.get(p.id) ?? null,
     };
   });
