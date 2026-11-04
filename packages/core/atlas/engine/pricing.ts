@@ -46,9 +46,12 @@ const CALIBRATION = calibration as unknown as {
   region: FactorTable;
   country: FactorTable;
   package: FactorTable;
+  place?: FactorTable;
 };
 
 export type CalibrationScope = {
+  /** The one place a line belongs to; beats package, country and region. */
+  placeId?: string | null;
   packageId?: string | null;
   countryId?: string | null;
   regionId?: string | null;
@@ -58,12 +61,13 @@ export type CalibrationScope = {
  * Correction factor for a component.
  *
  * Lets the agency reconcile generated quotes with their published prices
- * without editing the rate card. The most specific scope wins outright — the
+ * without editing the rate card. A place beats a package, then country, region, global. The most specific scope wins outright — the
  * levels deliberately do not compound, so a package factor is the whole story
  * for that package and stays easy to reason about.
  */
 export function calibrationFactor(component: CostComponent, scope: CalibrationScope): number {
   const tiers: (number | undefined)[] = [
+    scope.placeId ? CALIBRATION.place?.[scope.placeId]?.[component] : undefined,
     scope.packageId ? CALIBRATION.package?.[scope.packageId]?.[component] : undefined,
     scope.countryId ? CALIBRATION.country?.[scope.countryId]?.[component] : undefined,
     scope.regionId ? CALIBRATION.region?.[scope.regionId]?.[component] : undefined,
@@ -404,7 +408,7 @@ export function priceQuotation(input: PricingInput): {
     // Calibration is applied here so every component is corrected the same way,
     // whatever priced it. An agency's own flat rate is already the real figure,
     // so it opts out rather than being scaled a second time.
-    const calibrated = unitPriceInr * (calibrate ? calibrationFactor(component, scope) : 1);
+    const calibrated = unitPriceInr * (calibrate ? calibrationFactor(component, placeId ? { ...scope, placeId } : scope) : 1);
     if (quantity <= 0 || calibrated <= 0) return;
     // Same label twice (rare) gets a counter so each line has its own switch.
     const base = `${component}|${label}`;

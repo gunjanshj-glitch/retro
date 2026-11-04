@@ -336,11 +336,37 @@ async function main() {
 
   // --- 7. per-place summaries used by the allocator ------------------------
   const activityRatesByPlace = new Map<string, typeof pricing.activityRates>();
+  // An activity code is `<IATA>_A_<ATTRACTION>`. The workbook's Ha Long Bay tab is a
+  // copy of Danang's (DAD_A_BANA_HILLS, DAD_A_MARBLE_MOUNTAINS ...), which charged a
+  // cruise for Da Nang's cable car. A code whose prefix is *another* place's airport
+  // and not this place's own is a copy, so it is dropped rather than priced.
+  const airportOf = new Map(Object.entries(placeAirports).map(([id, a]) => [id, a.iata]));
+  const placesWithCode = new Map<string, string[]>();
   for (const r of pricing.activityRates) {
+    const list = placesWithCode.get(r.code);
+    if (list) list.push(r.placeId);
+    else placesWithCode.set(r.code, [r.placeId]);
+  }
+  let foreignRates = 0;
+  for (const r of pricing.activityRates) {
+    const prefix = r.code.split("_A_")[0]?.toUpperCase() ?? "";
+    const sharers = placesWithCode.get(r.code) ?? [];
+    // Only a real copy: the identical code sits under two places, and the *other* one is the airport's own.
+    if (
+      /^[A-Z]{3}$/.test(prefix) &&
+      sharers.length > 1 &&
+      airportOf.get(r.placeId) !== prefix &&
+      sharers.some((id) => id !== r.placeId && airportOf.get(id) === prefix)
+    ) {
+      foreignRates++;
+      continue;
+    }
     const list = activityRatesByPlace.get(r.placeId);
     if (list) list.push(r);
     else activityRatesByPlace.set(r.placeId, [r]);
   }
+
+  if (foreignRates) console.log(`  activity    ${foreignRates} rate(s) dropped: their code names another place's airport`);
 
   const placeSummaries: CoreBundle["placeSummaries"] = places.map((p) => {
     const c = content.byPlaceId.get(p.id);

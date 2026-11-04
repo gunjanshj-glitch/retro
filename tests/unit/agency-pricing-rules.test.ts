@@ -172,3 +172,70 @@ describe("Vietnam: Ha Noi, Danang, Hochiminh, Phu Quoc", () => {
     expect(air / 3).toBeLessThan(59000 / 1.13 * 1.1);
   });
 });
+
+describe("India 3 Star hotels", () => {
+  const india = core.places.filter((p) => p.countryId === "india-india" && p.hasRates && p.id !== "india");
+
+  it("prices a 3 Star room between 2,500 and 6,500 in every Indian place in every season (Mumbai excepted)", () => {
+    const rooms: { id: string; rate: number }[] = [];
+    for (const place of india) {
+      for (const month of ["01", "04", "07", "10", "12"]) {
+        const q = quote({ placeIds: [place.id], nights: 3, startDate: `2027-${month}-10`, travellerType: "couple", tripStyle: "culture" });
+        const hotel = q.lineItems.find((l) => l.component === "hotel" && l.label.endsWith("3 Star"));
+        if (hotel) rooms.push({ id: place.id, rate: hotel.unitPriceInr });
+      }
+    }
+    expect(rooms.length).toBeGreaterThan(india.length * 4);
+    const outside = rooms.filter((r) => r.id !== "mumbai" && (r.rate < 2500 || r.rate > 6500));
+    expect(outside).toEqual([]);
+    // Mumbai's own authored rate is dearer, and should stay so: it is a real city rate, not the template.
+    expect(Math.max(...rooms.filter((r) => r.id === "mumbai").map((r) => r.rate))).toBeLessThan(11500);
+  });
+
+  it("centres on the agency's INR 4,000-5,000 range", () => {
+    const q = quote({ placeIds: ["jaipur"], nights: 3, startDate: "2027-12-10" });
+    const rate = q.lineItems.find((l) => l.component === "hotel")!.unitPriceInr;
+    expect(rate).toBeGreaterThanOrEqual(4000);
+    expect(rate).toBeLessThanOrEqual(5000);
+  });
+
+  it("does not shrink a genuinely authored cheap rate a second time (Omkareshwar)", () => {
+    const q = quote({ placeIds: ["omkareshwar"], nights: 2, startDate: "2027-03-10" });
+    expect(q.lineItems.find((l) => l.component === "hotel")!.unitPriceInr).toBeGreaterThan(2000);
+  });
+
+  it("bills a child's extra bed at about a third of the room and rooms by party size", () => {
+    const q = quote({ ...RAJASTHAN, nights: 3, placeIds: ["jaipur"] });
+    expect(q.pax.rooms).toBe(2);
+    const room = q.lineItems.find((l) => l.label === "Jaipur — 3 Star")!;
+    const bed = q.lineItems.find((l) => l.label === "Jaipur — extra bed")!;
+    expect(bed.unitPriceInr / room.unitPriceInr).toBeCloseTo(0.35, 1);
+  });
+});
+
+describe("Other locations", () => {
+  it("brings Southeast Asia's shared hotel template down to the level the agency measured in Vietnam", () => {
+    for (const place of ["bangkok", "bali", "kuala-lumpur", "phuket"]) {
+      if (!core.places.some((p) => p.id === place)) continue;
+      const q = quote({ placeIds: [place], nights: 3, hotelStar: "4 Star", startDate: "2027-03-10" });
+      const rate = q.lineItems.find((l) => l.component === "hotel")!.unitPriceInr;
+      expect(rate, place).toBeGreaterThan(4500);
+      expect(rate, place).toBeLessThan(9500);
+    }
+  });
+
+  it("leaves Singapore's real city rates alone", () => {
+    const q = quote({ placeIds: ["marina-bay-sands"], nights: 3, hotelStar: "4 Star", startDate: "2027-03-10" });
+    expect(q.lineItems.find((l) => l.component === "hotel")!.unitPriceInr).toBeGreaterThan(11000);
+  });
+
+  it("does not hand Ha Long Bay Danang's activity prices", () => {
+    const bundle = JSON.parse(readFileSync(path.join(DIR, "destinations", "ha-long-bay.json"), "utf8")) as DestinationBundle;
+    expect(bundle.activityRates.some((r) => r.code.startsWith("DAD_A_"))).toBe(false);
+  });
+
+  it("charges Osaka's compound-named attractions", () => {
+    const q = quote({ placeIds: ["osaka"], nights: 4, startDate: "2027-03-10", travellerType: "couple", tripStyle: "culture" });
+    expect(q.lineItems.some((l) => l.component === "sightseeing" && l.totalInr > 0)).toBe(true);
+  });
+});

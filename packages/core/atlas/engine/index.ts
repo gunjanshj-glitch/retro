@@ -65,7 +65,7 @@ export type EngineData = {
  * from the same source as the cluster names, so a normalised comparison joins
  * them. Where nothing matches, the cluster is planned but not charged for.
  */
-function buildActivityPricer(bundles: Map<string, DestinationBundle>) {
+export function buildActivityPricer(bundles: Map<string, DestinationBundle>) {
   const byPlace = new Map<string, { key: string; code: string; inr: number; source: RateSource }[]>();
 
   for (const [placeId, bundle] of bundles) {
@@ -111,6 +111,9 @@ function buildActivityPricer(bundles: Map<string, DestinationBundle>) {
       if (!words.length) return false;
       const hit = words.filter((w) => tokens.has(w) || tokens.has(`${w}s`));
       if (hit.length === words.length) return true;
+      // Compound rate names ("DOTONBORI + GLICO_SIGN + RIVER_CRUISE") are only partly
+      // echoed by the attraction text: three of five words, the longest among them, is the same item.
+      if (words.length >= 4 && hit.length / words.length >= 0.6 && hit.includes(words.reduce((a, b) => (b.length > a.length ? b : a)))) return true;
       // "SAFARI PARK" is "Vinpearl Safari Zoo": all but one word, and the one that
       // names the thing (the longest) is among those present.
       const longest = words.reduce((a, b) => (b.length > a.length ? b : a));

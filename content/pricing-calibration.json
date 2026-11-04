@@ -18,11 +18,18 @@
   "region": {
     "_india": "Pricing_Rules.xlsx gives all ~200 Indian places the same template figures (airport transfer 6,496 and sightseeing car 5,315 per service), roughly 3-4x a chauffeured sedan in India. Scaled to about 1,600 per airport transfer and 2,900 per sightseeing day. Replace with contracted rates in the workbook and remove this entry.",
     "_indiaHotel": "The same workbook template (USD 112.5 / 168.75 / 275 / 425 per room-night for 3 / 4 / 5 / Luxury 5 Star, about INR 10,630 / 15,945 / 25,985 / 40,158) is repeated for 203 of the 207 Indian places, and the gap-fill copies it to the rest. That is roughly 2.5x what Indian hotels charge in these categories (3 Star about 4,000 to 5,000, 4 Star about 6,000 to 8,000, 5 Star about 10,000 to 13,000). 0.4 brings it to that range. Replace with contracted per-city rates in the workbook and remove the hotel entry.",
-    "india": { "airport-transfer": 0.25, "local-transport": 0.55, "hotel": 0.4 }
+    "india": { "airport-transfer": 0.25, "local-transport": 0.55, "hotel": 0.4 },
+    "_southEastAsiaHotel": "Cambodia, Indonesia, Laos, Malaysia, the Philippines and Thailand all carry one identical workbook template (INR 9,071 for 3 Star and 13,607 for 4 Star a room-night; Vietnam's own figures are 25% lower, and the agency measured those as about 2x too high, at roughly INR 7,500 for a decent 4 Star). 0.5 puts the whole region where the agency's Vietnam check put Vietnam: 3 Star about 4,500 and 4 Star about 6,800. Singapore is excluded (its own figures are real city rates) and Vietnam keeps its country factor. Replace with contracted per-city rates and remove this entry.",
+    "south-east-asia": { "hotel": 0.5 }
   },
   "country": {
     "_vietnam": "Agency check of a 3-adult, 10-night, 4-destination Vietnam trip (Ha Noi, Danang, Hochiminh, Phu Quoc, April 2027): decent 4 Star rooms in those cities cost about INR 7,500 per room-night, not the workbook template's INR 11,990-12,700 (a hotel total of 2.8 lakh against a real 1.5 lakh at most), the Vietnam e-visa service is INR 3,360 per person against the template's INR 2,800, and the agency's retrieved fares for that routing (CCU-HAN, HAN-DAD, DAD-PQC, PQC-SGN, SGN-BKK-CCU) came to about INR 59,000 per person against the template's roughly INR 37,000 once its three domestic legs are counted. 0.5 and 1.2 bring hotel and visa to those figures; 1.9 on the international fare brings the air total to within about 8% of the retrieved one. The airfare factor is fitted to ONE retrieved itinerary and is a stopgap until live fares are switched on. Replace with contracted per-city rates in the workbook and remove this entry.",
+    "south-east-asia-singapore": { "hotel": 1 },
     "south-east-asia-vietnam": { "hotel": 0.5, "visa": 1.2, "flight": 1.9 }
+  },
+  "place": {
+    "_omkareshwar": "The India hotel factor corrects the workbook's one template rate (203 of 208 places). Omkareshwar is one of the few with a genuinely authored rate (INR 2,646 for 3 Star), which the factor would have cut to about 1,060.",
+    "omkareshwar": { "hotel": 1 }
   },
   "package": {},
   "_fittedAt": "2026-09-08T13:55:06.153Z"
