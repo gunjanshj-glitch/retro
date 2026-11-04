@@ -21,7 +21,7 @@ export default function Trips() {
   return (
     <ScrollView style={{ backgroundColor: c.bg }} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: space.lg, gap: space.md }} refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={() => { void refetch(); void pkgs.refetch(); }} />}>
       {error ? <ErrorBox message={messageOf(error)} onRetry={() => void refetch()} /> : null}
-      {data?.length === 0 && !pkgs.data?.length ? <Empty title="No trips yet" body="Pick a package and ask for a quote. We reply here." action={<Button label="Explore packages" onPress={() => router.push("/")} />} /> : null}
+      {data?.length === 0 && !pkgs.data?.length ? <Empty title="No trips yet" body="Plan a trip and get a live estimate, or pick a package. We reply here." action={<Button label="Plan a trip" onPress={() => router.push("/plan")} />} /> : null}
       {data?.map((r) => (
         <Card key={r.id} onPress={() => router.push({ pathname: "/trip/[id]", params: { id: r.id } })}>
           <Row between>

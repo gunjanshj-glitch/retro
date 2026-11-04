@@ -33,6 +33,7 @@ export default function Explore() {
         <View style={{ gap: space.md }}>
           <Text variant="title">Where to next?</Text>
           <TextInput value={q} onChangeText={setQ} placeholder="Search Kerala, Egypt, Bali…" placeholderTextColor={c.textDim} accessibilityLabel="Search packages" style={{ backgroundColor: c.surface, color: c.text, borderRadius: radius.md, paddingHorizontal: space.lg, paddingVertical: 12, fontSize: 16, borderColor: c.border, borderWidth: 1 }} />
+          <Button label="Plan your own trip" onPress={() => router.push("/plan")} />
           <Button label="Not sure? Talk to us" kind="secondary" onPress={() => router.push("/chat")} />
         </View>
       }

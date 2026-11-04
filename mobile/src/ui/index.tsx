@@ -17,11 +17,11 @@ export function Screen({ children, scroll = true, pad = true }: { children: Reac
   );
 }
 
-type TextProps = { children: ReactNode; variant?: keyof typeof t; dim?: boolean; style?: TextStyle; numberOfLines?: number; color?: string };
-export function Text({ children, variant = "body", dim, style, numberOfLines, color }: TextProps) {
+type TextProps = { children: ReactNode; variant?: keyof typeof t; dim?: boolean; style?: TextStyle; numberOfLines?: number; color?: string; accessibilityLabel?: string; onPress?: () => void };
+export function Text({ children, variant = "body", dim, style, numberOfLines, color, accessibilityLabel, onPress }: TextProps) {
   const c = useTheme();
   return (
-    <RNText numberOfLines={numberOfLines} style={[t[variant], { color: color ?? (dim ? c.textDim : c.text) }, style]}>
+    <RNText numberOfLines={numberOfLines} accessibilityLabel={accessibilityLabel} onPress={onPress} accessibilityRole={onPress ? "button" : undefined} style={[t[variant], { color: color ?? (dim ? c.textDim : c.text) }, style]}>
       {children}
     </RNText>
   );

@@ -6,6 +6,9 @@ import { useEffect, type ReactNode } from "react";
 import { useColorScheme } from "react-native";
 import * as Linking from "expo-linking";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
+import { CatalogueGate } from "@/features/catalogue/CatalogueGate";
+import { CatalogueProvider } from "@/features/catalogue/CatalogueProvider";
+import { PlannerProvider } from "@/features/planner/state";
 import { api, platform } from "@/lib/api";
 import { APP_VERSION } from "@/lib/env";
 import { Button, Empty, Screen } from "@/ui";
@@ -41,15 +44,19 @@ function Shell() {
     <ThemeProvider value={{ ...base, colors: { ...base.colors, background: c.bg, card: c.bg, text: c.text, primary: c.accent } }}>
       <StatusBar style="auto" />
       <ConfigGate>
+        <CatalogueGate>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="auth" options={{ presentation: "modal", title: "Sign in" }} />
           <Stack.Screen name="chat" options={{ presentation: "modal", title: "Talk to us" }} />
+          <Stack.Screen name="plan" options={{ title: "Plan a trip" }} />
+          <Stack.Screen name="map" options={{ presentation: "fullScreenModal", headerShown: false }} />
           <Stack.Screen name="package/[id]" options={{ title: "" }} />
           <Stack.Screen name="trip/[id]" options={{ title: "Your trip" }} />
           <Stack.Screen name="staff/[id]" options={{ title: "Request" }} />
           <Stack.Screen name="staff/leads" options={{ title: "Leads" }} />
         </Stack>
+        </CatalogueGate>
       </ConfigGate>
     </ThemeProvider>
   );
@@ -59,7 +66,11 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Shell />
+        <CatalogueProvider>
+          <PlannerProvider>
+            <Shell />
+          </PlannerProvider>
+        </CatalogueProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

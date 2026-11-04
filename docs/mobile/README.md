@@ -48,14 +48,14 @@ Updated: 2026-11-04. **Done** = built, type-checked and covered by tests where l
 | App | Explore: package list, search | Done | Reads the live site's package data; bundled offline snapshot Pending |
 | App | Package detail and "ask for a quote" request | Done | |
 | App | My trips: quotation requests and package requests | Done | |
-| App | Trip screen: quote, optional extras, accept, ask for changes, decline, withdraw, messages, pay | Done | Quote requests only; created by the planner, which is Pending |
+| App | Trip screen: quote, optional extras, accept, ask for changes, decline, withdraw, messages, pay | Done | Quote requests are now created by the planner |
 | App | Talk to us: scripted chat, lead, WhatsApp hand-off | Done | |
 | App | More: contact, policies, sign out, delete account | Done | Policies open the website |
 | App | Staff: queue, request detail, reply, private note, start review, leads | Done (S1, S2 reply) | Quote editor and "send quote" are S3, Pending |
 | App | Push registration | Done in code | Needs an Expo project id and a real phone |
-| App | Planner (where, when, who, style) and live quote on the phone | **Pending** | Largest item. Creates the quotation requests that the trip screen negotiates |
-| App | Map modal (pan, zoom, pins) | Pending | Needs the spike (SVG vs Skia) |
-| App | Offline catalogue snapshot, seed script | Pending | |
+| App | Planner: where, when and who, style, live quote, send to Retro | Done in code | 4 steps with a live price bar; draft survives an app kill. Not run on a device. Live hotel rates (second pricing pass) and the explore questionnaire are Pending |
+| App | Map modal (pan, zoom, pins) | Done in code | Skia on one canvas, own hit-testing, 10 regions as chips. Not run on a device; the world-map zoom is replaced by region chips |
+| App | Launch data check: revision, download only what changed, waiting screen with a game, offline fallback | Done in code | Needs the website redeployed so `/atlas/manifest.json` exists. Price policy now comes from the backend too |
 | App | Destination screens, region browsing | Pending | |
 | App | Staff S3: full quote editor, send revision | Pending | Largest staff item |
 | App | Biometric re-lock and screenshot block for staff | Pending | |
