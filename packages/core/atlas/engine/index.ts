@@ -65,6 +65,9 @@ export type EngineData = {
  * from the same source as the cluster names, so a normalised comparison joins
  * them. Where nothing matches, the cluster is planned but not charged for.
  */
+/** Paid tickets one half-day cluster can carry. */
+const MAX_TICKETS_PER_CLUSTER = 2;
+
 export function buildActivityPricer(bundles: Map<string, DestinationBundle>) {
   const byPlace = new Map<string, { key: string; code: string; inr: number; source: RateSource }[]>();
 
@@ -138,7 +141,10 @@ export function buildActivityPricer(bundles: Map<string, DestinationBundle>) {
     const exact = rows.find((r) => r.key === target);
     if (exact) return { code: exact.code, price: exact.inr, source: exact.source };
 
-    const named = byAttractions(placeId, rows, cluster);
+    // A half-day cluster buys at most MAX_TICKETS paid tickets. Dubai's downtown
+    // cluster names eight attractions that match five overlapping bundle prices,
+    // which summed to ₹49,000 a head for one morning.
+    const named = byAttractions(placeId, rows, cluster).sort((a, b) => b.inr - a.inr).slice(0, MAX_TICKETS_PER_CLUSTER);
     if (named.length) {
       for (const row of named) claimed.set(`${placeId}|${row.code}`, cluster.id);
       const top = named.reduce((a, b) => (b.inr > a.inr ? b : a));
@@ -468,7 +474,20 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     const flightTotal = totals.total - totals.total * landShare;
     const landPerPerson = (totals.total * landShare) / Math.max(1, pax.total);
 
-    if (landPerPerson < floorPerPerson) {
+    // A "from" price several times the bottom-up quote is a data error, not a
+    // marketing floor (Maharashtra is listed at Rs 5,00,000 against a quote
+    // near Rs 46,000). Flooring to it would charge every Maharashtra traveller
+    // ten times the trip; say so internally instead.
+    const maxOver = policy.guardrails.maxFloorOverQuote ?? Infinity;
+    if (landPerPerson > 0 && floorPerPerson > landPerPerson * maxOver) {
+      warnings.push({
+        level: "warning",
+        audience: "internal",
+        message:
+          `Published "from" price for ${referencePackage.name} (₹${referencePackage.priceFromInr.toLocaleString("en-IN")}) is more than ` +
+          `${maxOver}x the quoted land price (₹${Math.round(landPerPerson).toLocaleString("en-IN")} per person); treated as a data error and not applied as a floor.`,
+      });
+    } else if (landPerPerson < floorPerPerson) {
       const flooredLandTotal = floorPerPerson * pax.total;
       const newTotal = Math.round(flooredLandTotal + flightTotal);
       warnings.push({

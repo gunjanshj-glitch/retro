@@ -16,6 +16,7 @@ import {
   type DestinationBundle,
   type DestinationGuidance,
   type Place,
+  type Cluster,
 } from "@retro/core/atlas/schema";
 import { parseMaster, parseTransport } from "./parse-master";
 import { parsePricing } from "./parse-pricing";
@@ -452,10 +453,53 @@ async function main() {
   const everyGuidanceRow: DestinationGuidance[] = [];
   rmSync(OUT.guidance, { recursive: true, force: true });
 
+  /** Median paid activity rate per country, for places whose own rate card is all zeros. */
+const typicalPaidRate = new Map<string, number>();
+{
+  const byCountry = new Map<string, number[]>();
   for (const place of places) {
+    for (const r of activityRatesByPlace.get(place.id) ?? []) {
+      if (r.inr > 0) byCountry.set(place.countryId, [...(byCountry.get(place.countryId) ?? []), r.inr]);
+    }
+  }
+  for (const [country, values] of byCountry) {
+    values.sort((a, b) => a - b);
+    typicalPaidRate.set(country, Math.round(values[values.length >> 1]));
+  }
+}
+
+/**
+ * A place with priced activities but no authored day-plan content would
+ * otherwise quote no sightseeing at all (Kandy, Muscat, the Nile, Nuwara Eliya
+ * and a dozen more). Each priced activity becomes its own cluster, named as the
+ * rate card names it so it prices exactly. The authored clusters win wherever
+ * they exist; this is only the floor under them.
+ */
+function clustersFromActivities(placeId: string, activities: { name: string }[]): Cluster[] {
+  return activities
+    .filter((a) => a.name?.trim())
+    .map((a) => ({
+      id: `${placeId}:cluster:${a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`,
+      placeId,
+      name: a.name.trim(),
+      attractions: a.name.split(/\s*\+\s*/).map((x) => x.trim()).filter(Boolean),
+      recommendedDuration: "Half day",
+      durationHours: 4,
+      walkingIntensity: null,
+    }));
+}
+
+for (const place of places) {
     const c = content.byPlaceId.get(place.id);
-    const rates = activityRatesByPlace.get(place.id) ?? [];
+    let rates = activityRatesByPlace.get(place.id) ?? [];
     if (!c && !rates.length) continue;
+    if (rates.length && rates.every((r) => r.inr <= 0)) {
+      // An entire rate card of zeros (Hong Kong, most of the Philippines) is a
+      // missing price list, not free sightseeing. Price each activity at its
+      // country's typical paid attraction, marked as estimated.
+      const typical = typicalPaidRate.get(place.countryId);
+      if (typical) rates = rates.map((r) => ({ ...r, inr: typical, source: "estimated" as const }));
+    }
 
     // Activity identity comes from the workbook where it exists (it carries the
     // priced codes) and falls back to section 15 of the destination file.
@@ -493,7 +537,7 @@ async function main() {
       activities,
       activityRates: rates,
       purposeActivities: c?.purposeActivities ?? [],
-      clusters: c?.clusters ?? [],
+      clusters: c?.clusters?.length ? c.clusters : clustersFromActivities(place.id, activities),
       guidance: forEngine,
       decisionRules: c?.decisionRules ?? [],
     };

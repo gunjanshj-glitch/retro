@@ -220,7 +220,8 @@ describe("Other locations", () => {
       const q = quote({ placeIds: [place], nights: 3, hotelStar: "4 Star", startDate: "2027-03-10" });
       const rate = q.lineItems.find((l) => l.component === "hotel")!.unitPriceInr;
       expect(rate, place).toBeGreaterThan(4500);
-      expect(rate, place).toBeLessThan(9500);
+      // The template is INR 13,607; the published package prices pull Malaysia and Thailand back up a little from the Vietnam level.
+      expect(rate, place).toBeLessThan(11500);
     }
   });
 
@@ -237,5 +238,53 @@ describe("Other locations", () => {
   it("charges Osaka's compound-named attractions", () => {
     const q = quote({ placeIds: ["osaka"], nights: 4, startDate: "2027-03-10", travellerType: "couple", tripStyle: "culture" });
     expect(q.lineItems.some((l) => l.component === "sightseeing" && l.totalInr > 0)).toBe(true);
+  });
+});
+
+describe("Sightseeing coverage and defaults", () => {
+  const sightseeing = (q: ReturnType<typeof quote>) => sum(q, "sightseeing");
+
+  it("plans and prices sightseeing in places that had priced attractions but no day-plan content", () => {
+    for (const place of ["kandy", "muscat", "nuwaraeliya", "nile", "mekong-delta", "tawang"]) {
+      if (!core.places.some((p) => p.id === place)) continue;
+      const q = quote({ placeIds: [place], nights: 3, startDate: "2027-03-10" });
+      const planned = q.days.flatMap((d) => d.activities ?? []);
+      expect(planned.length, place).toBeGreaterThan(0);
+    }
+    expect(sightseeing(quote({ placeIds: ["kandy"], nights: 3, startDate: "2027-03-10" }))).toBeGreaterThan(0);
+  });
+
+  it("does not quote Hong Kong and the Philippines at zero sightseeing because their rate cards are blank", () => {
+    expect(sightseeing(quote({ placeIds: ["hong-kong"], nights: 3, startDate: "2027-03-10" }))).toBeGreaterThan(0);
+    expect(sightseeing(quote({ placeIds: ["boracay"], nights: 3, startDate: "2027-03-10" }))).toBeGreaterThan(0);
+  });
+
+  it("charges a half-day cluster for at most two tickets", () => {
+    const q = quote({ placeIds: ["dubai"], nights: 3, startDate: "2027-03-10", adults: 2 });
+    const rates = JSON.parse(readFileSync(path.join(DIR, "destinations", "dubai.json"), "utf8")).activityRates as { inr: number }[];
+    const top2 = rates.map((r) => r.inr).sort((a, b) => b - a).slice(0, 2).reduce((a, b) => a + b, 0);
+    for (const l of q.lineItems.filter((x) => x.component === "sightseeing")) {
+      // calibration scales the sum, never the count of tickets
+      expect(l.unitPriceInr).toBeLessThanOrEqual(top2 * 1.6);
+    }
+  });
+});
+
+describe("Island hops and bad published prices", () => {
+  it("moves between Andaman islands by ferry, not a Rs 5,750 flight", () => {
+    const q = quote({ placeIds: ["port-blair", "havelock-island", "neil-island"], nights: 6, adults: 4, startDate: "2027-03-10" });
+    const legs = q.days.filter((d) => d.isTransferDay && d.transfer && d.transfer.mode !== "transfer").map((d) => d.transfer!);
+    expect(legs.length).toBeGreaterThan(0);
+    for (const leg of legs) {
+      expect(leg.mode).toBe("ferry");
+      expect(leg.priceInr).toBeLessThan(1500);
+    }
+  });
+
+  it("ignores a published 'from' price that is several times the quote (Maharashtra is listed at Rs 5,00,000)", () => {
+    const pkg = core.packages.find((p) => p.name === "Maharashtra")!;
+    const q = quote({ placeIds: pkg.placeIds, nights: pkg.nights, adults: 2, startDate: "2027-03-10" });
+    expect(q.totals.flooredToPackage).toBeFalsy();
+    expect(q.totals.perPerson).toBeLessThan(150000);
   });
 });

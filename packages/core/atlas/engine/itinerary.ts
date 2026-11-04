@@ -769,9 +769,46 @@ export function buildRouteLookup(
     // The authored tables still list a Ho Chi Minh City -> Phu Quoc "train".
     const islandA = islandOfPlace.get(originId) ?? null;
     const islandB = islandOfPlace.get(destId) ?? null;
-    if (islandA === islandB) return all;
+    if (islandA === islandB) return withoutShortFlights(originId, destId, all, preference);
     const crossable = all.filter((h) => h.mode !== "train" && h.mode !== "private_vehicle");
-    return crossable.length ? crossable : all;
+    return withoutShortFlights(originId, destId, crossable.length ? crossable : all, preference);
+  };
+
+  /**
+   * The workbook lists a flight between every pair of Indian places, including
+   * Havelock to Neil Island (15 km), which then quoted a Rs 5,750 airfare for a
+   * ferry ride. No airline serves a hop that short: drop the flight when
+   * anything else exists, and put a ferry on a sea crossing that has none.
+   */
+  const SHORT_HOP_KM = 150;
+  const withoutShortFlights = (
+    originId: string,
+    destId: string,
+    options: RouteHit[],
+    preference: TransportPreference,
+  ): RouteHit[] => {
+    const a = pointOfPlace.get(originId);
+    const b = pointOfPlace.get(destId);
+    if (!a || !b) return options;
+    const km = haversineKm(a, b);
+    if (!Number.isFinite(km) || km >= SHORT_HOP_KM) return options;
+
+    const seaCrossing = (islandOfPlace.get(originId) ?? null) !== (islandOfPlace.get(destId) ?? null);
+    let result = options.filter((h) => h.mode !== "flight");
+    if (seaCrossing && !result.some((h) => h.mode === "ferry" || h.mode === "seaplane")) {
+      const country = countryOfPlace.get(originId);
+      const regionId = country ? (regionOfCountry.get(country) ?? "") : "";
+      const distanceKm = Math.max(1, Math.round(km));
+      result = [
+        ...result,
+        {
+          route: null, mode: "ferry", minutes: deriveDurationMinutes("ferry", distanceKm, regionId),
+          priceInr: deriveFareInr("ferry", distanceKm, regionId), estimated: true, distanceKm, onsiteMode: null,
+        },
+      ];
+    }
+    if (!result.length) return options;
+    return result.sort((x, y) => scoreOf(x, preference) - scoreOf(y, preference));
   };
 
   /** Group size assumed when a caller (e.g. the visiting-order search) has none. */

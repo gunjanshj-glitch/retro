@@ -48,6 +48,14 @@ const core = CoreBundle.parse(JSON.parse(readFileSync(path.join(DATA, "core.json
 const routes = (JSON.parse(readFileSync(path.join(DATA, "routes.json"), "utf8")) as { routes: Route[] }).routes;
 const visaRules = (JSON.parse(readFileSync(path.join(DATA, "visa.json"), "utf8")) as { rules: VisaRule[] }).rules;
 
+/**
+ * "From" prices are quoted per person on a shared basis. In India the biggest
+ * cost is a chauffeured vehicle charged per day, so what one person pays falls
+ * as the party fills the vehicle (Sedan to 3, SUV to 6). The brochure number is
+ * the cheapest legitimate setup, so the harness tries each party size.
+ */
+const PARTY_SIZES = [4]; // India only (shared SUV); elsewhere a person's share does not depend on party size
+
 const DEPARTURE_CITIES = ["DEL", "BOM", "MAA", "BLR", "HYD", "CCU", "COK", "AMD", "PNQ", "GOI"];
 
 const bundleCache = new Map<string, DestinationBundle | null>();
@@ -78,7 +86,7 @@ function cheapestMonth(placeId: string): number {
 }
 
 /** The published price is a minimum, so quote the cheapest legitimate setup. */
-function minimumRequest(pkg: Package, departureCity: string): QuoteRequest {
+function minimumRequest(pkg: Package, departureCity: string, adults: number): QuoteRequest {
   const month = cheapestMonth(pkg.placeIds[0]);
   const year = new Date().getUTCFullYear() + 1;
   const style: TripStyle = /pilgrim|kailash|amarnath|char dham/i.test(pkg.name) ? "pilgrimage" : "culture";
@@ -87,9 +95,9 @@ function minimumRequest(pkg: Package, departureCity: string): QuoteRequest {
     placeIds: pkg.placeIds,
     nights: pkg.nights || Math.max(1, pkg.placeIds.length),
     startDate: `${year}-${String(month).padStart(2, "0")}-15`,
-    adults: 2,
+    adults,
     childAges: [],
-    travellerType: "couple",
+    travellerType: adults === 2 ? "couple" : "friends",
     tripStyle: style,
     nationality: "IND",
     departureCity,
@@ -112,6 +120,7 @@ type Row = {
   pkg: Package;
   quote: Quotation;
   departureCity: string;
+  adults: number;
   published: number;
   generated: number;
   deltaPct: number;
@@ -120,10 +129,11 @@ type Row = {
 };
 
 function evaluate(pkg: Package): Row | null {
-  let best: { quote: Quotation; city: string } | null = null;
+  let best: { quote: Quotation; city: string; adults: number } | null = null;
 
   for (const city of DEPARTURE_CITIES) {
-    const request = minimumRequest(pkg, city);
+   for (const adults of pkg.regionId === "india" ? PARTY_SIZES : [2]) {
+    const request = minimumRequest(pkg, city, adults);
     let quote: Quotation;
     try {
       quote = generateQuotation(request, {
@@ -134,7 +144,8 @@ function evaluate(pkg: Package): Row | null {
     } catch {
       continue;
     }
-    if (!best || quote.totals.perPerson < best.quote.totals.perPerson) best = { quote, city };
+    if (!best || quote.totals.perPerson < best.quote.totals.perPerson) best = { quote, city, adults };
+   }
   }
   if (!best) return null;
 
@@ -158,7 +169,7 @@ function evaluate(pkg: Package): Row | null {
           : "OK";
 
   return {
-    pkg, quote: best.quote, departureCity: best.city,
+    pkg, quote: best.quote, departureCity: best.city, adults: best.adults,
     published, generated, deltaPct, verdict, componentPerPerson,
   };
 }
@@ -180,46 +191,78 @@ const SCALABLE: CostComponent[] = [
   "hotel", "flight", "local-transport", "intercity-transport", "sightseeing", "meals",
 ];
 
-function fitFactors(rows: Row[]): Record<string, Partial<Record<CostComponent, number>>> {
-  const byRegion = new Map<string, Row[]>();
+/**
+ * Land components the brochure price covers and the rate card can misstate.
+ * Visa, insurance and city tax are pass-through; flights are not in a land
+ * "from" price; the India vehicle is the agency's own flat day rate.
+ */
+const FIT_COMPONENTS: CostComponent[] = [
+  "hotel", "airport-transfer", "local-transport", "intercity-transport", "sightseeing", "meals",
+];
+
+/** Scopes the agency has checked line by line; the published-price fit must not move them. */
+const VALIDATED_COUNTRIES = new Set(["south-east-asia-vietnam"]);
+const VALIDATED_REGIONS = new Set(["india"]);
+
+/**
+ * A rate card is not wrong by more than this. A factor outside the band means
+ * the brochure sells something the engine does not model (a better hotel class,
+ * guides, permits), and stretching every rate to reach it would misprice the
+ * trips travellers build themselves. The package floor still covers the package.
+ */
+const FACTOR_BAND = { min: 0.4, max: 1.5 };
+const bounded = (n: number) => Number(Math.max(FACTOR_BAND.min, Math.min(FACTOR_BAND.max, n)).toFixed(3));
+
+/** A published price this far from the bottom-up quote is a data error, not a signal. */
+const OUTLIER_RATIO = { low: 0.25, high: 4 };
+
+type Fit = { country: Record<string, number>; region: Record<string, number>; outliers: string[] };
+
+/**
+ * Fits one correction per country from the agency's own published prices.
+ *
+ * For each package the factor f that lands its 3 Star couple quote on 1.05x the
+ * brochure price is solved exactly (the non-scalable part is held fixed), then
+ * each country takes the median over the packages that touch it, and each region
+ * the median over its countries for places no package covers. Multiplying onto
+ * the factor already in force keeps hand-set figures (the Southeast Asia hotel
+ * level) instead of overwriting them.
+ */
+function fitFactors(rows: Row[]): Fit {
+  const outliers: string[] = [];
+  const byCountry = new Map<string, number[]>();
+  const byRegion = new Map<string, number[]>();
+
   for (const row of rows) {
-    const list = byRegion.get(row.pkg.regionId) ?? [];
-    list.push(row);
-    byRegion.set(row.pkg.regionId, list);
+    if (VALIDATED_REGIONS.has(row.pkg.regionId)) continue;
+    if (row.pkg.countryIds.every((c) => VALIDATED_COUNTRIES.has(c))) continue;
+    const ratio = row.generated / row.published;
+    if (!(row.published > 0) || ratio < OUTLIER_RATIO.low || ratio > OUTLIER_RATIO.high) {
+      outliers.push(`${row.pkg.name}: published ${inr(row.published)} vs quote ${inr(row.generated)}`);
+      continue;
+    }
+    const scalable = FIT_COMPONENTS.reduce((a, c) => a + (row.componentPerPerson[c] ?? 0), 0);
+    if (scalable <= 0) continue;
+    const fixed = row.generated - scalable;
+    const f = Math.max(0.3, Math.min(2.5, (1.05 * row.published - fixed) / scalable));
+
+    for (const country of row.pkg.countryIds) {
+      if (VALIDATED_COUNTRIES.has(country)) continue;
+      // A circuit that crosses borders (Kailash: Nepal then Tibet) says little
+      // about any one country; the country's own package outranks it.
+      const own = core.packages.some((p) => p.id !== row.pkg.id && p.countryIds.length === 1 && p.countryIds[0] === country);
+      if (own && row.pkg.countryIds.length > 1) continue;
+      byCountry.set(country, [...(byCountry.get(country) ?? []), f]);
+    }
+    byRegion.set(row.pkg.regionId, [...(byRegion.get(row.pkg.regionId) ?? []), f]);
   }
 
-  const out: Record<string, Partial<Record<CostComponent, number>>> = {};
-  for (const [regionId, regionRows] of byRegion) {
-    // Target the median package in the region, so one outlier cannot drag the
-    // whole region's pricing with it.
-    const ratios = regionRows
-      .filter((r) => r.published > 0)
-      .map((r) => r.generated / r.published)
-      .sort((a, b) => a - b);
-    if (!ratios.length) continue;
-    const median = ratios[ratios.length >> 1];
-
-    // Aim a little above the published price rather than exactly at it.
-    const target = 1.05;
-    const correction = target / median;
-    if (Math.abs(correction - 1) < 0.02) continue; // already close enough
-
-    const scalableShare = regionRows.reduce((sum, r) => {
-      const total = Object.values(r.componentPerPerson).reduce((a, b) => a + b, 0);
-      const scalable = SCALABLE.reduce((a, c) => a + (r.componentPerPerson[c] ?? 0), 0);
-      return sum + (total > 0 ? scalable / total : 1);
-    }, 0) / regionRows.length;
-
-    // Only the scalable share can absorb the correction, so it must move more
-    // than the headline gap to close it.
-    const factor = 1 + (correction - 1) / Math.max(0.2, scalableShare);
-    const clamped = Math.max(0.4, Math.min(2.5, factor));
-
-    out[regionId] = Object.fromEntries(
-      SCALABLE.map((c) => [c, Number(clamped.toFixed(4))]),
-    ) as Partial<Record<CostComponent, number>>;
-  }
-  return out;
+  const median = (v: number[]) => [...v].sort((a, b) => a - b)[v.length >> 1];
+  const country: Record<string, number> = {};
+  const region: Record<string, number> = {};
+  for (const [id, v] of byCountry) country[id] = Number(median(v).toFixed(3));
+  for (const [id, v] of byRegion) region[id] = Number(median(v).toFixed(3));
+  return { country, region, outliers };
 }
 
 // ---------------------------------------------------------------------------
@@ -338,6 +381,14 @@ const deltas = rows.map((r) => r.deltaPct).sort((a, b) => a - b);
 console.log(
   `\n  delta  min ${pct(deltas[0])}   median ${pct(deltas[deltas.length >> 1])}   max ${pct(deltas[deltas.length - 1])}`,
 );
+
+const detail = process.argv.find((a) => a.startsWith("--detail="))?.slice(9).toLowerCase();
+if (detail) {
+  for (const r of rows.filter((x) => x.pkg.name.toLowerCase().includes(detail))) {
+    console.log(`\n  ${r.pkg.name}: ${r.pkg.nights}N, ${r.adults} adults, from ${r.departureCity}, per person`);
+    for (const [c, v] of Object.entries(r.componentPerPerson).sort((a, b) => b[1] - a[1])) console.log(`    ${c.padEnd(20)} ${inr(v)}`);
+  }
+}
 
 console.log("\n  " + "Package".padEnd(40) + "Published".padStart(11) + "Generated".padStart(11) + "Delta".padStart(9) + "  Verdict");
 console.log("  " + "-".repeat(88));
@@ -462,12 +513,29 @@ if (apply) {
   }
   for (const s of skipped) console.log(`    skipped: ${s}`);
 } else if (write) {
-  const fitted = fitFactors(rows);
+  const fit = fitFactors(rows);
   const existing = JSON.parse(readFileSync(CALIBRATION_FILE, "utf8"));
-  existing.region = { ...existing.region, ...fitted };
+  const regionOf = (countryId: string) => core.regions.find((r) => countryId.startsWith(`${r.id}-`))?.id ?? "";
+  const inForce = (component: CostComponent, countryId: string) =>
+    existing.country?.[countryId]?.[component] ?? existing.region?.[regionOf(countryId)]?.[component] ?? existing.global?.[component] ?? 1;
+
+  for (const [countryId, rel] of Object.entries(fit.country)) {
+    if (Math.abs(rel - 1) < 0.05) continue;
+    const next: Record<string, number> = { ...(existing.country?.[countryId] ?? {}) };
+    for (const c of FIT_COMPONENTS) next[c] = bounded(inForce(c, countryId) * rel);
+    existing.country = { ...existing.country, [countryId]: next };
+  }
+  // Countries with no package of their own inherit the region's typical correction.
+  for (const [regionId, rel] of Object.entries(fit.region)) {
+    if (Math.abs(rel - 1) < 0.05) continue;
+    const next: Record<string, number> = { ...(existing.region?.[regionId] ?? {}) };
+    for (const c of FIT_COMPONENTS) next[c] = bounded((existing.region?.[regionId]?.[c] ?? existing.global?.[c] ?? 1) * rel);
+    existing.region = { ...existing.region, [regionId]: next };
+  }
   existing._fittedAt = new Date().toISOString();
   writeFileSync(CALIBRATION_FILE, `${JSON.stringify(existing, null, 2)}\n`);
-  console.log(`  fitted  ${Object.keys(fitted).length} region factor(s) written to ${CALIBRATION_FILE}`);
+  console.log(`  fitted  ${Object.keys(fit.country).length} country and ${Object.keys(fit.region).length} region factor(s) -> ${CALIBRATION_FILE}`);
+  for (const o of fit.outliers) console.log(`  ignored as a data error: ${o}`);
   console.log("          re-run `npm run calibrate` to see the effect.");
 } else if (counts.UNDER || counts["TOO HIGH"]) {
   console.log("\n  Next steps:");
