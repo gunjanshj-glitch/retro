@@ -190,7 +190,8 @@ describe("India 3 Star hotels", () => {
     expect(outside).toEqual([]);
     // Mumbai's own authored rate is dearer, and should stay so: it is a real city rate, not the template.
     expect(Math.max(...rooms.filter((r) => r.id === "mumbai").map((r) => r.rate))).toBeLessThan(11500);
-  });
+    // ~1,000 quotes: slower than the 5s default on a shared CI runner.
+  }, 120_000);
 
   it("centres on the agency's INR 4,000-5,000 range", () => {
     const q = quote({ placeIds: ["jaipur"], nights: 3, startDate: "2027-12-10" });
