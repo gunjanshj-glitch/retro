@@ -47,6 +47,24 @@ describe("India: one all-in vehicle per day", () => {
     expect(indiaVehicle(50)).toMatchObject({ dayRateInr: 9000, count: 2 });
   });
 
+  it("follows the agency's table: 2-3 Sedan, 4-7 SUV, 8-24 Tempo Traveller, 25-40 Bus", () => {
+    const at = (n: number) => indiaVehicle(n)!;
+    expect([at(3).label, at(4).label, at(7).label]).toEqual(["Sedan", expect.stringContaining("SUV"), expect.stringContaining("SUV")]);
+    expect(at(8).label).toContain("Tempo");
+    expect(at(24)).toMatchObject({ count: 1, dayRateInr: 7500 });
+    expect(at(25).label).toContain("Bus");
+    expect(at(40)).toMatchObject({ count: 1, dayRateInr: 9000 });
+  });
+
+  it("Gujarat 13 nights for a group of 10 lands on the brochure's 40,000 a head, a couple pays more", () => {
+    const gujarat = ["ahmedabad", "surat", "vadodara", "rajkot", "gandhinagar", "bhuj", "dhordo"];
+    const group = quote({ placeIds: gujarat, nights: 13, adults: 10, travellerType: "friends", hotelZone: "Outskirts" });
+    const couple = quote({ placeIds: gujarat, nights: 13, adults: 2, travellerType: "couple", hotelZone: "Outskirts" });
+    expect(group.totals.perPerson).toBeGreaterThan(38_000);
+    expect(group.totals.perPerson).toBeLessThan(44_000);
+    expect(couple.totals.perPerson).toBeGreaterThan(group.totals.perPerson * 1.4);
+  });
+
   it("charges 5 travellers an SUV for each of the 8 days, and nothing else for road transport", () => {
     const q = quote({ ...RAJASTHAN, mealPlan: "half-board" });
     const vehicle = q.lineItems.filter((l) => l.component === "ground-transport");

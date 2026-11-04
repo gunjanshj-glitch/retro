@@ -64,8 +64,8 @@
       "regionId": "india",
       "classes": [
         { "maxPax": 3, "label": "Sedan", "dayRateInr": 4500 },
-        { "maxPax": 6, "label": "SUV (Innova / Ertiga)", "dayRateInr": 5500 },
-        { "maxPax": 12, "label": "Tempo Traveller (12-seater)", "dayRateInr": 7500 },
+        { "maxPax": 7, "label": "SUV (Innova / Ertiga)", "dayRateInr": 5500 },
+        { "maxPax": 24, "label": "Tempo Traveller / 12-seater van", "dayRateInr": 7500 },
         { "maxPax": 40, "label": "Bus (24-40 seater)", "dayRateInr": 9000 }
       ],
       "_longLegComment": "A drive that takes most of a day is not an ordinary day: Delhi to Shimla, Leh to Manali, Kathgodam to Haridwar. The agency doubles or triples the day rate for those. Measured on the leg's drive time.",

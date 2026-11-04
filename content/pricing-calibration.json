@@ -34,12 +34,12 @@
       "meals": 1.378
     },
     "east-asia": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.893,
+      "airport-transfer": 1.893,
+      "local-transport": 1.893,
+      "intercity-transport": 1.893,
+      "sightseeing": 1.893,
+      "meals": 1.893
     },
     "middle-east-and-gulf": {
       "hotel": 1.5,
@@ -50,12 +50,12 @@
       "meals": 1.5
     },
     "russia": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.999,
+      "airport-transfer": 1.999,
+      "local-transport": 1.999,
+      "intercity-transport": 1.999,
+      "sightseeing": 1.999,
+      "meals": 1.999
     },
     "europe": {
       "hotel": 1.245,
@@ -101,12 +101,12 @@
   "country": {
     "_vietnam": "Agency check of a 3-adult, 10-night, 4-destination Vietnam trip (Ha Noi, Danang, Hochiminh, Phu Quoc, April 2027): decent 4 Star rooms in those cities cost about INR 7,500 per room-night, not the workbook template's INR 11,990-12,700 (a hotel total of 2.8 lakh against a real 1.5 lakh at most), the Vietnam e-visa service is INR 3,360 per person against the template's INR 2,800, and the agency's retrieved fares for that routing (CCU-HAN, HAN-DAD, DAD-PQC, PQC-SGN, SGN-BKK-CCU) came to about INR 59,000 per person against the template's roughly INR 37,000 once its three domestic legs are counted. 0.5 and 1.2 bring hotel and visa to those figures; 1.9 on the international fare brings the air total to within about 8% of the retrieved one. The airfare factor is fitted to ONE retrieved itinerary and is a stopgap until live fares are switched on. Replace with contracted per-city rates in the workbook and remove this entry.",
     "south-east-asia-singapore": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.662,
+      "airport-transfer": 1.662,
+      "local-transport": 1.662,
+      "intercity-transport": 1.662,
+      "sightseeing": 1.662,
+      "meals": 1.662
     },
     "south-east-asia-vietnam": {
       "hotel": 0.5,
@@ -114,44 +114,44 @@
       "flight": 1.9
     },
     "east-asia-china": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.736,
+      "airport-transfer": 1.736,
+      "local-transport": 1.736,
+      "intercity-transport": 1.736,
+      "sightseeing": 1.736,
+      "meals": 1.736
     },
     "middle-east-and-gulf-oman": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 2.5,
+      "airport-transfer": 2.5,
+      "local-transport": 2.5,
+      "intercity-transport": 2.5,
+      "sightseeing": 2.5,
+      "meals": 2.5
     },
     "russia-russia": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.999,
+      "airport-transfer": 1.999,
+      "local-transport": 1.999,
+      "intercity-transport": 1.999,
+      "sightseeing": 1.999,
+      "meals": 1.999
     },
     "europe-united-kingdom": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 2.156,
+      "airport-transfer": 2.156,
+      "local-transport": 2.156,
+      "intercity-transport": 2.156,
+      "sightseeing": 2.156,
+      "meals": 2.156
     },
     "south-east-asia-phillipines": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.615,
+      "airport-transfer": 1.615,
+      "local-transport": 1.615,
+      "intercity-transport": 1.615,
+      "sightseeing": 1.615,
+      "meals": 1.615
     },
     "south-east-asia-laos": {
       "hotel": 1.165,
@@ -162,36 +162,36 @@
       "meals": 1.5
     },
     "east-asia-south-korea": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.893,
+      "airport-transfer": 1.893,
+      "local-transport": 1.893,
+      "intercity-transport": 1.893,
+      "sightseeing": 1.893,
+      "meals": 1.893
     },
     "east-asia-japan": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.737,
+      "airport-transfer": 1.737,
+      "local-transport": 1.737,
+      "intercity-transport": 1.737,
+      "sightseeing": 1.737,
+      "meals": 1.737
     },
     "africa-south-africa": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.719,
+      "airport-transfer": 1.719,
+      "local-transport": 1.719,
+      "intercity-transport": 1.719,
+      "sightseeing": 1.719,
+      "meals": 1.719
     },
     "africa-seychelles": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 1.659,
+      "airport-transfer": 1.659,
+      "local-transport": 1.659,
+      "intercity-transport": 1.659,
+      "sightseeing": 1.659,
+      "meals": 1.659
     },
     "south-asia-maldives": {
       "hotel": 1.5,
@@ -226,12 +226,12 @@
       "meals": 1.5
     },
     "eurasia-cis-uzbekistan": {
-      "hotel": 1.5,
-      "airport-transfer": 1.5,
-      "local-transport": 1.5,
-      "intercity-transport": 1.5,
-      "sightseeing": 1.5,
-      "meals": 1.5
+      "hotel": 2.028,
+      "airport-transfer": 2.028,
+      "local-transport": 2.028,
+      "intercity-transport": 2.028,
+      "sightseeing": 2.028,
+      "meals": 2.028
     },
     "south-east-asia-malaysia": {
       "hotel": 0.65,
@@ -521,5 +521,5 @@
     }
   },
   "package": {},
-  "_fittedAt": "2026-11-04T16:35:32.001Z"
+  "_fittedAt": "2026-11-04T17:14:59.749Z"
 }

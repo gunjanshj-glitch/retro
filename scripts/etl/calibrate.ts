@@ -54,7 +54,7 @@ const visaRules = (JSON.parse(readFileSync(path.join(DATA, "visa.json"), "utf8")
  * as the party fills the vehicle (Sedan to 3, SUV to 6). The brochure number is
  * the cheapest legitimate setup, so the harness tries each party size.
  */
-const PARTY_SIZES = [4]; // India only (shared SUV); elsewhere a person's share does not depend on party size
+const PARTY_SIZES = (process.env.INDIA_PAX ?? "2").split(",").map(Number); // India only: "from" prices fit a couple in a Sedan best (median -6% vs -26% at 4, -41% at 10); group prices are lower per head, e.g. Gujarat 13 nights is 40,000 at 10 people. Elsewhere a person's share does not depend on party size
 
 const DEPARTURE_CITIES = ["DEL", "BOM", "MAA", "BLR", "HYD", "CCU", "COK", "AMD", "PNQ", "GOI"];
 
@@ -210,7 +210,7 @@ const VALIDATED_REGIONS = new Set(["india"]);
  * guides, permits), and stretching every rate to reach it would misprice the
  * trips travellers build themselves. The package floor still covers the package.
  */
-const FACTOR_BAND = { min: 0.4, max: 1.5 };
+const FACTOR_BAND = { min: 0.4, max: 2.5 };
 const bounded = (n: number) => Number(Math.max(FACTOR_BAND.min, Math.min(FACTOR_BAND.max, n)).toFixed(3));
 
 /** A published price this far from the bottom-up quote is a data error, not a signal. */
