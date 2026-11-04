@@ -272,7 +272,8 @@ export async function handleLogout(request: Request, env: Env): Promise<Response
 export async function handleMe(request: Request, env: Env): Promise<Response> {
   const user = await getSessionUser(request, env);
   if (!user) return json({ user: null });
-  return json({ user });
+  // Lets the app show staff screens without probing an admin route. The server still enforces access on every /admin call.
+  return json({ user, isStaff: adminEmails(env).includes(user.email.toLowerCase()) });
 }
 
 // ---------------------------------------------------------------------------

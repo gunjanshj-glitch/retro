@@ -72,3 +72,11 @@ data/raw-footage/
 
 # lighthouse ci output
 /.lighthouseci/
+
+# mobile app
+/mobile/node_modules/
+/mobile/.expo/
+/mobile/dist/
+/mobile/ios/
+/mobile/android/
+/mobile/expo-env.d.ts

@@ -611,3 +611,12 @@ describe("B6 push notifications", () => {
     expect(pushes.map((p) => p.data.kind)).toContain("quote_expired");
   });
 });
+
+describe("/auth/me isStaff (drives the app's Queue tab)", () => {
+  it("is true only for an address on the admin list", async () => {
+    const s = setup();
+    expect((await api(s, "GET", "/auth/me", { as: "admin" })).json.isStaff).toBe(true);
+    expect((await api(s, "GET", "/auth/me", { as: "asha" })).json.isStaff).toBe(false);
+    expect((await api(s, "GET", "/auth/me")).json).toEqual({ user: null });
+  });
+});

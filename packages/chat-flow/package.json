@@ -1,0 +1,8 @@
+{
+  "name": "@retro/chat-flow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scripted enquiry chat: the question flow as data plus a pure runner. No UI, no network.",
+  "exports": { ".": "./index.ts" }
+}

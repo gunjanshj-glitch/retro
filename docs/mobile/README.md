@@ -1,6 +1,6 @@
 # Retro Holidays mobile app: plan
 
-Status: **final plan, ready for implementation.** No mobile code exists yet. Implementation starts when you say go; the first step is the Phase 0 spike (doc 06).
+Status: **plan final; implementation in progress.** The backend work is done in code (the latest Worker changes are not deployed yet); the Expo app has its foundation and a first slice of screens. See the status table below, which is updated with every change.
 
 Confidence tags used throughout: **[Certain]** verified in this repo, by a test I ran, or from an official source; **[Likely]** strong inference; **[Guessing]** assumption to confirm.
 
@@ -16,6 +16,61 @@ Confidence tags used throughout: **[Certain]** verified in this repo, by a test 
 | [08-accounts-and-dev-track.md](08-accounts-and-dev-track.md) | **New.** Building and testing before the Apple/Google accounts exist, and Gate A |
 | [09-gap-review.md](09-gap-review.md) | **New.** The audit: every gap found, evidence, severity, fix, owner doc |
 | [mockup/](mockup/index.html) | Clickable phone mockup (traveller and staff) |
+
+## Implementation status
+
+Updated: 2026-11-04. **Done** = built, type-checked and covered by tests where logic exists. **Not verified on a device** is called out, because nothing here has run on a phone yet.
+
+| Area | Item | Status | Notes |
+|---|---|---|---|
+| Backend | B1 bearer tokens, hashed sessions, single session reader | Done | |
+| Backend | B7 idempotency keys, B8 draft optimistic lock | Done | |
+| Backend | B5 `/app-config` version gate | Done | |
+| Backend | B10 free-form messages, staff leads list | Done | |
+| Backend | B2 mobile sign-in return (PKCE), Apple sign-in | Done | Apple tested against a generated key, not Apple |
+| Backend | B3 delete account | Done | |
+| Backend | B4 hosted pay page | Done | Needs one Razorpay test-mode payment to confirm the page's CSP |
+| Backend | B6 push (registry, coalescing, receipts, cron) | Done | Tested against a mocked Expo API |
+| Backend | Audit fixes, router, `/api/v1`, error codes, rate limits | Done | |
+| Backend | Email via Resend (MailChannels removed) | Done, deployed key | Worker redeploy pending |
+| Backend | `/auth/me` returns `isStaff` | Done | Not deployed yet |
+| Backend | O1 catalogue manifest, O2 image variants | Pending | Optimisations |
+| Backend | O4 contracts package (zod request/response schemas) | Pending | Types are hand-written in `api-client` for now |
+| Backend | O5 Cloudflare rate rules, O6 cache policy, O7 Sentry | Pending | Dashboard/ops work |
+| Backend | O8 `.well-known` files (universal links) | Pending | Needs store accounts (Gate A) |
+| Packages | `@retro/core` (engine, schema, pricing, workflow) | Done | |
+| Packages | `@retro/api-client` (bearer transport, idempotency) | Done | 8 tests |
+| Packages | `@retro/chat-flow` (flow + runner + lead builder) | Done | 16 tests; web chat UI not built |
+| Packages | `@retro/contracts` | Pending | See O4 |
+| App | Expo SDK 58 skeleton, Metro monorepo config, theme tokens, UI kit | Done | iOS bundle builds |
+| App | Update/maintenance gate | Done | |
+| App | Auth: email/password, create account, forgot, Google, secure token | Done | Not verified on a device |
+| App | Explore: package list, search | Done | Reads the live site's package data; bundled offline snapshot Pending |
+| App | Package detail and "ask for a quote" request | Done | |
+| App | My trips: quotation requests and package requests | Done | |
+| App | Trip screen: quote, optional extras, accept, ask for changes, decline, withdraw, messages, pay | Done | Quote requests only; created by the planner, which is Pending |
+| App | Talk to us: scripted chat, lead, WhatsApp hand-off | Done | |
+| App | More: contact, policies, sign out, delete account | Done | Policies open the website |
+| App | Staff: queue, request detail, reply, private note, start review, leads | Done (S1, S2 reply) | Quote editor and "send quote" are S3, Pending |
+| App | Push registration | Done in code | Needs an Expo project id and a real phone |
+| App | Planner (where, when, who, style) and live quote on the phone | **Pending** | Largest item. Creates the quotation requests that the trip screen negotiates |
+| App | Map modal (pan, zoom, pins) | Pending | Needs the spike (SVG vs Skia) |
+| App | Offline catalogue snapshot, seed script | Pending | |
+| App | Destination screens, region browsing | Pending | |
+| App | Staff S3: full quote editor, send revision | Pending | Largest staff item |
+| App | Biometric re-lock and screenshot block for staff | Pending | |
+| App | Sign in with Apple button | Pending | Backend ready; needs the Apple account |
+| App | Push tap routing (open the right trip) | Pending | |
+| App | Analytics events (Phase 2) | Pending | |
+| App | Policies as native screens | Pending | Websites links for now |
+| Quality | Device spike (engine speed on Hermes, map fps, `@expo/ui` in Expo Go) | **Pending** | Needs your iPhone |
+| Quality | Golden-fixture engine parity (Node vs Hermes) | Pending | |
+| Quality | Maestro end-to-end flows, app unit tests | Pending | No app tests exist yet |
+| Quality | CI for the app | Pending | |
+| Release | Gate A: Apple and Google accounts, signing, TestFlight, Play internal | Pending | Needs accounts |
+| Release | EAS project, `eas.json` build profiles | Pending | |
+| Release | Store assets, review notes, privacy declarations | Pending | |
+| Ops | Deploy Worker with latest backend changes | Pending | Run `npx wrangler deploy` in `workers/api` |
 
 ## Your answers, and what they changed
 
@@ -59,7 +114,6 @@ The audit is in [09-gap-review.md](09-gap-review.md). The ones that would have h
 
 ## Not done, on purpose
 
-- **No backend or app code.** The changes touch production sign-in and payments; they begin in Phase 0 after you approve.
 - Unverified until the spike: engine speed on Hermes, map frame rate, `@expo/ui` in Expo Go, whether the web timeline renders the new `message` event type.
 
 ## Decisions closed

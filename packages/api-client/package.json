@@ -1,0 +1,8 @@
+{
+  "name": "@retro/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Typed fetch client for the Retro Holidays API. Bearer-token transport for the app; no dependencies.",
+  "exports": { ".": "./index.ts", "./types": "./types.ts" }
+}
