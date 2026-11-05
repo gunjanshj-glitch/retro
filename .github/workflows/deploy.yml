@@ -61,7 +61,9 @@ jobs:
         run: test -f out/index.html || (echo "out/ is empty — the export did not run" && exit 1)
 
       # D1 migrations are additive and idempotent (`CREATE TABLE IF NOT
-      # EXISTS`), so re-running them on every deploy is safe.
+      # EXISTS`), so re-running them on every deploy is safe. The database is
+      # named by its binding ("DB"): the name differs per environment
+      # ("atlas" / "atlas-preview") but the binding does not.
       - name: Apply D1 migrations
         uses: cloudflare/wrangler-action@v3
         with:
@@ -69,7 +71,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: workers/api
           command: >-
-            d1 migrations apply atlas --remote
+            d1 migrations apply DB --remote
             --env="${{ (inputs.environment || 'preview') == 'preview' && 'preview' || '' }}"
 
       - name: Deploy backend Worker
