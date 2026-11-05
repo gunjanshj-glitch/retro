@@ -71,8 +71,10 @@ test.describe("contact page", () => {
     await expect(page.getByText(/Kolkata/).first()).toBeVisible();
   });
 
-  test("the enquiry form says it continues on WhatsApp and stores nothing", async ({ page }) => {
+  test("the enquiry form says the enquiry is saved and continues on WhatsApp", async ({ page }) => {
     await page.goto("/contact");
-    await expect(page.getByText(/pre-filled WhatsApp message/i).first()).toBeVisible();
+    await expect(page.getByText(/We save your enquiry/i).first()).toBeVisible();
+    await expect(page.getByText(/WhatsApp with your answers pre-filled/i).first()).toBeVisible();
+    await expect(page.getByText(/Nothing is stored/i)).toHaveCount(0);
   });
 });

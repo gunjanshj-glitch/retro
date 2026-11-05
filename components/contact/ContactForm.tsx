@@ -171,7 +171,7 @@ export function ContactForm() {
           <span aria-hidden="true">↗</span>
         </button>
         <p className="text-xs leading-5 text-[var(--ink-2)]">
-          Your answers open as a pre-filled WhatsApp message. Nothing is stored on this website.
+          We save your enquiry so our team can reply, then open WhatsApp with your answers pre-filled.
         </p>
       </div>
     </form>
