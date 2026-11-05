@@ -142,9 +142,8 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
       <div
         className="relative overflow-hidden rounded-2xl border"
         style={{
-          borderColor: "var(--line)",
-          background: "radial-gradient(120% 120% at 50% 40%, var(--sea-2) 0%, var(--sea) 100%)",
-          boxShadow: "var(--shadow-sm)",
+          borderColor: "var(--hairline)",
+          background: "var(--card)",
           aspectRatio: world ? `${world.viewBox[2]} / ${world.viewBox[3]}` : "960 / 500",
         }}
       >
@@ -173,8 +172,8 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
                     Unsupported countries "stay as it is" — visible, never interactive. */}
                 <path
                   d={world.land}
-                  fill="var(--land-out)"
-                  stroke="#fff"
+                  fill="var(--surface)"
+                  stroke="var(--hairline)"
                   strokeWidth={0.6}
                   pointerEvents="none"
                 />
@@ -209,10 +208,11 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
                       <title>{isDisabled ? disabledReason : r.name}</title>
                       <path
                         d={r.path}
-                        fill={isDisabled ? "var(--land-dim)" : isHovered ? "var(--land-on)" : "var(--land)"}
-                        stroke="#fff"
-                        strokeWidth={isHovered && !isDisabled ? 1.4 : 0.8}
-                        style={{ transition: "fill 0.15s ease" }}
+                        fill={isDisabled ? "var(--surface)" : isHovered ? "var(--sun)" : "var(--muted)"}
+                        fillOpacity={isDisabled ? 0.35 : isHovered ? 0.35 : 0.16}
+                        stroke={isDisabled ? "var(--hairline)" : isHovered ? "var(--sun-deep)" : "var(--hairline)"}
+                        strokeWidth={isHovered && !isDisabled ? 1.5 : 1}
+                        style={{ transition: "fill-opacity 0.15s ease, stroke 0.15s ease" }}
                       />
                       {isHovered && !isDisabled && (
                         <text
@@ -221,9 +221,9 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
                           textAnchor="middle"
                           fontSize={13}
                           fontWeight={700}
-                          fill="var(--ink)"
-                          stroke="#fff"
-                          strokeWidth={4}
+                          fill="var(--text)"
+                          stroke="var(--deep)"
+                          strokeWidth={3}
                           paintOrder="stroke"
                           pointerEvents="none"
                         >
@@ -534,8 +534,8 @@ function RegionView({
             {coastline && (
               <path
                 d={coastline}
-                fill="var(--land)"
-                stroke="#fff"
+                fill="color-mix(in srgb, var(--muted) 14%, transparent)"
+                stroke="var(--muted)"
                 strokeWidth={1.4 / zoom}
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -558,8 +558,8 @@ function RegionView({
                   cy={t.cy}
                   rx={t.rx}
                   ry={t.ry}
-                  fill="color-mix(in srgb, var(--land) 35%, transparent)"
-                  stroke="var(--land-on)"
+                  fill="color-mix(in srgb, var(--muted) 8%, transparent)"
+                  stroke="var(--muted)"
                   strokeWidth={0.9 / zoom}
                   strokeDasharray={`${4 / zoom},${3 / zoom}`}
                   opacity={0.7}
@@ -613,8 +613,8 @@ function RegionView({
                   >
                     <title>{`${name} · ${marker.count ?? 0} places — click to zoom in`}</title>
                     <circle r={metrics.radiusPx} fill="transparent" />
-                    <circle r={metrics.radiusPx * 0.8} fill={isHover ? "var(--coral)" : "#fff"} stroke="var(--coral)" strokeWidth={2.5} />
-                    <text y={4} textAnchor="middle" fontSize={11} fontWeight={800} fill={isHover ? "#fff" : "var(--ink)"} pointerEvents="none">
+                    <circle r={metrics.radiusPx * 0.8} fill="var(--sun)" fillOpacity={isHover ? 1 : 0.9} stroke="var(--sun-deep)" strokeWidth={1.5} />
+                    <text y={4} textAnchor="middle" fontSize={11} fontWeight={700} fill="var(--on-sun)" pointerEvents="none">
                       {marker.count}
                     </text>
                     {(side || isHover) && (
@@ -624,8 +624,8 @@ function RegionView({
                         textAnchor={(side ?? "right") === "right" ? "start" : "end"}
                         fontSize={11}
                         fontWeight={700}
-                        fill="var(--ink)"
-                        stroke="#fff"
+                        fill="var(--text)"
+                        stroke="var(--deep)"
                         strokeWidth={3}
                         paintOrder="stroke"
                         pointerEvents="none"
@@ -680,8 +680,8 @@ function RegionView({
                       textAnchor={labelSide === "right" ? "start" : "end"}
                       fontSize={11}
                       fontWeight={700}
-                      fill="var(--ink)"
-                      stroke="#fff"
+                      fill="var(--text)"
+                      stroke="var(--deep)"
                       strokeWidth={3}
                       paintOrder="stroke"
                       pointerEvents="none"
@@ -694,15 +694,15 @@ function RegionView({
                   <g transform={`scale(${PIN_SCALE})`} opacity={isDisabled ? 0.3 : 1}>
                     <path
                       d={PIN_PATH}
-                      fill={isSelected ? "var(--coral)" : isHovered ? "var(--coral-soft)" : "#fff"}
-                      stroke={isDisabled ? "var(--muted)" : "var(--coral)"}
+                      fill={isSelected ? "var(--sun)" : isHovered ? "color-mix(in srgb, var(--sun) 55%, var(--card))" : "var(--card)"}
+                      stroke={isDisabled ? "var(--muted)" : "var(--sun-deep)"}
                       strokeWidth={isSelected || isHovered ? 2 : 1.4}
                     />
-                    <circle cx={0} cy={-18} r={3.4} fill={isSelected ? "#fff" : "var(--coral)"} />
+                    <circle cx={0} cy={-18} r={3.4} fill={isSelected ? "var(--on-sun)" : "var(--sun-deep)"} />
                     {isSelected && (
                       <path
                         d="M-3.2,-18 L-1,-15.5 L3.4,-20.5"
-                        fill="none" stroke="var(--coral)" strokeWidth={1.4}
+                        fill="none" stroke="var(--sun)" strokeWidth={1.4}
                         strokeLinecap="round" strokeLinejoin="round"
                       />
                     )}

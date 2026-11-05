@@ -39,11 +39,11 @@ type Props = {
   ariaLabel?: string;
 };
 
-const LABEL_FONT = 12.5;
-const CHAR_W = 7.1;
+const LABEL_FONT = 11;
+const CHAR_W = 6.2;
 
 const labelText = (m: MapMarker) => (m.level === 0 ? groupDisplayName(m.label ?? m.country) : displayName(m.name));
-const labelWidth = (m: MapMarker) => labelText(m).length * CHAR_W + 16;
+const labelWidth = (m: MapMarker) => labelText(m).length * CHAR_W + 4;
 
 export function RegionMap({
   svg,
@@ -60,7 +60,7 @@ export function RegionMap({
   onPlaceSelect,
   ariaLabel = "Map of places",
 }: Props) {
-  const { coastline } = useMemo(() => parseRegionSvg(svg), [svg]);
+  const { coastline, decorations } = useMemo(() => parseRegionSvg(svg), [svg]);
   const { svgRef, view, zoom, size, pxPerUnit, zoomIn, zoomOut, reset, fitTo, panned, hint, handlers } = useZoomPan(
     markers.viewBox,
     mapKey,
@@ -171,7 +171,7 @@ export function RegionMap({
 
 
   return (
-    <div className="relative h-full w-full select-none" style={{ background: "var(--sea)" }}>
+    <div className="relative h-full w-full select-none">
       <svg
         ref={svgRef}
         viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
@@ -181,19 +181,20 @@ export function RegionMap({
         style={{ touchAction: "pan-y" }}
         {...handlers}
       >
-        <defs>
-          <radialGradient id={`sea-${mapKey}`} cx="50%" cy="45%" r="65%">
-            <stop offset="0" stopColor="var(--sea-2)" />
-            <stop offset="1" stopColor="var(--sea)" />
-          </radialGradient>
-        </defs>
-        <rect x={view.x - view.w} y={view.y - view.h} width={view.w * 3} height={view.h * 3} fill={`url(#sea-${mapKey})`} />
-
-        {regions?.context && <path d={regions.context} className="map-context" />}
-        {(!regions || regions.baseOutline) && coastline && (
-          <path d={coastline} fill="var(--land)" stroke="#fff" strokeWidth={1.1 * k} strokeLinejoin="round" pointerEvents="none" />
+        {/* The map art as it has always been drawn: one tinted outline with
+            thin borders, no sea and no neighbouring land. */}
+        {coastline && (
+          <path
+            d={coastline}
+            fill="color-mix(in srgb, var(--muted) 12%, transparent)"
+            stroke="var(--muted)"
+            strokeWidth={1.2 * k}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            pointerEvents="none"
+          />
         )}
-        {regions?.islets && <path d={regions.islets} fill="var(--land)" pointerEvents="none" />}
+        <g opacity={0.55} pointerEvents="none" dangerouslySetInnerHTML={{ __html: decorations }} />
 
         {regions?.units.map((u) => {
           const group = unitGroup(u.groups, u.name);
@@ -205,7 +206,7 @@ export function RegionMap({
               className="map-country"
               data-state={state}
               data-unit={u.name}
-              style={regions.baseOutline && !u.groups.length ? { fill: "transparent", cursor: "default" } : undefined}
+              style={!u.groups.length ? { cursor: "default" } : undefined}
               onPointerEnter={() => {
                 if (!group) return;
                 setHoverUnit(u.name);
@@ -238,9 +239,9 @@ export function RegionMap({
           const isGroup = m.level === 0;
           const hot = isGroup ? !!hotGroups?.has(m.country) : activePlace ? markerKey(activePlace) === key : false;
           const text = labelText(m);
-          const labelW = text.length * CHAR_W + 16;
           const small = compact.has(key);
-          const r = small ? 6 : isGroup ? metrics.radiusPx + 2 : metrics.radiusPx * 0.55;
+          const dotR = metrics.radiusPx * 0.55;
+          const r = small ? dotR : isGroup ? dotR * 1.45 : dotR;
           return (
             <g
               key={key}
@@ -269,30 +270,39 @@ export function RegionMap({
             >
               {/* Generous invisible target, never wider than the enforced spacing allows. */}
               <circle r={metrics.radiusPx + 4} fill="transparent" />
-              {small ? (
-                <circle r={r} fill={hot ? "var(--coral)" : "#fff"} stroke="var(--coral)" strokeWidth={2.5} />
-              ) : isGroup ? (
+              {isGroup && !small ? (
                 <>
-                  <circle r={r} fill={hot ? "var(--coral)" : "#fff"} stroke="var(--coral)" strokeWidth={2.5} style={{ filter: "drop-shadow(0 2px 4px rgba(11,34,56,.18))" }} />
+                  <circle r={r} fill="var(--sun)" stroke={hot ? "var(--ink)" : "var(--sun-deep)"} strokeWidth={hot ? 2 : 1.5} />
                   {m.count != null && (
-                    <text y={0.5} textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={800} fill={hot ? "#fff" : "var(--ink)"} pointerEvents="none">
+                    <text y={0.5} textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="var(--on-sun)" pointerEvents="none">
                       {m.count}
                     </text>
                   )}
                 </>
               ) : (
-                <>
-                  <circle r={hot ? r * 2.6 : r * 2} fill="var(--coral)" opacity={hot ? 0.3 : 0.18} />
-                  <circle r={r} fill="var(--coral)" stroke="#fff" strokeWidth={2.5} />
-                </>
+                <circle
+                  r={hot ? r * 1.35 : r}
+                  fill={hot || isGroup ? "var(--sun)" : "var(--muted)"}
+                  stroke={hot || isGroup ? "var(--sun-deep)" : "var(--bg)"}
+                  strokeWidth={1.5}
+                />
               )}
               {side && (
-                <g transform={`translate(${side === "right" ? r + 6 : -(r + 6) - labelW}, 0)`} pointerEvents="none">
-                  <rect y={-12} width={labelW} height={24} rx={12} fill={hot ? "var(--ink)" : "#fff"} style={{ filter: "drop-shadow(0 2px 4px rgba(11,34,56,.16))" }} />
-                  <text x={8} y={0.5} dominantBaseline="central" fontSize={LABEL_FONT} fontWeight={700} fill={hot ? "#fff" : "var(--ink)"}>
-                    {text}
-                  </text>
-                </g>
+                <text
+                  x={side === "right" ? r + 4 : -(r + 4)}
+                  y={0.5}
+                  dominantBaseline="central"
+                  textAnchor={side === "right" ? "start" : "end"}
+                  fontSize={LABEL_FONT}
+                  fontWeight={isGroup || hot ? 700 : 600}
+                  fill={isGroup || hot ? "var(--text)" : "var(--muted)"}
+                  stroke="var(--bg)"
+                  strokeWidth={3}
+                  paintOrder="stroke"
+                  pointerEvents="none"
+                >
+                  {text}
+                </text>
               )}
             </g>
           );

@@ -118,7 +118,7 @@ export function DestinationExplorer({
       <div className="min-w-0 lg:order-2">
         <div
           className="relative overflow-hidden rounded-[28px]"
-          style={{ height: "clamp(380px, 70vh, 720px)", boxShadow: "var(--shadow)", background: "var(--sea)" }}
+          style={{ height: "clamp(380px, 70vh, 720px)", boxShadow: "var(--shadow)", background: "var(--card)" }}
         >
           <RegionMap
             svg={mapSvg}
@@ -138,7 +138,6 @@ export function DestinationExplorer({
             onPlaceHover={(m) => m && setActive(m)}
             onPlaceSelect={(m) => setActive(m)}
           />
-          <Legend />
         </div>
         <p className="mt-3 hidden flex-wrap gap-x-5 gap-y-1 text-sm sm:flex" style={{ color: "var(--muted)" }}>
           <span>The page scrolls normally over the map</span>
@@ -233,7 +232,7 @@ export function DestinationExplorer({
                       className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left font-semibold transition-colors hover:bg-[var(--surface)]"
                       style={{ background: on ? "var(--surface)" : undefined, color: on ? "var(--ink)" : "var(--muted)" }}
                     >
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: "var(--coral)", boxShadow: "0 0 0 3px var(--coral-soft)" }} />
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: "var(--muted)", boxShadow: "0 0 0 3px var(--surface)" }} />
                       <span className="min-w-0 flex-1 truncate">{displayName(m.name)}</span>
                       {g && selectedHasSeveralPackages && (
                         <span className="max-w-[45%] truncate rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: "var(--surface)", color: "var(--muted)" }}>
@@ -263,7 +262,7 @@ export function DestinationExplorer({
                         opacity: dim ? 0.4 : 1,
                       }}
                     >
-                      <span className="h-3 w-3 shrink-0 rounded" style={{ background: isHot ? "var(--land-on)" : "var(--land)" }} />
+                      <span className="h-3 w-3 shrink-0 rounded" style={{ background: isHot ? "var(--sun-deep)" : "var(--sun)" }} />
                       <span className="min-w-0 flex-1 truncate">{e.label}</span>
                       <span
                         className="rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums"
@@ -372,29 +371,6 @@ function DetailCard({
           </Link>
         )}
       </div>
-    </div>
-  );
-}
-
-function Legend() {
-  return (
-    <div
-      className="pointer-events-none absolute left-3 bottom-3 z-10 hidden flex-wrap gap-3.5 rounded-[14px] px-3.5 py-2.5 text-[13px] font-semibold sm:flex"
-      style={{ background: "rgba(255,255,255,0.94)", boxShadow: "var(--shadow)" }}
-      aria-hidden="true"
-    >
-      <span className="inline-flex items-center gap-1.5">
-        <i className="inline-block h-3 w-3 rounded" style={{ background: "var(--land)" }} />
-        We go here
-      </span>
-      <span className="inline-flex items-center gap-1.5">
-        <i className="inline-block h-3 w-3 rounded" style={{ background: "var(--land-out)" }} />
-        Neighbouring
-      </span>
-      <span className="inline-flex items-center gap-1.5">
-        <i className="inline-block h-3 w-3 rounded-full" style={{ background: "var(--coral)" }} />
-        Places
-      </span>
     </div>
   );
 }

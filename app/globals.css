@@ -194,22 +194,20 @@ h3 {
 
 /* --- Region maps -------------------------------------------------------- */
 .map-country {
-  fill: var(--land);
-  stroke: #fff;
-  stroke-width: 1.1;
-  vector-effect: non-scaling-stroke;
-  stroke-linejoin: round;
+  /* Invisible over the outline art until hovered or chosen. */
+  fill: transparent;
+  stroke: none;
   cursor: pointer;
-  transition: fill 0.18s ease;
+  transition: fill 0.15s ease;
 }
 .map-country[data-state="hot"] {
-  fill: var(--land-hi);
+  fill: color-mix(in srgb, var(--sun) 38%, transparent);
 }
 .map-country[data-state="on"] {
-  fill: var(--land-on);
+  fill: color-mix(in srgb, var(--sun) 24%, transparent);
 }
 .map-country[data-state="dim"] {
-  fill: var(--land-dim);
+  fill: transparent;
 }
 .map-context {
   fill: var(--land-out);
