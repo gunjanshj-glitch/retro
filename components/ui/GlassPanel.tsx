@@ -5,9 +5,9 @@ export function GlassPanel({ children, className = "" }: { children: ReactNode; 
     <div
       className={`rounded-2xl border ${className}`}
       style={{
-        background: "var(--glass)",
+        background: "var(--card)",
         borderColor: "var(--hairline)",
-        backdropFilter: "blur(20px)",
+        boxShadow: "var(--shadow)",
       }}
     >
       {children}

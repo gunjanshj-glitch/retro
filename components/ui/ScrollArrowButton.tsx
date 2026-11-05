@@ -18,11 +18,11 @@ export function ScrollArrowButton({ dir, onClick, disabled, label }: Props) {
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border backdrop-blur-md transition-all duration-200 sm:h-10 sm:w-10"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-all duration-200 hover:border-[var(--ink)]"
       style={{
-        background: "var(--glass-strong)",
+        background: "var(--card)",
         borderColor: "var(--hairline)",
-        color: disabled ? "var(--hairline)" : "var(--text)",
+        color: "var(--text)",
         opacity: disabled ? 0.35 : 1,
         cursor: disabled ? "default" : "pointer",
         pointerEvents: disabled ? "none" : "auto",

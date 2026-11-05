@@ -41,8 +41,8 @@ export function PackageRequestButton({ pkg }: { pkg: PackageRequestPackage }) {
       <button
         type="button"
         onClick={handleClick}
-        className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-medium transition-transform hover:scale-[1.02]"
-        style={{ background: "var(--accent)", color: "var(--deep)" }}
+        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 py-3 font-bold shadow-[0_6px_18px_rgba(242,169,0,0.32)] transition-[transform,filter] hover:-translate-y-px hover:brightness-[0.97] motion-reduce:hover:translate-y-0"
+        style={{ background: "var(--sun)", color: "var(--on-sun)" }}
       >
         Request a quote
         <span aria-hidden="true">→</span>

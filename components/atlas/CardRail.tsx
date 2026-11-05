@@ -39,25 +39,28 @@ export function CardRail({ cards, activeIndex, onSelect }: Props) {
 
   return (
     <div>
-      <div className="mb-3 flex items-end justify-between px-1">
-        <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--text)" }}>
-          Popular Destinations
-        </p>
+      <div className="mb-2 flex items-end justify-between px-1">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Popular Destinations</p>
         <Link
           href="/destinations"
-          className="text-sm font-medium transition-colors hover:brightness-110"
-          style={{ color: "var(--accent)" }}
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-2 text-sm font-semibold text-white underline-offset-4 hover:underline"
         >
           View all
+          <span aria-hidden="true">→</span>
         </Link>
       </div>
 
       <div className="flex items-center gap-2">
-        <ScrollArrowButton dir="left" onClick={() => nudge(-1, 260)} disabled={atStart} label="Scroll destinations left" />
+        <ScrollArrowButton
+          dir="left"
+          onClick={() => nudge(-1, 260)}
+          disabled={atStart}
+          label="Scroll destinations left"
+        />
 
         <div
           ref={scrollerRef}
-          className="no-scrollbar flex flex-1 gap-4 overflow-x-auto scroll-smooth py-2"
+          className="no-scrollbar flex min-w-0 flex-1 gap-3 overflow-x-auto scroll-smooth px-1 pb-2 pt-3 md:gap-4"
           role="list"
         >
           {cards.map((card, i) => {
@@ -76,14 +79,12 @@ export function CardRail({ cards, activeIndex, onSelect }: Props) {
                     e.preventDefault();
                     onSelect(i);
                   }}
-                  className="relative h-44 w-40 shrink-0 overflow-hidden rounded-2xl border transition-all duration-300 active:scale-[0.96] active:brightness-90"
+                  className="relative h-40 w-36 shrink-0 overflow-hidden rounded-2xl transition-[transform,box-shadow] duration-300 active:scale-[0.96] active:brightness-90 motion-reduce:transition-none sm:h-44 sm:w-40"
                   style={{
-                    borderColor: isActive ? card.palette.accent : "var(--hairline)",
-                    borderWidth: isActive ? 2 : 1,
-                    transform: isActive ? "translateY(-8px)" : "none",
+                    transform: isActive ? "translateY(-6px)" : "none",
                     boxShadow: isActive
-                      ? `0 18px 40px rgba(0,0,0,0.5), 0 0 0 1px ${card.palette.accent}55`
-                      : "0 10px 24px rgba(0,0,0,0.35)",
+                      ? "0 0 0 3px var(--sun), 0 16px 36px rgba(11,34,56,0.45)"
+                      : "0 0 0 1px rgba(255,255,255,0.35), 0 8px 20px rgba(11,34,56,0.3)",
                   }}
                 >
                   <img
@@ -96,20 +97,26 @@ export function CardRail({ cards, activeIndex, onSelect }: Props) {
                   <div className="card-overlay absolute inset-0" aria-hidden="true" />
 
                   <div
-                    className="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold backdrop-blur-md"
-                    style={{ background: "rgba(3,12,14,0.55)", color: "var(--accent)" }}
+                    className="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums"
+                    style={{
+                      background: "rgba(255,255,255,0.95)",
+                      color: "var(--ink)",
+                    }}
                   >
-                    <span aria-hidden="true">★</span>
+                    <span aria-hidden="true" style={{ color: "var(--sun-deep)" }}>
+                      ★
+                    </span>
                     {card.rating.toFixed(1)}
                   </div>
 
                   <div className="absolute inset-x-0 bottom-0 p-3">
-                    <p className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(242,247,246,0.75)" }}>
+                    <p
+                      className="text-[11px] font-semibold uppercase tracking-wide"
+                      style={{ color: "rgba(255,255,255,0.85)" }}
+                    >
                       {card.region}
                     </p>
-                    <p className="font-display text-xl leading-tight" style={{ color: "var(--text)" }}>
-                      {card.country}
-                    </p>
+                    <p className="font-display text-xl leading-tight text-white">{card.country}</p>
                   </div>
                 </Link>
               </div>
@@ -117,7 +124,12 @@ export function CardRail({ cards, activeIndex, onSelect }: Props) {
           })}
         </div>
 
-        <ScrollArrowButton dir="right" onClick={() => nudge(1, 260)} disabled={atEnd} label="Scroll destinations right" />
+        <ScrollArrowButton
+          dir="right"
+          onClick={() => nudge(1, 260)}
+          disabled={atEnd}
+          label="Scroll destinations right"
+        />
       </div>
     </div>
   );

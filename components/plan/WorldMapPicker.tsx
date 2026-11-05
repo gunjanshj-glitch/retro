@@ -142,8 +142,9 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
       <div
         className="relative overflow-hidden rounded-2xl border"
         style={{
-          borderColor: "var(--hairline)",
-          background: "color-mix(in srgb, var(--accent) 4%, transparent)",
+          borderColor: "var(--line)",
+          background: "radial-gradient(120% 120% at 50% 40%, var(--sea-2) 0%, var(--sea) 100%)",
+          boxShadow: "var(--shadow-sm)",
           aspectRatio: world ? `${world.viewBox[2]} / ${world.viewBox[3]}` : "960 / 500",
         }}
       >
@@ -172,8 +173,8 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
                     Unsupported countries "stay as it is" — visible, never interactive. */}
                 <path
                   d={world.land}
-                  fill="var(--surface)"
-                  stroke="var(--hairline)"
+                  fill="var(--land-out)"
+                  stroke="#fff"
                   strokeWidth={0.6}
                   pointerEvents="none"
                 />
@@ -208,11 +209,10 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
                       <title>{isDisabled ? disabledReason : r.name}</title>
                       <path
                         d={r.path}
-                        fill={isDisabled ? "var(--surface)" : isHovered ? "var(--accent)" : "var(--muted)"}
-                        fillOpacity={isDisabled ? 0.35 : isHovered ? 0.35 : 0.16}
-                        stroke={isDisabled ? "var(--hairline)" : isHovered ? "var(--accent)" : "var(--hairline)"}
-                        strokeWidth={isHovered && !isDisabled ? 1.5 : 1}
-                        style={{ transition: "fill-opacity 0.15s ease, stroke 0.15s ease" }}
+                        fill={isDisabled ? "var(--land-dim)" : isHovered ? "var(--land-on)" : "var(--land)"}
+                        stroke="#fff"
+                        strokeWidth={isHovered && !isDisabled ? 1.4 : 0.8}
+                        style={{ transition: "fill 0.15s ease" }}
                       />
                       {isHovered && !isDisabled && (
                         <text
@@ -221,9 +221,9 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
                           textAnchor="middle"
                           fontSize={13}
                           fontWeight={700}
-                          fill="var(--text)"
-                          stroke="var(--deep)"
-                          strokeWidth={3}
+                          fill="var(--ink)"
+                          stroke="#fff"
+                          strokeWidth={4}
                           paintOrder="stroke"
                           pointerEvents="none"
                         >
@@ -320,7 +320,7 @@ function RegionView({
     () => data?.markers.viewBox ?? [0, 0, 1, 1],
     [data],
   );
-  const { svgRef, view, zoom, size, pxPerUnit, zoomIn, zoomOut, reset, fitTo, panned, handlers } = useZoomPan(
+  const { svgRef, view, zoom, size, pxPerUnit, zoomIn, zoomOut, reset, fitTo, panned, hint, handlers } = useZoomPan(
     base,
     asset,
   );
@@ -474,7 +474,7 @@ function RegionView({
         type="button"
         onClick={onBack}
         className="absolute left-3 top-3 z-10 flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium backdrop-blur-sm"
-        style={{ borderColor: "var(--hairline)", background: "color-mix(in srgb, var(--deep) 70%, transparent)" }}
+        style={{ borderColor: "var(--hairline)", background: "var(--card)", boxShadow: "var(--shadow-sm)" }}
       >
         ‹ All regions
       </button>
@@ -493,8 +493,8 @@ function RegionView({
               onClick={zoomOut}
               disabled={zoom <= ZOOM_MIN + 0.001}
               aria-label="Zoom out"
-              className="flex h-7 w-7 items-center justify-center rounded-full border text-sm font-medium backdrop-blur-sm disabled:opacity-35"
-              style={{ borderColor: "var(--hairline)", background: "color-mix(in srgb, var(--deep) 70%, transparent)" }}
+              className="flex h-10 w-10 items-center justify-center rounded-full border text-base font-semibold disabled:opacity-35"
+              style={{ borderColor: "var(--hairline)", background: "var(--card)", boxShadow: "var(--shadow-sm)" }}
             >
               −
             </button>
@@ -506,8 +506,8 @@ function RegionView({
               onClick={zoomIn}
               disabled={zoom >= ZOOM_MAX - 0.001}
               aria-label="Zoom in"
-              className="flex h-7 w-7 items-center justify-center rounded-full border text-sm font-medium backdrop-blur-sm disabled:opacity-35"
-              style={{ borderColor: "var(--hairline)", background: "color-mix(in srgb, var(--deep) 70%, transparent)" }}
+              className="flex h-10 w-10 items-center justify-center rounded-full border text-base font-semibold disabled:opacity-35"
+              style={{ borderColor: "var(--hairline)", background: "var(--card)", boxShadow: "var(--shadow-sm)" }}
             >
               +
             </button>
@@ -519,7 +519,7 @@ function RegionView({
             className={`h-full w-full${zoom > 1 ? " cursor-grab active:cursor-grabbing" : ""}`}
             role="group"
             aria-label="Selectable places"
-            style={{ touchAction: "none" }}
+            style={{ touchAction: "pan-y" }}
             {...handlers}
           >
             {/* Country boundary: filled so the landmass reads as solid ground
@@ -534,8 +534,8 @@ function RegionView({
             {coastline && (
               <path
                 d={coastline}
-                fill="color-mix(in srgb, var(--muted) 14%, transparent)"
-                stroke="var(--muted)"
+                fill="var(--land)"
+                stroke="#fff"
                 strokeWidth={1.4 / zoom}
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -558,8 +558,8 @@ function RegionView({
                   cy={t.cy}
                   rx={t.rx}
                   ry={t.ry}
-                  fill="color-mix(in srgb, var(--muted) 8%, transparent)"
-                  stroke="var(--muted)"
+                  fill="color-mix(in srgb, var(--land) 35%, transparent)"
+                  stroke="var(--land-on)"
                   strokeWidth={0.9 / zoom}
                   strokeDasharray={`${4 / zoom},${3 / zoom}`}
                   opacity={0.7}
@@ -613,8 +613,8 @@ function RegionView({
                   >
                     <title>{`${name} · ${marker.count ?? 0} places — click to zoom in`}</title>
                     <circle r={metrics.radiusPx} fill="transparent" />
-                    <circle r={metrics.radiusPx * 0.8} fill="var(--accent)" fillOpacity={isHover ? 1 : 0.85} stroke="var(--deep)" strokeWidth={1.5} />
-                    <text y={4} textAnchor="middle" fontSize={11} fontWeight={700} fill="var(--deep)" pointerEvents="none">
+                    <circle r={metrics.radiusPx * 0.8} fill={isHover ? "var(--coral)" : "#fff"} stroke="var(--coral)" strokeWidth={2.5} />
+                    <text y={4} textAnchor="middle" fontSize={11} fontWeight={800} fill={isHover ? "#fff" : "var(--ink)"} pointerEvents="none">
                       {marker.count}
                     </text>
                     {(side || isHover) && (
@@ -624,8 +624,8 @@ function RegionView({
                         textAnchor={(side ?? "right") === "right" ? "start" : "end"}
                         fontSize={11}
                         fontWeight={700}
-                        fill="var(--text)"
-                        stroke="var(--deep)"
+                        fill="var(--ink)"
+                        stroke="#fff"
                         strokeWidth={3}
                         paintOrder="stroke"
                         pointerEvents="none"
@@ -680,8 +680,8 @@ function RegionView({
                       textAnchor={labelSide === "right" ? "start" : "end"}
                       fontSize={11}
                       fontWeight={700}
-                      fill="var(--text)"
-                      stroke="var(--deep)"
+                      fill="var(--ink)"
+                      stroke="#fff"
                       strokeWidth={3}
                       paintOrder="stroke"
                       pointerEvents="none"
@@ -694,15 +694,15 @@ function RegionView({
                   <g transform={`scale(${PIN_SCALE})`} opacity={isDisabled ? 0.3 : 1}>
                     <path
                       d={PIN_PATH}
-                      fill={isSelected ? "var(--accent)" : isHovered ? "color-mix(in srgb, var(--accent) 55%, var(--surface))" : "var(--surface)"}
-                      stroke={isDisabled ? "var(--muted)" : "var(--accent)"}
+                      fill={isSelected ? "var(--coral)" : isHovered ? "var(--coral-soft)" : "#fff"}
+                      stroke={isDisabled ? "var(--muted)" : "var(--coral)"}
                       strokeWidth={isSelected || isHovered ? 2 : 1.4}
                     />
-                    <circle cx={0} cy={-18} r={3.4} fill={isSelected ? "var(--deep)" : "var(--accent)"} />
+                    <circle cx={0} cy={-18} r={3.4} fill={isSelected ? "#fff" : "var(--coral)"} />
                     {isSelected && (
                       <path
                         d="M-3.2,-18 L-1,-15.5 L3.4,-20.5"
-                        fill="none" stroke="var(--deep)" strokeWidth={1.4}
+                        fill="none" stroke="var(--coral)" strokeWidth={1.4}
                         strokeLinecap="round" strokeLinejoin="round"
                       />
                     )}
@@ -710,6 +710,14 @@ function RegionView({
                 </g>
               );
             })}          </svg>
+          <div
+            className="map-hint pointer-events-none absolute inset-0 z-20 grid place-items-center p-4 text-center text-base font-bold text-white"
+            style={{ background: "var(--scrim)" }}
+            data-show={hint === "wheel"}
+            aria-hidden="true"
+          >
+            Hold Ctrl or ⌘ and scroll to zoom the map
+          </div>
         </>
       )}
     </div>

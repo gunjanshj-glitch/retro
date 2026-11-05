@@ -13,7 +13,7 @@ export default function PlanPage() {
   return (
     <>
       <NavBar />
-      <main className="mx-auto w-full max-w-6xl p-6 md:p-12">
+      <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-[104px] sm:px-6 md:px-10 md:pb-24 md:pt-[124px]">
         <PlannerWizard />
       </main>
       <Footer />

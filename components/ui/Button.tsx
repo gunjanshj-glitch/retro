@@ -20,10 +20,12 @@ export function Button({ children, href, onClick, variant = "primary" }: ButtonP
 
   const style =
     variant === "primary"
-      ? { background: "var(--accent)", color: "var(--deep)" }
-      : { background: "transparent", color: "var(--text)", border: "1px solid var(--hairline)" };
+      ? { background: "var(--sun)", color: "var(--on-sun)" }
+      : { background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--line-strong)" };
 
-  const className = "inline-flex items-center gap-2 rounded-full px-6 py-3 font-medium transition-transform hover:scale-[1.02]";
+  const className =
+    "inline-flex min-h-11 items-center gap-2 rounded-full px-6 py-3 font-bold transition-[transform,box-shadow,filter] hover:-translate-y-px hover:brightness-[0.97]" +
+    (variant === "primary" ? " shadow-[0_6px_18px_rgba(242,169,0,0.32)]" : "");
 
   if (isCurrentPage) {
     return (

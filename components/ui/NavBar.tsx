@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -10,71 +11,132 @@ const LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
+/** Height of the fixed bar; pages offset their first section by this. */
+export const NAV_HEIGHT = 72;
+
 export function NavBar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close the phone menu when the route changes (adjusting state during
+  // render, as React recommends over an effect) or when Escape is pressed.
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setOpen(false);
+  }
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const isActive = (href: string) => !!pathname && (pathname === href || pathname.startsWith(`${href}/`));
+
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 md:px-12 transition-all duration-300"
-      style={
-        scrolled
-          ? {
-              background: "rgba(7, 26, 31, 0.94)",
-              backdropFilter: "blur(14px)",
-              WebkitBackdropFilter: "blur(14px)",
-              borderBottom: "1px solid rgba(255,255,255,0.07)",
-            }
-          : {}
-      }
+      className="fixed inset-x-0 top-0 z-50 transition-shadow duration-300"
+      style={{
+        background: "rgba(255,255,255,0.88)",
+        backdropFilter: "saturate(180%) blur(14px)",
+        WebkitBackdropFilter: "saturate(180%) blur(14px)",
+        borderBottom: "1px solid var(--line)",
+        boxShadow: scrolled ? "var(--shadow-sm)" : "none",
+      }}
     >
-      {!scrolled && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-28"
-          style={{ background: "linear-gradient(to bottom, rgba(4,14,17,0.72) 0%, rgba(4,14,17,0.32) 45%, rgba(4,14,17,0) 100%)" }}
-        />
-      )}
-      <Link
-        href="/"
-        aria-label="Retro Holidays — home"
-        className="logo-float flex items-center"
-      >
-        <img
-          src="/brand/logo-full.png"
-          alt="Retro Holidays"
-          width={1000}
-          height={337}
-          className="logo-glow h-12 w-auto object-contain sm:h-14"
-        />
-      </Link>
+      <div className="mx-auto flex h-[72px] max-w-[1320px] items-center gap-6 px-5 md:px-8">
+        <Link href="/" aria-label="Retro Holidays — home" className="flex shrink-0 items-center">
+          <img
+            src="/brand/logo-ink.png"
+            alt="Retro Holidays"
+            width={640}
+            height={209}
+            loading="eager"
+            className="h-10 w-auto sm:h-11"
+          />
+        </Link>
 
-      <nav className="flex items-center gap-3 text-sm" style={{ color: "var(--muted)" }}>
-        {LINKS.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            className="hidden rounded-full border-2 border-[var(--accent)] px-4 py-2 text-[var(--accent)] transition-all duration-200 hover:bg-[var(--accent)] hover:text-black sm:block"
+        <nav aria-label="Main" className="ml-auto hidden items-center gap-1 text-[15px] font-semibold md:flex">
+          {LINKS.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              aria-current={isActive(l.href) ? "page" : undefined}
+              className="rounded-full px-4 py-2.5 transition-colors hover:bg-[var(--surface)]"
+              style={{ color: isActive(l.href) ? "var(--accent)" : "var(--ink)" }}
+            >
+              {l.label}
+            </Link>
+          ))}
+          <AccountControl />
+          <span className="ml-2">
+            <Button href="/plan">
+              Plan your trip
+              <span aria-hidden="true">→</span>
+            </Button>
+          </span>
+        </nav>
+
+        <div className="ml-auto flex items-center gap-2 md:hidden">
+          <AccountControl compact />
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-[var(--surface)]"
           >
-            {l.label}
-          </Link>
-        ))}
-        <Button href="/plan">
-          Plan your trip
-          <span aria-hidden="true">→</span>
-        </Button>
-        <AccountControl />
-      </nav>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {open && (
+        <nav
+          id="mobile-menu"
+          aria-label="Main"
+          className="border-t px-5 pb-6 pt-3 md:hidden"
+          style={{ borderColor: "var(--line)", background: "var(--bg)" }}
+        >
+          <ul className="grid gap-1 text-lg font-semibold">
+            {LINKS.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  aria-current={isActive(l.href) ? "page" : undefined}
+                  className="block rounded-xl px-3 py-3 hover:bg-[var(--surface)]"
+                  style={{ color: isActive(l.href) ? "var(--accent)" : "var(--ink)" }}
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4">
+            <Button href="/plan">
+              Plan your trip
+              <span aria-hidden="true">→</span>
+            </Button>
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
 
-function AccountControl() {
+function AccountControl({ compact = false }: { compact?: boolean }) {
   const { user, loading, openLogin, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -95,7 +157,8 @@ function AccountControl() {
       <button
         type="button"
         onClick={openLogin}
-        className="hidden rounded-full border-2 border-[var(--accent)] px-4 py-2 text-[var(--accent)] transition-all duration-200 hover:bg-[var(--accent)] hover:text-black sm:block"
+        className={`rounded-full font-semibold transition-colors hover:bg-[var(--surface)] ${compact ? "px-3 py-2.5 text-[15px]" : "px-4 py-2.5"}`}
+        style={{ color: "var(--ink)" }}
       >
         Log in
       </button>
@@ -111,16 +174,17 @@ function AccountControl() {
         onClick={() => setMenuOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
-        className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[var(--accent)] text-sm font-semibold sm:h-10 sm:w-10"
-        style={{ color: "var(--accent)" }}
+        aria-label={`Account menu for ${user.name}`}
+        className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
+        style={{ background: "var(--sun)", color: "var(--on-sun)" }}
       >
         {initial}
       </button>
       {menuOpen && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-48 rounded-2xl border p-2 text-sm shadow-xl"
-          style={{ borderColor: "var(--hairline)", background: "rgba(9, 24, 28, 0.97)" }}
+          className="absolute right-0 top-full mt-2 w-52 rounded-2xl border p-2 text-sm"
+          style={{ borderColor: "var(--line)", background: "var(--card)", boxShadow: "var(--shadow-lg)" }}
         >
           <p className="truncate px-3 py-2 text-xs" style={{ color: "var(--muted)" }}>
             Signed in as <span style={{ color: "var(--text)" }}>{user.name}</span>
@@ -129,7 +193,7 @@ function AccountControl() {
             href="/my-requests"
             role="menuitem"
             onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2 transition hover:bg-white/5"
+            className="block rounded-xl px-3 py-2 transition hover:bg-[var(--surface)]"
           >
             My requests
           </Link>
@@ -140,7 +204,7 @@ function AccountControl() {
               setMenuOpen(false);
               void logout();
             }}
-            className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/5"
+            className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-[var(--surface)]"
           >
             Log out
           </button>

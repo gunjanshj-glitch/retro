@@ -9,7 +9,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { resetPassword } from "@/lib/auth-client";
 
 const fieldClassName =
-  "mt-1.5 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-2.5 text-sm text-[var(--text)] outline-none transition focus:border-[var(--accent)]";
+  "mt-1.5 w-full min-h-11 rounded-xl border border-[var(--line-strong)] bg-[var(--card)] px-4 py-2.5 text-[15px] text-[var(--ink)] outline-none transition placeholder:text-[#6b7c8d] focus:border-[var(--accent)] focus:ring-4 focus:ring-[rgba(198,61,23,0.12)]";
 
 export function ResetPasswordForm() {
   const [token, setToken] = useState<string | null | undefined>(undefined);
@@ -54,23 +54,41 @@ export function ResetPasswordForm() {
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-3.5">
-      <label className="text-sm font-medium">
+      <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
         New password
-        <input name="password" type="password" required minLength={8} autoComplete="new-password" className={fieldClassName} />
+        <input
+          name="password"
+          type="password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+          className={fieldClassName}
+        />
       </label>
-      <label className="text-sm font-medium">
+      <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
         Confirm password
-        <input name="confirm" type="password" required minLength={8} autoComplete="new-password" className={fieldClassName} />
+        <input
+          name="confirm"
+          type="password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+          className={fieldClassName}
+        />
       </label>
       {error && (
-        <p role="alert" className="text-xs" style={{ color: "#f28b82" }}>
+        <p
+          role="alert"
+          className="rounded-xl px-3.5 py-2.5 text-xs"
+          style={{ color: "var(--danger)", background: "var(--danger-soft)" }}
+        >
           {error}
         </p>
       )}
       <button
         type="submit"
         disabled={submitting}
-        className="mt-1 inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--accent)] px-6 py-2.5 text-sm font-semibold text-[var(--deep)] disabled:opacity-60"
+        className="mt-1 inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--sun)] px-6 py-2.5 text-sm font-bold text-[var(--on-sun)] shadow-[0_6px_18px_rgba(242,169,0,0.32)] transition hover:brightness-[0.97] disabled:opacity-60"
       >
         {submitting ? "Please wait…" : "Save password and sign in"}
       </button>

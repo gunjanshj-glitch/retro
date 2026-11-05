@@ -13,7 +13,7 @@ import policy from "@/content/quote-policy.json";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { allocateMarkup, COMPONENT_LABEL } from "@retro/core/quote-pricing";
 import { SendForApprovalModal } from "./SendForApprovalModal";
-import { onAccent } from "./theme";
+import { btnGhost, btnInk, cardClass, chipClass, chipStyle, optionCardStyle } from "./theme";
 
 /** Traveller-facing mode names; the raw enum reads like a database column. */
 const MODE_LABEL: Partial<Record<TransportMode, string>> = {
@@ -198,17 +198,21 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
     <div className="flex flex-col gap-10">
       {/* ---- headline ---- */}
       <section
-        className="rounded-2xl border p-6"
-        style={{ borderColor: "var(--hairline)", background: "color-mix(in srgb, var(--accent) 6%, transparent)" }}
+        className="relative overflow-hidden rounded-3xl border p-6 shadow-[var(--shadow)] sm:p-8"
+        style={{
+          borderColor: "var(--line)",
+          background:
+            "radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--sun) 22%, transparent) 0%, transparent 55%), var(--card)",
+        }}
       >
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <p className="text-sm" style={{ color: "var(--muted)" }}>
+          <div className="min-w-0">
+            <p className="eyebrow">
               {quote.referencePackage
                 ? `Based on ${quote.referencePackage.name}`
                 : "A custom itinerary built for you"}
             </p>
-            <h2 className="font-display mt-1 text-4xl">
+            <h2 className="font-display mt-2 text-3xl leading-tight md:text-4xl">
               {quote.stays.map((s) => s.placeName).join(" · ")}
             </h2>
             <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
@@ -219,11 +223,11 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
               {quote.pax.rooms !== 1 && "s"}
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-sm" style={{ color: "var(--muted)" }}>
+          <div className="sm:text-right">
+            <p className="text-sm font-semibold" style={{ color: "var(--muted)" }}>
               Total for the group
             </p>
-            <p className="font-display text-5xl tabular-nums" style={{ color: "var(--accent)" }}>
+            <p className="font-display text-4xl tabular-nums sm:text-5xl" style={{ color: "var(--ink)" }}>
               {formatInr(quote.totals.total)}
             </p>
             <p className="text-sm tabular-nums" style={{ color: "var(--muted)" }}>
@@ -233,10 +237,22 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
         </div>
 
         {travellerWarnings.length > 0 && (
-          <ul className="mt-5 flex flex-col gap-1 text-xs" style={{ color: "var(--muted)" }}>
+          <ul className="mt-6 flex flex-col gap-2 text-sm">
             {travellerWarnings.map((w, i) => (
-              <li key={i}>
-                {w.level === "warning" ? "⚠" : "ℹ"} {w.message}
+              <li
+                key={i}
+                className="flex items-start gap-2.5 rounded-xl px-3.5 py-2.5"
+                style={
+                  w.level === "warning"
+                    ? { background: "var(--warning-soft)", color: "var(--warning)" }
+                    : { background: "var(--surface)", color: "var(--ink-2)" }
+                }
+              >
+                {w.level === "warning" ? <WarningIcon /> : <InfoIcon />}
+                <span>
+                  <span className="sr-only">{w.level === "warning" ? "Warning: " : "Note: "}</span>
+                  {w.message}
+                </span>
               </li>
             ))}
           </ul>
@@ -245,7 +261,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
 
       {/* ---- adjusters ---- */}
       <section className="flex flex-col gap-4">
-        <h3 className="font-display text-2xl">Adjust the trip</h3>
+        <h3 className="font-display text-2xl md:text-[28px]">Adjust the trip</h3>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Slide nights between destinations and the price follows.
         </p>
@@ -253,12 +269,14 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
           {quote.stays.map((stay) => (
             <div
               key={stay.placeId}
-              className="rounded-xl border p-4"
-              style={{ borderColor: "var(--hairline)" }}
+              className={`${cardClass} p-4 sm:p-5`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium">{stay.placeName}</span>
-                <span className="text-sm tabular-nums" style={{ color: "var(--accent)" }}>
+                <span className="font-semibold">{stay.placeName}</span>
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-sm font-bold tabular-nums"
+                  style={{ background: "var(--surface)", color: "var(--ink)" }}
+                >
                   {stay.nights} night{stay.nights !== 1 && "s"}
                 </span>
               </div>
@@ -268,7 +286,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                 max={14}
                 value={stay.nights}
                 onChange={(e) => setNights(stay.placeId, Number(e.target.value))}
-                className="mt-3 w-full"
+                className="mt-3 h-8 w-full accent-[var(--accent)]"
                 aria-label={`Nights in ${stay.placeName}`}
               />
             </div>
@@ -279,7 +297,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
       {/* ---- transport legs ---- */}
       {transferLegs.length > 0 && (
         <section className="flex flex-col gap-4">
-          <h3 className="font-display text-2xl">Getting between destinations</h3>
+          <h3 className="font-display text-2xl md:text-[28px]">Getting between destinations</h3>
           <p className="text-sm" style={{ color: "var(--muted)" }}>
             Every leg is priced on the mode we think suits your trip. Switch any of them to trade
             fare against journey time — the total updates immediately.
@@ -303,12 +321,8 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                   onChange({ ...request, transportPreference: key, legModes: {} })
                 }
                 aria-pressed={request.transportPreference === key}
-                className="rounded-full border px-4 py-1.5 text-sm transition"
-                style={
-                  request.transportPreference === key
-                    ? { borderColor: "var(--accent)", background: "var(--accent)", color: "var(--deep)" }
-                    : { borderColor: "var(--hairline)" }
-                }
+                className={`${chipClass} hover:border-[var(--ink-2)]`}
+                style={chipStyle(request.transportPreference === key)}
               >
                 {label}
               </button>
@@ -319,9 +333,9 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
             {transferLegs.map(({ placeId, leg }) => {
               const chosen = leg.alternatives.find((a) => a.mode === leg.mode);
               return (
-                <div key={placeId} className="rounded-xl border p-4" style={{ borderColor: "var(--hairline)" }}>
+                <div key={placeId} className={`${cardClass} p-4 sm:p-5`}>
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="font-medium">
+                    <span className="font-semibold">
                       {leg.from} → {leg.to}
                     </span>
                     <span className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
@@ -342,14 +356,10 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                             role="radio"
                             aria-checked={isChosen}
                             onClick={() => setLegMode(placeId, alt.mode)}
-                            className="rounded-xl border px-3 py-2 text-left text-sm transition"
-                            style={
-                              isChosen
-                                ? { borderColor: "var(--accent)", background: "color-mix(in srgb, var(--accent) 14%, transparent)" }
-                                : { borderColor: "var(--hairline)" }
-                            }
+                            className="min-h-11 rounded-xl border-[1.5px] px-3.5 py-2.5 text-left text-sm transition-[border-color,background-color] hover:border-[var(--line-strong)]"
+                            style={optionCardStyle(isChosen)}
                           >
-                            <div className="font-medium capitalize">{modeLabel(alt.mode)}</div>
+                            <div className="font-semibold capitalize">{modeLabel(alt.mode)}</div>
                             <div className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
                               {alt.includedInVehicle ? "Included in your vehicle" : `${formatInr(alt.priceInr)} pp`} · {formatDuration(alt.minutes)}
                             </div>
@@ -384,7 +394,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
 
                   {leg.airportLinks && leg.airportLinks.length > 0 && (
                     <div className="mt-3 flex flex-col gap-3 border-t pt-3" style={{ borderColor: "var(--hairline)" }}>
-                      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--muted)" }}>
+                      <p className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: "var(--muted)" }}>
                         Getting to and from the airports
                       </p>
                       {leg.airportLinks.map((link) => {
@@ -410,14 +420,10 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                                     role="radio"
                                     aria-checked={isChosen}
                                     onClick={() => setLegMode(link.key, alt.mode)}
-                                    className="rounded-xl border px-3 py-2 text-left text-sm transition"
-                                    style={
-                                      isChosen
-                                        ? { borderColor: "var(--accent)", background: "color-mix(in srgb, var(--accent) 14%, transparent)" }
-                                        : { borderColor: "var(--hairline)" }
-                                    }
+                                    className="min-h-11 rounded-xl border-[1.5px] px-3.5 py-2.5 text-left text-sm transition-[border-color,background-color] hover:border-[var(--line-strong)]"
+                                    style={optionCardStyle(isChosen)}
                                   >
-                                    <div className="font-medium capitalize">
+                                    <div className="font-semibold capitalize">
                                       {modeLabel(alt.mode)}
                                       {isChosen && (
                                         <span className="ml-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--accent)" }}>
@@ -479,7 +485,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
 
       {/* ---- itinerary ---- */}
       <section className="flex flex-col gap-4">
-        <h3 className="font-display text-2xl">Day by day</h3>
+        <h3 className="font-display text-2xl md:text-[28px]">Day by day</h3>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           No day is planned beyond {maxSightseeingHours} hours of sightseeing, so there is always
           time to eat, travel between sites and rest.
@@ -490,16 +496,29 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
             return (
             <li
               key={day.dayNumber}
-              className="rounded-xl border p-4"
-              style={{ borderColor: "var(--hairline)" }}
+              className={`${cardClass} p-4 sm:p-5`}
             >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-medium">
-                  Day {day.dayNumber} · {day.placeName}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-3 font-semibold">
+                  <span
+                    className="flex h-9 min-w-9 items-center justify-center rounded-full px-2 text-sm font-bold tabular-nums"
+                    style={{ background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--line)" }}
+                    aria-hidden="true"
+                  >
+                    {day.dayNumber}
+                  </span>
+                  <span>
+                    <span className="sr-only">Day {day.dayNumber} · </span>
+                    {day.placeName}
+                  </span>
                 </span>
                 <span
-                  className="text-xs tabular-nums"
-                  style={{ color: full ? "var(--accent)" : "var(--muted)" }}
+                  className="rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums"
+                  style={
+                    full
+                      ? { background: "var(--coral-soft)", color: "var(--accent)" }
+                      : { background: "var(--surface)", color: "var(--muted)" }
+                  }
                 >
                   {day.date} · {day.activeHours}h of {day.budgetHours}h
                   {full ? " · full" : ""}
@@ -520,7 +539,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                       <li key={`${day.dayNumber}-${a.clusterId ?? a.title}`} className="flex items-start gap-3">
                         <input
                           type="checkbox"
-                          className="mt-1"
+                          className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--accent)] disabled:cursor-not-allowed"
                           checked={!off}
                           disabled={a.locked || !a.clusterId}
                           onChange={() => a.clusterId && toggleCluster(a.clusterId)}
@@ -554,7 +573,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
       {/* ---- suggestions ---- */}
       {quote.suggestions.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h3 className="font-display text-2xl">You could also add</h3>
+          <h3 className="font-display text-2xl md:text-[28px]">You could also add</h3>
           <div className="grid gap-3 md:grid-cols-2">
             {quote.suggestions.map((s) => {
               const pinned = s.clusterId ? request.pinnedClusterIds.includes(s.clusterId) : false;
@@ -564,16 +583,25 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                   type="button"
                   onClick={() => s.clusterId && (pinned ? toggleCluster(s.clusterId) : addCluster(s.clusterId))}
                   aria-pressed={pinned}
-                  className="rounded-xl border p-4 text-left transition hover:opacity-80"
-                  style={
-                    pinned
-                      ? { borderColor: "var(--accent)", background: "color-mix(in srgb, var(--accent) 12%, transparent)" }
-                      : { borderColor: "var(--hairline)" }
-                  }
+                  className="rounded-2xl border-[1.5px] p-4 text-left transition-[border-color,box-shadow] hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-sm)]"
+                  style={optionCardStyle(pinned)}
                 >
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="font-medium">{s.title}</span>
-                    <span className="text-xs tabular-nums" style={{ color: "var(--accent)" }}>
+                    <span className="flex items-center gap-2 font-semibold">
+                      <span
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px]"
+                        style={
+                          pinned
+                            ? { background: "var(--ink)", borderColor: "var(--ink)", color: "#fff" }
+                            : { borderColor: "var(--line-strong)", color: "var(--ink)" }
+                        }
+                        aria-hidden="true"
+                      >
+                        {pinned ? <CheckIcon size={11} /> : <PlusIcon />}
+                      </span>
+                      {s.title}
+                    </span>
+                    <span className="shrink-0 text-xs font-bold tabular-nums" style={{ color: "var(--accent)" }}>
                       +{formatInr(s.pricePerPersonInr)} pp
                     </span>
                   </div>
@@ -581,7 +609,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                     {s.hours}h · {s.attractions.slice(0, 3).join(" · ")}
                   </p>
                   {pinned && (
-                    <p className="mt-1 text-xs" style={{ color: "var(--accent)" }}>
+                    <p className="mt-1 text-xs font-semibold" style={{ color: "var(--warning)" }}>
                       Requested — no room yet. Add a night to fit it in.
                     </p>
                   )}
@@ -598,8 +626,8 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
 
       {/* ---- price breakdown ---- */}
       <section className="flex flex-col gap-4">
-        <h3 className="font-display text-2xl">What you are paying for</h3>
-        <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--hairline)" }}>
+        <h3 className="font-display text-2xl md:text-[28px]">What you are paying for</h3>
+        <div className={`${cardClass} overflow-hidden`}>
           {grouped.map(([component, items]) => {
             const optional = OPTIONAL_COMPONENTS[component];
             const requestKey = optional?.requestKey;
@@ -614,20 +642,18 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
             return (
               <div
                 key={component}
-                className="flex flex-wrap items-center justify-between gap-3 border-b p-4 last:border-b-0"
-                style={{ borderColor: "var(--hairline)" }}
+                className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3.5 last:border-b-0 sm:px-5"
+                style={{ borderColor: "var(--line)" }}
               >
+                {/* font-medium is also the hook the breakdown tests use to find a row's label. */}
                 <span className="font-medium">
                   {COMPONENT_LABEL[component] ?? component}
                   <span
-                    className="ml-2 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide"
+                    className="ml-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
                     style={
                       included
-                        ? { background: "var(--hairline)", color: "var(--muted)" }
-                        : {
-                            background: "color-mix(in srgb, var(--accent) 18%, transparent)",
-                            color: "var(--accent)",
-                          }
+                        ? { background: "var(--surface)", color: "var(--ink-2)", border: "1px solid var(--line)" }
+                        : { background: "var(--coral-soft)", color: "var(--accent)" }
                     }
                   >
                     {included ? "Included" : "Optional"}
@@ -642,8 +668,8 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                       type="button"
                       onClick={() => setShowFlightNote((v) => !v)}
                       aria-expanded={showFlightNote}
-                      className="ml-2 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide"
-                      style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}
+                      className="ml-2 inline-flex min-h-7 items-center gap-1 rounded-full border px-2.5 text-[10px] font-bold uppercase tracking-wide transition-colors hover:border-[var(--ink)]"
+                      style={{ borderColor: "var(--line-strong)", color: "var(--ink-2)" }}
                     >
                       Approximation
                     </button>
@@ -660,16 +686,17 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                     <button
                       type="button"
                       onClick={() => onChange({ ...request, [requestKey]: !isOn })}
-                      className="rounded-full border px-3 py-1 text-xs font-medium"
-                      style={{
-                        borderColor: isOn ? "var(--hairline)" : "var(--accent)",
-                        color: isOn ? "var(--muted)" : "var(--accent)",
-                      }}
+                      className="inline-flex min-h-9 items-center rounded-full border-[1.5px] px-3.5 text-xs font-bold transition-colors"
+                      style={
+                        isOn
+                          ? { borderColor: "var(--line-strong)", color: "var(--ink-2)", background: "var(--card)" }
+                          : { borderColor: "var(--sun-deep)", color: "var(--on-sun)", background: "var(--sun)" }
+                      }
                     >
                       {isOn ? "Remove" : "Add"}
                     </button>
                   )}
-                  <span className="tabular-nums">{formatInr(displayTotal)}</span>
+                  <span className="min-w-[88px] text-right font-semibold tabular-nums">{formatInr(displayTotal)}</span>
                 </span>
               </div>
             );
@@ -691,11 +718,11 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
             ) : null,
           )}
           <div
-            className="mt-2 flex justify-between border-t pt-2 text-lg"
-            style={{ borderColor: "var(--hairline)" }}
+            className="mt-2 flex items-baseline justify-between border-t pt-3"
+            style={{ borderColor: "var(--line-strong)" }}
           >
-            <dt>Total</dt>
-            <dd className="tabular-nums" style={{ color: "var(--accent)" }}>
+            <dt className="font-bold">Total</dt>
+            <dd className="font-display text-2xl tabular-nums" style={{ color: "var(--ink)" }}>
               {formatInr(quote.totals.total)}
             </dd>
           </div>
@@ -705,11 +732,14 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
       {/* ---- request a final, human-checked quotation ---- */}
       {mode === "traveller" && (
         <section
-          className="flex flex-col gap-3 rounded-2xl border p-5"
-          style={{ borderColor: "var(--hairline)", background: "color-mix(in srgb, var(--accent) 6%, transparent)" }}
+          className="flex flex-col gap-3 rounded-3xl p-6 sm:p-8"
+          style={{
+            background: "linear-gradient(120deg, #fff6d6 0%, color-mix(in srgb, var(--sun) 55%, #fff) 100%)",
+            border: "1px solid color-mix(in srgb, var(--sun-deep) 35%, transparent)",
+          }}
         >
-          <h3 className="font-display text-xl">Ready to lock this in?</h3>
-          <p className="text-sm" style={{ color: "var(--muted)" }}>
+          <h3 className="font-display text-2xl md:text-3xl">Ready to lock this in?</h3>
+          <p className="max-w-2xl text-sm leading-relaxed" style={{ color: "var(--ink)" }}>
             This is a live, adjustable estimate. Send it to us and a person on our team will check
             every rate — including the flight approximation — adjust anything that needs it, and
             email you a final quote. You then accept it and pay securely online.
@@ -719,18 +749,25 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
               type="button"
               onClick={handleRequestFinalQuotation}
               disabled={Boolean(sentId)}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-70"
-              style={{ background: "var(--accent)", color: onAccent }}
+              className={`${btnInk} shadow-[var(--shadow)] disabled:opacity-80`}
             >
-              {sentId ? "Sent for review ✓" : "Send for final approval"}
+              {sentId ? (
+                <>
+                  Sent for review <CheckIcon size={14} />
+                </>
+              ) : (
+                <>
+                  Send for final approval <span aria-hidden="true">→</span>
+                </>
+              )}
             </button>
             {sentId && (
-              <span className="text-sm" style={{ color: "var(--muted)" }}>
-                <a href={`/my-requests/view?id=${encodeURIComponent(sentId)}`} className="underline" style={{ color: "var(--accent)" }}>
+              <span className="text-sm" style={{ color: "var(--ink)" }}>
+                <a href={`/my-requests/view?id=${encodeURIComponent(sentId)}`} className="font-semibold underline underline-offset-2" style={{ color: "var(--ink)" }}>
                   Track this request
                 </a>{" "}
                 or see all in{" "}
-                <a href="/my-requests" className="underline" style={{ color: "var(--accent)" }}>
+                <a href="/my-requests" className="font-semibold underline underline-offset-2" style={{ color: "var(--ink)" }}>
                   My requests
                 </a>
                 .
@@ -754,12 +791,48 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
         <button
           type="button"
           onClick={onBack}
-          className="self-start rounded-full border px-6 py-2"
-          style={{ borderColor: "var(--hairline)" }}
+          className={`${btnGhost} self-start`}
         >
+          <span aria-hidden="true">←</span>
           Change my choices
         </button>
       )}
     </div>
+  );
+}
+
+function CheckIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function WarningIcon() {
+  return (
+    <svg className="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 3.5 2.5 20h19L12 3.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M12 10v4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="17.2" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg className="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+      <path d="M12 11v5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="7.8" r="1.1" fill="currentColor" />
+    </svg>
   );
 }

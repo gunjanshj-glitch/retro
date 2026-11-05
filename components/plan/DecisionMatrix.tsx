@@ -14,7 +14,7 @@ import type { QuoteRequest } from "@retro/core/atlas/engine/types";
 import { STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
 import { computeNightsBounds, hotelStarForStyle, isHotelStarAvailable } from "@retro/core/atlas/engine/bounds";
 import { resolvePax } from "@retro/core/atlas/engine/pricing";
-import { onAccent, selectStyle } from "./theme";
+import { chipClass, chipStyle, fieldClass, selectStyle } from "./theme";
 
 /** Pace nudged by trip style — pilgrimage itineraries plan gentler days by default. */
 const PACE_FOR_STYLE: Partial<Record<TripStyle, QuoteRequest["pace"]>> = {
@@ -89,9 +89,11 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   return (
     <div className="flex flex-col gap-2">
       <div>
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm font-bold" style={{ color: "var(--ink)" }}>
+          {label}
+        </span>
         {hint && (
-          <span className="ml-2 text-xs" style={{ color: "var(--muted)" }}>
+          <span className="mt-0.5 block text-xs leading-snug" style={{ color: "var(--muted)" }}>
             {hint}
           </span>
         )}
@@ -119,12 +121,8 @@ function ChipGroup<T extends string>({
           aria-checked={o.value === value}
           title={o.hint}
           onClick={() => onChange(o.value)}
-          className="rounded-full border px-4 py-1.5 text-sm transition"
-          style={{
-            borderColor: o.value === value ? "var(--accent)" : "var(--hairline)",
-            background: o.value === value ? "var(--accent)" : "transparent",
-            color: o.value === value ? onAccent : "inherit",
-          }}
+          className={`${chipClass} hover:border-[var(--ink-2)]`}
+          style={chipStyle(o.value === value)}
         >
           {o.label}
         </button>
@@ -145,12 +143,12 @@ function Stepper({
         aria-label={`Decrease ${label}`}
         disabled={value <= min}
         onClick={() => onChange(Math.max(min, value - 1))}
-        className="h-9 w-9 rounded-full border text-lg disabled:opacity-30"
-        style={{ borderColor: "var(--hairline)" }}
+        className="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] text-xl font-semibold transition-colors enabled:hover:border-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-35"
+        style={{ borderColor: "var(--line-strong)", background: "var(--card)", color: "var(--ink)" }}
       >
         −
       </button>
-      <span className="min-w-8 text-center tabular-nums" aria-live="polite">
+      <span className="min-w-8 text-center text-lg font-bold tabular-nums" aria-live="polite">
         {value}
       </span>
       <button
@@ -158,8 +156,8 @@ function Stepper({
         aria-label={`Increase ${label}`}
         disabled={value >= max}
         onClick={() => onChange(Math.min(max, value + 1))}
-        className="h-9 w-9 rounded-full border text-lg disabled:opacity-30"
-        style={{ borderColor: "var(--hairline)" }}
+        className="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] text-xl font-semibold transition-colors enabled:hover:border-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-35"
+        style={{ borderColor: "var(--line-strong)", background: "var(--card)", color: "var(--ink)" }}
       >
         +
       </button>
@@ -333,7 +331,7 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
   ).filter((o) => o.value !== "Business" || value.carrier !== "LCC");
 
   return (
-    <div className="grid gap-8 md:grid-cols-2">
+    <div className="grid gap-x-10 gap-y-8 md:grid-cols-2">
       <Field label="Who is travelling?">
         <ChipGroup
           ariaLabel="Traveller type"
@@ -374,7 +372,7 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
             {value.childAges.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {value.childAges.map((age, i) => (
-                  <label key={i} className="flex items-center gap-1 text-xs">
+                  <label key={i} className="flex items-center gap-2 text-xs font-semibold">
                     <span style={{ color: "var(--muted)" }}>Child {i + 1}</span>
                     <select
                       aria-label={`Age of child ${i + 1}`}
@@ -384,7 +382,7 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
                         next[i] = Number(e.target.value);
                         set("childAges", next);
                       }}
-                      className="rounded-lg border px-2 py-1"
+                      className="min-h-11 rounded-xl border-[1.5px] px-2.5 text-sm outline-none focus:border-[var(--ink)]"
                       style={selectStyle}
                     >
                       {CHILD_AGES.map((a) => (
@@ -437,8 +435,9 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
           type="date"
           value={value.startDate}
           onChange={(e) => set("startDate", e.target.value)}
-          className="rounded-lg border p-3"
+          className={fieldClass}
           style={selectStyle}
+          aria-label="Departure date"
         />
       </Field>
 
@@ -453,12 +452,14 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
                 key={p.id}
                 type="button"
                 onClick={() => removePlace(p.id)}
-                className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition hover:opacity-80"
-                style={{ borderColor: "var(--hairline)" }}
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border-[1.5px] pl-4 pr-3 text-sm font-semibold transition-colors hover:border-[var(--ink)]"
+                style={{ borderColor: "var(--line-strong)", background: "var(--card)", color: "var(--ink)" }}
                 aria-label={`Remove ${p.name}`}
               >
                 {p.name}
-                <span aria-hidden style={{ color: "var(--muted)" }}>×</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ color: "var(--muted)" }}>
+                  <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
               </button>
             ))}
           </div>
@@ -480,10 +481,14 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
             max={Math.max(nightsBounds.max, nightsBounds.min, 1)}
             value={displayNights}
             onChange={(e) => set("nights", Number(e.target.value))}
-            className="flex-1"
+            className="h-11 flex-1 accent-[var(--accent)]"
             aria-label="Number of nights"
           />
-          <span className="tabular-nums" aria-live="polite">
+          <span
+            className="rounded-full px-3 py-1 text-sm font-bold tabular-nums"
+            style={{ background: "var(--surface)", color: "var(--ink)" }}
+            aria-live="polite"
+          >
             {displayNights}N / {displayNights + 1}D
           </span>
         </div>
@@ -498,7 +503,7 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
         <select
           value={value.departureCity}
           onChange={(e) => set("departureCity", e.target.value)}
-          className="rounded-lg border p-3"
+          className={fieldClass}
           style={selectStyle}
           aria-label="Departure city"
         >
@@ -514,7 +519,7 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
         <select
           value={value.nationality}
           onChange={(e) => set("nationality", e.target.value)}
-          className="rounded-lg border p-3"
+          className={fieldClass}
           style={selectStyle}
           aria-label="Nationality"
         >
@@ -669,9 +674,10 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
               ["includeInsurance", "Travel insurance"],
             ] as const
           ).map(([key, label]) => (
-            <label key={key} className="flex cursor-pointer items-center gap-2">
+            <label key={key} className="flex min-h-11 cursor-pointer items-center gap-3 font-medium">
               <input
                 type="checkbox"
+                className="h-5 w-5 shrink-0 accent-[var(--accent)]"
                 checked={value[key]}
                 onChange={(e) => set(key, e.target.checked)}
               />

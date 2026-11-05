@@ -17,8 +17,8 @@ function setup() {
 
 const zoomOf = (svg: Element) => Number(svg.getAttribute("data-zoom"));
 
-const wheel = (svg: Element, deltaY: number) => {
-  const e = new WheelEvent("wheel", { deltaY, clientX: 500, clientY: 250, cancelable: true, bubbles: true });
+const wheel = (svg: Element, deltaY: number, mods: { ctrlKey?: boolean; metaKey?: boolean } = { ctrlKey: true }) => {
+  const e = new WheelEvent("wheel", { deltaY, clientX: 500, clientY: 250, cancelable: true, bubbles: true, ...mods });
   act(() => {
     svg.dispatchEvent(e);
   });
@@ -26,24 +26,31 @@ const wheel = (svg: Element, deltaY: number) => {
 };
 
 describe("useZoomPan wheel handling", () => {
-  it("caps zoom at 5.8x", () => {
-    expect(ZOOM_MAX).toBe(5.8);
+  it("leaves a plain wheel to the page so scrolling past the map always works", () => {
+    const svg = setup();
+    const e = wheel(svg, -100, {});
+    expect(e.defaultPrevented).toBe(false);
+    expect(zoomOf(svg)).toBe(1);
   });
 
-  it("zooms in and holds the wheel while below the cap", () => {
+  it("zooms with Ctrl + wheel (and trackpad pinch, which arrives as ctrl + wheel)", () => {
     const svg = setup();
     const e = wheel(svg, -100);
     expect(e.defaultPrevented).toBe(true);
     expect(zoomOf(svg)).toBeGreaterThan(1);
   });
 
-  it("stops at the cap and then lets the page scroll", () => {
+  it("zooms with ⌘ + wheel on a Mac", () => {
     const svg = setup();
-    for (let i = 0; i < 30; i++) wheel(svg, -300);
+    expect(wheel(svg, -100, { metaKey: true }).defaultPrevented).toBe(true);
+    expect(zoomOf(svg)).toBeGreaterThan(1);
+  });
+
+  it("stops at the cap and zooms back out", () => {
+    const svg = setup();
+    for (let i = 0; i < 40; i++) wheel(svg, -300);
     expect(zoomOf(svg)).toBeCloseTo(ZOOM_MAX, 5);
-    expect(wheel(svg, -100).defaultPrevented).toBe(false);
-    // Zooming back out still works.
-    expect(wheel(svg, 100).defaultPrevented).toBe(true);
+    wheel(svg, 100);
     expect(zoomOf(svg)).toBeLessThan(ZOOM_MAX);
   });
 });

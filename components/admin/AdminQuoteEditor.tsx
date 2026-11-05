@@ -16,7 +16,7 @@ import { DecisionMatrix } from "@/components/plan/DecisionMatrix";
 import { QuotationView } from "@/components/plan/QuotationView";
 import { WorldMapPicker } from "@/components/plan/WorldMapPicker";
 import { QuoteOffer } from "@/components/my-requests/QuoteOffer";
-import { onAccent } from "@/components/plan/theme";
+import { btnGhost, btnPrimary, cardClass, toneStyle } from "@/components/plan/theme";
 import { useQuotation } from "@/lib/atlas/use-quotation";
 import { formatInr } from "@retro/core/atlas/engine/text";
 import { QuoteRequest } from "@retro/core/atlas/engine/types";
@@ -27,8 +27,8 @@ import type { RequestStatus } from "@retro/core/quote-workflow";
 import { PricingPanel } from "./PricingPanel";
 import { PriceSplitPanel } from "./PriceSplitPanel";
 
-const primaryBtn = "inline-flex min-h-11 items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold transition disabled:opacity-50";
-const ghostBtn = "inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2.5 text-sm transition hover:border-[var(--accent)] disabled:opacity-50";
+const primaryBtn = btnPrimary;
+const ghostBtn = btnGhost;
 
 /** Requests stored before newer optional fields existed get the engine's defaults filled in. */
 function readRequest(raw: unknown): QuoteRequest | null {
@@ -43,16 +43,21 @@ function slimQuotation(q: Quotation): Quotation {
 
 function Section({ title, hint, open = false, children }: { title: string; hint?: string; open?: boolean; children: React.ReactNode }) {
   return (
-    <details open={open} className="group rounded-2xl border" style={{ borderColor: "var(--hairline)" }}>
-      <summary className="flex cursor-pointer list-none items-baseline justify-between gap-3 p-5">
-        <span className="font-display text-xl">{title}</span>
-        {hint && (
-          <span className="text-xs" style={{ color: "var(--muted)" }}>
-            {hint}
-          </span>
-        )}
+    <details open={open} className={`${cardClass} group overflow-hidden`}>
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 p-5 transition-colors hover:bg-[var(--surface)] [&::-webkit-details-marker]:hidden">
+        <span className="min-w-0">
+          <span className="block font-display text-xl">{title}</span>
+          {hint && (
+            <span className="mt-0.5 block text-xs" style={{ color: "var(--muted)" }}>
+              {hint}
+            </span>
+          )}
+        </span>
+        <svg className="shrink-0 transition-transform group-open:rotate-180" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ color: "var(--ink-2)" }}>
+          <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </summary>
-      <div className="border-t p-5" style={{ borderColor: "var(--hairline)" }}>
+      <div className="border-t p-4 sm:p-6" style={{ borderColor: "var(--line)" }}>
         {children}
       </div>
     </details>
@@ -211,9 +216,9 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
   }, [dirty]);
 
   if (!request) {
-    return <p className="rounded-xl border p-4 text-sm" style={{ borderColor: "#ff8a80" }}>The stored trip couldn&apos;t be read, so it can&apos;t be edited here. The original is in the request snapshot.</p>;
+    return <p role="alert" className="rounded-xl border px-4 py-3 text-sm" style={toneStyle.danger}>The stored trip couldn&apos;t be read, so it can&apos;t be edited here. The original is in the request snapshot.</p>;
   }
-  if (error) return <p style={{ color: "var(--muted)" }}>{error}</p>;
+  if (error) return <p role="alert" style={{ color: "var(--danger)" }}>{error}</p>;
   if (!core) return <p style={{ color: "var(--muted)" }}>Loading the atlas…</p>;
 
   const originalEstimate = detail.estimateInr;
@@ -225,15 +230,15 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
   return (
     <div className="flex flex-col gap-4">
       {message && (
-        <p role={message.tone === "error" ? "alert" : "status"} className="rounded-xl border p-3 text-sm" style={{ borderColor: message.tone === "error" ? "#ff8a80" : "#7bd88f" }}>
+        <p role={message.tone === "error" ? "alert" : "status"} className="rounded-xl border px-4 py-3 text-sm font-medium" style={message.tone === "error" ? toneStyle.danger : toneStyle.success}>
           {message.text}
         </p>
       )}
 
       {quote && Math.abs(moved) > 1 && (
-        <p className="rounded-xl border p-3 text-sm" style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}>
-          The traveller saw <span className="tabular-nums" style={{ color: "var(--text)" }}>{formatInr(originalEstimate)}</span>; the engine now prices this trip at{" "}
-          <span className="tabular-nums" style={{ color: "var(--text)" }}>{formatInr(quote.totals.total)}</span> ({moved > 0 ? "+" : "−"}
+        <p className="rounded-xl border px-4 py-3 text-sm" style={toneStyle.warning}>
+          The traveller saw <span className="font-bold tabular-nums">{formatInr(originalEstimate)}</span>; the engine now prices this trip at{" "}
+          <span className="font-bold tabular-nums">{formatInr(quote.totals.total)}</span> ({moved > 0 ? "+" : "−"}
           {formatInr(Math.abs(moved))}) — rates or your edits have moved it.
         </p>
       )}
@@ -282,17 +287,17 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
 
       {confirmSend && priced && (
         <div role="dialog" aria-modal="true" aria-label="Send quote" className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-          <button type="button" aria-label="Cancel" onClick={() => setConfirmSend(false)} className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-          <div className="relative w-full max-w-md rounded-3xl border border-white/10 p-6 shadow-2xl" style={{ background: "linear-gradient(160deg, rgba(14,36,42,0.98), rgba(9,24,28,0.96))" }}>
+          <button type="button" aria-label="Cancel" onClick={() => setConfirmSend(false)} className="absolute inset-0 backdrop-blur-[2px]" style={{ background: "var(--scrim)" }} />
+          <div className="relative w-full max-w-md rounded-3xl border p-6 md:p-7" style={{ background: "var(--card)", borderColor: "var(--line)", boxShadow: "var(--shadow-lg)" }}>
             <h2 className="font-display text-2xl">Send this quote?</h2>
-            <dl className="mt-4 flex flex-col gap-1.5 text-sm">
+            <dl className="mt-4 flex flex-col gap-2 rounded-2xl p-4 text-sm" style={{ background: "var(--surface)" }}>
               <div className="flex justify-between gap-3">
                 <dt style={{ color: "var(--muted)" }}>To</dt>
-                <dd>{detail.contact.email}</dd>
+                <dd className="break-all text-right font-semibold">{detail.contact.email}</dd>
               </div>
               <div className="flex justify-between gap-3">
                 <dt style={{ color: "var(--muted)" }}>Total</dt>
-                <dd className="tabular-nums" style={{ color: "var(--accent)" }}>{formatInr(priced.totalInr)}</dd>
+                <dd className="font-display text-xl tabular-nums" style={{ color: "var(--ink)" }}>{formatInr(priced.totalInr)}</dd>
               </div>
               {priced.dueNowInr < priced.totalInr && (
                 <div className="flex justify-between gap-3">
@@ -306,7 +311,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
               </div>
             </dl>
             {detail.status === "accepted" && (
-              <p className="mt-4 rounded-xl border p-3 text-xs" style={{ borderColor: "#ffb74d", color: "#ffb74d" }}>
+              <p className="mt-4 rounded-xl border px-3.5 py-3 text-xs font-semibold" style={toneStyle.warning}>
                 The traveller has already accepted the previous quote. Sending this clears that acceptance and they will need to accept again.
               </p>
             )}
@@ -314,10 +319,10 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
               They get an email with a link to review and accept. Earlier versions stay on record.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <button type="button" onClick={send} disabled={busy} className={primaryBtn} style={{ background: "var(--accent)", color: onAccent }}>
+              <button type="button" onClick={send} disabled={busy} className={primaryBtn}>
                 {busy ? "Sending…" : "Send to traveller"}
               </button>
-              <button type="button" onClick={() => setConfirmSend(false)} className={ghostBtn} style={{ borderColor: "var(--hairline)" }}>
+              <button type="button" onClick={() => setConfirmSend(false)} className={ghostBtn}>
                 Not yet
               </button>
             </div>

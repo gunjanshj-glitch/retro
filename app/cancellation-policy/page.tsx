@@ -43,19 +43,19 @@ export default function CancellationPolicyPage() {
 
       <h2>4. Standard slab</h2>
       <p>Applies where supplier terms are not stricter.</p>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl border border-[var(--line)] bg-[var(--card)] shadow-[var(--shadow-sm)]">
         <table className="w-full border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-white/15 text-[var(--text)]">
-              <th className="py-2 pr-4 font-semibold">Days before departure</th>
-              <th className="py-2 font-semibold">Cancellation charge (of land package cost)</th>
+            <tr className="border-b border-[var(--line)] bg-[var(--surface)] text-[var(--ink)]">
+              <th className="px-4 py-3 font-semibold">Days before departure</th>
+              <th className="px-4 py-3 font-semibold">Cancellation charge (of land package cost)</th>
             </tr>
           </thead>
           <tbody>
             {SLAB.map(([days, pct]) => (
-              <tr key={days} className="border-b border-white/10">
-                <td className="py-2 pr-4">{days}</td>
-                <td className="py-2">{pct}</td>
+              <tr key={days} className="border-b border-[var(--line)] last:border-b-0">
+                <td className="px-4 py-3 font-medium text-[var(--ink)]">{days}</td>
+                <td className="px-4 py-3 tabular-nums">{pct}</td>
               </tr>
             ))}
           </tbody>

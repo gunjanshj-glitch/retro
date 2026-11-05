@@ -30,8 +30,8 @@ function Card({ pkg, inert }: { pkg: PackageCard; inert?: boolean }) {
     <Link
       href={`/destinations/${pkg.destinationSlug}/packages/${pkg.slug}`}
       tabIndex={inert ? -1 : undefined}
-      className="group flex w-48 shrink-0 flex-col overflow-hidden rounded-2xl border transition-colors duration-200 hover:border-[var(--accent)] sm:w-56"
-      style={{ background: "var(--surface)", borderColor: "var(--hairline)" }}
+      className="group flex w-52 shrink-0 flex-col overflow-hidden rounded-2xl border shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] duration-200 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow)] sm:w-60"
+      style={{ background: "var(--card)", borderColor: "var(--line)" }}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
@@ -43,36 +43,36 @@ function Card({ pkg, inert }: { pkg: PackageCard; inert?: boolean }) {
         />
         {pkg.priceFromInr > 0 && (
           <div
-            className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-semibold backdrop-blur-md"
-            style={{ background: "rgba(3,12,14,0.55)", color: "var(--accent)" }}
+            className="absolute bottom-2 left-2 rounded-full px-2.5 py-1 text-[11px] font-bold tabular-nums shadow-[0_2px_8px_rgba(11,34,56,0.18)]"
+            style={{ background: "var(--sun)", color: "var(--on-sun)" }}
           >
             from {formatInr(pkg.priceFromInr)}
             {!pkg.priceIncludesFlight && (
-              <span style={{ color: "var(--muted)" }}> + flights</span>
+              <span className="font-semibold opacity-75"> + flights</span>
             )}
           </div>
         )}
         <div
           className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-          style={{ background: "rgba(3,12,14,0.45)" }}
+          style={{ background: "rgba(11,34,56,0.32)" }}
         >
           <span
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
-            style={{ background: "var(--accent)", color: "var(--deep)" }}
+            style={{ background: "var(--sun)", color: "var(--on-sun)" }}
           >
             View package
             <span aria-hidden="true">→</span>
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-col p-3">
-        <h3 className="font-display text-base leading-tight">{pkg.name}</h3>
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="font-display text-lg leading-tight">{pkg.name}</h3>
         {pkg.tagline && (
-          <p className="mt-1 text-xs leading-snug" style={{ color: "var(--muted)" }}>
+          <p className="mt-1 line-clamp-3 text-xs leading-snug" style={{ color: "var(--muted)" }}>
             {pkg.tagline}
           </p>
         )}
-        <p className="mt-auto pt-3 text-[11px]" style={{ color: "var(--muted)" }}>
+        <p className="mt-auto pt-3 text-xs font-semibold" style={{ color: "var(--ink)" }}>
           {pkg.nights > 0 ? `${pkg.nights}N / ${pkg.days}D` : "Flexible"}
         </p>
       </div>
@@ -95,7 +95,7 @@ function ManualRail({ cards, startNudge }: { cards: PackageCard[]; startNudge?: 
   return (
     <div className="flex items-center gap-2">
       <ScrollArrowButton dir="left" onClick={() => nudge(-1)} disabled={atStart} label="Scroll packages left" />
-      <div ref={scrollerRef} className="no-scrollbar flex flex-1 gap-4 overflow-x-auto scroll-smooth pb-2" role="list">
+      <div ref={scrollerRef} className="no-scrollbar flex flex-1 gap-4 overflow-x-auto scroll-smooth py-2" role="list">
         {cards.map((pkg) => (
           <div key={pkg.id} role="listitem" className="contents">
             <Card pkg={pkg} />
@@ -123,16 +123,17 @@ export function PackageBrowseRail() {
   if (!cards || !cards.length) return null;
 
   const heading = (
-    <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--text)" }}>
-      All packages
-    </p>
+    <div className="flex flex-col gap-1">
+      <p className="eyebrow">All packages</p>
+      <h2 className="font-display text-2xl md:text-3xl">Or start from a ready-made trip</h2>
+    </div>
   );
 
   if (reduceMotion || manualDir) {
     // No duplicated track: without the animation a doubled list would just
     // look like every package appearing twice.
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {heading}
         <ManualRail cards={cards} startNudge={manualDir ?? undefined} />
       </div>
@@ -142,13 +143,13 @@ export function PackageBrowseRail() {
   const duration = cards.length * SECONDS_PER_CARD;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {heading}
       <div className="flex items-center gap-2">
         <ScrollArrowButton dir="left" onClick={() => setManualDir(-1)} disabled={false} label="Scroll packages left" />
         <div className="min-w-0 flex-1 overflow-hidden">
           <div
-            className="marquee-track flex w-max gap-4 pb-2"
+            className="marquee-track flex w-max gap-4 py-2"
             style={{ "--marquee-duration": `${duration}s` } as React.CSSProperties}
             role="list"
             aria-label="All packages"

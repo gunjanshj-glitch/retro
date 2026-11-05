@@ -1,9 +1,11 @@
-// Stock photos via picsum.photos (curated Unsplash content, seed = consistent image per place).
-// Descriptions are short editorial blurbs shown in the map tooltip.
+// Place photos come from `content/place-photos.json`, built by
+// `npm run fetch-place-photos` (reviewed Wikimedia Commons images, stored
+// locally with their credit). Descriptions below are our own short blurbs.
+import placePhotos from "@/content/place-photos.json";
 
-type PlaceInfo = { seed: string; description: string };
+type Curated = { seed: string; description: string };
 
-const PLACES: Record<string, PlaceInfo> = {
+const PLACES: Record<string, Curated> = {
   // Bali
   "bali/denpasar": {
     seed: "bali-denpasar-temple",
@@ -225,17 +227,39 @@ function lookupKey(destSlug: string, placeName: string): string {
   return `${destSlug}/${toSlug(placeName)}`;
 }
 
-export function getPlaceImageUrl(destSlug: string, placeName: string): string {
-  const key = lookupKey(destSlug, placeName);
-  const seed = PLACES[key]?.seed ?? `${destSlug}-${toSlug(placeName)}`;
-  // picsum.photos: seeded, consistent, high-quality Unsplash content, no API key needed
-  return `https://picsum.photos/seed/${seed}/480/300`;
+export type PlaceInfo = {
+  /** Local photo, if we have a reviewed one. */
+  image?: string;
+  /** "Photo: <author> · <licence>", required by most free licences. */
+  credit?: string;
+  creditUrl?: string;
+  description?: string;
+};
+
+type PhotoEntry = { src: string; description?: string; credit: string; license: string; source: string };
+const PHOTOS = placePhotos as Record<string, PhotoEntry>;
+
+/** Our own blurb for a place, wherever it was first written (keys predate the region slugs). */
+function curatedDescription(destSlug: string, placeName: string): string | undefined {
+  const exact = PLACES[lookupKey(destSlug, placeName)]?.description;
+  if (exact) return exact;
+  const suffix = `/${toSlug(placeName)}`;
+  const key = Object.keys(PLACES).find((k) => k.endsWith(suffix));
+  return key ? PLACES[key].description : undefined;
 }
 
-export function getPlaceDescription(destSlug: string, placeName: string): string {
-  const key = lookupKey(destSlug, placeName);
-  return (
-    PLACES[key]?.description ??
-    `One of the ${placeName} experiences we build trips around — chosen for what it offers, not how often it appears in a listicle.`
-  );
+/**
+ * Photo, credit and description for one place on a destination map.
+ * Server-side only (reads the photo manifest), so pages pass the result down
+ * instead of shipping the whole manifest to the browser. Nothing is invented:
+ * a place with no reviewed photo or description simply has none.
+ */
+export function getPlaceInfo(destSlug: string, placeName: string): PlaceInfo {
+  const photo = PHOTOS[lookupKey(destSlug, placeName)];
+  return {
+    image: photo?.src,
+    credit: photo ? `Photo: ${photo.credit} · ${photo.license}, Wikimedia Commons` : undefined,
+    creditUrl: photo?.source,
+    description: curatedDescription(destSlug, placeName) ?? photo?.description,
+  };
 }

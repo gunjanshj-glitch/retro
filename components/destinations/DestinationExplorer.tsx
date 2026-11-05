@@ -1,330 +1,408 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { getPlaceImageUrl, getPlaceDescription } from "@/lib/place-images";
-import { classifyGroupThemes } from "@/lib/group-themes";
+/**
+ * The destination atlas: an index panel beside a live region map.
+ *
+ * Everything the map can do is also reachable from the panel (pick a country
+ * or state, pick a package, pick a place), so it works without hover — on
+ * phones and from the keyboard — and the map never has to trap the page's
+ * scroll to be useful.
+ */
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import type { PlaceInfo } from "@/lib/place-images";
+import { displayName } from "@/lib/display-names";
 import { RegionMap } from "@/components/map/RegionMap";
-import type { MapMarker, RegionMarkers } from "@/lib/map-svg";
+import { groupDisplayName, markerKey, type MapMarker, type RegionLayer, type RegionMarkers } from "@/lib/map-svg";
 import type { Group } from "@/content/schema";
 
 type Props = {
   destinationSlug: string;
+  destinationName: string;
   mapSvg: string;
   markers: RegionMarkers;
+  regions?: RegionLayer | null;
   groups?: Group[];
-  // When set, dims all markers not belonging to this group.
-  selectedGroupId?: number;
+  /** Photo, credit and blurb per place name, prepared on the server. */
+  placeInfo?: Record<string, PlaceInfo>;
+  /** Cover image per package id; the fallback photo for a place without its own. */
+  packageCovers?: Record<number, string>;
 };
 
-type TooltipPos = { x: number; y: number; flip: boolean };
+/** One row of the index: a country/state, possibly several map groupings merged by name. */
+type Entry = { label: string; keys: Set<string>; count: number; places: MapMarker[] };
 
-export function DestinationExplorer({ destinationSlug, mapSvg, markers, groups = [], selectedGroupId }: Props) {
-  const [hovered, setHovered] = useState<MapMarker | null>(null);
-  const [tooltipPos, setTooltipPos] = useState<TooltipPos | null>(null);
-  const router = useRouter();
+/** Package chips shown before "Show all"; India alone has three dozen packages. */
+const PACKAGE_CHIPS = 8;
 
-  const vbW = markers.viewBox[2];
-  const vbH = markers.viewBox[3];
+const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
-  const groupOf = (m: MapMarker | null) =>
-    m?.group != null ? groups.find((g) => g.id === m.group) : undefined;
+export function DestinationExplorer({
+  destinationSlug,
+  destinationName,
+  mapSvg,
+  markers,
+  regions,
+  groups = [],
+  placeInfo = {},
+  packageCovers = {},
+}: Props) {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [packageId, setPackageId] = useState<number | null>(null);
+  const [hot, setHot] = useState<string | null>(null);
+  const [active, setActive] = useState<MapMarker | null>(null);
+  const [showAllPackages, setShowAllPackages] = useState(false);
 
-  const goToPackage = (m: MapMarker) => {
-    const group = groupOf(m);
-    router.push(group ? `/destinations/${destinationSlug}/packages/${group.packageSlug}` : `/destinations/${destinationSlug}`);
+  const entries = useMemo<Entry[]>(() => {
+    const byLabel = new Map<string, Entry>();
+    for (const m of markers.markers) {
+      if (m.level !== 1) continue;
+      const label = groupDisplayName(m.country);
+      const e = byLabel.get(label) ?? { label, keys: new Set<string>(), count: 0, places: [] };
+      e.keys.add(m.country);
+      e.count += 1;
+      e.places.push(m);
+      byLabel.set(label, e);
+    }
+    for (const e of byLabel.values()) e.places.sort((a, b) => a.rank - b.rank);
+    return [...byLabel.values()].sort((a, b) => a.label.localeCompare(b.label));
+  }, [markers.markers]);
+
+  const entryOf = (group: string | null) => (group ? entries.find((e) => e.keys.has(group)) ?? null : null);
+  const selectedEntry = entries.find((e) => e.label === selected) ?? null;
+  const hotEntry = entries.find((e) => e.label === hot) ?? null;
+  const pkg = groups.find((g) => g.id === packageId) ?? null;
+  const pkgPlaces = useMemo(
+    () => (packageId == null ? [] : markers.markers.filter((m) => m.level === 1 && m.group === packageId)),
+    [markers.markers, packageId],
+  );
+  const pkgLabels = useMemo(() => new Set(pkgPlaces.map((m) => groupDisplayName(m.country))), [pkgPlaces]);
+  const selectedHasSeveralPackages = !!selectedEntry && new Set(selectedEntry.places.map((m) => m.group)).size > 1;
+  const totalPlaces = entries.reduce((n, e) => n + e.count, 0);
+  const packagesWithPlaces = groups.filter((g) => markers.markers.some((m) => m.group === g.id));
+
+  const openEntry = (label: string) => {
+    setSelected(label);
+    setPackageId(null);
+    setActive(null);
+    setHot(null);
+  };
+  const togglePackage = (id: number) => {
+    setPackageId((p) => (p === id ? null : id));
+    setSelected(null);
+    setActive(null);
+  };
+  const back = () => {
+    setSelected(null);
+    setPackageId(null);
+    setActive(null);
   };
 
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setTooltipPos({ x, y, flip: x > rect.width * 0.55 });
-  };
+  useEffect(() => {
+    if (!selected && packageId == null) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && back();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [selected, packageId]);
 
-  const group = groupOf(hovered);
-  const isCountryPin = hovered?.level === 0;
-  const countryName = hovered ? (hovered.label ?? hovered.name) : "";
-  // A country pin whose name is the package's own label (Kerala, Vietnam) shows
-  // that package; otherwise it shows country information.
-  const countryIsGroup = isCountryPin && group && normalise(group.name) === normalise(countryName);
-
-  const showTooltip = hovered && tooltipPos;
-  const placeImage = hovered && !group ? getPlaceImageUrl(destinationSlug, hovered.name) : null;
-  const placeDescription = hovered && !group ? getPlaceDescription(destinationSlug, hovered.name) : null;
+  const title = selectedEntry?.label ?? pkg?.packageName ?? destinationName;
+  const subtitle = selectedEntry
+    ? `${selectedEntry.count} ${selectedEntry.count === 1 ? "place" : "places"} we visit`
+    : pkg
+      ? `${pkgLabels.size} ${pkgLabels.size === 1 ? "stop" : "stops"} · ${pkgPlaces.length} places`
+      : `${entries.length} ${entries.length === 1 ? "area" : "areas"} · ${totalPlaces} places`;
 
   return (
-    <div
-      className="relative w-full overflow-hidden rounded-2xl border"
-      style={{
-        borderColor: "var(--hairline)",
-        aspectRatio: `${vbW} / ${vbH}`,
-        maxHeight: "82vh",
-        minHeight: 360,
-      }}
-      onMouseMove={onMove}
-    >
-      <RegionMap
-        svg={mapSvg}
-        markers={markers}
-        mapKey={destinationSlug}
-        onHover={(m) => setHovered(m)}
-        onPlaceClick={goToPackage}
-        pinVisual={(m) => ({
-          active: hovered != null && hovered.name === m.name && hovered.level === m.level,
-          dimmed: selectedGroupId != null && m.group != null && m.group !== selectedGroupId,
-        })}
-      />
-
-      {showTooltip && (
+    <div className="grid items-start gap-5 lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-7">
+      {/* Map */}
+      <div className="min-w-0 lg:order-2">
         <div
-          className="pointer-events-none absolute z-30"
-          style={{
-            top: tooltipPos.y,
-            left: tooltipPos.x,
-            transform: tooltipPos.flip ? "translate(calc(-100% - 18px), -50%)" : "translate(18px, -50%)",
-            width: group || isCountryPin ? "240px" : "216px",
-            borderRadius: "14px",
-            overflow: "hidden",
-            border: "1px solid rgba(255,255,255,0.13)",
-            background: "rgba(9, 24, 28, 0.82)",
-            backdropFilter: "blur(24px) saturate(180%)",
-            WebkitBackdropFilter: "blur(24px) saturate(180%)",
-            boxShadow:
-              "0 24px 64px rgba(0,0,0,0.65), 0 0 0 0.5px rgba(111,227,196,0.06), inset 0 1px 0 rgba(255,255,255,0.06)",
-          }}
+          className="relative overflow-hidden rounded-[28px]"
+          style={{ height: "clamp(380px, 70vh, 720px)", boxShadow: "var(--shadow)", background: "var(--sea)" }}
         >
-          {isCountryPin && !countryIsGroup ? (
-            <CountryTooltip
-              marker={hovered}
-              group={group}
-              imageUrl={getPlaceImageUrl(destinationSlug, countryName)}
-            />
-          ) : group ? (
-            <GroupTooltip group={group} placeName={isCountryPin ? countryName : hovered.name} />
-          ) : (
-            <PlaceTooltip name={hovered.name} imageUrl={placeImage!} description={placeDescription!} />
-          )}
+          <RegionMap
+            svg={mapSvg}
+            markers={markers}
+            regions={regions}
+            mapKey={destinationSlug}
+            ariaLabel={`Map of ${destinationName}`}
+            selectedGroups={selectedEntry?.keys ?? null}
+            packageId={packageId}
+            hotGroups={hotEntry?.keys ?? null}
+            activePlace={active}
+            onGroupHover={(g) => setHot(entryOf(g)?.label ?? null)}
+            onGroupSelect={(g) => {
+              const e = entryOf(g);
+              if (e) openEntry(e.label);
+            }}
+            onPlaceHover={(m) => m && setActive(m)}
+            onPlaceSelect={(m) => setActive(m)}
+          />
+          <Legend />
         </div>
-      )}
-    </div>
-  );
-}
-
-function normalise(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "");
-}
-
-/* ── Country card: what a zoomed-out country pin shows ───────── */
-function CountryTooltip({ marker, group, imageUrl }: { marker: MapMarker; group?: Group; imageUrl: string }) {
-  const name = marker.label ?? marker.name;
-  const places = marker.places ?? [];
-  const count = marker.count ?? places.length;
-  return (
-    <>
-      <div style={{ position: "relative", height: "112px", overflow: "hidden" }}>
-        <img src={imageUrl} alt={name} loading="eager" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-        <div
-          aria-hidden="true"
-          style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 40%, rgba(9,24,28,0.75) 100%)" }}
-        />
-      </div>
-      <div style={{ padding: "12px 16px 14px" }}>
-        <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "5px" }}>
-          Country · {count} {count === 1 ? "place" : "places"}
-        </p>
-        <p style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "var(--text)", lineHeight: 1.1, marginBottom: "8px" }}>
-          {name}
-        </p>
-        {places.length > 0 && (
-          <p style={{ fontSize: "11px", color: "var(--muted)", lineHeight: 1.5 }}>
-            <span style={{ color: "var(--text)", fontWeight: 600 }}>Includes: </span>
-            {places.slice(0, 6).join(", ")}
-            {count > 6 && ` +${count - 6} more`}
-          </p>
-        )}
-        {group && (
-          <p style={{ fontSize: "11px", color: "var(--muted)", lineHeight: 1.5, marginTop: "6px" }}>
-            Part of <span style={{ color: "var(--text)" }}>{group.packageName}</span>
-          </p>
-        )}
-        <div style={{ marginTop: "10px", paddingTop: "9px", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--accent)" }}>
-            Click to zoom in
+        <p className="mt-3 hidden flex-wrap gap-x-5 gap-y-1 text-sm sm:flex" style={{ color: "var(--muted)" }}>
+          <span>The page scrolls normally over the map</span>
+          <span>
+            <Kbd>Ctrl</Kbd> or <Kbd>⌘</Kbd> + scroll to zoom
           </span>
-          <span style={{ fontSize: "13px", color: "var(--accent)" }}>+</span>
-        </div>
+          <span>Drag to move when zoomed</span>
+          <span>Pinch with two fingers on a phone</span>
+        </p>
       </div>
-    </>
-  );
-}
 
-/* ── Group offer card ─────────────────────────────────── */
-function GroupTooltip({ group, placeName }: { group: Group; placeName: string }) {
-  const { offer } = group;
-  const imageUrl = getPlaceImageUrl(group.packageSlug, placeName);
-  const themes = classifyGroupThemes(group);
-  // Cities/places this state (or country) pointer stands in for — shown so a
-  // single collapsed pin still communicates everywhere it covers.
-  const cities = group.places;
-
-  return (
-    <div>
-      {/* Photo */}
-      <div style={{ position: "relative", height: "120px", overflow: "hidden" }}>
-        <img
-          src={imageUrl}
-          alt={placeName}
-          loading="eager"
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to bottom, transparent 45%, rgba(9,24,28,0.7) 100%)",
-          }}
-        />
-        {themes.length > 0 && (
-          <div style={{ position: "absolute", top: "8px", left: "8px", display: "flex", gap: "5px", flexWrap: "wrap" }}>
-            {themes.map((t) => (
-              <span
-                key={t}
-                style={{
-                  fontSize: "9px",
-                  fontWeight: 600,
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                  color: "var(--text)",
-                  background: "rgba(9,24,28,0.6)",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  borderRadius: "999px",
-                  padding: "3px 8px",
-                  backdropFilter: "blur(6px)",
-                }}
-              >
-                {t}
-              </span>
-            ))}
+      {/* Index panel */}
+      <aside
+        className="grid min-w-0 gap-5 rounded-[28px] p-5 sm:p-6 lg:order-1"
+        style={{ background: "var(--card)", boxShadow: "var(--shadow)" }}
+        aria-label={`${destinationName} map index`}
+      >
+        <div className="flex min-h-11 items-center gap-3">
+          {(selectedEntry || pkg) && (
+            <button
+              type="button"
+              onClick={back}
+              aria-label={`Back to all of ${destinationName}`}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-[var(--line)]"
+              style={{ background: "var(--surface)" }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          <div className="min-w-0">
+            <h3 className="font-display text-[28px] leading-tight">{title}</h3>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              {subtitle}
+            </p>
           </div>
-        )}
-      </div>
+        </div>
 
-      <div style={{ padding: "14px 16px 16px" }}>
-      {/* Label: which place was hovered */}
-      <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "6px" }}>
-        {placeName}
-      </p>
-
-      {/* Package name */}
-      <p style={{ fontFamily: "var(--font-display)", fontSize: "20px", fontWeight: 400, color: "var(--text)", lineHeight: 1.1, marginBottom: "4px" }}>
-        {group.packageName}
-      </p>
-
-      {/* Group tagline */}
-      {group.tagline && (
-        <p style={{ fontSize: "11.5px", color: "var(--muted)", lineHeight: 1.45, marginBottom: "10px" }}>
-          {group.tagline}
-        </p>
-      )}
-
-      {/* Cities/places covered by this pin */}
-      {cities.length > 0 && (
-        <p style={{ fontSize: "11px", color: "var(--muted)", lineHeight: 1.5, marginBottom: "12px" }}>
-          <span style={{ color: "var(--text)", fontWeight: 600 }}>Covers: </span>
-          {cities.slice(0, 6).join(", ")}
-          {cities.length > 6 && ` +${cities.length - 6} more`}
-        </p>
-      )}
-
-      {offer && (
-        <>
-          {/* Price + days */}
-          {(offer.days || offer.price_from_usd) && (
-            <div style={{ display: "flex", gap: "12px", marginBottom: "10px" }}>
-              {offer.days && (
-                <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text)" }}>
-                  {offer.days} days
-                </span>
-              )}
-              {offer.price_from_usd && (
-                <span style={{ fontSize: "12px", color: "var(--accent)", fontWeight: 600 }}>
-                  from ₹{offer.price_from_usd.toLocaleString("en-IN")}
-                  {!offer.price_includes_flight && (
-                    <span style={{ color: "var(--muted)", fontWeight: 400 }}> + flights</span>
-                  )}
-                </span>
+        {!selectedEntry && packagesWithPlaces.length > 0 && (
+          <div>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
+              Show a package
+            </p>
+            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Show a package on the map">
+              {(showAllPackages ? packagesWithPlaces : packagesWithPlaces.slice(0, PACKAGE_CHIPS)).map((g) => {
+                const on = g.id === packageId;
+                return (
+                  <button
+                    key={g.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => togglePackage(g.id)}
+                    className="min-h-9 rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-colors"
+                    style={{
+                      borderColor: on ? "var(--ink)" : "var(--line)",
+                      background: on ? "var(--ink)" : "var(--card)",
+                      color: on ? "#fff" : "var(--ink)",
+                    }}
+                  >
+                    {g.packageName}
+                  </button>
+                );
+              })}
+              {packagesWithPlaces.length > PACKAGE_CHIPS && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllPackages((v) => !v)}
+                  aria-expanded={showAllPackages}
+                  className="min-h-9 rounded-full px-3 py-1.5 text-[13px] font-bold underline-offset-2 hover:underline"
+                  style={{ color: "var(--accent)" }}
+                >
+                  {showAllPackages ? "Show fewer" : `Show all ${packagesWithPlaces.length}`}
+                </button>
               )}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Highlights */}
-          {offer.highlights && offer.highlights.length > 0 && (
-            <>
-              <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", marginBottom: "10px" }} />
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {offer.highlights.slice(0, 3).map((h) => (
-                  <li key={h} style={{ display: "flex", gap: "7px", alignItems: "flex-start", marginBottom: "5px" }}>
-                    <span style={{ fontSize: "9px", color: "var(--accent)", marginTop: "3px", flexShrink: 0 }}>▸</span>
-                    <span style={{ fontSize: "11px", color: "var(--muted)", lineHeight: 1.4 }}>{h}</span>
+        <ul className="-mx-2 grid max-h-[420px] gap-0.5 overflow-auto px-2" style={{ scrollbarWidth: "thin" }}>
+          {selectedEntry
+            ? selectedEntry.places.map((m) => {
+                const on = active && markerKey(active) === markerKey(m);
+                const g = groups.find((x) => x.id === m.group);
+                return (
+                  <li key={markerKey(m)}>
+                    <button
+                      type="button"
+                      onMouseEnter={() => setActive(m)}
+                      onFocus={() => setActive(m)}
+                      onClick={() => setActive(m)}
+                      className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left font-semibold transition-colors hover:bg-[var(--surface)]"
+                      style={{ background: on ? "var(--surface)" : undefined, color: on ? "var(--ink)" : "var(--muted)" }}
+                    >
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: "var(--coral)", boxShadow: "0 0 0 3px var(--coral-soft)" }} />
+                      <span className="min-w-0 flex-1 truncate">{displayName(m.name)}</span>
+                      {g && selectedHasSeveralPackages && (
+                        <span className="max-w-[45%] truncate rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: "var(--surface)", color: "var(--muted)" }}>
+                          {g.packageName}
+                        </span>
+                      )}
+                    </button>
                   </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </>
-      )}
+                );
+              })
+            : entries.map((e) => {
+                const dim = packageId != null && !pkgLabels.has(e.label);
+                const isHot = hot === e.label;
+                return (
+                  <li key={e.label}>
+                    <button
+                      type="button"
+                      onMouseEnter={() => setHot(e.label)}
+                      onMouseLeave={() => setHot(null)}
+                      onFocus={() => setHot(e.label)}
+                      onBlur={() => setHot(null)}
+                      onClick={() => openEntry(e.label)}
+                      className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left font-semibold transition-colors hover:bg-[var(--surface)]"
+                      style={{
+                        background: isHot ? "var(--surface)" : undefined,
+                        color: isHot ? "var(--ink)" : "var(--muted)",
+                        opacity: dim ? 0.4 : 1,
+                      }}
+                    >
+                      <span className="h-3 w-3 shrink-0 rounded" style={{ background: isHot ? "var(--land-on)" : "var(--land)" }} />
+                      <span className="min-w-0 flex-1 truncate">{e.label}</span>
+                      <span
+                        className="rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums"
+                        style={{ background: isHot ? "var(--card)" : "var(--surface)", color: "var(--muted)" }}
+                      >
+                        {e.count}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+        </ul>
 
-      {/* CTA */}
-      <div style={{ marginTop: "12px", paddingTop: "10px", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--accent)" }}>
-          View package
-        </span>
-        <span style={{ fontSize: "13px", color: "var(--accent)" }}>→</span>
-      </div>
+        <DetailCard
+          destinationSlug={destinationSlug}
+          place={active}
+          pkg={pkg}
+          groups={groups}
+          hasSelection={!!selectedEntry}
+          info={active ? placeInfo[active.name] : undefined}
+          packageCovers={packageCovers}
+        />
+      </aside>
+    </div>
+  );
+}
+
+function DetailCard({
+  destinationSlug,
+  place,
+  pkg,
+  groups,
+  hasSelection,
+  info,
+  packageCovers,
+}: {
+  destinationSlug: string;
+  place: MapMarker | null;
+  pkg: Group | null;
+  groups: Group[];
+  hasSelection: boolean;
+  info?: PlaceInfo;
+  packageCovers: Record<number, string>;
+}) {
+  const group = place?.group != null ? groups.find((g) => g.id === place.group) : pkg;
+  if (!place && !pkg) {
+    return (
+      <p className="rounded-xl px-4 py-3 text-sm" style={{ background: "var(--surface)", color: "var(--muted)" }}>
+        {hasSelection ? "Pick a place to see which package visits it." : "Pick an area to zoom in, or a package to see its route."}
+      </p>
+    );
+  }
+  const offer = group?.offer;
+  const ownPhoto = place ? info?.image : undefined;
+  const image = ownPhoto ?? (group ? packageCovers[group.id] : undefined);
+  const description = (place ? info?.description : undefined) ?? group?.tagline;
+  return (
+    <div className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--line)" }} aria-live="polite">
+      {image && (
+        <figure className="relative">
+          <img src={image} alt={place?.name ?? group?.packageName ?? ""} className="block aspect-[16/9] w-full object-cover" loading="lazy" />
+          {ownPhoto && info?.credit && (
+            <figcaption className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/60 to-transparent px-3 pb-1.5 pt-4 text-[10.5px] text-white/90">
+              {info.creditUrl ? (
+                <a href={info.creditUrl} target="_blank" rel="noreferrer" className="hover:underline">
+                  {info.credit}
+                </a>
+              ) : (
+                info.credit
+              )}
+            </figcaption>
+          )}
+        </figure>
+      )}
+      <div className="grid gap-1.5 p-4">
+        <p className="eyebrow">{place ? `${displayName(place.name)} · ${groupDisplayName(place.country)}` : "Package"}</p>
+        <p className="font-display text-[22px] leading-tight">{group ? group.packageName : place ? displayName(place.name) : ""}</p>
+        {description && (
+          <p className="line-clamp-3 text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
+            {description}
+          </p>
+        )}
+        {offer && (offer.days || offer.price_from_usd) && (
+          <p className="text-sm font-semibold tabular-nums">
+            {offer.days ? `${offer.days} days` : ""}
+            {offer.days && offer.price_from_usd ? " · " : ""}
+            {offer.price_from_usd ? `from ${inr(offer.price_from_usd)}` : ""}
+            {offer.price_from_usd && !offer.price_includes_flight ? " + flights" : ""}
+          </p>
+        )}
+        {group ? (
+          <Link
+            href={`/destinations/${destinationSlug}/packages/${group.packageSlug}`}
+            className="mt-2 inline-flex min-h-11 w-fit items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold"
+            style={{ background: "var(--sun)", color: "var(--on-sun)" }}
+          >
+            View package <span aria-hidden="true">→</span>
+          </Link>
+        ) : (
+          <Link
+            href="/plan"
+            className="mt-2 inline-flex min-h-11 w-fit items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-bold"
+            style={{ borderColor: "var(--line-strong)" }}
+          >
+            Plan a trip with this place <span aria-hidden="true">→</span>
+          </Link>
+        )}
       </div>
     </div>
   );
 }
 
-/* ── Per-place image card ─────────────────────────────── */
-function PlaceTooltip({ name, imageUrl, description }: { name: string; imageUrl: string; description: string }) {
+function Legend() {
   return (
-    <>
-      {/* Photo */}
-      <div style={{ position: "relative", height: "144px", overflow: "hidden" }}>
-        <img
-          src={imageUrl}
-          alt={name}
-          loading="eager"
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to bottom, transparent 45%, rgba(9,24,28,0.65) 100%)",
-          }}
-        />
-      </div>
+    <div
+      className="pointer-events-none absolute left-3 bottom-3 z-10 hidden flex-wrap gap-3.5 rounded-[14px] px-3.5 py-2.5 text-[13px] font-semibold sm:flex"
+      style={{ background: "rgba(255,255,255,0.94)", boxShadow: "var(--shadow)" }}
+      aria-hidden="true"
+    >
+      <span className="inline-flex items-center gap-1.5">
+        <i className="inline-block h-3 w-3 rounded" style={{ background: "var(--land)" }} />
+        We go here
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <i className="inline-block h-3 w-3 rounded" style={{ background: "var(--land-out)" }} />
+        Neighbouring
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <i className="inline-block h-3 w-3 rounded-full" style={{ background: "var(--coral)" }} />
+        Places
+      </span>
+    </div>
+  );
+}
 
-      {/* Body */}
-      <div style={{ padding: "11px 14px 14px" }}>
-        <p style={{ fontFamily: "var(--font-display)", fontSize: "17px", fontWeight: 400, color: "var(--text)", lineHeight: 1.15, marginBottom: "6px" }}>
-          {name}
-        </p>
-        <p style={{ fontSize: "11.5px", color: "var(--muted)", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-          {description}
-        </p>
-        <div style={{ marginTop: "10px", paddingTop: "9px", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--accent)" }}>
-            Explore
-          </span>
-          <span style={{ fontSize: "13px", color: "var(--accent)" }}>→</span>
-        </div>
-      </div>
-    </>
+function Kbd({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="rounded-md border border-b-2 px-1.5 py-px text-xs font-bold" style={{ borderColor: "var(--line)", background: "var(--card)", fontFamily: "inherit" }}>
+      {children}
+    </kbd>
   );
 }

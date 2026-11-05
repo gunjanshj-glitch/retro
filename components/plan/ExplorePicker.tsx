@@ -12,7 +12,7 @@ import type { CoreBundle, TripStyle } from "@retro/core/atlas/schema";
 import { styleScore } from "@retro/core/atlas/engine";
 import { evaluatePlaceSelectability } from "@retro/core/atlas/engine/bounds";
 
-import { onAccent, selectStyle } from "./theme";
+import { cardClass, chipClass, chipStyle, fieldClass, optionCardStyle, selectStyle } from "./theme";
 
 const STYLES: { value: TripStyle; label: string }[] = [
   { value: "family", label: "Family time" },
@@ -98,10 +98,10 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
     onChange(selectedSet.has(id) ? selected.filter((x) => x !== id) : [...selected, id]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-6 md:grid-cols-2">
+    <div className="flex flex-col gap-8">
+      <div className={`${cardClass} grid gap-6 p-5 sm:p-7 md:grid-cols-2`}>
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">What kind of trip?</span>
+          <span className="text-sm font-bold">What kind of trip?</span>
           <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Trip style">
             {STYLES.map((s) => (
               <button
@@ -110,12 +110,8 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
                 role="radio"
                 aria-checked={s.value === style}
                 onClick={() => setStyle(s.value)}
-                className="rounded-full border px-4 py-1.5 text-sm"
-                style={{
-                  borderColor: s.value === style ? "var(--accent)" : "var(--hairline)",
-                  background: s.value === style ? "var(--accent)" : "transparent",
-                  color: s.value === style ? onAccent : "inherit",
-                }}
+                className={chipClass}
+                style={chipStyle(s.value === style)}
               >
                 {s.label}
               </button>
@@ -124,7 +120,7 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">Budget</span>
+          <span className="text-sm font-bold">Budget</span>
           <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Budget">
             {BUDGETS.map((b) => (
               <button
@@ -134,12 +130,8 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
                 aria-checked={b.value === budget}
                 title={b.stars}
                 onClick={() => setBudget(b.value)}
-                className="rounded-full border px-4 py-1.5 text-sm"
-                style={{
-                  borderColor: b.value === budget ? "var(--accent)" : "var(--hairline)",
-                  background: b.value === budget ? "var(--accent)" : "transparent",
-                  color: b.value === budget ? onAccent : "inherit",
-                }}
+                className={chipClass}
+                style={chipStyle(b.value === budget)}
               >
                 {b.label}
               </button>
@@ -148,11 +140,11 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
         </div>
 
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium">When?</span>
+          <span className="text-sm font-bold">When?</span>
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="rounded-lg border p-3"
+            className={fieldClass}
             style={selectStyle}
           >
             {MONTHS.map((m, i) => (
@@ -164,11 +156,11 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
         </label>
 
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium">Anywhere in particular?</span>
+          <span className="text-sm font-bold">Anywhere in particular?</span>
           <select
             value={regionId}
             onChange={(e) => setRegionId(e.target.value)}
-            className="rounded-lg border p-3"
+            className={fieldClass}
             style={selectStyle}
           >
             <option value="any">Surprise me</option>
@@ -182,7 +174,7 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
       </div>
 
       <div>
-        <h3 className="font-display text-xl">Best matches</h3>
+        <h2 className="font-display text-2xl">Best matches</h2>
         <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
           Ranked on how well each destination suits a {STYLES.find((s) => s.value === style)?.label.toLowerCase()} trip
           in {MONTHS[month - 1]}.
@@ -208,25 +200,52 @@ export function ExplorePicker({ core, selected, onChange }: Props) {
                 disabled={isDisabled}
                 title={isDisabled ? disabledReason : undefined}
                 onClick={() => !isDisabled && toggle(place.id)}
-                className="rounded-xl border p-4 text-left transition"
+                className="relative min-h-[76px] rounded-2xl border-[1.5px] p-4 text-left transition-[border-color,box-shadow,background-color] hover:shadow-[var(--shadow-sm)] enabled:hover:border-[var(--line-strong)]"
                 style={{
-                  borderColor: on ? "var(--accent)" : "var(--hairline)",
-                  background: on ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "transparent",
-                  opacity: isDisabled ? 0.4 : 1,
+                  ...optionCardStyle(on),
+                  ...(isDisabled
+                    ? { background: "var(--surface)", borderColor: "var(--line)", borderStyle: "dashed", color: "var(--ink-2)" }
+                    : null),
                   cursor: isDisabled ? "not-allowed" : "pointer",
                 }}
               >
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-medium">{place.name}</span>
-                  <span className="text-xs tabular-nums" style={{ color: "var(--accent)" }}>
+                <div className="flex items-start justify-between gap-2">
+                  <span className="flex items-center gap-2 font-semibold">
+                    <span
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px]"
+                      style={
+                        on
+                          ? { background: "var(--ink)", borderColor: "var(--ink)", color: "#fff" }
+                          : { borderColor: "var(--line-strong)", background: "var(--card)" }
+                      }
+                      aria-hidden="true"
+                    >
+                      {on && (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                          <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </span>
+                    {place.name}
+                  </span>
+                  <span
+                    className="rounded-full px-2 py-0.5 text-xs font-bold tabular-nums"
+                    style={
+                      isDisabled
+                        ? { background: "var(--line)", color: "var(--ink-2)" }
+                        : { background: "var(--coral-soft)", color: "var(--accent)" }
+                    }
+                    title="Match score"
+                  >
+                    <span className="sr-only">Match score </span>
                     {Math.round(fit)}
                   </span>
                 </div>
-                <p className="mt-1 text-xs" style={{ color: "var(--muted)" }}>
+                <p className="mt-1 pl-7 text-xs" style={{ color: "var(--muted)" }}>
                   {countryById.get(place.countryId)?.name}
                 </p>
                 {isDisabled && (
-                  <p className="mt-1 text-xs" style={{ color: "var(--accent)" }}>
+                  <p className="mt-1 pl-7 text-xs" style={{ color: "var(--ink-2)" }}>
                     {disabledReason}
                   </p>
                 )}

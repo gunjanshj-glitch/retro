@@ -6,6 +6,7 @@
  * the client-side shapes of those files.
  */
 import type { Box, ViewBox } from "./use-zoom-pan";
+import { displayName } from "./display-names";
 
 export type MapMarker = {
   name: string;
@@ -49,5 +50,28 @@ export function countryBox(markers: MapMarker[], country: string): Box | null {
     y0: Math.min(...own.map((m) => m.cy)),
     x1: Math.max(...own.map((m) => m.cx)),
     y1: Math.max(...own.map((m) => m.cy)),
+  };
+}
+
+/** `<region>.regions.json`: per-country (or per-state) shapes and the land around them. */
+export type RegionUnit = { name: string; d: string; places: number; groups: string[] };
+export type RegionLayer = { units: RegionUnit[]; context: string; baseOutline: boolean; islets: string };
+
+/**
+ * The traveller-facing name of a map grouping. Some groupings are internal
+ * package clusters ("Himachal Pradesh Cluster 2"); people only need the place.
+ */
+export function groupDisplayName(group: string): string {
+  return displayName(group.replace(/\s*cluster\s*\d+\s*$/i, "").trim() || group);
+}
+
+/** Bounding box of a set of map points, for framing them. */
+export function pointsBox(points: { cx: number; cy: number }[]): Box | null {
+  if (!points.length) return null;
+  return {
+    x0: Math.min(...points.map((m) => m.cx)),
+    y0: Math.min(...points.map((m) => m.cy)),
+    x1: Math.max(...points.map((m) => m.cx)),
+    y1: Math.max(...points.map((m) => m.cy)),
   };
 }

@@ -34,7 +34,8 @@
     "cf:check": "wrangler deploy --dry-run --env=\"\" -c workers/api/wrangler.toml && wrangler deploy --dry-run --env=\"\"",
     "cf:deploy:api": "wrangler deploy --env=\"\" --config workers/api/wrangler.toml",
     "cf:deploy:web": "wrangler deploy --env=\"\"",
-    "cf:deploy": "npm run cf:deploy:api && npm run cf:deploy:web"
+    "cf:deploy": "npm run cf:deploy:api && npm run cf:deploy:web",
+    "fetch-place-photos": "tsx scripts/fetch-place-photos.ts"
   },
   "dependencies": {
     "next": "16.3.0",

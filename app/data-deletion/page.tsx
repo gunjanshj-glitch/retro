@@ -15,7 +15,7 @@ export default function DataDeletionPage() {
       </p>
 
       <h2>How to request deletion</h2>
-      <ol className="list-decimal space-y-2 pl-5">
+      <ol className="list-decimal space-y-2">
         <li>
           Email <a href="mailto:info@retroholidays.in?subject=Delete%20my%20data">info@retroholidays.in</a> with the
           subject &ldquo;Delete my data&rdquo;, from the email address registered on your account. If you signed in

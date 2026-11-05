@@ -7,8 +7,7 @@ import { PHONE_DISPLAY, PHONE_E164, WHATSAPP_DISPLAY, whatsappLink } from "@retr
 
 export const metadata: Metadata = {
   title: "Contact | Retro Holidays",
-  description:
-    "Speak with Retro Holidays about a thoughtful, tailor-made journey built around how you want to travel.",
+  description: "Speak with Retro Holidays about a thoughtful, tailor-made journey built around how you want to travel.",
 };
 
 const CONTACT_DETAILS = [
@@ -33,43 +32,39 @@ export default function ContactPage() {
   return (
     <>
       <NavBar />
-      <main className="relative overflow-hidden pt-28 sm:pt-32">
+      <main className="relative overflow-hidden pt-[112px] sm:pt-[136px]">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-[38rem]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[40rem]"
           style={{
-            background:
-              "radial-gradient(circle at 18% 18%, rgba(253,191,0,0.13), transparent 30%), radial-gradient(circle at 82% 42%, rgba(111,227,196,0.08), transparent 28%)",
+            background: "linear-gradient(180deg, var(--surface) 0%, var(--surface) 55%, var(--bg) 100%)",
           }}
         />
 
-        <section className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-20 md:px-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:pb-28">
+        <section className="relative mx-auto grid max-w-[1320px] gap-10 px-5 pb-20 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:pb-28">
           <div className="flex flex-col">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
-              Start a conversation
-            </p>
-            <h1 className="mt-5 max-w-xl font-display text-5xl leading-[0.98] sm:text-6xl lg:text-7xl">
+            <p className="eyebrow">Start a conversation</p>
+            <h1 className="mt-4 max-w-xl font-display text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-[4.25rem]">
               A thoughtful trip starts with a good conversation.
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-[var(--muted)] sm:text-lg">
-              Tell us what you have in mind—even if it is only a place, a season, or a feeling.
-              We will help shape the details into a journey that feels distinctly yours.
+            <p className="mt-6 max-w-xl text-base leading-7 text-[var(--ink-2)] sm:text-lg">
+              Tell us what you have in mind—even if it is only a place, a season, or a feeling. We will help shape the
+              details into a journey that feels distinctly yours.
             </p>
 
-            <div className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            <div className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 sm:[&>a:last-child]:col-span-2 lg:[&>a:last-child]:col-span-1 xl:[&>a:last-child]:col-span-2">
               {CONTACT_DETAILS.map((detail) => (
                 <a
                   key={detail.label}
                   href={detail.href}
                   target={detail.href.startsWith("https") ? "_blank" : undefined}
                   rel={detail.href.startsWith("https") ? "noreferrer" : undefined}
-                  className="group rounded-2xl border p-5 transition-colors hover:border-[rgba(253,191,0,0.55)] hover:bg-[rgba(253,191,0,0.05)]"
-                  style={{ borderColor: "var(--hairline)", background: "rgba(14,36,42,0.5)" }}
+                  className="lift group rounded-2xl border border-[var(--line)] bg-[var(--card)] p-5 shadow-[var(--shadow-sm)] hover:border-[var(--accent)]"
                 >
-                  <span className="block text-xs uppercase tracking-[0.18em] text-[var(--muted)]">
+                  <span className="block text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink-2)]">
                     {detail.label}
                   </span>
-                  <span className="mt-2 flex items-center justify-between gap-3 text-sm font-medium sm:text-base">
+                  <span className="mt-2 flex items-center justify-between gap-3 break-all text-[15px] font-semibold text-[var(--ink)] sm:text-base">
                     {detail.value}
                     <span
                       aria-hidden="true"
@@ -82,27 +77,20 @@ export default function ContactPage() {
               ))}
             </div>
 
-            <figure className="relative mt-8 min-h-72 overflow-hidden rounded-3xl border border-white/10 sm:min-h-80">
+            <figure className="relative mt-8 min-h-72 overflow-hidden rounded-[28px] shadow-[var(--shadow-lg)] sm:min-h-80">
               <Image
                 src="/media/agra/poster.webp"
-                alt="A quiet mountain landscape in Kashmir"
+                alt="Aerial view of the Taj Mahal and its gardens in Agra"
                 fill
                 sizes="(max-width: 1024px) 100vw, 42vw"
                 className="object-cover"
               />
-              <div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to top, rgba(3,12,14,0.92) 0%, rgba(3,12,14,0.12) 72%)",
-                }}
-              />
+              <div aria-hidden="true" className="card-overlay absolute inset-0" />
               <figcaption className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                <blockquote className="max-w-md font-display text-2xl leading-tight sm:text-3xl">
+                <blockquote className="max-w-md font-display text-2xl leading-tight text-white sm:text-3xl">
                   “The best itineraries leave room for stories you did not plan.”
                 </blockquote>
-                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+                <p className="mt-3 text-xs font-bold uppercase tracking-[0.16em] text-white/85">
                   Tailor-made by Retro Holidays
                 </p>
               </figcaption>
@@ -114,17 +102,19 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-[rgba(14,36,42,0.36)]">
-          <div className="mx-auto grid max-w-7xl gap-px px-6 py-8 sm:grid-cols-3 md:px-12">
+        <section className="border-y border-[var(--line)] bg-[var(--surface)]">
+          <div className="mx-auto grid max-w-[1320px] gap-px px-5 py-10 sm:grid-cols-3 md:px-8 md:py-14">
             {[
               ["01", "Share the brief", "Your pace, interests, dates and non-negotiables."],
               ["02", "Shape it together", "We refine the route, stays and experiences with you."],
               ["03", "Travel with confidence", "Clear planning and thoughtful support throughout."],
             ].map(([number, title, copy]) => (
-              <div key={number} className="border-white/10 py-5 sm:px-6 sm:first:pl-0 sm:not-last:border-r">
-                <span className="text-xs font-semibold text-[var(--accent)]">{number}</span>
+              <div key={number} className="border-[var(--line-strong)] py-5 sm:px-6 sm:first:pl-0 sm:not-last:border-r">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--card)] text-xs font-bold text-[var(--accent)] shadow-[var(--shadow-sm)] tabular-nums">
+                  {number}
+                </span>
                 <h2 className="mt-3 font-display text-2xl">{title}</h2>
-                <p className="mt-2 max-w-xs text-sm leading-6 text-[var(--muted)]">{copy}</p>
+                <p className="mt-2 max-w-xs text-sm leading-6 text-[var(--ink-2)]">{copy}</p>
               </div>
             ))}
           </div>

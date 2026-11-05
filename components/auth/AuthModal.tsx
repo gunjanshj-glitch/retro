@@ -30,14 +30,18 @@ type Props = {
 };
 
 const fieldClassName =
-  "mt-1.5 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-2.5 text-sm text-[var(--text)] outline-none transition placeholder:text-[rgba(155,179,180,0.55)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(253,191,0,0.12)]";
+  "mt-1.5 w-full min-h-11 rounded-xl border border-[var(--line-strong)] bg-[var(--card)] px-4 py-2.5 text-[15px] text-[var(--ink)] outline-none transition placeholder:text-[#6b7c8d] focus:border-[var(--accent)] focus:ring-4 focus:ring-[rgba(198,61,23,0.12)]";
 
 export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirectOverride }: Props) {
   const [mode, setMode] = useState<Mode>("login");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [providers, setProviders] = useState<OAuthProviderAvailability>({ google: false, facebook: false, x: false });
+  const [providers, setProviders] = useState<OAuthProviderAvailability>({
+    google: false,
+    facebook: false,
+    x: false,
+  });
 
   useEffect(() => {
     if (open) fetchOAuthProviders().then(setProviders);
@@ -81,7 +85,11 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
     const result =
       mode === "login"
         ? await login({ email, password })
-        : await registerAccount({ name: String(data.get("name") ?? "").trim(), email, password });
+        : await registerAccount({
+            name: String(data.get("name") ?? "").trim(),
+            email,
+            password,
+          });
 
     setSubmitting(false);
     if (!result.ok) {
@@ -105,26 +113,42 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
         type="button"
         aria-label="Close"
         onClick={onClose}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 backdrop-blur-[2px]"
+        style={{ background: "var(--scrim)" }}
       />
       <div
-        className="relative w-full max-w-sm rounded-3xl border border-white/10 p-7 shadow-2xl"
-        style={{ background: "linear-gradient(160deg, rgba(14,36,42,0.98), rgba(9,24,28,0.96))" }}
+        className="relative max-h-[92vh] w-full max-w-sm overflow-y-auto rounded-3xl border p-7"
+        style={{
+          background: "var(--card)",
+          borderColor: "var(--line)",
+          boxShadow: "var(--shadow-lg)",
+        }}
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-5 top-5 text-lg leading-none"
-          style={{ color: "var(--muted)" }}
+          className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-[var(--surface)]"
+          style={{ color: "var(--ink-2)" }}
         >
-          ×
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
         </button>
 
-        <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>
+        <p className="eyebrow">
           {mode === "login" ? "Welcome back" : mode === "forgot" ? "Forgot password" : "Create your account"}
         </p>
-        <h2 className="mt-2 font-display text-2xl">
+        <h2 className="mt-2 pr-8 font-display text-2xl">
           {mode === "login" ? "Sign in to continue" : mode === "forgot" ? "Reset by email" : "Sign up to continue"}
         </h2>
         <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
@@ -139,8 +163,12 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
               <button
                 type="button"
                 onClick={() => startOAuth("google", redirectTo)}
-                className="flex items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-medium transition hover:bg-white/5"
-                style={{ borderColor: "var(--hairline)" }}
+                className="flex min-h-11 items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-semibold transition hover:border-[var(--ink)] hover:bg-[var(--surface)]"
+                style={{
+                  borderColor: "var(--line-strong)",
+                  color: "var(--ink)",
+                  background: "var(--card)",
+                }}
               >
                 <GoogleMark /> Continue with Google
               </button>
@@ -149,8 +177,12 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
               <button
                 type="button"
                 onClick={() => startOAuth("facebook", redirectTo)}
-                className="flex items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-medium transition hover:bg-white/5"
-                style={{ borderColor: "var(--hairline)" }}
+                className="flex min-h-11 items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-semibold transition hover:border-[var(--ink)] hover:bg-[var(--surface)]"
+                style={{
+                  borderColor: "var(--line-strong)",
+                  color: "var(--ink)",
+                  background: "var(--card)",
+                }}
               >
                 <FacebookMark /> Continue with Facebook
               </button>
@@ -159,44 +191,61 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
               <button
                 type="button"
                 onClick={() => startOAuth("x", redirectTo)}
-                className="flex items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-medium transition hover:bg-white/5"
-                style={{ borderColor: "var(--hairline)" }}
+                className="flex min-h-11 items-center justify-center gap-2.5 rounded-full border px-4 py-2.5 text-sm font-semibold transition hover:border-[var(--ink)] hover:bg-[var(--surface)]"
+                style={{
+                  borderColor: "var(--line-strong)",
+                  color: "var(--ink)",
+                  background: "var(--card)",
+                }}
               >
                 <XMark /> Continue with X
               </button>
             )}
             <div className="my-1 flex items-center gap-3 text-xs" style={{ color: "var(--muted)" }}>
-              <span className="h-px flex-1 bg-white/10" />
+              <span className="h-px flex-1 bg-[var(--line)]" />
               or
-              <span className="h-px flex-1 bg-white/10" />
+              <span className="h-px flex-1 bg-[var(--line)]" />
             </div>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3.5">
           {mode === "register" && (
-            <label className="text-sm font-medium">
+            <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
               Your name
-              <input name="name" required autoComplete="name" placeholder="How should we address you?" className={fieldClassName} />
+              <input
+                name="name"
+                required
+                autoComplete="name"
+                placeholder="How should we address you?"
+                className={fieldClassName}
+              />
             </label>
           )}
-          <label className="text-sm font-medium">
+          <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
             Email address
-            <input name="email" type="email" required autoComplete="email" placeholder="you@example.com" className={fieldClassName} />
-          </label>
-          {mode !== "forgot" && (
-          <label className="text-sm font-medium">
-            Password
             <input
-              name="password"
-              type="password"
+              name="email"
+              type="email"
               required
-              minLength={8}
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              placeholder="At least 8 characters"
+              autoComplete="email"
+              placeholder="you@example.com"
               className={fieldClassName}
             />
           </label>
+          {mode !== "forgot" && (
+            <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+              Password
+              <input
+                name="password"
+                type="password"
+                required
+                minLength={8}
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                placeholder="At least 8 characters"
+                className={fieldClassName}
+              />
+            </label>
           )}
           {mode === "login" && (
             <button
@@ -206,7 +255,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
                 setError(null);
                 setNotice(null);
               }}
-              className="-mt-1.5 self-end text-xs font-semibold underline-offset-2 hover:underline"
+              className="-my-2 inline-flex min-h-11 items-center self-end text-xs font-semibold underline-offset-2 hover:underline"
               style={{ color: "var(--accent)" }}
             >
               Forgot password?
@@ -214,12 +263,26 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
           )}
 
           {notice && (
-            <p role="status" className="text-xs" style={{ color: "var(--accent)" }}>
+            <p
+              role="status"
+              className="rounded-xl px-3.5 py-2.5 text-xs"
+              style={{
+                color: "var(--success)",
+                background: "var(--success-soft)",
+              }}
+            >
               {notice}
             </p>
           )}
           {error && (
-            <p className="text-xs" style={{ color: "#f28b82" }}>
+            <p
+              role="alert"
+              className="rounded-xl px-3.5 py-2.5 text-xs"
+              style={{
+                color: "var(--danger)",
+                background: "var(--danger-soft)",
+              }}
+            >
               {error}
             </p>
           )}
@@ -227,9 +290,15 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
           <button
             type="submit"
             disabled={submitting}
-            className="mt-1 inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--accent)] px-6 py-2.5 text-sm font-semibold text-[var(--deep)] transition hover:-translate-y-0.5 disabled:opacity-60"
+            className="mt-1 inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--sun)] px-6 py-2.5 text-sm font-bold text-[var(--on-sun)] shadow-[0_6px_18px_rgba(242,169,0,0.32)] transition hover:-translate-y-px hover:brightness-[0.97] disabled:opacity-60 motion-reduce:hover:translate-y-0"
           >
-            {submitting ? "Please wait…" : mode === "login" ? "Sign in" : mode === "forgot" ? "Email me a link" : "Create account"}
+            {submitting
+              ? "Please wait…"
+              : mode === "login"
+                ? "Sign in"
+                : mode === "forgot"
+                  ? "Email me a link"
+                  : "Create account"}
           </button>
         </form>
 
@@ -242,7 +311,7 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
               setError(null);
               setNotice(null);
             }}
-            className="font-semibold underline-offset-2 hover:underline"
+            className="inline-flex min-h-11 items-center font-semibold underline-offset-2 hover:underline"
             style={{ color: "var(--accent)" }}
           >
             {mode === "login" ? "Create an account" : mode === "forgot" ? "Back to sign in" : "Sign in instead"}
@@ -256,10 +325,22 @@ export function AuthModal({ open, onClose, onAuthenticated, redirectTo: redirect
 function GoogleMark() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+      <path
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        fill="#4285F4"
+      />
+      <path
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        fill="#34A853"
+      />
+      <path
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+        fill="#EA4335"
+      />
     </svg>
   );
 }

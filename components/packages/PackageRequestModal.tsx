@@ -9,8 +9,10 @@
  * row in D1 for the agency to price by hand; the answer shows up on the
  * traveller's My requests page.
  */
+import { fixSpelling } from "@/lib/display-names";
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { DEPARTURE_CITIES } from "@retro/core/atlas/departure-cities";
 import { createPackageRequest } from "@/lib/auth-client";
 import { formatPrice } from "@/lib/trips";
@@ -48,11 +50,11 @@ const FOOD = [
 ];
 
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-2.5 text-sm text-[var(--text)] outline-none transition placeholder:text-[rgba(155,179,180,0.55)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(253,191,0,0.12)]";
+  "mt-1.5 w-full min-h-11 rounded-xl border border-[var(--line-strong)] bg-[var(--card)] px-4 py-2.5 text-[15px] text-[var(--ink)] outline-none transition placeholder:text-[#6b7c8d] focus:border-[var(--accent)] focus:ring-4 focus:ring-[rgba(198,61,23,0.12)]";
 
 function Field({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
   return (
-    <label className={`block text-sm ${className}`} style={{ color: "var(--muted)" }}>
+    <label className={`block text-sm font-semibold ${className}`} style={{ color: "var(--ink)" }}>
       {label}
       {children}
     </label>
@@ -95,7 +97,11 @@ export function PackageRequestModal({
       destinationName: pkg.destinationName,
       packageSlug: pkg.packageSlug,
       packageName: pkg.packageName,
-      package: { places: pkg.places, days: pkg.days, priceFromInr: pkg.priceFromInr },
+      package: {
+        places: pkg.places,
+        days: pkg.days,
+        priceFromInr: pkg.priceFromInr,
+      },
       tripType: String(data.get("tripType")),
       adults: Number(data.get("adults")),
       children: Number(data.get("children") || 0),
@@ -116,28 +122,54 @@ export function PackageRequestModal({
 
   const today = new Date().toISOString().slice(0, 10);
 
-  return (
-    <div role="dialog" aria-modal="true" aria-label="Request a quote" className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+  // Portalled to <body> so no ancestor stacking context (e.g. the sticky
+  // price card that renders the trigger) can trap the dialog under the nav.
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Request a quote"
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4"
+    >
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0 backdrop-blur-[2px]"
+        style={{ background: "var(--scrim)" }}
+      />
       <div
-        className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/10 p-6 shadow-2xl md:p-7"
-        style={{ background: "linear-gradient(160deg, rgba(14,36,42,0.98), rgba(9,24,28,0.96))" }}
+        className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border p-6 md:p-8"
+        style={{
+          background: "var(--card)",
+          borderColor: "var(--line)",
+          boxShadow: "var(--shadow-lg)",
+        }}
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-5 top-5 text-lg leading-none"
-          style={{ color: "var(--muted)" }}
+          className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-[var(--surface)]"
+          style={{ color: "var(--ink-2)" }}
         >
-          ×
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
         </button>
 
         {done ? (
           <div className="py-6 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>
-              Request received
-            </p>
+            <p className="eyebrow">Request received</p>
             <h2 className="mt-2 font-display text-2xl">We&apos;re on it</h2>
             <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
               Our team will put together a quote for {pkg.packageName} and it will appear on your My requests page.
@@ -145,16 +177,20 @@ export function PackageRequestModal({
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link
                 href="/my-requests"
-                className="rounded-full px-6 py-2.5 text-sm font-semibold"
-                style={{ background: "var(--accent)", color: "var(--deep)" }}
+                className="inline-flex min-h-11 items-center rounded-full px-6 py-2.5 text-sm font-bold"
+                style={{ background: "var(--sun)", color: "var(--on-sun)" }}
               >
                 View my requests
               </Link>
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full border px-6 py-2.5 text-sm"
-                style={{ borderColor: "var(--hairline)" }}
+                className="inline-flex min-h-11 items-center rounded-full border px-6 py-2.5 text-sm font-semibold transition-colors hover:border-[var(--ink)]"
+                style={{
+                  borderColor: "var(--line-strong)",
+                  color: "var(--ink)",
+                  background: "var(--card)",
+                }}
               >
                 Close
               </button>
@@ -163,20 +199,24 @@ export function PackageRequestModal({
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>
-                Request a quote
-              </p>
+              <p className="eyebrow">Request a quote</p>
               <h2 className="mt-2 pr-6 font-display text-2xl">{pkg.packageName}</h2>
             </div>
 
-            <div className="rounded-2xl border p-4 text-sm" style={{ borderColor: "var(--hairline)", background: "var(--surface)" }}>
-              <p style={{ color: "var(--muted)" }}>
+            <div
+              className="rounded-2xl border p-4 text-sm"
+              style={{
+                borderColor: "var(--hairline)",
+                background: "var(--surface)",
+              }}
+            >
+              <p className="font-semibold" style={{ color: "var(--ink)" }}>
                 {pkg.destinationName}
                 {pkg.days ? ` · ${pkg.days} days` : ""}
                 {pkg.priceFromInr ? ` · from ${formatPrice(pkg.priceFromInr)} per person` : ""}
               </p>
-              <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-                {pkg.places.join(" · ")}
+              <p className="mt-1.5 text-xs" style={{ color: "var(--ink-2)" }}>
+                {fixSpelling(pkg.places.join(" · "))}
               </p>
             </div>
 
@@ -226,17 +266,38 @@ export function PackageRequestModal({
                   ))}
                 </select>
               </Field>
-              <label className="col-span-2 flex items-center gap-2.5 text-sm" style={{ color: "var(--muted)" }}>
-                <input name="includeFlights" type="checkbox" defaultChecked={pkg.includesFlight} className="h-4 w-4 accent-[var(--accent)]" />
+              <label
+                className="col-span-2 flex min-h-11 items-center gap-3 text-sm font-semibold"
+                style={{ color: "var(--ink)" }}
+              >
+                <input
+                  name="includeFlights"
+                  type="checkbox"
+                  defaultChecked={pkg.includesFlight}
+                  className="h-5 w-5 accent-[var(--accent)]"
+                />
                 Include flights in the quote
               </label>
               <Field label="Anything else we should know? (optional)" className="col-span-2">
-                <textarea name="notes" rows={3} maxLength={1000} className={inputClass} placeholder="Special occasions, mobility needs, must-see places…" />
+                <textarea
+                  name="notes"
+                  rows={3}
+                  maxLength={1000}
+                  className={inputClass}
+                  placeholder="Special occasions, mobility needs, must-see places…"
+                />
               </Field>
             </div>
 
             {error && (
-              <p role="alert" className="text-sm" style={{ color: "#ff8a80" }}>
+              <p
+                role="alert"
+                className="rounded-xl px-4 py-3 text-sm"
+                style={{
+                  color: "var(--danger)",
+                  background: "var(--danger-soft)",
+                }}
+              >
                 {error}
               </p>
             )}
@@ -244,14 +305,15 @@ export function PackageRequestModal({
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-full px-6 py-3 font-medium transition disabled:opacity-60"
-              style={{ background: "var(--accent)", color: "var(--deep)" }}
+              className="min-h-12 rounded-full px-6 py-3 font-bold shadow-[0_6px_18px_rgba(242,169,0,0.32)] transition hover:brightness-[0.97] disabled:opacity-60"
+              style={{ background: "var(--sun)", color: "var(--on-sun)" }}
             >
               {submitting ? "Sending…" : "Send request"}
             </button>
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

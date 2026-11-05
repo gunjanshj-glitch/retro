@@ -4,9 +4,8 @@ import type { FormEvent } from "react";
 import { submitEnquiry } from "@/lib/atlas/client";
 import { WHATSAPP_NUMBER } from "@retro/core/contact";
 
-
 const fieldClassName =
-  "mt-2 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-3 text-sm text-[var(--text)] outline-none transition placeholder:text-[rgba(155,179,180,0.55)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(253,191,0,0.12)]";
+  "mt-2 w-full min-h-12 rounded-xl border border-[var(--line-strong)] bg-[var(--card)] px-4 py-3 text-[15px] font-normal text-[var(--ink)] outline-none transition placeholder:text-[#6b7c8d] focus:border-[var(--accent)] focus:ring-4 focus:ring-[rgba(198,61,23,0.12)]";
 
 export function ContactForm() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -60,27 +59,23 @@ export function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-3xl border border-white/10 p-5 shadow-2xl shadow-black/10 sm:p-8 lg:p-10"
-      style={{
-        background:
-          "linear-gradient(145deg, rgba(14,36,42,0.94), rgba(9,24,28,0.82))",
-      }}
+      className="rounded-3xl border border-[var(--line)] bg-[var(--card)] p-5 sm:p-8 lg:p-10"
+      style={{ boxShadow: "var(--shadow-lg)" }}
     >
-      <div className="flex flex-col gap-3 border-b border-white/10 pb-7 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-[var(--line)] pb-7 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
-            Trip enquiry
-          </p>
+          <p className="eyebrow">Trip enquiry</p>
           <h2 className="mt-2 font-display text-3xl sm:text-4xl">Tell us about your trip</h2>
         </div>
-        <p className="max-w-48 text-xs leading-5 text-[var(--muted)]">
-          Usually takes less than two minutes.
-        </p>
+        <p className="max-w-48 text-sm leading-5 text-[var(--ink-2)]">Usually takes less than two minutes.</p>
       </div>
 
       <div className="mt-7 grid gap-5 sm:grid-cols-2">
-        <label className="text-sm font-medium">
-          Your name <span className="text-[var(--accent)]">*</span>
+        <label className="text-sm font-semibold text-[var(--ink)]">
+          Your name{" "}
+          <span className="text-[var(--accent)]" aria-hidden="true">
+            *
+          </span>
           <input
             name="name"
             autoComplete="name"
@@ -90,8 +85,11 @@ export function ContactForm() {
           />
         </label>
 
-        <label className="text-sm font-medium">
-          Phone number <span className="text-[var(--accent)]">*</span>
+        <label className="text-sm font-semibold text-[var(--ink)]">
+          Phone number{" "}
+          <span className="text-[var(--accent)]" aria-hidden="true">
+            *
+          </span>
           <input
             name="phone"
             type="tel"
@@ -102,7 +100,7 @@ export function ContactForm() {
           />
         </label>
 
-        <label className="text-sm font-medium">
+        <label className="text-sm font-semibold text-[var(--ink)]">
           Email address
           <input
             name="email"
@@ -113,25 +111,17 @@ export function ContactForm() {
           />
         </label>
 
-        <label className="text-sm font-medium">
+        <label className="text-sm font-semibold text-[var(--ink)]">
           Destination
-          <input
-            name="destination"
-            placeholder="Where would you like to go?"
-            className={fieldClassName}
-          />
+          <input name="destination" placeholder="Where would you like to go?" className={fieldClassName} />
         </label>
 
-        <label className="text-sm font-medium">
+        <label className="text-sm font-semibold text-[var(--ink)]">
           Travel window
-          <input
-            name="travelWindow"
-            placeholder="e.g. October 2026"
-            className={fieldClassName}
-          />
+          <input name="travelWindow" placeholder="e.g. October 2026" className={fieldClassName} />
         </label>
 
-        <label className="text-sm font-medium">
+        <label className="text-sm font-semibold text-[var(--ink)]">
           Number of travellers
           <select name="travellers" defaultValue="" className={fieldClassName}>
             <option value="" disabled>
@@ -146,8 +136,11 @@ export function ContactForm() {
         </label>
       </div>
 
-      <label className="mt-5 block text-sm font-medium">
-        What would make this trip special? <span className="text-[var(--accent)]">*</span>
+      <label className="mt-5 block text-sm font-semibold text-[var(--ink)]">
+        What would make this trip special?{" "}
+        <span className="text-[var(--accent)]" aria-hidden="true">
+          *
+        </span>
         <textarea
           name="notes"
           required
@@ -165,25 +158,19 @@ export function ContactForm() {
       <div aria-hidden="true" className="hidden">
         <label>
           Company
-          <input
-            type="text"
-            name="company"
-            tabIndex={-1}
-            autoComplete="off"
-            defaultValue=""
-          />
+          <input type="text" name="company" tabIndex={-1} autoComplete="off" defaultValue="" />
         </label>
       </div>
 
       <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center">
         <button
           type="submit"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-7 py-3 text-sm font-semibold text-[var(--deep)] transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[rgba(253,191,0,0.18)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+          className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[var(--sun)] px-7 py-3 text-[15px] font-bold text-[var(--on-sun)] shadow-[0_6px_18px_rgba(242,169,0,0.32)] transition hover:-translate-y-px hover:brightness-[0.97] motion-reduce:hover:translate-y-0"
         >
           Continue on WhatsApp
           <span aria-hidden="true">↗</span>
         </button>
-        <p className="text-xs leading-5 text-[var(--muted)]">
+        <p className="text-xs leading-5 text-[var(--ink-2)]">
           Your answers open as a pre-filled WhatsApp message. Nothing is stored on this website.
         </p>
       </div>

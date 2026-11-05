@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ProgressTracker, StatusBadge, Timeline, formatDate } from "@/components/my-requests/status";
-import { onAccent } from "@/components/plan/theme";
+import { btnGhost, btnPrimary, cardClass, fieldClass, toneStyle } from "@/components/plan/theme";
 import { formatInr } from "@retro/core/atlas/engine/text";
 import {
   adminAddNote,
@@ -22,8 +22,9 @@ import {
 import { canTransition, STATUS_COPY } from "@retro/core/quote-workflow";
 import { AdminQuoteEditor, isEditable, type EditorActions, type EditorSummary } from "./AdminQuoteEditor";
 
-const primaryBtn = "inline-flex min-h-11 w-full items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold transition disabled:opacity-50";
-const ghostBtn = "inline-flex min-h-11 w-full items-center justify-center rounded-full border px-5 py-2.5 text-sm transition hover:border-[var(--accent)] disabled:opacity-50";
+const primaryBtn = `${btnPrimary} w-full`;
+const ghostBtn = `${btnGhost} w-full`;
+const textBtn = "inline-flex min-h-11 items-center text-xs font-semibold underline underline-offset-2 hover:text-[var(--ink)]";
 
 const GUIDANCE: Record<string, (d: Detail) => string> = {
   pending: () => "New request. Nobody has picked it up yet — look over the trip, contact the traveller if anything is unclear, then build the quote.",
@@ -63,17 +64,17 @@ export function AdminRequestDetail() {
     };
   }, [user, id]);
 
-  if (loading) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
+  if (loading) return <p role="status" style={{ color: "var(--muted)" }}>Loading…</p>;
   if (!user) {
     return (
-      <button type="button" onClick={openLogin} className="rounded-full px-6 py-2.5 text-sm font-semibold" style={{ background: "var(--accent)", color: onAccent }}>
+      <button type="button" onClick={openLogin} className={btnPrimary}>
         Sign in
       </button>
     );
   }
-  if (!id) return <p style={{ color: "var(--muted)" }}>No request specified.</p>;
-  if (!result || result.id !== id) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
-  if (!result.detail) return <p style={{ color: "var(--muted)" }}>This page isn&apos;t available for your account, or the request doesn&apos;t exist.</p>;
+  if (!id) return <p role="status" style={{ color: "var(--muted)" }}>No request specified.</p>;
+  if (!result || result.id !== id) return <p role="status" style={{ color: "var(--muted)" }}>Loading…</p>;
+  if (!result.detail) return <p role="status" style={{ color: "var(--muted)" }}>This page isn&apos;t available for your account, or the request doesn&apos;t exist.</p>;
 
   const detail = result.detail;
   const editable = isEditable(detail.status);
@@ -81,13 +82,18 @@ export function AdminRequestDetail() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/admin" className="text-xs underline" style={{ color: "var(--muted)" }}>
-          ← All requests
+        <Link
+          href="/admin"
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold hover:text-[var(--accent)]"
+          style={{ color: "var(--ink-2)" }}
+        >
+          <span aria-hidden="true">←</span> All requests
         </Link>
-        <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="font-display text-3xl md:text-4xl">{detail.destinationSummary}</h1>
-            <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+        <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="eyebrow">Trip request</p>
+            <h1 className="mt-2 font-display text-3xl md:text-4xl">{detail.destinationSummary}</h1>
+            <p className="mt-2 break-words text-sm" style={{ color: "var(--muted)" }}>
               {detail.nights} nights from {formatDate(detail.startDate)} · received {formatDate(detail.createdAt)} · ID {detail.id}
             </p>
           </div>
@@ -96,7 +102,7 @@ export function AdminRequestDetail() {
       </div>
 
       <ProgressTracker status={detail.status} />
-      <p className="rounded-xl border p-3 text-sm" style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}>
+      <p className="rounded-xl border px-4 py-3 text-sm" style={toneStyle.info}>
         {(GUIDANCE[detail.status] ?? (() => STATUS_COPY[detail.status].traveller))(detail)}
       </p>
 
@@ -105,7 +111,7 @@ export function AdminRequestDetail() {
           {editable ? (
             <AdminQuoteEditor detail={detail} onSent={reload} onSummary={setSummary} actionsRef={actionsRef} />
           ) : (
-            <p className="rounded-2xl border p-5 text-sm" style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}>
+            <p className={`${cardClass} p-5 text-sm`} style={{ color: "var(--ink-2)", background: "var(--surface)" }}>
               This request is {detail.status === "paid" || detail.status === "part_paid" ? "already being paid" : "finished"}, so the quote is locked. The versions sent are listed on the right.
             </p>
           )}
@@ -125,10 +131,8 @@ export function AdminRequestDetail() {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border p-4" style={{ borderColor: "var(--hairline)" }}>
-      <h2 className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: "var(--accent)" }}>
-        {title}
-      </h2>
+    <section className={`${cardClass} p-4 sm:p-5`}>
+      <h2 className="eyebrow">{title}</h2>
       <div className="mt-3 text-sm">{children}</div>
     </section>
   );
@@ -137,12 +141,12 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 function ContactCard({ detail }: { detail: Detail }) {
   const { contact } = detail;
   const digits = contact.phone?.replace(/\D/g, "") ?? "";
-  const chip = "rounded-full border px-3 py-1.5 text-xs hover:border-[var(--accent)]";
+  const chip = "inline-flex min-h-10 items-center gap-1.5 rounded-full border-[1.5px] border-[var(--line-strong)] bg-[var(--card)] px-4 text-xs font-bold text-[var(--ink)] transition-colors hover:border-[var(--ink)]";
   return (
     <Card title="Traveller">
-      <p className="text-base font-medium">{contact.name}</p>
+      <p className="text-base font-bold">{contact.name}</p>
       <p className="mt-1 break-all">
-        <a className="underline" href={`mailto:${contact.email}`}>
+        <a className="font-semibold underline underline-offset-2" style={{ color: "var(--accent)" }} href={`mailto:${contact.email}`}>
           {contact.email}
         </a>
       </p>
@@ -153,7 +157,7 @@ function ContactCard({ detail }: { detail: Detail }) {
       )}
       <p className="mt-1">
         {contact.phone ? (
-          <a className="underline" href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>
+          <a className="font-semibold underline underline-offset-2" style={{ color: "var(--accent)" }} href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>
             {contact.phone}
           </a>
         ) : (
@@ -161,23 +165,23 @@ function ContactCard({ detail }: { detail: Detail }) {
         )}
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <a className={chip} style={{ borderColor: "var(--hairline)" }} href={`mailto:${contact.email}?subject=${encodeURIComponent(`Your trip — ${detail.destinationSummary}`)}`}>
+        <a className={chip} href={`mailto:${contact.email}?subject=${encodeURIComponent(`Your trip — ${detail.destinationSummary}`)}`}>
           Email
         </a>
         {contact.phone && (
           <>
-            <a className={chip} style={{ borderColor: "var(--hairline)" }} href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>
+            <a className={chip} href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>
               Call
             </a>
-            <a className={chip} style={{ borderColor: "var(--hairline)" }} href={`https://wa.me/${digits}`} target="_blank" rel="noreferrer">
+            <a className={chip} href={`https://wa.me/${digits}`} target="_blank" rel="noreferrer">
               WhatsApp
             </a>
           </>
         )}
       </div>
       {contact.note && (
-        <p className="mt-3 rounded-xl border p-3 text-xs" style={{ borderColor: "var(--hairline)", background: "var(--surface)" }}>
-          <span className="block uppercase tracking-wide" style={{ color: "var(--muted)" }}>Their note</span>
+        <p className="mt-3 rounded-xl border p-3 text-xs" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
+          <span className="mb-1 block font-bold uppercase tracking-wide" style={{ color: "var(--ink-2)" }}>Their note</span>
           {contact.note}
         </p>
       )}
@@ -217,9 +221,9 @@ function SummaryCard({
           <dt style={{ color: "var(--muted)" }}>Engine now</dt>
           <dd className="tabular-nums">{summary?.engineTotalInr != null ? formatInr(summary.engineTotalInr) : "…"}</dd>
         </div>
-        <div className="flex justify-between gap-3 border-t pt-1.5 text-base" style={{ borderColor: "var(--hairline)" }}>
-          <dt>Final total</dt>
-          <dd className="tabular-nums" style={{ color: "var(--accent)" }}>
+        <div className="mt-1 flex items-baseline justify-between gap-3 border-t pt-2" style={{ borderColor: "var(--line-strong)" }}>
+          <dt className="font-bold">Final total</dt>
+          <dd className="font-display text-xl tabular-nums" style={{ color: "var(--ink)" }}>
             {summary?.totalInr != null ? formatInr(summary.totalInr) : "…"}
           </dd>
         </div>
@@ -232,7 +236,7 @@ function SummaryCard({
       </dl>
 
       {summary?.problem && (
-        <p className="mt-3 text-xs" style={{ color: "#ffb74d" }}>
+        <p role="status" className="mt-3 rounded-lg px-3 py-2 text-xs font-semibold" style={{ background: "var(--warning-soft)", color: "var(--warning)" }}>
           {summary.problem}
         </p>
       )}
@@ -242,11 +246,11 @@ function SummaryCard({
 
       <div className="mt-3 flex flex-col gap-2">
         {canStart && (
-          <button type="button" onClick={start} disabled={busy} className={ghostBtn} style={{ borderColor: "var(--hairline)" }}>
+          <button type="button" onClick={start} disabled={busy} className={ghostBtn}>
             {busy ? "Starting…" : "Mark as being prepared"}
           </button>
         )}
-        <button type="button" onClick={() => actionsRef.current?.saveDraft()} disabled={!summary || Boolean(summary.engineTotalInr == null) || !summary.dirty} className={ghostBtn} style={{ borderColor: "var(--hairline)" }}>
+        <button type="button" onClick={() => actionsRef.current?.saveDraft()} disabled={!summary || Boolean(summary.engineTotalInr == null) || !summary.dirty} className={ghostBtn}>
           Save draft
         </button>
         <button
@@ -254,7 +258,6 @@ function SummaryCard({
           onClick={() => actionsRef.current?.requestSend()}
           disabled={!summary || Boolean(summary.problem)}
           className={primaryBtn}
-          style={{ background: "var(--accent)", color: onAccent }}
         >
           {detail.revisions.some((r) => r.status === "sent") ? "Send revised quote…" : "Send final quote…"}
         </button>
@@ -295,7 +298,7 @@ function PaymentsCard({ detail }: { detail: Detail }) {
           <li key={p.id} className="flex items-start justify-between gap-3">
             <span>
               <span className="capitalize">{p.kind}</span>{" "}
-              <span style={{ color: p.status === "paid" ? "#7bd88f" : "var(--muted)" }}>· {p.status}</span>
+              <span style={{ color: p.status === "paid" ? "var(--success)" : p.status === "failed" ? "var(--danger)" : "var(--muted)", fontWeight: 600 }}>· {p.status}</span>
               <span className="block break-all text-xs" style={{ color: "var(--muted)" }}>
                 {p.status === "paid" ? `${formatDate(p.paidAt)}${p.method ? ` · ${p.method}` : ""} · ${p.reference ?? ""}` : p.failureReason ?? `opened ${formatDate(p.createdAt)}`}
               </span>
@@ -304,9 +307,9 @@ function PaymentsCard({ detail }: { detail: Detail }) {
           </li>
         ))}
       </ul>
-      <p className="mt-3 flex justify-between border-t pt-2" style={{ borderColor: "var(--hairline)" }}>
+      <p className="mt-3 flex justify-between border-t pt-2" style={{ borderColor: "var(--line)" }}>
         <span style={{ color: "var(--muted)" }}>Received</span>
-        <span className="tabular-nums" style={{ color: "var(--accent)" }}>
+        <span className="font-bold tabular-nums" style={{ color: "var(--success)" }}>
           {formatInr(detail.paidInr)}
         </span>
       </p>
@@ -341,18 +344,18 @@ function ActivityCard({ detail, onReload }: { detail: Detail; onReload: () => Pr
     await onReload();
   }
 
-  const input = "w-full rounded-lg border border-white/10 bg-[rgba(7,26,31,0.72)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]";
+  const input = fieldClass;
 
   return (
     <Card title="Activity & notes">
       <div className="flex flex-col gap-2">
-        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} maxLength={1000} placeholder="Internal note — e.g. called, wants a river cruise (traveller can't see this)" className={input} />
-        <button type="button" onClick={addNote} disabled={busy || !note.trim()} className={ghostBtn} style={{ borderColor: "var(--hairline)" }}>
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} maxLength={1000} placeholder="Internal note — e.g. called, wants a river cruise (traveller can't see this)" aria-label="Internal note" className={input} />
+        <button type="button" onClick={addNote} disabled={busy || !note.trim()} className={ghostBtn}>
           Add internal note
         </button>
       </div>
       {error && (
-        <p role="alert" className="mt-2 text-xs" style={{ color: "#ff8a80" }}>
+        <p role="alert" className="mt-2 rounded-lg px-3 py-2 text-xs font-semibold" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>
           {error}
         </p>
       )}
@@ -360,21 +363,21 @@ function ActivityCard({ detail, onReload }: { detail: Detail; onReload: () => Pr
         <Timeline events={detail.events} viewer="agency" />
       </div>
       {canTransition(detail.status, "closed") && (
-        <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--hairline)" }}>
+        <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--line)" }}>
           {closing ? (
             <div className="flex flex-col gap-2">
-              <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (internal, optional)" maxLength={500} className={input} />
-              <div className="flex gap-2">
-                <button type="button" onClick={close} disabled={busy} className={ghostBtn} style={{ borderColor: "#ff8a80", color: "#ff8a80" }}>
+              <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (internal, optional)" aria-label="Reason for closing (internal, optional)" maxLength={500} className={input} />
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={close} disabled={busy} className={`${ghostBtn} hover:bg-[var(--danger-soft)]`} style={{ borderColor: "var(--danger)", color: "var(--danger)" }}>
                   Close request
                 </button>
-                <button type="button" onClick={() => setClosing(false)} className="text-xs underline" style={{ color: "var(--muted)" }}>
+                <button type="button" onClick={() => setClosing(false)} className={textBtn} style={{ color: "var(--ink-2)" }}>
                   Cancel
                 </button>
               </div>
             </div>
           ) : (
-            <button type="button" onClick={() => setClosing(true)} className="text-xs underline" style={{ color: "var(--muted)" }}>
+            <button type="button" onClick={() => setClosing(true)} className={textBtn} style={{ color: "var(--ink-2)" }}>
               Close this request…
             </button>
           )}

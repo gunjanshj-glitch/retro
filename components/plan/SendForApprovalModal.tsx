@@ -14,10 +14,9 @@ import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
 import { formatInr } from "@retro/core/atlas/engine/text";
 import { createFinalRequest, type AuthUser } from "@/lib/auth-client";
 import { isValidEmail, normalisePhone } from "@retro/core/quote-workflow";
-import { onAccent } from "./theme";
+import { btnGhost, btnPrimary, fieldClass, onAccent } from "./theme";
 
-const inputClass =
-  "mt-1.5 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-2.5 text-sm text-[var(--text)] outline-none transition placeholder:text-[rgba(155,179,180,0.55)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(253,191,0,0.12)]";
+const inputClass = `mt-1.5 ${fieldClass}`;
 
 const NEXT_STEPS = [
   "Our travel expert reviews every rate and may call you to confirm details.",
@@ -27,11 +26,11 @@ const NEXT_STEPS = [
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
-    <label className="block text-sm" style={{ color: "var(--muted)" }}>
+    <label className="block text-sm font-semibold" style={{ color: "var(--ink)" }}>
       {label}
       {children}
       {hint && (
-        <span className="mt-1 block text-xs" style={{ color: "var(--muted)" }}>
+        <span className="mt-1 block text-xs font-normal" style={{ color: "var(--muted)" }}>
           {hint}
         </span>
       )}
@@ -102,20 +101,35 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
 
   return (
     <div role="dialog" aria-modal="true" aria-label="Send for final approval" className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 backdrop-blur-[2px]" style={{ background: "var(--scrim)" }} />
       <div
-        className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/10 p-6 shadow-2xl md:p-7"
-        style={{ background: "linear-gradient(160deg, rgba(14,36,42,0.98), rgba(9,24,28,0.96))" }}
+        className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border p-6 md:p-8"
+        style={{ background: "var(--card)", borderColor: "var(--line)", boxShadow: "var(--shadow-lg)" }}
       >
-        <button type="button" onClick={onClose} aria-label="Close" className="absolute right-5 top-5 text-lg leading-none" style={{ color: "var(--muted)" }}>
-          ×
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-[var(--surface)]"
+          style={{ color: "var(--ink-2)" }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          </svg>
         </button>
 
         {sentId ? (
           <div className="py-4 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>
-              Request received
-            </p>
+            <span
+              className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
+              style={{ background: "var(--success-soft)", color: "var(--success)" }}
+              aria-hidden="true"
+            >
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <p className="eyebrow">Request received</p>
             <h2 className="mt-2 font-display text-2xl">We&apos;re on it</h2>
             <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
               We have emailed you a confirmation. You can follow every step — from review to final quote to payment — on your request page.
@@ -123,7 +137,7 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
             <ol className="mx-auto mt-5 flex max-w-sm flex-col gap-2 text-left text-sm" style={{ color: "var(--muted)" }}>
               {NEXT_STEPS.map((step, i) => (
                 <li key={step} className="flex gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold" style={{ background: "var(--accent)", color: onAccent }}>
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: "var(--sun)", color: onAccent }}>
                     {i + 1}
                   </span>
                   {step}
@@ -131,10 +145,10 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
               ))}
             </ol>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Link href={`/my-requests/view?id=${encodeURIComponent(sentId)}`} className="rounded-full px-6 py-2.5 text-sm font-semibold" style={{ background: "var(--accent)", color: onAccent }}>
+              <Link href={`/my-requests/view?id=${encodeURIComponent(sentId)}`} className={btnPrimary}>
                 Track this request
               </Link>
-              <button type="button" onClick={onClose} className="rounded-full border px-6 py-2.5 text-sm" style={{ borderColor: "var(--hairline)" }}>
+              <button type="button" onClick={onClose} className={btnGhost}>
                 Close
               </button>
             </div>
@@ -142,17 +156,15 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>
-                Final approval
-              </p>
-              <h2 className="mt-2 pr-6 font-display text-2xl">Send this to our team</h2>
+              <p className="eyebrow">Final approval</p>
+              <h2 className="mt-2 pr-10 font-display text-2xl md:text-3xl">Send this to our team</h2>
             </div>
 
-            <div className="rounded-2xl border p-4 text-sm" style={{ borderColor: "var(--hairline)", background: "var(--surface)" }}>
-              <p className="font-medium">{destinationSummary}</p>
+            <div className="rounded-2xl border p-4 text-sm" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
+              <p className="font-semibold">{destinationSummary}</p>
               <p className="mt-1" style={{ color: "var(--muted)" }}>
                 {request.nights} nights · from {request.startDate} · estimate{" "}
-                <span className="tabular-nums" style={{ color: "var(--accent)" }}>
+                <span className="font-bold tabular-nums" style={{ color: "var(--ink)" }}>
                   {formatInr(quote.totals.total)}
                 </span>
               </p>
@@ -160,7 +172,7 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
 
             <div className="grid gap-3">
               <Field label="Your name">
-                <input value={user.name} readOnly className={`${inputClass} opacity-70`} aria-readonly="true" />
+                <input value={user.name} readOnly className={inputClass} style={{ color: "var(--ink-2)" }} aria-readonly="true" />
               </Field>
               <Field label="Email for your quote" hint="We send the final quote and payment receipt here.">
                 <input
@@ -173,11 +185,11 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
                   className={inputClass}
                   aria-invalid={Boolean(fieldErrors.email)}
                 />
-                {fieldErrors.email && <span role="alert" className="mt-1 block text-xs" style={{ color: "#ff8a80" }}>{fieldErrors.email}</span>}
+                {fieldErrors.email && <span role="alert" className="mt-1 block text-xs font-semibold" style={{ color: "var(--danger)" }}>{fieldErrors.email}</span>}
               </Field>
               <Field label="Phone number (optional)" hint="Only used if our team needs to talk something through with you.">
                 <input name="phone" type="tel" autoComplete="tel" placeholder="+91 98765 43210" className={inputClass} aria-invalid={Boolean(fieldErrors.phone)} />
-                {fieldErrors.phone && <span role="alert" className="mt-1 block text-xs" style={{ color: "#ff8a80" }}>{fieldErrors.phone}</span>}
+                {fieldErrors.phone && <span role="alert" className="mt-1 block text-xs font-semibold" style={{ color: "var(--danger)" }}>{fieldErrors.phone}</span>}
               </Field>
               <Field label="Anything we should know? (optional)">
                 <textarea name="note" rows={3} maxLength={1000} className={inputClass} placeholder="Occasion, budget limit, must-have experiences, mobility needs…" />
@@ -185,7 +197,7 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
             </div>
 
             <ol className="flex flex-col gap-1.5 text-xs" style={{ color: "var(--muted)" }}>
-              <li className="font-semibold uppercase tracking-wide">What happens next</li>
+              <li className="font-bold uppercase tracking-[0.12em]" style={{ color: "var(--ink)" }}>What happens next</li>
               {NEXT_STEPS.map((step, i) => (
                 <li key={step}>
                   {i + 1}. {step}
@@ -194,19 +206,19 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
             </ol>
 
             {error && (
-              <p role="alert" className="text-sm" style={{ color: "#ff8a80" }}>
+              <p role="alert" className="rounded-xl px-3.5 py-2.5 text-sm font-medium" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>
                 {error}
               </p>
             )}
 
-            <button type="submit" disabled={submitting} className="rounded-full px-6 py-3 font-medium transition disabled:opacity-60" style={{ background: "var(--accent)", color: onAccent }}>
+            <button type="submit" disabled={submitting} className={`${btnPrimary} w-full text-base`}>
               {submitting ? "Sending…" : "Send for final approval"}
             </button>
             <p className="text-center text-xs" style={{ color: "var(--muted)" }}>
               Sending is free and commits you to nothing — you decide after you see the final quote. Bookings are subject to our{" "}
-              <a href="/terms" target="_blank" className="underline">Terms</a>,{" "}
-              <a href="/cancellation-policy" target="_blank" className="underline">Cancellation</a> and{" "}
-              <a href="/refund-policy" target="_blank" className="underline">Refund</a> policies.
+              <a href="/terms" target="_blank" className="underline underline-offset-2 hover:text-[var(--accent)]">Terms</a>,{" "}
+              <a href="/cancellation-policy" target="_blank" className="underline underline-offset-2 hover:text-[var(--accent)]">Cancellation</a> and{" "}
+              <a href="/refund-policy" target="_blank" className="underline underline-offset-2 hover:text-[var(--accent)]">Refund</a> policies.
             </p>
           </form>
         )}

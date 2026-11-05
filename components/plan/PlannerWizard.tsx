@@ -14,7 +14,7 @@ import { DecisionMatrix } from "./DecisionMatrix";
 import { QuotationView } from "./QuotationView";
 import { ExplorePicker } from "./ExplorePicker";
 import { PackageBrowseRail } from "./PackageBrowseRail";
-import { onAccent } from "./theme";
+import { btnGhost, btnPrimary, cardClass } from "./theme";
 import { useQuotation } from "@/lib/atlas/use-quotation";
 import { STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
 import type { QuoteRequest } from "@retro/core/atlas/engine/types";
@@ -94,16 +94,19 @@ export function PlannerWizard() {
   if (error) {
     return (
       <GlassPanel className="p-6">
-        <p>{error}</p>
+        <p role="alert" style={{ color: "var(--danger)" }}>
+          {error}
+        </p>
       </GlassPanel>
     );
   }
 
   if (!core) {
     return (
-      <p className="p-6" style={{ color: "var(--muted)" }}>
+      <div className="flex min-h-[40vh] items-center justify-center gap-3" role="status" style={{ color: "var(--muted)" }}>
+        <Spinner />
         Loading the atlas…
-      </p>
+      </div>
     );
   }
 
@@ -111,12 +114,19 @@ export function PlannerWizard() {
 
   return (
     <div className="flex flex-col gap-8">
-      <Progress step={step} />
+      {step !== "mode" && <Progress step={step} />}
 
       {step === "mode" && (
         <section className="flex flex-col gap-10">
           <div className="flex flex-col gap-6">
-            <h1 className="font-display text-4xl">Where shall we take you?</h1>
+            <div className="flex flex-col gap-2">
+              <p className="eyebrow">Plan your trip</p>
+              <h1 className="font-display text-4xl md:text-5xl">Where shall we take you?</h1>
+              <p className="max-w-xl text-base" style={{ color: "var(--muted)" }}>
+                Start from the map if you already have places in mind, or let us suggest destinations that suit
+                the trip you are after.
+              </p>
+            </div>
             <div className="grid gap-5 md:grid-cols-2">
               <ModeCard
                 icon={<MapPinIcon />}
@@ -145,11 +155,18 @@ export function PlannerWizard() {
 
       {step === "where" && (
         <section className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-baseline justify-between gap-4">
-            <h1 className="font-display text-4xl">
-              {mode === "known" ? "Choose your destinations" : "Find your trip"}
-            </h1>
-            <span className="text-sm" style={{ color: "var(--muted)" }}>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="flex flex-col gap-2">
+              <p className="eyebrow">{mode === "known" ? "Pick on the map" : "Tell us your style"}</p>
+              <h1 className="font-display text-3xl md:text-4xl">
+                {mode === "known" ? "Choose your destinations" : "Find your trip"}
+              </h1>
+            </div>
+            <span
+              className="rounded-full border px-3 py-1 text-sm font-semibold tabular-nums"
+              style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
+              aria-live="polite"
+            >
               {request.placeIds.length} selected
             </span>
           </div>
@@ -170,23 +187,25 @@ export function PlannerWizard() {
                     key={id}
                     type="button"
                     onClick={() => setPlaces(request.placeIds.filter((x) => x !== id))}
-                    className="rounded-full px-3 py-1 text-xs"
-                    style={{ background: "var(--accent)", color: onAccent }}
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-full border-[1.5px] pl-4 pr-3 text-sm font-semibold transition-colors hover:bg-[var(--sun-deep)]"
+                    style={{ background: "var(--sun)", borderColor: "var(--sun-deep)", color: "var(--on-sun)" }}
                     aria-label={`Remove ${place.name}`}
                   >
-                    {place.name} ×
+                    {place.name}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                    </svg>
                   </button>
                 );
               })}
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button
               type="button"
               onClick={() => setStep("mode")}
-              className="rounded-full border px-6 py-2"
-              style={{ borderColor: "var(--hairline)" }}
+              className={btnGhost}
             >
               Back
             </button>
@@ -194,10 +213,10 @@ export function PlannerWizard() {
               type="button"
               disabled={!canContinue}
               onClick={() => setStep("options")}
-              className="rounded-full px-6 py-2 disabled:opacity-40"
-              style={{ background: "var(--accent)", color: onAccent }}
+              className={btnPrimary}
             >
               Continue
+              <span aria-hidden="true">→</span>
             </button>
           </div>
         </section>
@@ -205,24 +224,28 @@ export function PlannerWizard() {
 
       {step === "options" && (
         <section className="flex flex-col gap-8">
-          <h1 className="font-display text-4xl">Tell us about the trip</h1>
-          <DecisionMatrix core={core} value={request} onChange={setRequest} />
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-2">
+            <p className="eyebrow">How you travel</p>
+            <h1 className="font-display text-3xl md:text-4xl">Tell us about the trip</h1>
+          </div>
+          <div className={`${cardClass} p-5 sm:p-7 md:p-8`}>
+            <DecisionMatrix core={core} value={request} onChange={setRequest} />
+          </div>
+          <div className="flex flex-wrap gap-3">
             <button
               type="button"
               onClick={() => setStep("where")}
-              className="rounded-full border px-6 py-2"
-              style={{ borderColor: "var(--hairline)" }}
+              className={btnGhost}
             >
               Back
             </button>
             <button
               type="button"
               onClick={() => setStep("quote")}
-              className="rounded-full px-6 py-2"
-              style={{ background: "var(--accent)", color: onAccent }}
+              className={btnPrimary}
             >
               Build my quotation
+              <span aria-hidden="true">→</span>
             </button>
           </div>
         </section>
@@ -238,7 +261,10 @@ export function PlannerWizard() {
             destinationSummary={destinationSummary}
           />
         ) : (
-          <p style={{ color: "var(--muted)" }}>Building your quotation…</p>
+          <div className="flex items-center gap-3 py-16" role="status" style={{ color: "var(--muted)" }}>
+            <Spinner />
+            Building your quotation…
+          </div>
         ))}
     </div>
   );
@@ -252,17 +278,65 @@ function Progress({ step }: { step: Step }) {
   ];
   const activeIndex = steps.findIndex(([s]) => s === step);
   return (
-    <ol className="flex flex-wrap gap-4 text-xs uppercase tracking-wide">
-      {steps.map(([s, label], i) => (
-        <li
-          key={s}
-          style={{ color: i <= activeIndex ? "var(--accent)" : "var(--muted)" }}
-          aria-current={s === step ? "step" : undefined}
-        >
-          {i + 1}. {label}
-        </li>
-      ))}
-    </ol>
+    <nav aria-label="Planner progress">
+      <ol className="flex items-center gap-2 sm:gap-3">
+        {steps.map(([s, label], i) => {
+          const done = i < activeIndex;
+          const current = i === activeIndex;
+          return (
+            <li
+              key={s}
+              className="flex min-w-0 items-center gap-2 sm:gap-3"
+              aria-current={s === step ? "step" : undefined}
+            >
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-[1.5px] text-sm font-bold tabular-nums"
+                style={
+                  current
+                    ? { background: "var(--sun)", borderColor: "var(--sun-deep)", color: "var(--on-sun)" }
+                    : done
+                      ? { background: "var(--ink)", borderColor: "var(--ink)", color: "#fff" }
+                      : { background: "var(--card)", borderColor: "var(--line-strong)", color: "var(--muted)" }
+                }
+                aria-hidden="true"
+              >
+                {done ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : (
+                  i + 1
+                )}
+              </span>
+              <span
+                className={`truncate text-sm font-semibold ${current ? "" : "hidden sm:inline"}`}
+                style={{ color: current ? "var(--ink)" : done ? "var(--ink)" : "var(--muted)" }}
+              >
+                <span className="sr-only">Step {i + 1}: </span>
+                {label}
+                {done && <span className="sr-only"> (done)</span>}
+              </span>
+              {i < steps.length - 1 && (
+                <span
+                  className="h-[2px] w-6 shrink-0 rounded-full sm:w-12"
+                  style={{ background: done ? "var(--ink)" : "var(--line-strong)" }}
+                  aria-hidden="true"
+                />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="var(--line-strong)" strokeWidth="3" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -278,29 +352,29 @@ function ModeCard({
     <button
       type="button"
       onClick={onClick}
-      className="group relative flex min-h-56 flex-col justify-end overflow-hidden rounded-3xl border p-8 text-left transition-all duration-300 hover:-translate-y-1"
-      style={{ borderColor: "var(--hairline)", background: "var(--surface)" }}
+      className="lift group relative flex min-h-56 flex-col justify-end overflow-hidden rounded-3xl border p-6 text-left shadow-[var(--shadow-sm)] hover:border-[var(--sun-deep)] sm:p-8"
+      style={{ borderColor: "var(--line)", background: "var(--card)" }}
     >
       {/* Ambient accent glow behind the icon, on hover — purely decorative,
           gives the large empty card body somewhere for the eye to land. */}
       <div
         className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
-        style={{ background: "color-mix(in srgb, var(--accent) 35%, transparent)" }}
+        style={{ background: "color-mix(in srgb, var(--sun) 45%, transparent)" }}
         aria-hidden="true"
       />
       <div
         className="relative mb-5 flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105"
-        style={{ background: "color-mix(in srgb, var(--accent) 16%, transparent)", color: "var(--accent)" }}
+        style={{ background: "var(--coral-soft)", color: "var(--accent)" }}
         aria-hidden="true"
       >
         {icon}
       </div>
-      <h2 className="font-display relative text-3xl">{title}</h2>
+      <h2 className="font-display relative text-2xl sm:text-3xl">{title}</h2>
       <p className="relative mt-2 max-w-sm text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
         {body}
       </p>
       <span
-        className="relative mt-5 inline-flex w-fit items-center gap-1.5 text-sm font-medium transition-transform duration-300 group-hover:translate-x-1"
+        className="relative mt-5 inline-flex w-fit items-center gap-1.5 text-sm font-bold transition-transform duration-300 group-hover:translate-x-1"
         style={{ color: "var(--accent)" }}
       >
         Get started

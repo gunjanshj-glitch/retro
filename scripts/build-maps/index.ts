@@ -9,6 +9,7 @@ import { unionCountries, mergeFeatures, loadCountryFeature, explodePolygons, poi
 import { selectProjection } from "./projection";
 import { buildMapSvg } from "./svg";
 import { buildMarkerEntries } from "./markers";
+import { buildRegionLayer } from "./regions";
 
 const OUT_DIR = path.join(process.cwd(), "public", "maps");
 const VIEW_W = 600;
@@ -207,6 +208,16 @@ const SIMPLIFY_OVERRIDES: Record<string, number> = {
   europe: 25,
   "south-east-asia": 12,
   "south-asia": 20,
+};
+
+/** Regions (per-unit shapes + neighbouring land) are fetched with the page; keep them light. */
+const REGIONS_BUDGET_KB = 96;
+/** Keep-percentage for per-unit shapes where the outline default would be too heavy. */
+const REGION_SIMPLIFY: Record<string, number> = {
+  europe: 25,
+  india: 8,
+  russia: 4,
+  "south-east-asia": 15,
 };
 
 function makeProjection(kind: ReturnType<typeof selectProjection>): GeoProjection {
@@ -421,15 +432,62 @@ async function buildOne(destSlug: string) {
     markers: [],
   });
 
+  // Per-country (or, on a one-country map, per-state) shapes for the
+  // interactive map, plus the neighbouring land around them.
+  const ownCodes: string[] =
+    area?.type === "state" ? [area.country]
+    : area?.type === "region" || area?.type === "country" ? area.countries
+    : dest.map.countries;
+  const povAdmin0 = loadAdmin0(
+    area?.type === "state" ? area.country : area?.type === "country" ? area.pov_country : dest.map.povCountry,
+  );
+  let unitFeatures: Feature<Geometry>[];
+  if (area?.type === "state") {
+    unitFeatures = filterAdmin1(loadAdmin1(), area.country, area.admin1_names);
+  } else if (ownCodes.length === 1) {
+    unitFeatures = loadAdmin1().features.filter((f) => f.properties?.adm0_a3 === ownCodes[0]) as Feature<Geometry>[];
+  } else {
+    unitFeatures = ownCodes.map((code) => loadCountryFeature(povAdmin0, code)).filter((f): f is Feature<Geometry> => !!f);
+  }
+  // Antarctica wraps the pole and smears across conic projections; it is never
+  // near a destination anyway.
+  const neighbourFeatures = povAdmin0.features.filter(
+    (f) =>
+      f.properties?.ADM0_A3 !== "ATA" &&
+      (area?.type === "state" || !ownCodes.includes(f.properties?.ADM0_A3)),
+  ) as Feature<Geometry>[];
+  const regionLayer = await buildRegionLayer({
+    units: unitFeatures,
+    neighbours: neighbourFeatures,
+    markers: dest.map.markers.map((m) => ({
+      lat: m.lat,
+      lng: m.lng,
+      country: m.country ?? (m.group != null ? groupNameById.get(m.group) : undefined) ?? "Other",
+    })),
+    projection,
+    viewBox,
+    unitSimplifyPercent: REGION_SIMPLIFY[destSlug] ?? Math.max(simplifyPercent, 30),
+    // A one-country map keeps its national outline underneath its states: the
+    // outline comes from the point-of-view dataset (India's own borders),
+    // which the default admin1 states do not fully cover.
+    baseOutline: ownCodes.length === 1 || area?.type === "state",
+  });
+
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(outputPath(dest.slug, "svg"), svg);
+  const regionsJson = JSON.stringify(regionLayer);
+  writeFileSync(outputPath(dest.slug, "regions.json"), regionsJson);
+  const regionsKb = Buffer.byteLength(regionsJson, "utf-8") / 1024;
+  if (regionsKb > REGIONS_BUDGET_KB) {
+    throw new Error(`${dest.slug}.regions.json exceeds ${REGIONS_BUDGET_KB}KB budget: ${regionsKb.toFixed(1)}KB`);
+  }
   writeFileSync(
     outputPath(dest.slug, "markers.json"),
     JSON.stringify({ viewBox, markers: svgMarkers })
   );
 
   const sizeKb = Buffer.byteLength(svg, "utf-8") / 1024;
-  console.log(`${dest.slug}: ${sizeKb.toFixed(1)} KB (${kind})`);
+  console.log(`${dest.slug}: ${sizeKb.toFixed(1)} KB (${kind}), regions ${regionLayer.units.length} units ${regionsKb.toFixed(1)} KB`);
   if (sizeKb > 32) {
     throw new Error(`${dest.slug}.svg exceeds 32KB budget: ${sizeKb.toFixed(1)}KB`);
   }

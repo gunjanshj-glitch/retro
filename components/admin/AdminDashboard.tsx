@@ -7,7 +7,7 @@
  */
 import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { onAccent } from "@/components/plan/theme";
+import { btnPrimary } from "@/components/plan/theme";
 import { AdminRequests } from "./AdminRequests";
 import { AdminTripRequests } from "./AdminTripRequests";
 
@@ -17,10 +17,10 @@ export function AdminDashboard() {
   const { user, loading, openLogin } = useAuth();
   const [tab, setTab] = useState<Tab>("trips");
 
-  if (loading) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
+  if (loading) return <p role="status" style={{ color: "var(--muted)" }}>Loading…</p>;
   if (!user) {
     return (
-      <button type="button" onClick={openLogin} className="rounded-full px-6 py-2.5 text-sm font-semibold" style={{ background: "var(--accent)", color: onAccent }}>
+      <button type="button" onClick={openLogin} className={btnPrimary}>
         Sign in
       </button>
     );
@@ -28,7 +28,7 @@ export function AdminDashboard() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div role="tablist" aria-label="Request type" className="flex gap-6 border-b" style={{ borderColor: "var(--hairline)" }}>
+      <div role="tablist" aria-label="Request type" className="no-scrollbar flex gap-6 overflow-x-auto border-b" style={{ borderColor: "var(--line)" }}>
         {(
           [
             ["trips", "Trip requests"],
@@ -41,8 +41,8 @@ export function AdminDashboard() {
             aria-selected={tab === key}
             type="button"
             onClick={() => setTab(key)}
-            className="-mb-px border-b-2 pb-3 text-sm font-medium transition"
-            style={{ borderColor: tab === key ? "var(--accent)" : "transparent", color: tab === key ? "var(--text)" : "var(--muted)" }}
+            className="-mb-px min-h-11 shrink-0 whitespace-nowrap border-b-[3px] pb-2.5 pt-2 text-sm font-bold transition-colors hover:text-[var(--ink)]"
+            style={{ borderColor: tab === key ? "var(--sun)" : "transparent", color: tab === key ? "var(--ink)" : "var(--muted)" }}
           >
             {label}
           </button>

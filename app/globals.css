@@ -12,50 +12,111 @@
   }
 }
 
+/*
+ * "Sunlit Atlas" — one light theme for the whole app (public site and admin).
+ *
+ * Semantic tokens first; the older names (--deep, --text, --muted, --hairline,
+ * --glass) are kept as aliases so every component reads from one source.
+ *   --sun     brand sunshine from the logo: filled CTAs and selected chips only
+ *   --on-sun  text placed on --sun
+ *   --accent  deep coral: accent text, active borders, live map pins
+ *             (#c63d17 on white is 5.0:1, AA for body text)
+ */
 :root {
-  --deep: #071a1f;
-  --surface: #0e242a;
-  --glass: rgba(12, 30, 34, 0.55);
-  --glass-strong: rgba(9, 24, 28, 0.72);
-  --hairline: rgba(255, 255, 255, 0.12);
-  --text: #f2f7f6;
-  --muted: #9bb3b4;
-  --brand: #fdbf00;
-  --accent: var(--brand);
+  color-scheme: light;
 
-  --font-display: "Instrument Serif", serif;
-  --font-interface: "Inter", sans-serif;
+  --bg: #ffffff;
+  --surface: #f3f8fc;
+  --card: #ffffff;
+  --ink: #0b2238;
+  --ink-2: #4a5d70;
+  --line: #e2e9f0;
+  --line-strong: #c9d5e1;
+
+  --sun: #ffc21a;
+  --sun-deep: #f2a900;
+  --on-sun: #0b2238;
+  --accent: #c63d17;
+  --coral: #e8431e;
+  --coral-soft: #ffe3da;
+  --success: #1f7a4d;
+  --success-soft: #e3f4ea;
+  --warning: #9a5b00;
+  --warning-soft: #fff1d6;
+  --danger: #b42318;
+  --danger-soft: #fde7e5;
+
+  /* map */
+  --sea: #d6ecf8;
+  --sea-2: #eef7fc;
+  --land: #a9cb7c;
+  --land-hi: #86b354;
+  --land-on: #5f9139;
+  --land-dim: #dbe8cc;
+  --land-out: #e6e9ed;
+
+  --shadow-sm: 0 1px 2px rgba(11, 34, 56, 0.06), 0 4px 12px rgba(11, 34, 56, 0.06);
+  --shadow: 0 1px 2px rgba(11, 34, 56, 0.06), 0 8px 24px rgba(11, 34, 56, 0.08);
+  --shadow-lg: 0 2px 6px rgba(11, 34, 56, 0.08), 0 24px 60px rgba(11, 34, 56, 0.16);
+  --scrim: rgba(11, 34, 56, 0.45);
+
+  /* aliases kept for existing call sites */
+  --deep: var(--bg);
+  --text: var(--ink);
+  --muted: var(--ink-2);
+  --hairline: var(--line);
+  --glass: rgba(255, 255, 255, 0.86);
+  --glass-strong: rgba(255, 255, 255, 0.94);
+  --brand: var(--sun);
+
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-interface: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--deep);
-  --color-foreground: var(--text);
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
   --font-sans: var(--font-interface);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--deep);
-  color: var(--text);
+  background: var(--bg);
+  color: var(--ink);
   font-family: var(--font-interface);
+}
+
+:focus-visible {
+  outline: 3px solid var(--coral);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--sun);
+  color: var(--on-sun);
 }
 
 .font-display {
   font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
 }
 
-/* --- Logo: floating lockup ------------------------------------------------ */
-.logo-glow {
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55))
-    drop-shadow(0 0 14px rgba(253, 191, 0, 0.28));
-}
-
+/* --- Logo ----------------------------------------------------------------- */
 @keyframes logo-float {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
   }
 }
 
@@ -64,19 +125,44 @@ body {
   will-change: transform;
 }
 
-/* Text legibility scrim helpers over full-bleed media */
+/* Legibility scrim for white text over full-bleed photos */
 .scrim-hero {
   background:
-    linear-gradient(105deg, rgba(4, 14, 17, 0.88) 0%, rgba(4, 14, 17, 0.5) 42%, rgba(4, 14, 17, 0) 70%),
-    linear-gradient(to top, rgba(4, 14, 17, 0.85) 0%, rgba(4, 14, 17, 0) 45%);
+    linear-gradient(105deg, rgba(11, 34, 56, 0.7) 0%, rgba(11, 34, 56, 0.32) 45%, rgba(11, 34, 56, 0) 72%),
+    linear-gradient(to top, rgba(11, 34, 56, 0.72) 0%, rgba(11, 34, 56, 0) 50%);
 }
 
-/* Overlay used on image-filled cards so overlaid text stays readable */
+/* Overlay on image-filled cards so overlaid white text stays readable */
 .card-overlay {
-  background: linear-gradient(to top, rgba(3, 12, 14, 0.9) 8%, rgba(3, 12, 14, 0.35) 45%, rgba(3, 12, 14, 0.05) 100%);
+  background: linear-gradient(to top, rgba(11, 34, 56, 0.85) 8%, rgba(11, 34, 56, 0.3) 45%, rgba(11, 34, 56, 0) 100%);
 }
 
-/* Hide scrollbar on the horizontal card rail */
+/* Shared surfaces */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+}
+.lift {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Hide scrollbar on horizontal card rails */
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -87,10 +173,8 @@ body {
 
 /* Continuously auto-scrolling package rail (planner "browse all" section):
    the track is rendered twice back to back and slides exactly one copy's
-   width, so the loop point is seamless. Paused on hover/focus so a traveller
-   can actually read and click a card, and stopped entirely for reduced
-   motion (see the media query below), where it behaves like an ordinary
-   manually-scrollable row instead. */
+   width, so the loop point is seamless. Paused on hover/focus, and stopped
+   for reduced motion, where it behaves like an ordinary scrollable row. */
 @keyframes marquee-scroll {
   from {
     transform: translateX(0);
@@ -108,77 +192,62 @@ body {
   animation-play-state: paused;
 }
 
-/* Interactive destination map + marker highlighting */
-.destination-map-wrapper {
-  position: relative;
-  width: 100%;
-  overflow: hidden; /* prevent SVG country paths from bleeding into adjacent sections */
-}
-
-.destination-map {
-  width: 100%;
-}
-.destination-map svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible; /* country shapes may extend beyond tight viewBox; clipped by wrapper */
-}
-/* Give the landmass a faint fill so it reads as a shape, not a thin outline */
-.destination-map [data-role="coastline"] {
-  fill: rgba(111, 227, 196, 0.07);
-  stroke: var(--muted);
-}
-.destination-map [data-marker-name] {
+/* --- Region maps -------------------------------------------------------- */
+.map-country {
+  fill: var(--land);
+  stroke: #fff;
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
   cursor: pointer;
+  transition: fill 0.18s ease;
 }
-
-/* Dot: muted by default, accent on active */
-.destination-map .marker-dot {
-  transition: fill 0.2s ease;
+.map-country[data-state="hot"] {
+  fill: var(--land-hi);
 }
-.destination-map [data-marker-name].marker-active .marker-dot {
-  fill: var(--accent);
+.map-country[data-state="on"] {
+  fill: var(--land-on);
 }
-
-/* Leader line */
-.destination-map .marker-leader {
-  transition: stroke 0.2s ease;
+.map-country[data-state="dim"] {
+  fill: var(--land-dim);
 }
-.destination-map [data-marker-name].marker-active .marker-leader {
-  stroke: var(--accent);
-  stroke-opacity: 0.6;
+.map-context {
+  fill: var(--land-out);
+  stroke: #fff;
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
 }
-
-/* Plain text label */
-.destination-map .marker-label-text {
-  transition: fill 0.2s ease;
-}
-.destination-map [data-marker-name].marker-active .marker-label-text {
-  fill: var(--text);
-}
-
-/* Dimmed markers when a group filter is active */
-.destination-map [data-marker-name].marker-dimmed .marker-dot,
-.destination-map [data-marker-name].marker-dimmed .marker-leader {
-  opacity: 0.18;
+.map-hint {
+  opacity: 0;
   transition: opacity 0.25s ease;
 }
-.destination-map [data-marker-name].marker-dimmed .marker-label-text {
-  opacity: 0.18;
-  transition: opacity 0.25s ease;
+.map-hint[data-show="true"] {
+  opacity: 1;
 }
-.destination-map [data-marker-name]:not(.marker-dimmed) .marker-dot,
-.destination-map [data-marker-name]:not(.marker-dimmed) .marker-leader,
-.destination-map [data-marker-name]:not(.marker-dimmed) .marker-label-text {
-  transition: opacity 0.25s ease;
+
+@keyframes hero-drift {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.1) translate(-1%, -1%);
+  }
+}
+.hero-drift {
+  animation: hero-drift 22s ease-in-out infinite alternate;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo-float {
+  html {
+    scroll-behavior: auto;
+  }
+  .logo-float,
+  .marquee-track,
+  .hero-drift {
     animation: none;
   }
-  .marquee-track {
-    animation: none;
+  .lift:hover {
+    transform: none;
   }
 }

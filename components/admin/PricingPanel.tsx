@@ -9,9 +9,9 @@
 import { useState } from "react";
 import { formatInr } from "@retro/core/atlas/engine/text";
 import { priceQuote, type CustomLine, type QuoteAdjustments } from "@retro/core/quote-pricing";
+import { btnSmall, fieldClass, selectStyle } from "@/components/plan/theme";
 
-const inputClass =
-  "w-full rounded-lg border border-white/10 bg-[rgba(7,26,31,0.72)] px-3 py-2 text-sm text-[var(--text)] outline-none transition focus:border-[var(--accent)]";
+const inputClass = fieldClass;
 
 type LineKind = "charge" | "discount" | "optional";
 
@@ -70,19 +70,19 @@ export function PricingPanel({ engineTotalInr, adjustments, onChange, validUntil
   return (
     <fieldset disabled={disabled} className="flex flex-col gap-6 disabled:opacity-60">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <p className="text-xs uppercase tracking-wide" style={{ color: "var(--muted)" }}>
+        <div className="rounded-xl p-4" style={{ background: "var(--surface)" }}>
+          <p className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: "var(--ink-2)" }}>
             Priced by the engine
           </p>
           <p className="mt-1 font-display text-2xl tabular-nums">{formatInr(engineTotalInr)}</p>
         </div>
-        <label className="text-sm" style={{ color: "var(--muted)" }}>
-          <span className="flex items-center gap-2">
+        <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+          <span className="flex min-h-11 items-center gap-3">
             <input
               type="checkbox"
               checked={pinned}
               onChange={(e) => onChange({ ...adjustments, fixedPackageInr: e.target.checked ? Math.round(engineTotalInr) : null })}
-              className="h-4 w-4 accent-[var(--accent)]"
+              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
             />
             Set a fixed package price
           </span>
@@ -98,17 +98,20 @@ export function PricingPanel({ engineTotalInr, adjustments, onChange, validUntil
               aria-label="Fixed package price in rupees"
             />
           )}
-          <span className="mt-1 block text-xs">Overrides the engine total — use for a negotiated or rounded figure. The breakdown scales to match.</span>
+          <span className="mt-1 block text-xs font-normal" style={{ color: "var(--muted)" }}>Overrides the engine total — use for a negotiated or rounded figure. The breakdown scales to match.</span>
         </label>
       </div>
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h4 className="font-display text-lg">Charges, discounts &amp; optional extras</h4>
-          <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex flex-wrap gap-2">
             {(["charge", "discount", "optional"] as const).map((k) => (
-              <button key={k} type="button" onClick={() => addLine(k)} className="rounded-full border px-3 py-1.5 hover:border-[var(--accent)]" style={{ borderColor: "var(--hairline)" }}>
-                + {k === "charge" ? "Charge" : k === "discount" ? "Discount" : "Optional extra"}
+              <button key={k} type="button" onClick={() => addLine(k)} className={`${btnSmall} min-h-10`}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+                </svg>
+                {k === "charge" ? "Charge" : k === "discount" ? "Discount" : "Optional extra"}
               </button>
             ))}
           </div>
@@ -122,12 +125,12 @@ export function PricingPanel({ engineTotalInr, adjustments, onChange, validUntil
           {adjustments.lines.map((line) => {
             const kind = kindOf(line);
             return (
-              <li key={line.id} className="grid grid-cols-[1fr_auto] gap-2 rounded-xl border p-3 sm:grid-cols-[8.5rem_1fr_9rem_auto]" style={{ borderColor: "var(--hairline)" }}>
+              <li key={line.id} className="grid grid-cols-[1fr_auto] gap-2 rounded-xl border p-3 sm:grid-cols-[9rem_1fr_9rem_auto]" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
                 <select
                   value={kind}
                   onChange={(e) => setLine(line.id, { kind: e.target.value as LineKind })}
                   className={`${inputClass} col-span-2 sm:col-span-1`}
-                  style={{ colorScheme: "dark" }}
+                  style={selectStyle}
                   aria-label="Type"
                 >
                   <option value="charge">Charge</option>
@@ -152,8 +155,16 @@ export function PricingPanel({ engineTotalInr, adjustments, onChange, validUntil
                   className={inputClass}
                   aria-label="Amount in rupees"
                 />
-                <button type="button" onClick={() => removeLine(line.id)} className="rounded-lg border px-3 text-sm" style={{ borderColor: "var(--hairline)", color: "var(--muted)" }} aria-label="Remove line">
-                  ×
+                <button
+                  type="button"
+                  onClick={() => removeLine(line.id)}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border-[1.5px] bg-[var(--card)] transition-colors hover:border-[var(--danger)] hover:text-[var(--danger)]"
+                  style={{ borderColor: "var(--line-strong)", color: "var(--ink-2)" }}
+                  aria-label="Remove line"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                  </svg>
                 </button>
               </li>
             );
@@ -162,13 +173,13 @@ export function PricingPanel({ engineTotalInr, adjustments, onChange, validUntil
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="text-sm" style={{ color: "var(--muted)" }}>
-          <label className="flex items-center gap-2">
+        <div className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+          <label className="flex min-h-11 items-center gap-3">
             <input
               type="checkbox"
               checked={deposit != null}
               onChange={(e) => onChange({ ...adjustments, depositInr: e.target.checked ? Math.max(1, Math.round(priced.totalInr * 0.25)) : null })}
-              className="h-4 w-4 accent-[var(--accent)]"
+              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
             />
             Take a deposit to confirm the booking
           </label>
@@ -186,30 +197,30 @@ export function PricingPanel({ engineTotalInr, adjustments, onChange, validUntil
               />
               <span className="mt-1.5 flex flex-wrap gap-1.5">
                 {[25, 30, 50].map((pct) => (
-                  <button key={pct} type="button" onClick={() => onChange({ ...adjustments, depositInr: Math.round((priced.totalInr * pct) / 100) })} className="rounded-full border px-2.5 py-1 text-xs" style={{ borderColor: "var(--hairline)" }}>
+                  <button key={pct} type="button" onClick={() => onChange({ ...adjustments, depositInr: Math.round((priced.totalInr * pct) / 100) })} className={btnSmall}>
                     {pct}%
                   </button>
                 ))}
               </span>
               {deposit >= priced.totalInr && (
-                <span className="mt-1.5 block text-xs" style={{ color: "#ffb74d" }}>
+                <span role="status" className="mt-1.5 block text-xs font-semibold" style={{ color: "var(--warning)" }}>
                   A deposit must be less than the total ({formatInr(priced.totalInr)}).
                 </span>
               )}
             </>
           )}
-          <span className="mt-1 block text-xs">The balance is requested after the first payment. Leave off to take everything up front.</span>
+          <span className="mt-1 block text-xs font-normal" style={{ color: "var(--muted)" }}>The balance is requested after the first payment. Leave off to take everything up front.</span>
         </div>
-        <label className="text-sm" style={{ color: "var(--muted)" }}>
+        <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
           Quote stays open until
-          <input type="date" value={validUntil} min={today} max={max} onChange={(e) => onValidUntilChange(e.target.value)} className={`${inputClass} mt-1.5`} style={{ colorScheme: "dark" }} />
-          <span className="mt-1 block text-xs">After this date the traveller can no longer accept it.</span>
+          <input type="date" value={validUntil} min={today} max={max} onChange={(e) => onValidUntilChange(e.target.value)} className={`${inputClass} mt-1.5 font-normal`} style={selectStyle} />
+          <span className="mt-1 block text-xs font-normal" style={{ color: "var(--muted)" }}>After this date the traveller can no longer accept it.</span>
         </label>
       </div>
 
-      <label className="text-sm" style={{ color: "var(--muted)" }}>
+      <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
         Note to the traveller (shown on the quote and in the email)
-        <textarea value={note} maxLength={1500} rows={3} onChange={(e) => onNoteChange(e.target.value)} className={`${inputClass} mt-1.5`} placeholder="e.g. As discussed on our call, I've upgraded the Rome hotel and added the private Vatican tour as an option." />
+        <textarea value={note} maxLength={1500} rows={3} onChange={(e) => onNoteChange(e.target.value)} className={`${inputClass} mt-1.5 font-normal`} placeholder="e.g. As discussed on our call, I've upgraded the Rome hotel and added the private Vatican tour as an option." />
       </label>
     </fieldset>
   );

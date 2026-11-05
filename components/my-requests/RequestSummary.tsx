@@ -29,7 +29,7 @@ import { formatInr } from "@retro/core/atlas/engine/text";
 import type { Quotation } from "@retro/core/atlas/engine/types";
 import { priceQuote } from "@retro/core/quote-pricing";
 import { STATUS_COPY } from "@retro/core/quote-workflow";
-import { onAccent } from "@/components/plan/theme";
+import { btnGhost, btnPrimary, cardClass, fieldClass, toneStyle } from "@/components/plan/theme";
 import { QuoteOffer } from "./QuoteOffer";
 import { daysLeft, daysLeftLabel, formatDate, ProgressTracker, StatusBadge, Timeline } from "./status";
 
@@ -37,8 +37,10 @@ const AGENCY_EMAIL = "info@retroholidays.in";
 
 type Banner = { tone: "success" | "info" | "error"; text: string } | null;
 
-const primaryBtn = "inline-flex min-h-11 items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold transition disabled:opacity-60";
-const ghostBtn = "inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2.5 text-sm transition hover:border-[var(--accent)] disabled:opacity-60";
+const primaryBtn = btnPrimary;
+const ghostBtn = btnGhost;
+/** Quiet text action (Decline, Back, Keep it): underlined, 44px tall target. */
+const textBtn = "inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-2 hover:text-[var(--ink)]";
 
 export function RequestSummary() {
   const params = useSearchParams();
@@ -91,15 +93,15 @@ export function RequestSummary() {
 
   const detail: RequestDetail | null | "loading" = id && result?.id === id ? result.detail : "loading";
 
-  if (authLoading) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
-  if (!user) return <p style={{ color: "var(--muted)" }}>Sign in to view this request.</p>;
-  if (!id) return <p style={{ color: "var(--muted)" }}>No request specified.</p>;
-  if (detail === "loading") return <p style={{ color: "var(--muted)" }}>Loading your request…</p>;
+  if (authLoading) return <p role="status" style={{ color: "var(--muted)" }}>Loading…</p>;
+  if (!user) return <p role="status" style={{ color: "var(--muted)" }}>Sign in to view this request.</p>;
+  if (!id) return <p role="status" style={{ color: "var(--muted)" }}>No request specified.</p>;
+  if (detail === "loading") return <p role="status" style={{ color: "var(--muted)" }}>Loading your request…</p>;
   if (!detail) {
     return (
-      <div className="rounded-2xl border p-8 text-center" style={{ borderColor: "var(--hairline)" }}>
+      <div className={`${cardClass} px-6 py-12 text-center`} style={{ background: "var(--surface)" }}>
         <p style={{ color: "var(--muted)" }}>We couldn&apos;t find that request.</p>
-        <Link href="/my-requests" className={`${ghostBtn} mt-4`} style={{ borderColor: "var(--hairline)" }}>
+        <Link href="/my-requests" className={`${ghostBtn} mt-5`}>
           Back to my requests
         </Link>
       </div>
@@ -115,14 +117,16 @@ export function RequestSummary() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <Link href="/my-requests" className="text-xs underline" style={{ color: "var(--muted)" }}>
-          ← My requests
+        <Link
+          href="/my-requests"
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold hover:text-[var(--accent)]"
+          style={{ color: "var(--ink-2)" }}
+        >
+          <span aria-hidden="true">←</span> My requests
         </Link>
-        <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--accent)" }}>
-              Trip request
-            </p>
+        <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="eyebrow">Trip request</p>
             <h1 className="mt-3 font-display text-3xl md:text-4xl">{detail.destinationSummary}</h1>
             <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
               {detail.nights} nights from {formatDate(detail.startDate)} · sent {formatDate(detail.createdAt)} · ID {detail.id.slice(0, 8)}
@@ -137,18 +141,22 @@ export function RequestSummary() {
       {banner && (
         <p
           role={banner.tone === "error" ? "alert" : "status"}
-          className="rounded-xl border p-3 text-sm"
-          style={{
-            borderColor: banner.tone === "success" ? "#7bd88f" : banner.tone === "error" ? "#ff8a80" : "var(--hairline)",
-            background: banner.tone === "success" ? "color-mix(in srgb, #7bd88f 10%, transparent)" : "transparent",
-          }}
+          className="rounded-xl border px-4 py-3 text-sm font-medium"
+          style={banner.tone === "success" ? toneStyle.success : banner.tone === "error" ? toneStyle.danger : toneStyle.info}
         >
           {banner.text}
         </p>
       )}
 
-      <section className="rounded-2xl border p-5" style={{ borderColor: STATUS_COPY[status].tone === "action" ? "var(--accent)" : "var(--hairline)" }}>
-        <h2 className="font-display text-xl">{copy.label}</h2>
+      <section
+        className={`${cardClass} p-5 sm:p-6`}
+        style={
+          STATUS_COPY[status].tone === "action"
+            ? { borderColor: "var(--sun-deep)", boxShadow: "inset 4px 0 0 var(--sun), var(--shadow-sm)" }
+            : undefined
+        }
+      >
+        <h2 className="font-display text-2xl">{copy.label}</h2>
         <p className="mt-1.5 text-sm" style={{ color: "var(--muted)" }}>
           {copy.traveller}
         </p>
@@ -167,10 +175,10 @@ export function RequestSummary() {
 
       {payment.payments.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h2 className="font-display text-xl">Payments</h2>
-          <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--hairline)" }}>
+          <h2 className="font-display text-2xl">Payments</h2>
+          <div className={`${cardClass} overflow-hidden`}>
             {payment.payments.map((p) => (
-              <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 text-sm last:border-b-0" style={{ borderColor: "var(--hairline)" }}>
+              <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 text-sm last:border-b-0" style={{ borderColor: "var(--line)" }}>
                 <span className="capitalize">
                   {p.kind === "full" ? "Full payment" : p.kind} · {formatDate(p.paidAt)}
                   {p.method ? ` · ${p.method.toUpperCase()}` : ""}
@@ -179,8 +187,8 @@ export function RequestSummary() {
               </div>
             ))}
             <div className="flex justify-between px-4 py-3 text-sm" style={{ background: "var(--surface)" }}>
-              <span>Paid of {formatInr(payment.totalInr ?? payment.paidInr)}</span>
-              <span className="tabular-nums" style={{ color: "var(--accent)" }}>
+              <span className="font-semibold">Paid of {formatInr(payment.totalInr ?? payment.paidInr)}</span>
+              <span className="font-bold tabular-nums" style={{ color: "var(--success)" }}>
                 {formatInr(payment.paidInr)}
               </span>
             </div>
@@ -188,36 +196,43 @@ export function RequestSummary() {
         </section>
       )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-display text-xl">Activity</h2>
-        <Timeline events={detail.events} />
+      <section className="flex flex-col gap-4">
+        <h2 className="font-display text-2xl">Activity</h2>
+        <div className={`${cardClass} p-5 sm:p-6`}>
+          <Timeline events={detail.events} />
+        </div>
       </section>
 
-      <details className="rounded-2xl border p-5" style={{ borderColor: "var(--hairline)" }}>
-        <summary className="cursor-pointer font-display text-xl">What you originally sent</summary>
+      <details className={`${cardClass} group p-5 sm:p-6`}>
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 font-display text-xl [&::-webkit-details-marker]:hidden">
+          What you originally sent
+          <svg className="shrink-0 transition-transform group-open:rotate-180" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ color: "var(--ink-2)" }}>
+            <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </summary>
         <div className="mt-4 flex flex-col gap-4">
           <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
             <div>
               <dt style={{ color: "var(--muted)" }}>Nights</dt>
-              <dd className="mt-1 text-lg">{detail.nights}</dd>
+              <dd className="mt-1 text-lg font-semibold">{detail.nights}</dd>
             </div>
             <div>
               <dt style={{ color: "var(--muted)" }}>Starts</dt>
-              <dd className="mt-1 text-lg">{formatDate(detail.startDate)}</dd>
+              <dd className="mt-1 text-lg font-semibold">{formatDate(detail.startDate)}</dd>
             </div>
             <div>
               <dt style={{ color: "var(--muted)" }}>Estimate</dt>
-              <dd className="mt-1 text-lg tabular-nums">{formatInr(detail.totalInr)}</dd>
+              <dd className="mt-1 text-lg font-semibold tabular-nums">{formatInr(detail.totalInr)}</dd>
             </div>
             <div>
               <dt style={{ color: "var(--muted)" }}>Per person</dt>
-              <dd className="mt-1 text-lg tabular-nums">{formatInr(detail.perPersonInr)}</dd>
+              <dd className="mt-1 text-lg font-semibold tabular-nums">{formatInr(detail.perPersonInr)}</dd>
             </div>
           </dl>
           {snapshot && (
-            <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--hairline)" }}>
+            <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--line)" }}>
               {Object.entries(groupByComponent(snapshot.quotation)).map(([component, total]) => (
-                <div key={component} className="flex items-center justify-between gap-3 border-b px-4 py-3 text-sm last:border-b-0" style={{ borderColor: "var(--hairline)" }}>
+                <div key={component} className="flex items-center justify-between gap-3 border-b px-4 py-3 text-sm last:border-b-0" style={{ borderColor: "var(--line)" }}>
                   <span className="capitalize">{component.replace(/-/g, " ")}</span>
                   <span className="tabular-nums">{formatInr(total)}</span>
                 </div>
@@ -228,8 +243,8 @@ export function RequestSummary() {
             This is the estimate you saw when you sent the request. The final quote above is what counts.
           </p>
           <div className="text-sm" style={{ color: "var(--muted)" }}>
-            <p className="text-xs uppercase tracking-wide">We&apos;ll reach you at</p>
-            <p className="mt-1" style={{ color: "var(--text)" }}>
+            <p className="text-xs font-bold uppercase tracking-[0.12em]">We&apos;ll reach you at</p>
+            <p className="mt-1" style={{ color: "var(--ink)" }}>
               {detail.contact.email}
               {detail.contact.phone ? ` · ${detail.contact.phone}` : ""}
             </p>
@@ -240,7 +255,7 @@ export function RequestSummary() {
 
       <p className="text-xs" style={{ color: "var(--muted)" }}>
         Questions? Write to{" "}
-        <a className="underline" href={`mailto:${AGENCY_EMAIL}?subject=${encodeURIComponent(`Trip request ${detail.id}`)}`}>
+        <a className="font-semibold underline underline-offset-2" style={{ color: "var(--accent)" }} href={`mailto:${AGENCY_EMAIL}?subject=${encodeURIComponent(`Trip request ${detail.id}`)}`}>
           {AGENCY_EMAIL}
         </a>{" "}
         and quote the ID {detail.id}.
@@ -279,25 +294,25 @@ function ActionArea({ detail, onChanged, onPay, paying, setBanner }: ActionProps
     const label = status === "part_paid" ? "Pay the balance" : payment.nextInr < (payment.totalInr ?? 0) ? "Pay the booking deposit" : "Pay now";
     return (
       <div className="mt-4 flex flex-col gap-3">
-        <dl className="grid grid-cols-3 gap-3 text-sm">
+        <dl className="grid grid-cols-3 gap-3 rounded-xl p-4 text-sm" style={{ background: "var(--surface)" }}>
           <div>
             <dt style={{ color: "var(--muted)" }}>Agreed total</dt>
-            <dd className="mt-0.5 tabular-nums">{formatInr(payment.totalInr ?? 0)}</dd>
+            <dd className="mt-0.5 font-semibold tabular-nums">{formatInr(payment.totalInr ?? 0)}</dd>
           </div>
           <div>
             <dt style={{ color: "var(--muted)" }}>Paid so far</dt>
-            <dd className="mt-0.5 tabular-nums">{formatInr(payment.paidInr)}</dd>
+            <dd className="mt-0.5 font-semibold tabular-nums">{formatInr(payment.paidInr)}</dd>
           </div>
           <div>
             <dt style={{ color: "var(--muted)" }}>Due now</dt>
-            <dd className="mt-0.5 tabular-nums" style={{ color: "var(--accent)" }}>
+            <dd className="mt-0.5 font-bold tabular-nums" style={{ color: "var(--ink)" }}>
               {formatInr(payment.nextInr)}
             </dd>
           </div>
         </dl>
         {payment.configured ? (
           <div className="flex flex-wrap items-center gap-3">
-            <button type="button" onClick={onPay} disabled={paying} className={primaryBtn} style={{ background: "var(--accent)", color: onAccent }}>
+            <button type="button" onClick={onPay} disabled={paying} className={primaryBtn}>
               {paying ? "Opening payment…" : `${label} · ${formatInr(payment.nextInr)}`}
             </button>
             <span className="text-xs" style={{ color: "var(--muted)" }}>
@@ -305,7 +320,7 @@ function ActionArea({ detail, onChanged, onPay, paying, setBanner }: ActionProps
             </span>
           </div>
         ) : (
-          <p className="rounded-xl border p-3 text-sm" style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}>
+          <p className="rounded-xl border px-4 py-3 text-sm" style={toneStyle.info}>
             Online payment isn&apos;t switched on yet. We have been told you accepted — our team will email you payment details shortly.
           </p>
         )}
@@ -327,7 +342,6 @@ function ActionArea({ detail, onChanged, onPay, paying, setBanner }: ActionProps
       <div className="mt-4 flex flex-wrap gap-3">
         <a
           className={primaryBtn}
-          style={{ background: "var(--accent)", color: onAccent }}
           href={`mailto:${AGENCY_EMAIL}?subject=${encodeURIComponent(`Please refresh my quote — ${detail.id}`)}`}
         >
           Ask us to refresh it
@@ -339,7 +353,7 @@ function ActionArea({ detail, onChanged, onPay, paying, setBanner }: ActionProps
   if (status === "declined" || status === "cancelled" || status === "closed") {
     return (
       <div className="mt-4">
-        <Link href="/plan" className={primaryBtn} style={{ background: "var(--accent)", color: onAccent }}>
+        <Link href="/plan" className={primaryBtn}>
           Plan another trip
         </Link>
       </div>
@@ -352,7 +366,7 @@ function ActionArea({ detail, onChanged, onPay, paying, setBanner }: ActionProps
 function WithdrawLink({ confirm, setConfirm, busy, onWithdraw }: { confirm: boolean; setConfirm: (v: boolean) => void; busy: boolean; onWithdraw: () => void }) {
   if (!confirm) {
     return (
-      <button type="button" onClick={() => setConfirm(true)} className="self-start text-xs underline" style={{ color: "var(--muted)" }}>
+      <button type="button" onClick={() => setConfirm(true)} className={`${textBtn} self-start`} style={{ color: "var(--ink-2)" }}>
         Withdraw this request
       </button>
     );
@@ -360,10 +374,10 @@ function WithdrawLink({ confirm, setConfirm, busy, onWithdraw }: { confirm: bool
   return (
     <div className="flex flex-wrap items-center gap-3 text-sm">
       <span style={{ color: "var(--muted)" }}>Withdraw this request?</span>
-      <button type="button" onClick={onWithdraw} disabled={busy} className={ghostBtn} style={{ borderColor: "var(--hairline)" }}>
+      <button type="button" onClick={onWithdraw} disabled={busy} className={ghostBtn}>
         {busy ? "Withdrawing…" : "Yes, withdraw"}
       </button>
-      <button type="button" onClick={() => setConfirm(false)} className="text-xs underline" style={{ color: "var(--muted)" }}>
+      <button type="button" onClick={() => setConfirm(false)} className={textBtn} style={{ color: "var(--ink-2)" }}>
         Keep it
       </button>
     </div>
@@ -430,11 +444,14 @@ function QuoteDecision({
     <>
       <QuoteOffer quote={quote.view} version={quote.version} selected={selected} onSelectedChange={setSelected} />
 
-      <div className="flex flex-col gap-4 rounded-2xl border p-5" style={{ borderColor: "var(--accent)", background: "color-mix(in srgb, var(--accent) 5%, transparent)" }}>
+      <div
+        className="flex flex-col gap-4 rounded-2xl border p-5 sm:p-6"
+        style={{ borderColor: "var(--sun-deep)", background: "color-mix(in srgb, var(--sun) 10%, var(--card))", boxShadow: "var(--shadow-sm)" }}
+      >
         {mode === "idle" ? (
           <>
             <label className="flex items-start gap-3 text-sm">
-              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--accent)]" />
+              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--accent)]" />
               <span>
                 I have reviewed the itinerary, inclusions and price, and I accept this quote for{" "}
                 <strong className="tabular-nums">{formatInr(priced.totalInr)}</strong>
@@ -446,13 +463,13 @@ function QuoteDecision({
               </span>
             </label>
             <div className="flex flex-wrap items-center gap-3">
-              <button type="button" onClick={accept} disabled={!agreed || busy} className={primaryBtn} style={{ background: "var(--accent)", color: onAccent }}>
+              <button type="button" onClick={accept} disabled={!agreed || busy} className={primaryBtn}>
                 {busy ? "Working…" : `Accept & continue to payment`}
               </button>
-              <button type="button" onClick={() => setMode("changes")} disabled={busy} className={ghostBtn} style={{ borderColor: "var(--hairline)" }}>
+              <button type="button" onClick={() => setMode("changes")} disabled={busy} className={ghostBtn}>
                 Request changes
               </button>
-              <button type="button" onClick={() => setMode("decline")} disabled={busy} className="text-sm underline" style={{ color: "var(--muted)" }}>
+              <button type="button" onClick={() => setMode("decline")} disabled={busy} className={textBtn} style={{ color: "var(--ink-2)" }}>
                 Decline
               </button>
             </div>
@@ -464,7 +481,7 @@ function QuoteDecision({
           </>
         ) : (
           <>
-            <label className="text-sm" style={{ color: "var(--muted)" }}>
+            <label className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
               {mode === "changes" ? "What would you like changed?" : "Anything you'd like to tell us? (optional)"}
               <textarea
                 value={text}
@@ -473,7 +490,7 @@ function QuoteDecision({
                 maxLength={1000}
                 autoFocus
                 placeholder={mode === "changes" ? "e.g. Drop the spa day, add one more night in Rome, upgrade to 5-star…" : "e.g. Found a better price, plans changed…"}
-                className="mt-1.5 w-full rounded-xl border border-white/10 bg-[rgba(7,26,31,0.72)] px-4 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
+                className={`mt-1.5 font-normal ${fieldClass}`}
               />
             </label>
             <div className="flex flex-wrap items-center gap-3">
@@ -482,18 +499,17 @@ function QuoteDecision({
                 onClick={submitChanges}
                 disabled={busy || (mode === "changes" && text.trim().length < 5)}
                 className={primaryBtn}
-                style={{ background: "var(--accent)", color: onAccent }}
               >
                 {busy ? "Sending…" : mode === "changes" ? "Send to our team" : "Decline this quote"}
               </button>
-              <button type="button" onClick={() => { setMode("idle"); setError(null); }} className="text-sm underline" style={{ color: "var(--muted)" }}>
+              <button type="button" onClick={() => { setMode("idle"); setError(null); }} className={textBtn} style={{ color: "var(--ink-2)" }}>
                 Back
               </button>
             </div>
           </>
         )}
         {error && (
-          <p role="alert" className="text-sm" style={{ color: "#ff8a80" }}>
+          <p role="alert" className="rounded-xl border px-4 py-3 text-sm font-medium" style={toneStyle.danger}>
             {error}
           </p>
         )}

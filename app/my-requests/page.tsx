@@ -13,7 +13,7 @@ export default function MyRequestsPage() {
     <>
       <NavBar />
       <main className="mx-auto w-full max-w-4xl p-6 pt-28 md:p-12 md:pt-36">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--accent)" }}>
+        <p className="eyebrow">
           Your account
         </p>
         <h1 className="mt-3 font-display text-4xl md:text-5xl">My requests</h1>

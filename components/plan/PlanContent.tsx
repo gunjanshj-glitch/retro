@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { Destination } from "@/content/schema";
+import { fieldClass, selectStyle } from "./theme";
 
 type Props = { destinations: Pick<Destination, "slug" | "name">[] };
 
@@ -14,7 +15,7 @@ export function PlanContent({ destinations }: Props) {
 
   if (!dest) {
     return (
-      <section className="p-6 md:p-12">
+      <section className="px-6 pb-12 pt-[104px] md:px-12 md:pt-[124px]">
         <h1 className="font-display text-3xl">Where to?</h1>
         <p className="mt-2" style={{ color: "var(--muted)" }}>
           Pick a destination to start planning.
@@ -24,8 +25,8 @@ export function PlanContent({ destinations }: Props) {
             <Link
               key={d.slug}
               href={`/plan?destination=${d.slug}`}
-              className="rounded-full border px-5 py-2"
-              style={{ borderColor: "var(--hairline)" }}
+              className="inline-flex min-h-11 items-center rounded-full border-[1.5px] px-5 font-semibold transition-colors hover:border-[var(--ink)]"
+              style={{ borderColor: "var(--line-strong)" }}
             >
               {d.name}
             </Link>
@@ -36,7 +37,7 @@ export function PlanContent({ destinations }: Props) {
   }
 
   return (
-    <section className="p-6 md:p-12">
+    <section className="px-6 pb-12 pt-[104px] md:px-12 md:pt-[124px]">
       <GlassPanel className="mb-8 p-4">
         <p className="text-sm" style={{ color: "var(--accent)" }}>
           This is a Phase 2 preview — the quotation engine isn&apos;t built yet. These
@@ -46,24 +47,24 @@ export function PlanContent({ destinations }: Props) {
       <h1 className="font-display text-4xl">Planning your trip to {dest.name}</h1>
       <div className="mt-8 grid max-w-lg gap-4">
         <label className="flex flex-col gap-1">
-          <span style={{ color: "var(--muted)" }}>Travel dates</span>
-          <input type="date" className="rounded-lg border bg-transparent p-3" style={{ borderColor: "var(--hairline)" }} />
+          <span className="text-sm font-semibold">Travel dates</span>
+          <input type="date" className={fieldClass} style={selectStyle} />
         </label>
         <label className="flex flex-col gap-1">
-          <span style={{ color: "var(--muted)" }}>Travellers</span>
-          <input type="number" min={1} defaultValue={2} className="rounded-lg border bg-transparent p-3" style={{ borderColor: "var(--hairline)" }} />
+          <span className="text-sm font-semibold">Travellers</span>
+          <input type="number" min={1} defaultValue={2} className={fieldClass} style={selectStyle} />
         </label>
         <label className="flex flex-col gap-1">
-          <span style={{ color: "var(--muted)" }}>Trip style</span>
-          <select className="rounded-lg border bg-transparent p-3" style={{ borderColor: "var(--hairline)" }}>
+          <span className="text-sm font-semibold">Trip style</span>
+          <select className={fieldClass} style={selectStyle}>
             <option>Relaxed</option>
             <option>Adventure</option>
             <option>Luxury</option>
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          <span style={{ color: "var(--muted)" }}>Budget band</span>
-          <select className="rounded-lg border bg-transparent p-3" style={{ borderColor: "var(--hairline)" }}>
+          <span className="text-sm font-semibold">Budget band</span>
+          <select className={fieldClass} style={selectStyle}>
             <option>Comfortable</option>
             <option>Premium</option>
             <option>No limit</option>
