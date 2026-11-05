@@ -57,7 +57,7 @@
         {
           "country": "Sri Lanka",
           "origin": "Dambulla",
-          "destination": "Nuwaraeliya",
+          "destination": "Nuwara Eliya",
           "transport_options": {
             "flight": {
               "enabled": false,
@@ -84,7 +84,7 @@
               "duration_minutes": null,
               "terminals": {
                 "from": "Dambulla",
-                "to": "Nuwaraeliya"
+                "to": "Nuwara Eliya"
               }
             }
           },
@@ -237,7 +237,7 @@
         {
           "country": "Sri Lanka",
           "origin": "Kandy",
-          "destination": "Nuwaraeliya",
+          "destination": "Nuwara Eliya",
           "transport_options": {
             "flight": {
               "enabled": false,
@@ -257,7 +257,7 @@
               "duration_minutes": 210,
               "terminals": {
                 "from": "Kandy",
-                "to": "Nuwaraeliya"
+                "to": "Nuwara Eliya"
               }
             },
             "bus": {
@@ -271,7 +271,7 @@
               "duration_minutes": null,
               "terminals": {
                 "from": "Kandy",
-                "to": "Nuwaraeliya"
+                "to": "Nuwara Eliya"
               }
             }
           },
@@ -430,7 +430,7 @@
         },
         {
           "country": "Sri Lanka",
-          "origin": "Nuwaraeliya",
+          "origin": "Nuwara Eliya",
           "destination": "Kataragama",
           "transport_options": {
             "flight": {
@@ -457,7 +457,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Nuwaraeliya",
+                "from": "Nuwara Eliya",
                 "to": "Kataragama"
               }
             }
@@ -466,7 +466,7 @@
         },
         {
           "country": "Sri Lanka",
-          "origin": "Nuwaraeliya",
+          "origin": "Nuwara Eliya",
           "destination": "Mirissa",
           "transport_options": {
             "flight": {
@@ -493,7 +493,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Nuwaraeliya",
+                "from": "Nuwara Eliya",
                 "to": "Mirissa"
               }
             }
@@ -502,7 +502,7 @@
         },
         {
           "country": "Sri Lanka",
-          "origin": "Nuwaraeliya",
+          "origin": "Nuwara Eliya",
           "destination": "Waskaduwa",
           "transport_options": {
             "flight": {
@@ -529,7 +529,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Nuwaraeliya",
+                "from": "Nuwara Eliya",
                 "to": "Waskaduwa"
               }
             }
@@ -538,7 +538,7 @@
         },
         {
           "country": "Sri Lanka",
-          "origin": "Nuwaraeliya",
+          "origin": "Nuwara Eliya",
           "destination": "Colombo",
           "transport_options": {
             "flight": {
@@ -565,7 +565,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Nuwaraeliya",
+                "from": "Nuwara Eliya",
                 "to": "Colombo"
               }
             }
@@ -1286,7 +1286,7 @@
         {
           "country": "Bhutan",
           "origin": "Thimphu",
-          "destination": "Phunotsiling",
+          "destination": "Phuentsholing",
           "transport_options": {
             "flight": {
               "enabled": false,
@@ -1313,7 +1313,7 @@
               "duration_minutes": 180,
               "terminals": {
                 "from": "Thimphu",
-                "to": "Phunotsiling"
+                "to": "Phuentsholing"
               }
             }
           },
@@ -1365,7 +1365,7 @@
         {
           "country": "Bhutan",
           "origin": "Punakha",
-          "destination": "Phunotsiling",
+          "destination": "Phuentsholing",
           "transport_options": {
             "flight": {
               "enabled": false,
@@ -1392,7 +1392,7 @@
               "duration_minutes": 180,
               "terminals": {
                 "from": "Punakha",
-                "to": "Phunotsiling"
+                "to": "Phuentsholing"
               }
             }
           },
@@ -1401,7 +1401,7 @@
         {
           "country": "Bhutan",
           "origin": "Paro",
-          "destination": "Phunotsiling",
+          "destination": "Phuentsholing",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -1435,7 +1435,7 @@
               "duration_minutes": 180,
               "terminals": {
                 "from": "Paro",
-                "to": "Phunotsiling"
+                "to": "Phuentsholing"
               }
             }
           },

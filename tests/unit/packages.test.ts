@@ -19,7 +19,7 @@ describe("packages", () => {
     expect(withGermany?.packageName).toBe("Europe at a Glance");
     expect(withGermany?.packageSlug).toBe("europe-at-a-glance");
     expect(withGermany?.places).toEqual(
-      expect.arrayContaining(["Germany", "Austria", "Netherlands", "Linchestine"])
+      expect.arrayContaining(["Germany", "Austria", "Netherlands", "Liechtenstein"])
     );
   });
 

@@ -683,7 +683,7 @@
         },
         {
           "country": "South Korea",
-          "origin": "Seol",
+          "origin": "Seoul",
           "destination": "Jeonju",
           "transport_options": {
             "flight": {
@@ -710,7 +710,7 @@
               },
               "duration_minutes": 105,
               "terminals": {
-                "from": "Seol",
+                "from": "Seoul",
                 "to": "Jeonju"
               }
             },
@@ -724,7 +724,7 @@
               },
               "duration_minutes": 225,
               "terminals": {
-                "from": "Seol",
+                "from": "Seoul",
                 "to": "Jeonju"
               }
             }
@@ -732,7 +732,7 @@
         },
         {
           "country": "South Korea",
-          "origin": "Seol",
+          "origin": "Seoul",
           "destination": "Gyeongju",
           "transport_options": {
             "flight": {
@@ -759,7 +759,7 @@
               },
               "duration_minutes": 130,
               "terminals": {
-                "from": "Seol",
+                "from": "Seoul",
                 "to": "Gyeongju"
               }
             },
@@ -773,7 +773,7 @@
               },
               "duration_minutes": 250,
               "terminals": {
-                "from": "Seol",
+                "from": "Seoul",
                 "to": "Gyeongju"
               }
             }
@@ -781,7 +781,7 @@
         },
         {
           "country": "South Korea",
-          "origin": "Seol",
+          "origin": "Seoul",
           "destination": "Golgulsa",
           "transport_options": {
             "flight": {
@@ -808,7 +808,7 @@
               },
               "duration_minutes": 90,
               "terminals": {
-                "from": "Seol",
+                "from": "Seoul",
                 "to": "Golgulsa"
               }
             }
@@ -817,7 +817,7 @@
         },
         {
           "country": "South Korea",
-          "origin": "Seol",
+          "origin": "Seoul",
           "destination": "Busan",
           "transport_options": {
             "flight": {
@@ -844,7 +844,7 @@
               },
               "duration_minutes": 150,
               "terminals": {
-                "from": "Seol",
+                "from": "Seoul",
                 "to": "Busan"
               }
             },
@@ -858,7 +858,7 @@
               },
               "duration_minutes": 270,
               "terminals": {
-                "from": "Seol",
+                "from": "Seoul",
                 "to": "Busan"
               }
             }

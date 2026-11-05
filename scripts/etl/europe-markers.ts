@@ -30,12 +30,12 @@ const GROUP_BY_COUNTRY: Record<string, number> = {
   Ireland: 10,
 };
 const SCOTLAND_GROUP = 9;
-const SCOTLAND = new Set(["Edinburgh", "Edinburg", "Glasgow", "Inverness", "Stirling", "Aberdeen", "Dundee", "Scottish Highlands"]);
+const SCOTLAND = new Set(["Edinburgh", "Glasgow", "Inverness", "Stirling", "Aberdeen", "Dundee", "Scottish Highlands"]);
 
 /** Places that stand for a whole country rather than a city in it. */
 const COUNTRY_LEVEL = new Set([
   "France", "Switzerland", "Luxembourg", "Belgium", "Germany", "Austria", "Netherlands",
-  "Linchestine", "Czech", "Hungery", "Poland", "Spain", "Portugal",
+  "Liechtenstein", "Czech", "Hungary", "Poland", "Spain", "Portugal",
   "Denmark", "Norway", "Sweden", "Finland", "Iceland",
 ]);
 

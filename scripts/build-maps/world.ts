@@ -48,7 +48,7 @@ const SIZE_BUDGET_KB = 400;
 
 /**
  * A handful of catalogue country nodes stand in for several real countries
- * (e.g. "Scandinivia" covers Denmark, Norway, Sweden, Finland, Iceland) but
+ * (e.g. "Scandinavia" covers Denmark, Norway, Sweden, Finland, Iceland) but
  * only carry one ISO3 code unless a package happened to populate
  * `memberCountryIds`. This fills in the one such case in the current dataset
  * so its region isn't drawn as a single country's outline.

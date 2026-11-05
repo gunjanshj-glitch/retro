@@ -21,6 +21,7 @@
  */
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
+import { idName, legacySlug } from "./legacy-ids";
 import { Matcher, normalise, slugify } from "./normalise";
 import type {
   Country,
@@ -242,9 +243,9 @@ export function parseMaster(
         continue;
       }
       const country: Country = {
-        id: slugify(`${regionId}-${node.country}`),
+        id: slugify(`${regionId}-${idName("country", node.country)}`),
         name: node.country,
-        slug: slugify(node.country),
+        slug: legacySlug("country", node.country),
         regionId,
         iso3: ISO3[key] ?? null,
         isCluster: CLUSTER_PATTERN.test(node.country),
@@ -290,9 +291,9 @@ export function parseMaster(
       const country = override ?? selfCountry ?? ownerCountry ?? umbrella ?? fallbackCountry;
 
       const place: Place = {
-        id: slugify(name),
+        id: legacySlug("place", name),
         name,
-        slug: slugify(name),
+        slug: legacySlug("place", name),
         countryId: country?.id ?? regionId,
         stateId: override ? null : (ownerState?.id ?? null),
         hasRates: false,
@@ -374,9 +375,9 @@ export function parseMaster(
       }
 
       packages.push({
-        id: slugify(`${regionId}-${pkg.name}`),
+        id: slugify(`${regionId}-${idName("package", pkg.name)}`),
         name: pkg.name,
-        slug: slugify(pkg.name),
+        slug: legacySlug("package", pkg.name),
         regionId,
         countryIds: countryIds.length ? countryIds : umbrella ? [umbrella.id] : [],
         stateIds,

@@ -22,7 +22,7 @@
       "places": [
         "Dambulla",
         "Kandy",
-        "Nuwaraeliya",
+        "Nuwara Eliya",
         "Kataragama",
         "Mirissa",
         "Waskaduwa",
@@ -30,12 +30,12 @@
         "Bentota",
         "Colombo"
       ],
-      "tagline": "7 Nights, 8 Days · Dambulla, Kandy, Nuwaraeliya, Kataragama, Mirissa, Waskaduwa, Yale, Bentota, Colombo",
+      "tagline": "7 Nights, 8 Days · Dambulla, Kandy, Nuwara Eliya, Kataragama, Mirissa, Waskaduwa, Yale, Bentota, Colombo",
       "offer": {
         "days": 8,
         "price_from_usd": 53000,
         "price_includes_flight": false,
-        "summary": "8 days trip built around Dambulla, Kandy, Nuwaraeliya, Kataragama, Mirissa, Waskaduwa, Colombo at your pace — no rushed coaches, no fixed groups. It's one of the South Asia journeys we shape by hand through South Asia, and every detail here is a starting point we'll tailor to you.",
+        "summary": "8 days trip built around Dambulla, Kandy, Nuwara Eliya, Kataragama, Mirissa, Waskaduwa, Colombo at your pace — no rushed coaches, no fixed groups. It's one of the South Asia journeys we shape by hand through South Asia, and every detail here is a starting point we'll tailor to you.",
         "highlights": [
           "Discover the golden Cave Temple, where ancient murals and serene Buddha statues fill five sacred chambers.",
           "Experience Sri Lanka's cultural heart through the Temple of the Sacred Tooth Relic, misty hills and graceful Kandyan traditions.",
@@ -82,9 +82,9 @@
         "Thimphu",
         "Punakha",
         "Paro",
-        "Phunotsiling"
+        "Phuentsholing"
       ],
-      "tagline": "7 Nights, 8 Days · Thimphu, Punakha, Paro, Phunotsiling",
+      "tagline": "7 Nights, 8 Days · Thimphu, Punakha, Paro, Phuentsholing",
       "offer": {
         "days": 8,
         "price_from_usd": 35000,
@@ -159,7 +159,7 @@
         "country": "Sri Lanka"
       },
       {
-        "name": "Nuwaraeliya",
+        "name": "Nuwara Eliya",
         "lat": 6.949,
         "lng": 80.789,
         "type": "city",
@@ -279,7 +279,7 @@
         "country": "Bhutan"
       },
       {
-        "name": "Phunotsiling",
+        "name": "Phuentsholing",
         "lat": 26.851,
         "lng": 89.389,
         "type": "city",

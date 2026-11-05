@@ -1157,7 +1157,7 @@
         },
         {
           "origin_country": "Georgia",
-          "destination_country": "Kyrgisthan",
+          "destination_country": "Kyrgyzstan",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -1304,7 +1304,7 @@
         },
         {
           "origin_country": "Azerbaijan",
-          "destination_country": "Kyrgisthan",
+          "destination_country": "Kyrgyzstan",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -1430,7 +1430,7 @@
         },
         {
           "origin_country": "Kazakhstan",
-          "destination_country": "Kyrgisthan",
+          "destination_country": "Kyrgyzstan",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -1500,7 +1500,7 @@
         },
         {
           "origin_country": "Uzbekistan",
-          "destination_country": "Kyrgisthan",
+          "destination_country": "Kyrgyzstan",
           "transport_options": {
             "flight": {
               "enabled": true,

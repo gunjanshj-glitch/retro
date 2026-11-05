@@ -273,7 +273,7 @@
         {
           "country": "Kenya",
           "origin": "Amboseli National Park",
-          "destination": "Masaimara",
+          "destination": "Maasai Mara",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -343,7 +343,7 @@
         {
           "country": "Kenya",
           "origin": "Lake Naivasha",
-          "destination": "Masaimara",
+          "destination": "Maasai Mara",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -412,7 +412,7 @@
         },
         {
           "country": "Kenya",
-          "origin": "Masaimara",
+          "origin": "Maasai Mara",
           "destination": "Nairobi",
           "transport_options": {
             "flight": {

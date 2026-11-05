@@ -386,7 +386,7 @@
         {
           "country": "Europen Cluster 2",
           "origin": "Germany",
-          "destination": "Linchestine",
+          "destination": "Liechtenstein",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -458,7 +458,7 @@
         {
           "country": "Europen Cluster 2",
           "origin": "Austria",
-          "destination": "Linchestine",
+          "destination": "Liechtenstein",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -508,7 +508,7 @@
         {
           "country": "Europen Cluster 2",
           "origin": "Netherlands",
-          "destination": "Linchestine",
+          "destination": "Liechtenstein",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -544,7 +544,7 @@
         {
           "country": "Europen Cluster 3",
           "origin": "Czech",
-          "destination": "Hungery",
+          "destination": "Hungary",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -615,7 +615,7 @@
         },
         {
           "country": "Europen Cluster 3",
-          "origin": "Hungery",
+          "origin": "Hungary",
           "destination": "Poland",
           "transport_options": {
             "flight": {
@@ -1791,7 +1791,7 @@
           "onsite_mode": "guided_tour"
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Denmark",
           "destination": "Norway",
           "transport_options": {
@@ -1827,7 +1827,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Denmark",
           "destination": "Sweden",
           "transport_options": {
@@ -1877,7 +1877,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Denmark",
           "destination": "Finland",
           "transport_options": {
@@ -1913,7 +1913,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Denmark",
           "destination": "Iceland",
           "transport_options": {
@@ -1949,7 +1949,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Norway",
           "destination": "Sweden",
           "transport_options": {
@@ -1999,7 +1999,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Norway",
           "destination": "Finland",
           "transport_options": {
@@ -2035,7 +2035,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Norway",
           "destination": "Iceland",
           "transport_options": {
@@ -2071,7 +2071,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Sweden",
           "destination": "Finland",
           "transport_options": {
@@ -2121,7 +2121,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Sweden",
           "destination": "Iceland",
           "transport_options": {
@@ -2157,7 +2157,7 @@
           "onsite_mode": null
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "origin": "Finland",
           "destination": "Iceland",
           "transport_options": {
@@ -2324,7 +2324,7 @@
         {
           "country": "Scotland",
           "origin": "Glasgow",
-          "destination": "Edinburg",
+          "destination": "Edinburgh",
           "transport_options": {
             "flight": {
               "enabled": false,
@@ -2344,7 +2344,7 @@
               "duration_minutes": 50,
               "terminals": {
                 "from": "Glasgow",
-                "to": "Edinburg"
+                "to": "Edinburgh"
               }
             },
             "bus": {
@@ -2358,7 +2358,7 @@
               "duration_minutes": null,
               "terminals": {
                 "from": "Glasgow",
-                "to": "Edinburg"
+                "to": "Edinburgh"
               }
             }
           },
@@ -2552,7 +2552,7 @@
         },
         {
           "country": "Scotland",
-          "origin": "Edinburg",
+          "origin": "Edinburgh",
           "destination": "Inverness",
           "transport_options": {
             "flight": {
@@ -2565,7 +2565,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Inverness"
               }
             },
@@ -2579,7 +2579,7 @@
               },
               "duration_minutes": 210,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Inverness"
               }
             },
@@ -2593,7 +2593,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Inverness"
               }
             }
@@ -2602,7 +2602,7 @@
         },
         {
           "country": "Scotland",
-          "origin": "Edinburg",
+          "origin": "Edinburgh",
           "destination": "Stirling",
           "transport_options": {
             "flight": {
@@ -2622,7 +2622,7 @@
               },
               "duration_minutes": 50,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Stirling"
               }
             },
@@ -2636,7 +2636,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Stirling"
               }
             }
@@ -2645,7 +2645,7 @@
         },
         {
           "country": "Scotland",
-          "origin": "Edinburg",
+          "origin": "Edinburgh",
           "destination": "Aberdeen",
           "transport_options": {
             "flight": {
@@ -2658,7 +2658,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Aberdeen"
               }
             },
@@ -2672,7 +2672,7 @@
               },
               "duration_minutes": 150,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Aberdeen"
               }
             },
@@ -2686,7 +2686,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Aberdeen"
               }
             }
@@ -2695,7 +2695,7 @@
         },
         {
           "country": "Scotland",
-          "origin": "Edinburg",
+          "origin": "Edinburgh",
           "destination": "Dundee",
           "transport_options": {
             "flight": {
@@ -2715,7 +2715,7 @@
               },
               "duration_minutes": 75,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Dundee"
               }
             },
@@ -2729,7 +2729,7 @@
               },
               "duration_minutes": null,
               "terminals": {
-                "from": "Edinburg",
+                "from": "Edinburgh",
                 "to": "Dundee"
               }
             }
@@ -3792,7 +3792,7 @@
         },
         {
           "origin_country": "Europen Cluster 1",
-          "destination_country": "Scandinivia",
+          "destination_country": "Scandinavia",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -4192,7 +4192,7 @@
         },
         {
           "origin_country": "Europen Cluster 2",
-          "destination_country": "Scandinivia",
+          "destination_country": "Scandinavia",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -4542,7 +4542,7 @@
         },
         {
           "origin_country": "Europen Cluster 3",
-          "destination_country": "Scandinivia",
+          "destination_country": "Scandinavia",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -4842,7 +4842,7 @@
         },
         {
           "origin_country": "Europen Cluster 4",
-          "destination_country": "Scandinivia",
+          "destination_country": "Scandinavia",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -5092,7 +5092,7 @@
         },
         {
           "origin_country": "Greece",
-          "destination_country": "Scandinivia",
+          "destination_country": "Scandinavia",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -5292,7 +5292,7 @@
         },
         {
           "origin_country": "Italy",
-          "destination_country": "Scandinivia",
+          "destination_country": "Scandinavia",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -5491,7 +5491,7 @@
           "onsite_mode": null
         },
         {
-          "origin_country": "Scandinivia",
+          "origin_country": "Scandinavia",
           "destination_country": "England",
           "transport_options": {
             "flight": {
@@ -5541,7 +5541,7 @@
           "onsite_mode": null
         },
         {
-          "origin_country": "Scandinivia",
+          "origin_country": "Scandinavia",
           "destination_country": "Scotland",
           "transport_options": {
             "flight": {
@@ -5591,7 +5591,7 @@
           "onsite_mode": null
         },
         {
-          "origin_country": "Scandinivia",
+          "origin_country": "Scandinavia",
           "destination_country": "Ireland",
           "transport_options": {
             "flight": {

@@ -23,19 +23,19 @@
         "Ha Noi",
         "Ha Long Bay",
         "Danang",
-        "Hochiminh",
+        "Ho Chi Minh City",
         "Mekong Delta",
         "Phu Quoc",
-        "Nathrang",
+        "Nha Trang",
         "Sapa",
         "Bau Trang"
       ],
-      "tagline": "12 Nights, 13 Days · Ha Noi, Ha Long Bay, Danang, Hochiminh, Mekong Delta, Phu Quoc, Nathrang, Sapa, Bau Trang",
+      "tagline": "12 Nights, 13 Days · Ha Noi, Ha Long Bay, Danang, Ho Chi Minh City, Mekong Delta, Phu Quoc, Nha Trang, Sapa, Bau Trang",
       "offer": {
         "days": 13,
         "price_from_usd": 120000,
         "price_includes_flight": false,
-        "summary": "13 days trip built around Ha Noi, Ha Long Bay, Danang, Hochiminh, Mekong Delta, Phu Quoc, Nathrang, Sapa, Bau Trang at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
+        "summary": "13 days trip built around Ha Noi, Ha Long Bay, Danang, Ho Chi Minh City, Mekong Delta, Phu Quoc, Nha Trang, Sapa, Bau Trang at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
         "highlights": [
           "Wander through the atmospheric Old Quarter and around Hoàn Kiếm Lake, where heritage, street food and local life come together.",
           "Cruise through emerald waters and towering limestone karsts, with hidden caves and floating fishing villages along the way.",
@@ -136,20 +136,20 @@
         "Yogyakarta",
         "Sumatra",
         "Jawa",
-        "Bornea Island"
+        "Borneo Island"
       ],
-      "tagline": "12 Nights, 13 Days · Bali, Yogyakarta, Sumatra, Jawa, Bornea Island",
+      "tagline": "12 Nights, 13 Days · Bali, Yogyakarta, Sumatra, Jawa, Borneo Island",
       "offer": {
         "days": 13,
         "price_from_usd": 98000,
         "price_includes_flight": false,
-        "summary": "13 days trip built around Bali, Yogyakarta, Sumatra, Jawa, Bornea Island at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
+        "summary": "13 days trip built around Bali, Yogyakarta, Sumatra, Jawa, Borneo Island at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
         "highlights": [
           "Experience the beauty of Kuta, Ubud, Nusa Penida, Gili Islands, Uluwatu and Ulun Danu in Bali.",
           "Visit Borobudur, a UNESCO World Heritage Site and the world's largest Buddhist temple, and the volcanic site of Mt Merapi in Yogyakarta.",
           "A wild, untamed sanctuary where emerald rainforests and majestic orangutans thrive in nature's lush heart across Sumatra.",
           "A land of fire and spirit in Jawa, home to colossal volcanoes and historic temples rising from the misty dawn.",
-          "An untamed emerald jewel on Bornea Island, where dense jungles hold the secrets of rare wildlife and pristine, ancient wonders."
+          "An untamed emerald jewel on Borneo Island, where dense jungles hold the secrets of rare wildlife and pristine, ancient wonders."
         ]
       }
     },
@@ -204,7 +204,7 @@
     },
     {
       "id": 8,
-      "name": "Phillipines",
+      "name": "Philippines",
       "packageName": "Philippines",
       "packageSlug": "philippines",
       "places": [
@@ -283,7 +283,7 @@
         "country": "Vietnam"
       },
       {
-        "name": "Hochiminh",
+        "name": "Ho Chi Minh City",
         "lat": 10.823,
         "lng": 106.63,
         "type": "city",
@@ -307,7 +307,7 @@
         "country": "Vietnam"
       },
       {
-        "name": "Nathrang",
+        "name": "Nha Trang",
         "lat": 12.238,
         "lng": 109.197,
         "type": "city",
@@ -483,7 +483,7 @@
         "country": "Indonesia"
       },
       {
-        "name": "Bornea Island",
+        "name": "Borneo Island",
         "lat": -0.789,
         "lng": 113.921,
         "type": "city",
@@ -552,7 +552,7 @@
         "lng": 119.392,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       },
       {
         "name": "Boracay",
@@ -560,7 +560,7 @@
         "lng": 121.924,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       },
       {
         "name": "Cebu",
@@ -568,7 +568,7 @@
         "lng": 123.891,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       },
       {
         "name": "Bohol",
@@ -576,7 +576,7 @@
         "lng": 124.143,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       },
       {
         "name": "Manila",
@@ -584,7 +584,7 @@
         "lng": 120.984,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       },
       {
         "name": "Puerto Princesa",
@@ -592,7 +592,7 @@
         "lng": 118.736,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       },
       {
         "name": "Palawan",
@@ -600,7 +600,7 @@
         "lng": 119,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       },
       {
         "name": "Kawasan waterfalls",
@@ -608,7 +608,7 @@
         "lng": 123.376,
         "type": "city",
         "group": 8,
-        "country": "Phillipines"
+        "country": "Philippines"
       }
     ]
   }

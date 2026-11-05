@@ -94,7 +94,7 @@
         {
           "country": "Vietnam",
           "origin": "Ha Noi",
-          "destination": "Hochiminh",
+          "destination": "Ho Chi Minh City",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -202,7 +202,7 @@
         {
           "country": "Vietnam",
           "origin": "Ha Noi",
-          "destination": "Nathrang",
+          "destination": "Nha Trang",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -313,7 +313,7 @@
         {
           "country": "Vietnam",
           "origin": "Danang",
-          "destination": "Hochiminh",
+          "destination": "Ho Chi Minh City",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -421,7 +421,7 @@
         {
           "country": "Vietnam",
           "origin": "Danang",
-          "destination": "Nathrang",
+          "destination": "Nha Trang",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -531,7 +531,7 @@
         },
         {
           "country": "Vietnam",
-          "origin": "Hochiminh",
+          "origin": "Ho Chi Minh City",
           "destination": "Mekong Delta",
           "transport_options": {
             "flight": {
@@ -568,7 +568,7 @@
         },
         {
           "country": "Vietnam",
-          "origin": "Hochiminh",
+          "origin": "Ho Chi Minh City",
           "destination": "Phu Quoc",
           "transport_options": {
             "flight": {
@@ -602,8 +602,8 @@
         },
         {
           "country": "Vietnam",
-          "origin": "Hochiminh",
-          "destination": "Nathrang",
+          "origin": "Ho Chi Minh City",
+          "destination": "Nha Trang",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -639,7 +639,7 @@
         },
         {
           "country": "Vietnam",
-          "origin": "Hochiminh",
+          "origin": "Ho Chi Minh City",
           "destination": "Sapa",
           "transport_options": {
             "flight": {
@@ -676,7 +676,7 @@
         },
         {
           "country": "Vietnam",
-          "origin": "Hochiminh",
+          "origin": "Ho Chi Minh City",
           "destination": "Bau Trang",
           "transport_options": {
             "flight": {
@@ -748,7 +748,7 @@
         {
           "country": "Vietnam",
           "origin": "Mekong Delta",
-          "destination": "Nathrang",
+          "destination": "Nha Trang",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -859,7 +859,7 @@
         {
           "country": "Vietnam",
           "origin": "Phu Quoc",
-          "destination": "Nathrang",
+          "destination": "Nha Trang",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -969,7 +969,7 @@
         },
         {
           "country": "Vietnam",
-          "origin": "Nathrang",
+          "origin": "Nha Trang",
           "destination": "Sapa",
           "transport_options": {
             "flight": {
@@ -1006,7 +1006,7 @@
         },
         {
           "country": "Vietnam",
-          "origin": "Nathrang",
+          "origin": "Nha Trang",
           "destination": "Bau Trang",
           "transport_options": {
             "flight": {
@@ -2180,7 +2180,7 @@
         {
           "country": "Indonesia",
           "origin": "Bali",
-          "destination": "Bornea Island",
+          "destination": "Borneo Island",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -2291,7 +2291,7 @@
         {
           "country": "Indonesia",
           "origin": "Yogyakarta",
-          "destination": "Bornea Island",
+          "destination": "Borneo Island",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -2353,7 +2353,7 @@
         {
           "country": "Indonesia",
           "origin": "Sumatra",
-          "destination": "Bornea Island",
+          "destination": "Borneo Island",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -2384,7 +2384,7 @@
         {
           "country": "Indonesia",
           "origin": "Jawa",
-          "destination": "Bornea Island",
+          "destination": "Borneo Island",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -2689,7 +2689,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "El Nido",
           "destination": "Boracay",
           "transport_options": {
@@ -2723,7 +2723,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "El Nido",
           "destination": "Cebu",
           "transport_options": {
@@ -2757,7 +2757,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "El Nido",
           "destination": "Bohol",
           "transport_options": {
@@ -2791,7 +2791,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "El Nido",
           "destination": "Manila",
           "transport_options": {
@@ -2825,7 +2825,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "El Nido",
           "destination": "Puerto Princesa",
           "transport_options": {
@@ -2859,7 +2859,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "El Nido",
           "destination": "Palawan",
           "transport_options": {
@@ -2893,7 +2893,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "El Nido",
           "destination": "Kawasan waterfalls",
           "transport_options": {
@@ -2927,7 +2927,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Boracay",
           "destination": "Cebu",
           "transport_options": {
@@ -2961,7 +2961,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Boracay",
           "destination": "Bohol",
           "transport_options": {
@@ -2995,7 +2995,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Boracay",
           "destination": "Manila",
           "transport_options": {
@@ -3029,7 +3029,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Boracay",
           "destination": "Puerto Princesa",
           "transport_options": {
@@ -3063,7 +3063,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Boracay",
           "destination": "Palawan",
           "transport_options": {
@@ -3097,7 +3097,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Boracay",
           "destination": "Kawasan waterfalls",
           "transport_options": {
@@ -3131,7 +3131,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Cebu",
           "destination": "Bohol",
           "transport_options": {
@@ -3165,7 +3165,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Cebu",
           "destination": "Manila",
           "transport_options": {
@@ -3199,7 +3199,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Cebu",
           "destination": "Puerto Princesa",
           "transport_options": {
@@ -3233,7 +3233,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Cebu",
           "destination": "Palawan",
           "transport_options": {
@@ -3267,7 +3267,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Cebu",
           "destination": "Kawasan waterfalls",
           "transport_options": {
@@ -3301,7 +3301,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Bohol",
           "destination": "Manila",
           "transport_options": {
@@ -3335,7 +3335,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Bohol",
           "destination": "Puerto Princesa",
           "transport_options": {
@@ -3369,7 +3369,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Bohol",
           "destination": "Palawan",
           "transport_options": {
@@ -3403,7 +3403,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Bohol",
           "destination": "Kawasan waterfalls",
           "transport_options": {
@@ -3437,7 +3437,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Manila",
           "destination": "Puerto Princesa",
           "transport_options": {
@@ -3471,7 +3471,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Manila",
           "destination": "Palawan",
           "transport_options": {
@@ -3505,7 +3505,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Manila",
           "destination": "Kawasan waterfalls",
           "transport_options": {
@@ -3539,7 +3539,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Puerto Princesa",
           "destination": "Palawan",
           "transport_options": {
@@ -3573,7 +3573,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Puerto Princesa",
           "destination": "Kawasan waterfalls",
           "transport_options": {
@@ -3607,7 +3607,7 @@
           }
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "origin": "Palawan",
           "destination": "Kawasan waterfalls",
           "transport_options": {
@@ -4000,7 +4000,7 @@
         },
         {
           "origin_country": "Vietnam",
-          "destination_country": "Phillipines",
+          "destination_country": "Philippines",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -4356,7 +4356,7 @@
         },
         {
           "origin_country": "Thailand",
-          "destination_country": "Phillipines",
+          "destination_country": "Philippines",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -4649,7 +4649,7 @@
         },
         {
           "origin_country": "Singapore",
-          "destination_country": "Phillipines",
+          "destination_country": "Philippines",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -4869,7 +4869,7 @@
         },
         {
           "origin_country": "Malaysia",
-          "destination_country": "Phillipines",
+          "destination_country": "Philippines",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -5013,7 +5013,7 @@
         },
         {
           "origin_country": "Indonesia",
-          "destination_country": "Phillipines",
+          "destination_country": "Philippines",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -5127,7 +5127,7 @@
         },
         {
           "origin_country": "Cambodia",
-          "destination_country": "Phillipines",
+          "destination_country": "Philippines",
           "transport_options": {
             "flight": {
               "enabled": true,
@@ -5175,7 +5175,7 @@
         },
         {
           "origin_country": "Laos",
-          "destination_country": "Phillipines",
+          "destination_country": "Philippines",
           "transport_options": {
             "flight": {
               "enabled": true,

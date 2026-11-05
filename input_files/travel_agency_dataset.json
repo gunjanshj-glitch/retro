@@ -19,7 +19,7 @@
           "places": [
             "Amboseli National Park",
             "Lake Naivasha",
-            "Masaimara",
+            "Maasai Mara",
             "Nairobi"
           ]
         },
@@ -89,10 +89,10 @@
           "places": [
             "Amboseli National Park",
             "Lake Naivasha",
-            "Masaimara",
+            "Maasai Mara",
             "Nairobi"
           ],
-          "description": "9 days trip built around Amboseli National Park, Lake Naivasha, Masaimara, Nairobi at your pace — no rushed coaches, no fixed groups. It's one of the Africa journeys we shape by hand through Africa, and every detail here is a starting point we'll tailor to you.",
+          "description": "9 days trip built around Amboseli National Park, Lake Naivasha, Maasai Mara, Nairobi at your pace — no rushed coaches, no fixed groups. It's one of the Africa journeys we shape by hand through Africa, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Game drives among large elephant herds with spectacular views of Mount Kilimanjaro.",
             "Scenic Great Rift Valley freshwater lake known for boat rides, hippos and abundant birdlife.",
@@ -213,7 +213,7 @@
           ]
         },
         {
-          "country": "Kyrgisthan",
+          "country": "Kyrgyzstan",
           "places": [
             "Bishkek"
           ]
@@ -307,11 +307,11 @@
           ]
         },
         {
-          "name": "Kyrgisthan",
+          "name": "Kyrgyzstan",
           "duration": "3N, 4D",
           "price": "47000",
           "countries": [
-            "Kyrgisthan"
+            "Kyrgyzstan"
           ],
           "places": [
             "Bishkek"
@@ -433,7 +433,7 @@
           "places": [
             "Dambulla",
             "Kandy",
-            "Nuwaraeliya",
+            "Nuwara Eliya",
             "Kataragama",
             "Mirissa",
             "Waskaduwa",
@@ -456,7 +456,7 @@
             "Thimphu",
             "Punakha",
             "Paro",
-            "Phunotsiling"
+            "Phuentsholing"
           ]
         },
         {
@@ -481,7 +481,7 @@
           "places": [
             "Dambulla",
             "Kandy",
-            "Nuwaraeliya",
+            "Nuwara Eliya",
             "Kataragama",
             "Mirissa",
             "Waskaduwa",
@@ -489,7 +489,7 @@
             "Bentota",
             "Colombo"
           ],
-          "description": "8 days trip built around Dambulla, Kandy, Nuwaraeliya, Kataragama, Mirissa, Waskaduwa, Colombo at your pace — no rushed coaches, no fixed groups. It's one of the South Asia journeys we shape by hand through South Asia, and every detail here is a starting point we'll tailor to you.",
+          "description": "8 days trip built around Dambulla, Kandy, Nuwara Eliya, Kataragama, Mirissa, Waskaduwa, Colombo at your pace — no rushed coaches, no fixed groups. It's one of the South Asia journeys we shape by hand through South Asia, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Discover the golden Cave Temple, where ancient murals and serene Buddha statues fill five sacred chambers.",
             "Experience Sri Lanka's cultural heart through the Temple of the Sacred Tooth Relic, misty hills and graceful Kandyan traditions.",
@@ -533,7 +533,7 @@
             "Thimphu",
             "Punakha",
             "Paro",
-            "Phunotsiling"
+            "Phuentsholing"
           ],
           "description": "8 days trip built around Thimphu, Punakha, Paro at your pace — no rushed coaches, no fixed groups. It's one of the South Asia journeys we shape by hand through South Asia, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
@@ -584,7 +584,7 @@
         {
           "country": "South Korea",
           "places": [
-            "Seol",
+            "Seoul",
             "Jeonju",
             "Gyeongju",
             "Golgulsa",
@@ -657,13 +657,13 @@
             "South Korea"
           ],
           "places": [
-            "Seol",
+            "Seoul",
             "Jeonju",
             "Gyeongju",
             "Golgulsa",
             "Busan"
           ],
-          "description": "9 days trip built around Seol, Jeonju, Gyeongju, Golgulsa, Busan at your pace — no rushed coaches, no fixed groups. It's one of the East Asia journeys we shape by hand through East Asia, and every detail here is a starting point we'll tailor to you.",
+          "description": "9 days trip built around Seoul, Jeonju, Gyeongju, Golgulsa, Busan at your pace — no rushed coaches, no fixed groups. It's one of the East Asia journeys we shape by hand through East Asia, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Experience Korea's capital through Gyeongbokgung Palace, traditional Bukchon streets, lively markets and panoramic views from N Seoul Tower.",
             "Wander through Jeonju Hanok Village, home to around 700 traditional Korean houses, historic shrines and renowned local food culture.",
@@ -822,7 +822,7 @@
             "Germany",
             "Austria",
             "Netherlands",
-            "Linchestine"
+            "Liechtenstein"
           ]
         },
         {
@@ -831,7 +831,7 @@
             "Germany",
             "Austria",
             "Netherlands",
-            "Linchestine"
+            "Liechtenstein"
           ]
         },
         {
@@ -840,31 +840,31 @@
             "Germany",
             "Austria",
             "Netherlands",
-            "Linchestine"
+            "Liechtenstein"
           ]
         },
         {
-          "country": "Linchestine",
+          "country": "Liechtenstein",
           "places": [
             "Germany",
             "Austria",
             "Netherlands",
-            "Linchestine"
+            "Liechtenstein"
           ]
         },
         {
           "country": "Czech",
           "places": [
             "Czech",
-            "Hungery",
+            "Hungary",
             "Poland"
           ]
         },
         {
-          "country": "Hungery",
+          "country": "Hungary",
           "places": [
             "Czech",
-            "Hungery",
+            "Hungary",
             "Poland"
           ]
         },
@@ -872,7 +872,7 @@
           "country": "Poland",
           "places": [
             "Czech",
-            "Hungery",
+            "Hungary",
             "Poland"
           ]
         },
@@ -912,7 +912,7 @@
           ]
         },
         {
-          "country": "Scandinivia",
+          "country": "Scandinavia",
           "places": [
             "Denmark",
             "Norway",
@@ -933,7 +933,7 @@
           "country": "Scotland",
           "places": [
             "Glasgow",
-            "Edinburg",
+            "Edinburgh",
             "Inverness",
             "Stirling",
             "Aberdeen",
@@ -985,15 +985,15 @@
             "Germany",
             "Austria",
             "Netherlands",
-            "Linchestine"
+            "Liechtenstein"
           ],
           "places": [
             "Germany",
             "Austria",
             "Netherlands",
-            "Linchestine"
+            "Liechtenstein"
           ],
-          "description": "10 days trip built around Germany, Austria, Netherlands, Linchestine at your pace — no rushed coaches, no fixed groups. It's one of the Europe journeys we shape by hand through Europe, and every detail here is a starting point we'll tailor to you.",
+          "description": "10 days trip built around Germany, Austria, Netherlands, Liechtenstein at your pace — no rushed coaches, no fixed groups. It's one of the Europe journeys we shape by hand through Europe, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Discover grand castles, historic old towns and the scenic beauty of the Black Forest and Rhine Valley.",
             "Experience Vienna's imperial elegance, Salzburg's musical heritage and the breathtaking Austrian Alps.",
@@ -1025,15 +1025,15 @@
           "price": "215000",
           "countries": [
             "Czech",
-            "Hungery",
+            "Hungary",
             "Poland"
           ],
           "places": [
             "Czech",
-            "Hungery",
+            "Hungary",
             "Poland"
           ],
-          "description": "10 days trip built around Czech, Hungery, Poland at your pace — no rushed coaches, no fixed groups. It's one of the Europe journeys we shape by hand through Europe, and every detail here is a starting point we'll tailor to you.",
+          "description": "10 days trip built around Czech, Hungary, Poland at your pace — no rushed coaches, no fixed groups. It's one of the Europe journeys we shape by hand through Europe, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Discover Prague's romantic Old Town, Charles Bridge and Prague Castle, with Český Krumlov adding storybook charm.",
             "Experience Budapest's grand Parliament, Buda Castle and soothing thermal baths along the beautiful Danube.",
@@ -1093,7 +1093,7 @@
           "duration": "9N, 10D",
           "price": "215000",
           "countries": [
-            "Scandinivia"
+            "Scandinavia"
           ],
           "places": [
             "Denmark",
@@ -1139,13 +1139,13 @@
           ],
           "places": [
             "Glasgow",
-            "Edinburg",
+            "Edinburgh",
             "Inverness",
             "Stirling",
             "Aberdeen",
             "Dundee"
           ],
-          "description": "8 days trip built around Glasgow, Edinburg, Inverness, Stirling, Aberdeen, Dundee at your pace — no rushed coaches, no fixed groups. It's one of the Europe journeys we shape by hand through Europe, and every detail here is a starting point we'll tailor to you.",
+          "description": "8 days trip built around Glasgow, Edinburgh, Inverness, Stirling, Aberdeen, Dundee at your pace — no rushed coaches, no fixed groups. It's one of the Europe journeys we shape by hand through Europe, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Experience Glasgow's legendary music scene and stunning Victorian architecture, from the Kelvingrove Art Gallery to the vibrant West End.",
             "Walk the historic Royal Mile in Edinburgh, exploring the majestic Edinburgh Castle and the atmospheric narrow closes of the Old Town.",
@@ -1447,10 +1447,10 @@
             "Ha Noi",
             "Ha Long Bay",
             "Danang",
-            "Hochiminh",
+            "Ho Chi Minh City",
             "Mekong Delta",
             "Phu Quoc",
-            "Nathrang",
+            "Nha Trang",
             "Sapa",
             "Bau Trang"
           ]
@@ -1492,7 +1492,7 @@
             "Yogyakarta",
             "Sumatra",
             "Jawa",
-            "Bornea Island"
+            "Borneo Island"
           ]
         },
         {
@@ -1513,7 +1513,7 @@
           ]
         },
         {
-          "country": "Phillipines",
+          "country": "Philippines",
           "places": [
             "El Nido",
             "Boracay",
@@ -1538,14 +1538,14 @@
             "Ha Noi",
             "Ha Long Bay",
             "Danang",
-            "Hochiminh",
+            "Ho Chi Minh City",
             "Mekong Delta",
             "Phu Quoc",
-            "Nathrang",
+            "Nha Trang",
             "Sapa",
             "Bau Trang"
           ],
-          "description": "13 days trip built around Ha Noi, Ha Long Bay, Danang, Hochiminh, Mekong Delta, Phu Quoc, Nathrang, Sapa, Bau Trang at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
+          "description": "13 days trip built around Ha Noi, Ha Long Bay, Danang, Ho Chi Minh City, Mekong Delta, Phu Quoc, Nha Trang, Sapa, Bau Trang at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Wander through the atmospheric Old Quarter and around Hoàn Kiếm Lake, where heritage, street food and local life come together.",
             "Cruise through emerald waters and towering limestone karsts, with hidden caves and floating fishing villages along the way.",
@@ -1635,15 +1635,15 @@
             "Yogyakarta",
             "Sumatra",
             "Jawa",
-            "Bornea Island"
+            "Borneo Island"
           ],
-          "description": "13 days trip built around Bali, Yogyakarta, Sumatra, Jawa, Bornea Island at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
+          "description": "13 days trip built around Bali, Yogyakarta, Sumatra, Jawa, Borneo Island at your pace — no rushed coaches, no fixed groups. It's one of the South East Asia journeys we shape by hand through South East Asia, and every detail here is a starting point we'll tailor to you.",
           "highlights": [
             "Experience the beauty of Kuta, Ubud, Nusa Penida, Gili Islands, Uluwatu and Ulun Danu in Bali.",
             "Visit Borobudur, a UNESCO World Heritage Site and the world's largest Buddhist temple, and the volcanic site of Mt Merapi in Yogyakarta.",
             "A wild, untamed sanctuary where emerald rainforests and majestic orangutans thrive in nature's lush heart across Sumatra.",
             "A land of fire and spirit in Jawa, home to colossal volcanoes and historic temples rising from the misty dawn.",
-            "An untamed emerald jewel on Bornea Island, where dense jungles hold the secrets of rare wildlife and pristine, ancient wonders."
+            "An untamed emerald jewel on Borneo Island, where dense jungles hold the secrets of rare wildlife and pristine, ancient wonders."
           ]
         },
         {
@@ -1692,7 +1692,7 @@
           "duration": "9N, 10D",
           "price": "160000",
           "countries": [
-            "Phillipines"
+            "Philippines"
           ],
           "places": [
             "El Nido",

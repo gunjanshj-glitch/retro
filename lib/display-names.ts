@@ -1,10 +1,10 @@
 /**
  * Spelling fixes for place and country names as travellers see them.
  *
- * The catalogue spells a few names differently from their usual English form
- * ("Hungery", "Linchestine"). Those spellings are also lookup keys in the ETL
- * and pricing data, so they are corrected here, at display time only, rather
- * than in the data.
+ * The catalogue data now uses the standard spellings, but text saved before
+ * the correction (trip requests, quote snapshots, cached catalogue files)
+ * still carries the old ones ("Hungery", "Linchestine"). This keeps that
+ * older text reading correctly, and shows "Czech" as "Czechia".
  */
 const FIXES: Record<string, string> = {
   Hungery: "Hungary",

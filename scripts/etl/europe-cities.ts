@@ -71,15 +71,15 @@ export const MASTER_COUNTRY: Record<string, string> = {
   Germany: "Germany",
   Austria: "Austria",
   Netherlands: "Netherlands",
-  Liechtenstein: "Linchestine",
+  Liechtenstein: "Liechtenstein",
   Czechia: "Czech",
-  Hungary: "Hungery",
+  Hungary: "Hungary",
   Poland: "Poland",
-  Denmark: "Scandinivia",
-  Finland: "Scandinivia",
-  Norway: "Scandinivia",
-  Sweden: "Scandinivia",
-  Iceland: "Scandinivia",
+  Denmark: "Scandinavia",
+  Finland: "Scandinavia",
+  Norway: "Scandinavia",
+  Sweden: "Scandinavia",
+  Iceland: "Scandinavia",
   "United Kingdom": "United Kingdom",
   Ireland: "Ireland",
   Italy: "Italy",
@@ -93,8 +93,8 @@ export const MASTER_COUNTRY: Record<string, string> = {
 /** The master's whole-country place for each country that has one. */
 const COUNTRY_WIDE_PLACE: Record<string, string> = {
   France: "France", Switzerland: "Switzerland", Luxembourg: "Luxembourg", Belgium: "Belgium",
-  Germany: "Germany", Austria: "Austria", Netherlands: "Netherlands", Liechtenstein: "Linchestine",
-  Czechia: "Czech", Hungary: "Hungery", Poland: "Poland", Spain: "Spain", Portugal: "Portugal",
+  Germany: "Germany", Austria: "Austria", Netherlands: "Netherlands", Liechtenstein: "Liechtenstein",
+  Czechia: "Czech", Hungary: "Hungary", Poland: "Poland", Spain: "Spain", Portugal: "Portugal",
   Denmark: "Denmark", Finland: "Finland", Norway: "Norway", Sweden: "Sweden", Iceland: "Iceland",
 };
 
