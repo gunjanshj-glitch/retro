@@ -56,6 +56,10 @@ service = "atlas-api"
 
 [env.preview]
 name = "atlas-web-preview"
+# `routes` is inherited from the top level unless overridden. Without this
+# empty list a preview deploy takes over retroholidays.in from production.
+routes = []
+workers_dev = true
 
 [[env.preview.services]]
 binding = "API"
