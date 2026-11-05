@@ -78,6 +78,63 @@
     }
   },
 
+  "airfare": {
+    "_comment": "The agency's typical return economy ticket per person from Kolkata (CCU), full-service carrier, by destination country (agency answer, Nov 2026). The engine anchors that carrier/cabin on CCU to this figure and scales every other origin, carrier and cabin by the rate card's own ratio to it, so cheaper carriers and other cities stay cheaper. Countries not listed use the rate card's fare unchanged. Vietnam is not listed: it keeps the 1.9 flight factor fitted to the agency's retrieved multi-leg itinerary (about INR 59,000).",
+    "ccuEconomyFullServiceInr": {
+      "south-east-asia-thailand": 30000,
+      "south-east-asia-singapore": 45000,
+      "south-east-asia-malaysia": 28000,
+      "middle-east-and-gulf-uae": 50000,
+      "middle-east-and-gulf-turkey": 70000,
+      "south-east-asia-indonesia": 45000,
+      "south-asia-sri-lanka": 30000,
+      "east-asia-japan": 120000,
+      "europe-united-kingdom": 80000,
+      "europe-france": 80000,
+      "europe-italy": 80000,
+      "europe-germany": 80000,
+      "europe-spain": 80000,
+      "europe-switzerland": 80000,
+      "europe-netherlands": 80000,
+      "europe-austria": 80000,
+      "europe-belgium": 80000,
+      "europe-portugal": 80000,
+      "europe-greece": 80000,
+      "europe-ireland": 80000,
+      "europe-scotland": 80000
+    }
+  },
+  "permits": {
+    "_comment": "Fixed per-person charges that only apply when a trip includes certain places, and that no rate card carries. Agency answer (Nov 2026): the Kailash Mansarovar package of 1,60,000 per person is a group of 15 to 20, and includes return flight to Kathmandu 32,000, Tibet/China group visa and Kailash permit 3,500, Tibetan guide and Chinese operator charges 70,000, jeep or bus Kathmandu to Mansarovar and back 10,000, Tibet hotels 26,000 and all meals 13,000. Yak/porter/pony, oxygen and insurance are not included. The first two together are the 73,500 below. A small party pays more per head than a group of 15 to 20 because the guide and operator charge is shared, so this is the group figure and a couple's trip is quoted at least this.",
+    "items": [
+      {
+        "id": "kailash-tibet-permit-guide",
+        "label": "Tibet permits, group visa and guide (Kailash Mansarovar)",
+        "perPersonInr": 73500,
+        "appliesWhenAnyPlace": ["lake-mansarovar", "darchen"]
+      }
+    ]
+  },
+  "packageBasis": {
+    "_comment": "How many people each advertised package price is based on, and the meal plan it includes. Used by `npm run calibrate` to compare like with like; it never changes a traveller's own quote. Group sizes come from the dataset text ('Rate valid for minimum N PAX') or the agency's answers (Nov 2026); a range means the price holds anywhere inside it. Where the group size is not known the package is compared as a couple (the dearest per head, so a gap there is real). A meal plan is recorded only where the agency said all meals are included (Q3 and the Uttarakhand trek); packages not listed are compared as a couple on breakfast.",
+    "india-lakshadweep": { "pax": [10, 10], "mealPlan": "full-board" },
+    "india-uttarakhand-pilgrimage": { "pax": [4, 4], "mealPlan": "full-board" },
+    "india-great-uttarakhand-outdoors": { "pax": [8, 8], "mealPlan": "full-board" },
+    "india-meghalaya": { "pax": [2, 2], "mealPlan": "full-board" },
+    "india-arunachal-pradesh": { "pax": [2, 2], "mealPlan": "full-board" },
+    "india-assam": { "pax": [2, 2], "mealPlan": "full-board" },
+    "india-kashmir-off-beat": { "pax": [2, 2], "mealPlan": "full-board" },
+    "india-himachal-delights": { "pax": [4, 4] },
+    "india-sikkim": { "pax": [4, 4] },
+    "india-chhattisgarh": { "pax": [10, 10] },
+    "india-madhya-pradesh": { "pax": [15, 15] },
+    "india-odisha": { "pax": [15, 15] },
+    "india-gujarat": { "pax": [10, 13] },
+    "india-kerala": { "pax": [10, 13] },
+    "india-kashmir-delights": { "pax": [10, 13] },
+    "india-west-bengal": { "pax": [10, 13] },
+    "india-punjab": { "pax": [10, 13] }
+  },
   "markup": {
     "_comment": "Mirrors Markup_Tax_Rules and the Quotation_Calculation sheet. Applied in this order.",
     "contingency": 0.03,

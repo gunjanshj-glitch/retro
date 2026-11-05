@@ -492,7 +492,21 @@ export function priceQuotation(input: PricingInput): {
     };
 
     const fareOf = (band: FlightBand, destCountryId: string | undefined) => {
-      const baseline = (band.priceLow + band.priceHigh) / 2;
+      let baseline = (band.priceLow + band.priceHigh) / 2;
+      // Where the agency has told us a typical ticket from Kolkata, that figure
+      // anchors the CCU full-service economy band and every other band keeps its
+      // rate-card ratio to it (see `airfare` in content/quote-policy.json).
+      const anchors = (policy as { airfare?: { ccuEconomyFullServiceInr?: Record<string, number> } }).airfare
+        ?.ccuEconomyFullServiceInr;
+      const anchor = destCountryId ? anchors?.[destCountryId] : undefined;
+      if (anchor) {
+        const ref = core.flightBands.find(
+          (b: FlightBand) =>
+            b.destCountryId === destCountryId && b.originCity === "CCU" && b.carrier === "FSC" && b.cabin === "Economy",
+        );
+        const refMid = ref ? (ref.priceLow + ref.priceHigh) / 2 : 0;
+        if (refMid > 0) baseline = anchor * (baseline / refMid);
+      }
       const live = liveRates.get(`flight:${request.departureCity}:${destCountryId}:${request.carrier}`);
       return resolveRate(baseline, band.source, live, "flight");
     };
@@ -712,6 +726,16 @@ export function priceQuotation(input: PricingInput): {
         `${request.nationality} passport, ${rule.requirement.replace(/_/g, " ")}`,
         pax.total, "person", rule.feeInr, false, rule.source, null);
     }
+  }
+
+  // --- permits and other place-specific fixed charges -----------------------
+  // Charges no rate card carries (Tibet permits and guide for Kailash). They
+  // are the agency's own figures, so they are not calibrated.
+  const permitPolicy = (policy as { permits?: { items: { id: string; label: string; perPersonInr: number; appliesWhenAnyPlace: string[] }[] } }).permits;
+  for (const permit of permitPolicy?.items ?? []) {
+    if (!stays.some((s) => permit.appliesWhenAnyPlace.includes(s.placeId))) continue;
+    push("visa", permit.label, `${pax.total} traveller(s), agency fixed charge`,
+      pax.total, "person", permit.perPersonInr, true, "manual", null, false);
   }
 
   // --- insurance -----------------------------------------------------------

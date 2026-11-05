@@ -30,6 +30,7 @@ import { generateQuotation } from "@retro/core/atlas/engine";
 import { QuoteRequest, type CostComponent, type Quotation } from "@retro/core/atlas/engine/types";
 import { writeWorkbook, type SheetSpec } from "./xlsx-write";
 import { Workbook, cell, num } from "./xlsx-read";
+import quotePolicy from "../../content/quote-policy.json";
 
 const DATA = "public/atlas";
 const CALIBRATION_FILE = path.join("content", "pricing-calibration.json");
@@ -86,6 +87,9 @@ function cheapestMonth(placeId: string): number {
 }
 
 /** The published price is a minimum, so quote the cheapest legitimate setup. */
+type Basis = { pax: [number, number]; mealPlan?: "breakfast" | "half-board" | "full-board" };
+const BASIS = ((quotePolicy as unknown as { packageBasis?: Record<string, Basis> }).packageBasis ?? {});
+
 function minimumRequest(pkg: Package, departureCity: string, adults: number): QuoteRequest {
   const month = cheapestMonth(pkg.placeIds[0]);
   const year = new Date().getUTCFullYear() + 1;
@@ -105,7 +109,7 @@ function minimumRequest(pkg: Package, departureCity: string, adults: number): Qu
     hotelZone: "Outskirts",
     carrier: "LCC",
     cabin: "Economy",
-    mealPlan: "breakfast",
+    mealPlan: BASIS[pkg.id]?.mealPlan ?? "breakfast",
     food: "no-preference",
     pace: "balanced",
     includeVisa: true,
@@ -131,8 +135,17 @@ type Row = {
 function evaluate(pkg: Package): Row | null {
   let best: { quote: Quotation; city: string; adults: number } | null = null;
 
+  // A package whose price basis the agency has stated is compared at that group
+  // size (any size in a stated range), otherwise India is tried as a couple and
+  // every other region as 2, since a person's share there does not depend on it.
+  const basis = BASIS[pkg.id];
+  const sizes = basis
+    ? Array.from({ length: basis.pax[1] - basis.pax[0] + 1 }, (_, i) => basis.pax[0] + i)
+    : pkg.regionId === "india" ? PARTY_SIZES : [2];
+  const miss = (q: Quotation) => Math.abs(q.totals.perPerson - pkg.priceFromInr);
+
   for (const city of DEPARTURE_CITIES) {
-   for (const adults of pkg.regionId === "india" ? PARTY_SIZES : [2]) {
+   for (const adults of sizes) {
     const request = minimumRequest(pkg, city, adults);
     let quote: Quotation;
     try {
@@ -144,7 +157,10 @@ function evaluate(pkg: Package): Row | null {
     } catch {
       continue;
     }
-    if (!best || quote.totals.perPerson < best.quote.totals.perPerson) best = { quote, city, adults };
+    // Stated basis: the size that best reproduces the price. Otherwise the
+    // brochure number is a minimum, so keep the cheapest legitimate setup.
+    const better = !best || (basis ? miss(quote) < miss(best.quote) : quote.totals.perPerson < best.quote.totals.perPerson);
+    if (better) best = { quote, city, adults };
    }
   }
   if (!best) return null;

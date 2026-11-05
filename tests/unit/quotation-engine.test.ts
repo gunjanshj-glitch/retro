@@ -80,11 +80,12 @@ describe("compiled data", () => {
     expect(core.packages.every((p) => p.countryIds.length > 0)).toBe(true);
   });
 
-  it("marks every published price as land-only, since the master file excludes airfare", () => {
+  it("marks every published price as land-only except Kailash, which the agency says includes the flight", () => {
     // The agency's "from" prices cover the land package and quote the flight
     // on top. If this ever flips silently, the engine's package floor would
     // compare a land-only quote against an all-in price and under-quote.
-    expect(core.packages.every((p) => p.priceIncludesFlight === false)).toBe(true);
+    const withFlight = core.packages.filter((p) => p.priceIncludesFlight).map((p) => p.name);
+    expect(withFlight).toEqual(["Kailash Mansarovar Tour"]);
   });
 
   it("models India as one country with states under subregions", () => {
@@ -834,15 +835,19 @@ describe("planner guidance reaches the quotation", () => {
 });
 
 describe("published package price is land-only", () => {
-  // "Hong Kong & Macau" publishes ₹1,22,000 for 5 nights across exactly two
-  // places, and its own component rates come in well under that — so it
-  // reliably exercises the package floor.
-  const placeIds = ["hong-kong", "macau"];
-  const nights = 5;
+  // Lakshadweep publishes ₹40,000 for 4 nights, and a couple's bottom-up land
+  // cost comes in well under that (the agency's price carries island permits and
+  // boat transfers the rate card does not price), so it reliably exercises the
+  // package floor. Hong Kong used to; its rates were raised and it no longer does.
+  const pkgName = "Lakshadweep";
+  const lak = core.packages.find((p) => p.name === pkgName)!;
+  const placeIds = lak.placeIds;
+  const nights = lak.nights;
+  const cheapest = {} as const;
 
   it("floors the land component, then adds airfare on top rather than absorbing it", () => {
-    const land = quote({ placeIds, nights, includeFlight: false });
-    const allIn = quote({ placeIds, nights, includeFlight: true });
+    const land = quote({ placeIds, nights, includeFlight: false, ...cheapest });
+    const allIn = quote({ placeIds, nights, includeFlight: true, ...cheapest });
 
     // Both should have been raised to the published land-only "from" price.
     expect(land.totals.flooredToPackage).toBeTruthy();
@@ -861,8 +866,8 @@ describe("published package price is land-only", () => {
   });
 
   it("floors against the published price without the flight inflating the comparison", () => {
-    const land = quote({ placeIds, nights, includeFlight: false });
-    const pkg = core.packages.find((p) => p.name === "Hong Kong & Macau")!;
+    const land = quote({ placeIds, nights, includeFlight: false, ...cheapest });
+    const pkg = lak;
     const floor = pkg.priceFromInr * (1 - policy.guardrails.packageFloorTolerance);
 
     // Land-only per person lands on the published floor, not above it: proof
