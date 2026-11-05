@@ -137,7 +137,7 @@
       "offer": {
         "days": 14,
         "price_from_usd": 160000,
-        "price_includes_flight": false,
+        "price_includes_flight": true,
         "summary": "14 days trip built around Kathmandu, Syabrubesi, Kerung, Saga, Lake Mansarovar, Darchen, Dirapuk, Dolma La Pass, Zuthulphuk at your pace — no rushed coaches, no fixed groups. It's one of the East Asia journeys we shape by hand through East Asia, and every detail here is a starting point we'll tailor to you. Price valid for Group tour of min 15 PAX only",
         "highlights": [
           "Day 1 — Arrival in Kathmandu (1,400 m): Meet your tour representatives at Tribhuvan International Airport, transfer to your hotel and attend an evening briefing on gear, safety and altitude sickness.",
