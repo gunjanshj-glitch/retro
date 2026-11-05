@@ -234,9 +234,18 @@ export type PlaceInfo = {
   credit?: string;
   creditUrl?: string;
   description?: string;
+  /** The picture is AI-generated, not a photograph of the place; shown with a label. */
+  illustration?: boolean;
 };
 
-type PhotoEntry = { src: string; description?: string; credit: string; license: string; source: string };
+/**
+ * One manifest entry. Photographs carry their author, licence and source.
+ * AI-generated pictures (supplied for places with no free photo) set
+ * `illustration: true` instead and need no credit.
+ */
+type PhotoEntry =
+  | { src: string; description?: string; credit: string; license: string; source: string; illustration?: false }
+  | { src: string; description?: string; illustration: true };
 const PHOTOS = placePhotos as Record<string, PhotoEntry>;
 
 /** Our own blurb for a place, wherever it was first written (keys predate the region slugs). */
@@ -256,10 +265,12 @@ function curatedDescription(destSlug: string, placeName: string): string | undef
  */
 export function getPlaceInfo(destSlug: string, placeName: string): PlaceInfo {
   const photo = PHOTOS[lookupKey(destSlug, placeName)];
+  const description = curatedDescription(destSlug, placeName) ?? photo?.description;
+  if (photo?.illustration) return { image: photo.src, illustration: true, description };
   return {
     image: photo?.src,
     credit: photo ? `Photo: ${photo.credit} · ${photo.license}, Wikimedia Commons` : undefined,
     creditUrl: photo?.source,
-    description: curatedDescription(destSlug, placeName) ?? photo?.description,
+    description,
   };
 }

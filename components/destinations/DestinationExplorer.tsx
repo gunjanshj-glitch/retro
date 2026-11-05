@@ -324,6 +324,15 @@ function DetailCard({
       {image && (
         <figure className="relative">
           <img src={image} alt={place?.name ?? group?.packageName ?? ""} className="block aspect-[16/9] w-full object-cover" loading="lazy" />
+          {ownPhoto && info?.illustration && (
+            <figcaption
+              className="absolute left-2.5 top-2.5 rounded-full px-2.5 py-1 text-[11px] font-semibold shadow-sm"
+              style={{ background: "var(--card)", color: "var(--text)" }}
+              title="This picture is an illustration, not a photograph of the place."
+            >
+              Illustration
+            </figcaption>
+          )}
           {ownPhoto && info?.credit && (
             <figcaption className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/60 to-transparent px-3 pb-1.5 pt-4 text-[10.5px] text-white/90">
               {info.creditUrl ? (
