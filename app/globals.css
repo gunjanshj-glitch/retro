@@ -71,7 +71,7 @@
   --glass-strong: rgba(255, 255, 255, 0.94);
   --brand: var(--sun);
 
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
   --font-interface: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
@@ -104,10 +104,15 @@ body {
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.01em;
+  font-synthesis: none; /* Instrument Serif ships only weight 400: no faux bold */
 }
+/* All headlines use Instrument Serif at its one real weight. */
 h1,
 h2,
 h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-synthesis: none;
   text-wrap: balance;
 }
 
