@@ -383,7 +383,7 @@ function PackageRail({
       </div>
       <div
         ref={scrollerRef}
-        className="no-scrollbar -mx-1 flex snap-x gap-2.5 overflow-x-auto scroll-smooth px-1 pb-1"
+        className="no-scrollbar -mx-1 flex gap-2.5 overflow-x-auto scroll-smooth px-1 pb-1"
         role="group"
         aria-label="Show a package on the map"
       >
@@ -396,7 +396,7 @@ function PackageRail({
               type="button"
               aria-pressed={on}
               onClick={() => onToggle(g.id)}
-              className="group w-[190px] shrink-0 sm:w-[210px] snap-start overflow-hidden rounded-2xl border text-left transition-shadow hover:shadow-md"
+              className="group w-[190px] shrink-0 sm:w-[210px] overflow-hidden rounded-2xl border text-left transition-shadow hover:shadow-md"
               style={{ borderColor: on ? "var(--ink)" : "var(--line)", background: "var(--card)", boxShadow: on ? "0 0 0 2px var(--ink)" : undefined }}
             >
               <span className="relative block aspect-[4/3] overflow-hidden" style={{ background: "var(--surface)" }}>

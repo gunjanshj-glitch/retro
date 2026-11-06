@@ -14,6 +14,10 @@ type Props = {
   packages: PackageCardData[];
 };
 
+// No scroll-snap on this row, on purpose. A snapping row performs a compositor
+// scroll on first layout, which Chrome counts as a scroll and stops recording
+// Largest Contentful Paint. The page then reports no LCP at all (Lighthouse:
+// NO_LCP, performance score NaN) and the CI gate fails at random.
 // Horizontally scrolling row of package cards, with always-visible prev/next
 // arrows — not just touch/trackpad swipe — so the row is scrollable on every
 // screen size, including mouse-only desktops at a narrower viewport.
@@ -24,14 +28,14 @@ export function PackagesRow({ destinationSlug, packages }: Props) {
     <div>
       <div
         ref={scrollerRef}
-        className="no-scrollbar -mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-1 pb-4 pt-1"
+        className="no-scrollbar -mx-1 flex gap-5 overflow-x-auto px-1 pb-4 pt-1"
         role="list"
       >
         {packages.map((pkg) => (
           <div key={pkg.id} role="listitem" className="contents">
             <Link
               href={`/destinations/${destinationSlug}/packages/${pkg.packageSlug}`}
-              className="lift group flex w-[78vw] max-w-[300px] shrink-0 snap-start flex-col overflow-hidden rounded-[20px] border sm:w-[280px]"
+              className="lift group flex w-[78vw] max-w-[300px] shrink-0 flex-col overflow-hidden rounded-[20px] border sm:w-[280px]"
               style={{ background: "var(--card)", borderColor: "var(--line)" }}
             >
               <div className="relative aspect-[4/3] overflow-hidden">

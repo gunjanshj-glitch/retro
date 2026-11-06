@@ -70,6 +70,7 @@ export default async function DestinationPage({
             <img
               src={`/media/${dest.media.poster}/poster.webp`}
               alt=""
+              fetchPriority="high"
               className="hero-drift absolute inset-0 h-full w-full object-cover"
             />
             <div
