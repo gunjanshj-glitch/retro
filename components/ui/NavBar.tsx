@@ -88,6 +88,9 @@ export function NavBar() {
 
         <div className="ml-auto flex items-center gap-2 md:hidden">
           <AccountControl compact />
+          <Button href="/plan" size="sm">
+            Plan trip
+          </Button>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -157,7 +160,7 @@ function AccountControl({ compact = false }: { compact?: boolean }) {
       <button
         type="button"
         onClick={openLogin}
-        className={`rounded-full font-semibold transition-colors hover:bg-[var(--surface)] ${compact ? "px-3 py-2.5 text-[15px]" : "px-4 py-2.5"}`}
+        className={`rounded-full font-semibold transition-colors hover:bg-[var(--surface)] ${compact ? "whitespace-nowrap px-2.5 py-2.5 text-[15px]" : "px-4 py-2.5"}`}
         style={{ color: "var(--ink)" }}
       >
         Log in

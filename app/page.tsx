@@ -5,6 +5,11 @@ import { FeatureRow } from "@/components/atlas/FeatureRow";
 import { NavBar } from "@/components/ui/NavBar";
 import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
+import { ReviewText } from "@/components/ui/ReviewText";
+import { PackagesRow, type PackageCardData } from "@/components/destinations/PackagesRow";
+import { loadDestinations } from "@/lib/destinations";
+import { getPackagesForDestination } from "@/lib/packages";
+import { getPackageImages } from "@/lib/package-images";
 
 const REVIEWS = [
   {
@@ -37,8 +42,36 @@ const REVIEWS = [
   },
 ];
 
+/** One priced package per destination, then second picks, up to `limit`. */
+function featuredPackages(limit = 8): PackageCardData[] {
+  const perDest = loadDestinations().map((d) =>
+    getPackagesForDestination(d)
+      .filter((p) => p.offer?.price_from_usd)
+      .map((p) => ({
+        ...p,
+        coverImage: getPackageImages(d.slug, p.packageSlug)[0],
+        destinationSlug: d.slug,
+        destinationName: d.name,
+      }))
+      .filter((p) => p.coverImage),
+  );
+  const out: PackageCardData[] = [];
+  for (let round = 0; out.length < limit; round++) {
+    let added = false;
+    for (const list of perDest) {
+      if (list[round] && out.length < limit) {
+        out.push(list[round]);
+        added = true;
+      }
+    }
+    if (!added) break;
+  }
+  return out;
+}
+
 export default async function HomePage() {
   const heroCardRegions = loadHeroCardRegions();
+  const featured = featuredPackages();
   const live = await fetchGoogleReviews();
   const reviews = (live && live.reviews.length ? live.reviews : REVIEWS).slice(0, 4);
   const rating = live ? live.rating.toFixed(1) : "4.9";
@@ -59,26 +92,67 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Popular packages — real packages with prices, so browsers have something to open */}
+      {featured.length > 0 && (
+        <section className="px-5 pt-16 md:px-8 md:pt-24" style={{ background: "var(--bg)" }}>
+          <div className="mx-auto max-w-[1320px]">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="eyebrow">Start with a proven trip</p>
+                <h2 className="mt-3 font-display text-3xl md:text-[2.75rem] md:leading-[1.05]">Popular packages</h2>
+                <p className="mt-3 max-w-xl text-base" style={{ color: "var(--ink-2)" }}>
+                  Hand-built itineraries with a starting price. Open one, then change the dates or swap a hotel.
+                </p>
+              </div>
+              <Button href="/destinations" variant="ghost">
+                All destinations
+                <span aria-hidden="true">→</span>
+              </Button>
+            </div>
+            <PackagesRow destinationSlug="" packages={featured} deferImages />
+          </div>
+        </section>
+      )}
+
       {/* "You will not remember the itinerary" section */}
       <section className="px-5 py-20 md:px-8 md:py-28" style={{ background: "var(--bg)" }}>
-        <div className="mx-auto max-w-[1320px]">
-          <p className="eyebrow">Why travel with us</p>
-          <h2 className="mt-3 max-w-3xl font-display text-4xl leading-[1.05] md:text-6xl">
-            You will not remember the itinerary.
-          </h2>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed" style={{ color: "var(--ink-2)" }}>
-            Twelve years of trips people still talk about. {rating} stars, {total} reviews, two founders who still
-            answer the phone.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
-            <Button href="/plan">
-              Plan your trip
-              <span aria-hidden="true">→</span>
-            </Button>
-            <Button href="/contact" variant="ghost">
-              Get in touch
-            </Button>
+        <div className="mx-auto grid max-w-[1320px] items-center gap-10 md:grid-cols-[1.3fr_1fr] md:gap-16">
+          <div>
+            <p className="eyebrow">Why travel with us</p>
+            <h2 className="mt-3 max-w-3xl font-display text-4xl leading-[1.05] md:text-6xl">
+              You will not remember the itinerary.
+            </h2>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed" style={{ color: "var(--ink-2)" }}>
+              Twelve years of trips people still talk about. {rating} stars, {total} reviews, two founders who still
+              answer the phone.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+              <Button href="/plan">
+                Plan your trip
+                <span aria-hidden="true">→</span>
+              </Button>
+              <Button href="/contact" variant="ghost">
+                Get in touch
+              </Button>
+            </div>
           </div>
+          <dl
+            className="grid grid-cols-3 gap-4 rounded-3xl border p-6 text-center md:grid-cols-1 md:gap-6 md:p-8 md:text-left"
+            style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+          >
+            {[
+              { k: `${rating}★`, v: "Google rating" },
+              { k: `${total}`, v: "Google reviews" },
+              { k: "12 yrs", v: "Planning trips" },
+            ].map((x) => (
+              <div key={x.v}>
+                <dt className="font-display text-3xl tabular-nums md:text-5xl">{x.k}</dt>
+                <dd className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
+                  {x.v}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
@@ -147,7 +221,7 @@ export default async function HomePage() {
                       ★★★★★
                     </span>
                   )}
-                  {r.text}
+                  <ReviewText text={r.text} />
                 </p>
 
                 <div className="mt-auto flex items-center gap-1.5">
