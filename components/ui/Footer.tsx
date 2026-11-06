@@ -147,8 +147,8 @@ export function Footer() {
             ))}
           </p>
           <p>
-            Kolkata, India <span aria-hidden="true" className="mx-2 text-[var(--line-strong)]">•</span> 4.9 ★ from 77
-            Google reviews
+            Kolkata, India <span aria-hidden="true" className="mx-2 text-[var(--line-strong)]">•</span> {process.env.NEXT_PUBLIC_GOOGLE_RATING ?? "4.9"} ★ from{" "}
+            {process.env.NEXT_PUBLIC_GOOGLE_REVIEW_COUNT ?? "77"} Google reviews
           </p>
         </div>
       </div>
