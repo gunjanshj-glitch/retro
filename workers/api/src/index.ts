@@ -23,6 +23,7 @@ import { withIdempotency } from "./idempotency";
 import { handleAppConfig } from "./app-config";
 import { runScheduled } from "./cron";
 import { handleLiveRates } from "./live-rates";
+import { handleGoogleReviews } from "./google-reviews";
 import { handleEnquiry } from "./enquiries";
 import { handleGetQuote, handleSaveQuote } from "./quotes";
 import { handleDeleteAccount, handleForgotPassword, handleLogin, handleLogout, handleMe, handleRegister, handleResetPassword } from "./auth";
@@ -71,6 +72,7 @@ const ROUTES: Route[] = [
   { method: "GET", pattern: /^\/health$/, handle: (_r, env) => json({ ok: true, environment: env.ENVIRONMENT ?? "unknown", time: new Date().toISOString() }) },
   { method: "GET", pattern: /^\/app-config$/, handle: (r, env) => handleAppConfig(r, env) },
   { method: "GET", pattern: /^\/live-rates$/, handle: (r, env, ctx) => handleLiveRates(r, env, ctx) },
+  { method: "GET", pattern: /^\/google-reviews$/, handle: (r, env, ctx) => handleGoogleReviews(r, env, ctx) },
 
   // ---- public capture ----
   { method: "POST", pattern: /^\/enquiries$/, handle: (r, env, ctx) => handleEnquiry(r, env, ctx) },

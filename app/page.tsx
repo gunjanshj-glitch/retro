@@ -6,6 +6,7 @@ import { NavBar } from "@/components/ui/NavBar";
 import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
 import { ReviewText } from "@/components/ui/ReviewText";
+import { LiveGoogleStats } from "@/lib/live-google-reviews";
 import { PackagesRow, type PackageCardData } from "@/components/destinations/PackagesRow";
 import { loadDestinations } from "@/lib/destinations";
 import { getPackagesForDestination } from "@/lib/packages";
@@ -76,6 +77,7 @@ export default async function HomePage() {
   const reviews = (live && live.reviews.length ? live.reviews : REVIEWS).slice(0, 4);
   const rating = live ? live.rating.toFixed(1) : "4.9";
   const total = live ? live.total : 77;
+  const initial = { rating, total };
 
   return (
     <>
@@ -123,8 +125,9 @@ export default async function HomePage() {
               You will not remember the itinerary.
             </h2>
             <p className="mt-5 max-w-xl text-lg leading-relaxed" style={{ color: "var(--ink-2)" }}>
-              Twelve years of trips people still talk about. {rating} stars, {total} reviews, two founders who still
-              answer the phone.
+              Twelve years of trips people still talk about.{" "}
+              <LiveGoogleStats initial={initial} variant="sentence" />, two founders
+              who still answer the phone.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
               <Button href="/plan">
@@ -141,12 +144,14 @@ export default async function HomePage() {
             style={{ background: "var(--surface)", borderColor: "var(--line)" }}
           >
             {[
-              { k: `${rating}★`, v: "Google rating" },
-              { k: `${total}`, v: "Google reviews" },
-              { k: "12 yrs", v: "Planning trips" },
+              { k: "stars" as const, v: "Google rating" },
+              { k: "count" as const, v: "Google reviews" },
+              { k: null, v: "Planning trips" },
             ].map((x) => (
               <div key={x.v}>
-                <dt className="font-display text-3xl tabular-nums md:text-5xl">{x.k}</dt>
+                <dt className="font-display text-3xl tabular-nums md:text-5xl">
+                  {x.k ? <LiveGoogleStats initial={initial} variant={x.k} /> : "12 yrs"}
+                </dt>
                 <dd className="mt-1 text-sm" style={{ color: "var(--ink-2)" }}>
                   {x.v}
                 </dd>
@@ -175,7 +180,7 @@ export default async function HomePage() {
               <span className="text-base" style={{ color: "var(--accent)" }} aria-hidden="true">
                 ★★★★★
               </span>
-              {rating} · {total} reviews
+              <LiveGoogleStats initial={initial} variant="badge" />
             </p>
           </div>
 

@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 import { fetchGoogleReviews } from "./lib/google-reviews";
 
-// The footer is a client component shared by every page, so the live Google
-// rating/count is resolved once at build time and inlined as public env vars.
-// When the key is missing or the request fails these stay unset and the footer
-// falls back to its static copy.
+// Build-time Google rating/count, inlined as public env vars. They are only the
+// first paint: the browser replaces them with live figures from /api/google-reviews
+// (lib/live-google-reviews.tsx). Unset when the key is missing or Google fails.
 export default async function config(): Promise<NextConfig> {
   const live = await fetchGoogleReviews();
   return {

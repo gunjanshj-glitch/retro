@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { whatsappLink } from "@retro/core/contact";
+import { LiveGoogleStats } from "@/lib/live-google-reviews";
 
 const POLICY_LINKS = [
   { href: "/terms", short: "Terms" },
@@ -147,8 +148,7 @@ export function Footer() {
             ))}
           </p>
           <p>
-            Kolkata, India <span aria-hidden="true" className="mx-2 text-[var(--line-strong)]">•</span> {process.env.NEXT_PUBLIC_GOOGLE_RATING ?? "4.9"} ★ from{" "}
-            {process.env.NEXT_PUBLIC_GOOGLE_REVIEW_COUNT ?? "77"} Google reviews
+            Kolkata, India <span aria-hidden="true" className="mx-2 text-[var(--line-strong)]">•</span> <LiveGoogleStats variant="footer" />
           </p>
         </div>
       </div>

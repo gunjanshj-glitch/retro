@@ -15,6 +15,10 @@ export type Env = {
   TRAVELPAYOUTS_TOKEN?: string;
   /** LiteAPI sandbox or production key. Optional. */
   LITEAPI_KEY?: string;
+  /** Google Places API key for the live rating on the site. Optional. */
+  GOOGLE_PLACES_API_KEY?: string;
+  /** Place ID of the business listing; defaults to the Retro Holidays listing. */
+  GOOGLE_PLACE_ID?: string;
   /** Optional KV namespace for cross-request rate caching. */
   RATE_CACHE?: KVNamespace;
 
