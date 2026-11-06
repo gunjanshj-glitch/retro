@@ -13,7 +13,7 @@ import type { CoreBundle, HotelStar, TravellerType, TripStyle } from "@retro/cor
 import type { QuoteRequest } from "@retro/core/atlas/engine/types";
 import { STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
 import { computeNightsBounds, hotelStarForStyle, isHotelStarAvailable } from "@retro/core/atlas/engine/bounds";
-import { resolvePax } from "@retro/core/atlas/engine/pricing";
+import { isDomesticTrip, resolvePax } from "@retro/core/atlas/engine/pricing";
 import { chipClass, chipStyle, fieldClass, selectStyle } from "./theme";
 
 /** Pace nudged by trip style — pilgrimage itineraries plan gentler days by default. */
@@ -673,7 +673,10 @@ export function DecisionMatrix({ core, value, onChange, adopt = false }: Props) 
               ["includeVisa", "Visa support"],
               ["includeInsurance", "Travel insurance"],
             ] as const
-          ).map(([key, label]) => (
+          )
+            // No visa inside your own country: drop the option entirely.
+            .filter(([key]) => key !== "includeVisa" || !isDomesticTrip(core, value.placeIds, value.nationality))
+            .map(([key, label]) => (
             <label key={key} className="flex min-h-11 cursor-pointer items-center gap-3 font-medium">
               <input
                 type="checkbox"

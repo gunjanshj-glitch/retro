@@ -1358,6 +1358,14 @@ describe("end-to-end quotation", () => {
     );
   });
 
+  it("charges no visa inside the traveller's own country", () => {
+    const home = quote({ placeIds: ["jaipur"], nights: 2 });
+    expect(home.lineItems.some((i) => i.component === "visa")).toBe(false);
+    expect(home.request.includeVisa).toBe(false);
+    // The same trip for a foreign passport keeps the visa switch as asked.
+    expect(quote({ placeIds: ["jaipur"], nights: 2, nationality: "USA" }).request.includeVisa).toBe(true);
+  });
+
   it("applies the markup chain in order", () => {
     const t = q.totals;
     expect(t.costBeforeMarkup).toBe(t.directCost + t.contingency);

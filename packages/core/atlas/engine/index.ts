@@ -29,7 +29,7 @@ import type {
 } from "./types";
 import { planDays, type GroupProfile } from "./dayplan";
 import { applyLiveFx, type FxAdjustment, type FxRates } from "./fx";
-import { indiaGroundApplies, indiaRoadFirst, priceQuotation, resolvePax, type LiveRate } from "./pricing";
+import { indiaGroundApplies, indiaRoadFirst, isDomesticTrip, priceQuotation, resolvePax, type LiveRate } from "./pricing";
 import { normaliseKey, formatDuration } from "./text";
 import { filterRealisticSelection } from "./bounds";
 
@@ -628,7 +628,11 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   }
 
   return {
-    request,
+    // A trip inside the traveller's own country needs no visa, so it is never
+    // shown as "visa support included".
+    request: request.includeVisa && isDomesticTrip(core, placeIds, request.nationality)
+      ? { ...request, includeVisa: false }
+      : request,
     referencePackage,
     stays,
     days: plan.days,

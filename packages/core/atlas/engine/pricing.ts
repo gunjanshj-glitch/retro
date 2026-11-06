@@ -170,6 +170,17 @@ type IndiaGround = {
   roadFirstMaxHours: number;
 };
 
+/**
+ * True when every selected place is in the traveller's own country (an Indian
+ * passport on an India trip). No visa applies there, so visa support is moot.
+ */
+export function isDomesticTrip(core: CoreBundle, placeIds: string[], nationality: string): boolean {
+  if (!placeIds.length) return false;
+  const countryOf = new Map(core.places.map((p) => [p.id, p.countryId]));
+  const iso3Of = new Map(core.countries.map((c) => [c.id, c.iso3]));
+  return placeIds.every((id) => iso3Of.get(countryOf.get(id) ?? "") === nationality);
+}
+
 export function indiaGroundApplies(core: CoreBundle, placeIds: string[]): boolean {
   if (!INDIA_GROUND?.enabled || !placeIds.length) return false;
   const countryOf = new Map(core.places.map((p) => [p.id, p.countryId]));
@@ -732,6 +743,8 @@ export function priceQuotation(input: PricingInput): {
       const countryId = countryOf.get(stay.placeId);
       if (!countryId || seen.has(countryId)) continue;
       seen.add(countryId);
+      // Home country: a citizen needs no visa to travel inside it.
+      if (core.countries.find((c) => c.id === countryId)?.iso3 === request.nationality) continue;
       const rule = visaRules.find(
         (v) => v.nationality === request.nationality && v.destCountryId === countryId,
       );
