@@ -54,6 +54,8 @@
   --land-on: #5f9139;
   --land-dim: #dbe8cc;
   --land-out: #e6e9ed;
+  --land-visited: #fde7a6;
+  --land-visited-edge: #e3a512;
 
   --shadow-sm: 0 1px 2px rgba(11, 34, 56, 0.06), 0 4px 12px rgba(11, 34, 56, 0.06);
   --shadow: 0 1px 2px rgba(11, 34, 56, 0.06), 0 8px 24px rgba(11, 34, 56, 0.08);
@@ -210,9 +212,9 @@ h3 {
   fill: transparent;
 }
 .map-context {
-  fill: var(--land-out);
+  fill: #f6f3ec;
   stroke: #fff;
-  stroke-width: 0.8;
+  stroke-width: 1;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
