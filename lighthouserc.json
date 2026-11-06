@@ -3,7 +3,7 @@
     "collect": {
       "staticDistDir": "./out",
       "url": ["http://localhost/index.html", "http://localhost/destinations/india.html"],
-      "numberOfRuns": 2
+      "numberOfRuns": 5
     },
     "assert": {
       "assertions": {
