@@ -49,6 +49,15 @@ gtag('js',new Date());
 gtag('config','${GA_ID}');
 gtag('config','${ADS_ID}');`}
         </Script>
+        {/* Travelpayouts site verification. In the server-rendered HTML so their
+            crawler can see it. Remove once the account is verified and the API
+            token has been issued. */}
+        <Script
+          id="travelpayouts-verify"
+          src="https://emrldtp.com/NTk2NTkw.js?t=596590"
+          strategy="beforeInteractive"
+          data-cmp-ab="2"
+        />
         <RouteTracker />
         <AuthProvider>{children}</AuthProvider>
       </body>
