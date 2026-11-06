@@ -111,6 +111,10 @@ export function DestinationExplorer({
       : `${entries.length} ${entries.length === 1 ? "area" : "areas"} · ${totalPlaces} places`;
 
   return (
+    <div className="grid gap-6">
+      {packagesWithPlaces.length > 0 && (
+        <PackageRail packages={packagesWithPlaces} covers={packageCovers} activeId={packageId} onToggle={togglePackage} />
+      )}
     <div className="grid items-start gap-5 lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-7">
       {/* Map */}
       <div className="min-w-0 lg:order-2">
@@ -174,15 +178,6 @@ export function DestinationExplorer({
             </p>
           </div>
         </div>
-
-        {!selectedEntry && packagesWithPlaces.length > 0 && (
-          <PackageRail
-            packages={packagesWithPlaces}
-            covers={packageCovers}
-            activeId={packageId}
-            onToggle={togglePackage}
-          />
-        )}
 
         <ul className="-mx-2 grid max-h-[420px] gap-0.5 overflow-auto px-2" style={{ scrollbarWidth: "thin" }}>
           {selectedEntry
@@ -253,6 +248,7 @@ export function DestinationExplorer({
           packageCovers={packageCovers}
         />
       </aside>
+    </div>
     </div>
   );
 }
@@ -380,8 +376,8 @@ function PackageRail({
         </p>
         {packages.length > 2 && (
           <div className="flex gap-1.5">
-            <ScrollArrowButton dir="left" onClick={() => nudge(-1, 150)} disabled={atStart} label="Scroll packages left" />
-            <ScrollArrowButton dir="right" onClick={() => nudge(1, 150)} disabled={atEnd} label="Scroll packages right" />
+            <ScrollArrowButton dir="left" onClick={() => nudge(-1, 440)} disabled={atStart} label="Scroll packages left" />
+            <ScrollArrowButton dir="right" onClick={() => nudge(1, 440)} disabled={atEnd} label="Scroll packages right" />
           </div>
         )}
       </div>
@@ -400,7 +396,7 @@ function PackageRail({
               type="button"
               aria-pressed={on}
               onClick={() => onToggle(g.id)}
-              className="group w-[132px] shrink-0 snap-start overflow-hidden rounded-2xl border text-left transition-shadow hover:shadow-md"
+              className="group w-[190px] shrink-0 sm:w-[210px] snap-start overflow-hidden rounded-2xl border text-left transition-shadow hover:shadow-md"
               style={{ borderColor: on ? "var(--ink)" : "var(--line)", background: "var(--card)", boxShadow: on ? "0 0 0 2px var(--ink)" : undefined }}
             >
               <span className="relative block aspect-[4/3] overflow-hidden" style={{ background: "var(--surface)" }}>
@@ -412,7 +408,7 @@ function PackageRail({
                 )}
               </span>
               <span className="block p-2.5">
-                <span className="line-clamp-2 block text-[13px] font-bold leading-snug">{g.packageName}</span>
+                <span className="line-clamp-2 block text-sm font-bold leading-snug">{g.packageName}</span>
                 {g.offer?.days && (
                   <span className="mt-0.5 block text-xs" style={{ color: "var(--muted)" }}>
                     {g.offer.days} days
