@@ -1,14 +1,14 @@
-import { Fraunces, Figtree } from "next/font/google";
+import { Instrument_Serif, Figtree } from "next/font/google";
 
-// Display: Fraunces, a soft "old-style" serif with optical sizing, for
-// headings. Interface: Figtree, a friendly geometric sans for everything else.
-// Exposed as CSS variables; `app/globals.css` builds --font-display and
-// --font-interface (with fallback stacks) from them.
-export const display = Fraunces({
+// Display: Instrument Serif, a condensed editorial serif (single 400 weight,
+// roman + italic), for headlines. Interface: Figtree, a friendly geometric sans
+// for everything else. Exposed as CSS variables; `app/globals.css` builds
+// --font-display and --font-interface (with fallback stacks) from them.
+export const display = Instrument_Serif({
   subsets: ["latin"],
+  weight: "400",
   style: ["normal", "italic"],
-  axes: ["opsz"],
-  variable: "--font-fraunces",
+  variable: "--font-instrument-serif",
 });
 
 export const interface_ = Figtree({
