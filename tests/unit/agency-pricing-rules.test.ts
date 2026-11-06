@@ -300,11 +300,66 @@ describe("Island hops and bad published prices", () => {
     }
   });
 
-  it("Maharashtra (11 nights) quotes near its Rs 50,000 brochure price, which was once mis-keyed as Rs 5,00,000", () => {
+  it("Maharashtra (11 nights) is the agency's confirmed Rs 75,000, once mis-keyed as Rs 5,00,000", () => {
     const pkg = core.packages.find((p) => p.name === "Maharashtra")!;
     const q = quote({ placeIds: pkg.placeIds, nights: pkg.nights, adults: 2, startDate: "2027-03-10" });
-    expect(pkg.priceFromInr).toBe(50000);
-    expect(q.totals.perPerson).toBeGreaterThan(40000);
-    expect(q.totals.perPerson).toBeLessThan(75000);
+    expect(pkg.priceFromInr).toBe(75000);
+    expect(q.totals.perPerson).toBeGreaterThan(50000);
+    expect(q.totals.perPerson).toBeLessThan(95000);
+  });
+
+  it("Great Uttarakhand Outdoors is the agency's 6-night trek, no longer 'flexible'", () => {
+    const pkg = core.packages.find((p) => p.name === "Great Uttarakhand Outdoors")!;
+    expect(pkg.nights).toBe(6);
+    expect(pkg.days).toBe(7);
+    expect(pkg.flexibleDuration).toBe(false);
+  });
+});
+
+describe("Kailash Mansarovar", () => {
+  const pkg = () => core.packages.find((p) => p.name === "Kailash Mansarovar Tour")!;
+
+  it("is recorded as including the flight, per the agency", () => {
+    expect(pkg().priceIncludesFlight).toBe(true);
+  });
+
+  it("charges the agency's Tibet permit and guide (Rs 73,500 a head) on any trip to Mansarovar", () => {
+    const q = quote({ placeIds: pkg().placeIds, nights: pkg().nights, adults: 2, startDate: "2027-06-10" });
+    const permit = q.lineItems.find((l) => l.label.includes("Tibet permits"));
+    expect(permit).toBeDefined();
+    expect(permit!.unitPriceInr).toBe(73500);
+    expect(permit!.quantity).toBe(2);
+  });
+
+  it("does not charge it on a trip that never reaches Tibet", () => {
+    const q = quote({ placeIds: ["kathmandu"], nights: 3, adults: 2, startDate: "2027-06-10" });
+    expect(q.lineItems.some((l) => l.label.includes("Tibet permits"))).toBe(false);
+  });
+});
+
+describe("Airfare from Kolkata follows the agency's typical tickets", () => {
+  const fare = (country: string, place: string) => {
+    const q = quote({ placeIds: [place], nights: 4, adults: 2, includeFlight: true, carrier: "FSC", departureCity: "CCU", startDate: "2027-02-10" });
+    const f = q.lineItems.find((l) => l.component === "flight");
+    expect(f, country).toBeDefined();
+    return f!.unitPriceInr;
+  };
+  const place = (countryId: string) => core.places.find((p) => p.countryId === countryId)!.id;
+
+  it.each([
+    ["south-east-asia-thailand", 30000],
+    ["south-east-asia-singapore", 45000],
+    ["middle-east-and-gulf-uae", 50000],
+    ["east-asia-japan", 120000],
+    ["europe-united-kingdom", 80000],
+    ["south-asia-sri-lanka", 30000],
+  ])("%s full-service economy from Kolkata is Rs %i a head", (country, expected) => {
+    expect(fare(country, place(country))).toBe(expected);
+  });
+
+  it("a low-cost carrier stays cheaper than the full-service fare", () => {
+    const q = quote({ placeIds: [place("south-east-asia-thailand")], nights: 4, adults: 2, includeFlight: true, carrier: "LCC", departureCity: "CCU", startDate: "2027-02-10" });
+    const lcc = q.lineItems.find((l) => l.component === "flight")!.unitPriceInr;
+    expect(lcc).toBeLessThan(30000);
   });
 });

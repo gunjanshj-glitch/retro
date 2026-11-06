@@ -264,6 +264,14 @@ function baseOf(raw: unknown): { ok: true; base: string | null | undefined } | {
   return b === null || typeof b === "string" ? { ok: true, base: b } : { ok: false };
 }
 
+/** The current time as an ISO stamp, nudged to be strictly later than `previous` (millisecond ties are real). */
+function stampAfter(previous: string | null | undefined): string {
+  let t = Date.now();
+  const prev = previous ? Date.parse(previous) : NaN;
+  if (Number.isFinite(prev) && t <= prev) t = prev + 1;
+  return new Date(t).toISOString();
+}
+
 function draftChanged(draft: RevisionRow | null): Response {
   return json(
     {
@@ -291,11 +299,14 @@ export async function handleAdminSaveDraft(id: string, request: Request, env: En
   const { request: req, quotation, adjustments, validUntil, note } = parsed.value;
 
   const priced = priceQuote(quotation.totals.total, adjustments);
-  const now = new Date().toISOString();
   const payload = JSON.stringify({ request: req, quotation, adjustments });
   const validIso = validUntil ? endOfDayIst(validUntil) : null;
 
   const draft = await loadDraft(env, id);
+  // The draft's stamp is the lock token, so a save must always move it forward.
+  // Two saves in the same millisecond would otherwise write an identical stamp
+  // and let a colleague's stale copy pass the check above.
+  const now = stampAfter(draft?.updated_at);
   if (base.base !== undefined && (draft?.updated_at ?? null) !== base.base) return draftChanged(draft);
   if (draft) {
     // Conditional on the stamp we just checked, so two saves racing each other

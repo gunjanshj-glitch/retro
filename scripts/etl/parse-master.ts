@@ -104,6 +104,13 @@ const CLUSTER_PATTERN = /scandinivia|scandinavia|cluster/i;
  * package rather than a parse error surfacing anywhere. Strip everything but
  * digits and a leading minus so every one of those formats parses the same way.
  */
+/**
+ * Packages whose published price already includes the return flight from India.
+ * The master file is land-only everywhere else. Kailash Mansarovar: the agency
+ * confirmed (Nov 2026) its 1,60,000 includes a 32,000 flight to Kathmandu.
+ */
+const PRICE_INCLUDES_FLIGHT = new Set(["Kailash Mansarovar Tour"]);
+
 function parsePrice(price: unknown): number {
   const digits = String(price ?? "").replace(/[^\d-]/g, "");
   const n = Number(digits);
@@ -388,7 +395,7 @@ export function parseMaster(
         // Indian gateway is quoted on top. Recorded explicitly so the engine,
         // the calibration harness and the UI all agree on what the number
         // covers rather than each assuming.
-        priceIncludesFlight: false,
+        priceIncludesFlight: PRICE_INCLUDES_FLIGHT.has(pkg.name),
         flexibleDuration: flexible,
         description: pkg.description ?? "",
         highlights: pkg.highlights ?? [],

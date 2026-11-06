@@ -518,6 +518,23 @@
     "_omkareshwar": "The India hotel factor corrects the workbook's one template rate (203 of 208 places). Omkareshwar is one of the few with a genuinely authored rate (INR 2,646 for 3 Star), which the factor would have cut to about 1,060.",
     "omkareshwar": {
       "hotel": 1
+    },
+    "_hongKongMacau": "Hong Kong and Macau quoted 38% under the Rs 1,22,000 package. The agency confirmed that price is land only (Nov 2026) and explained why: Hong Kong is a business hub, hotel demand and rates move constantly, and tours and transfers cost more than in neighbouring countries. They gave no rupee rates, so this is a FITTED uplift at the top of the allowed band (2.5), not a measured rate. Replace it with real nightly hotel, transfer and tour prices when the agency has them. A place factor beats the China country factor outright, so meals keep that country's 1.736.",
+    "hong-kong": {
+      "hotel": 2.5,
+      "airport-transfer": 2.5,
+      "local-transport": 2.5,
+      "intercity-transport": 2.5,
+      "sightseeing": 2.5,
+      "meals": 1.736
+    },
+    "macau": {
+      "hotel": 2.5,
+      "airport-transfer": 2.5,
+      "local-transport": 2.5,
+      "intercity-transport": 2.5,
+      "sightseeing": 2.5,
+      "meals": 1.736
     }
   },
   "package": {},
