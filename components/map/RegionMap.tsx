@@ -171,7 +171,7 @@ export function RegionMap({
 
 
   return (
-    <div className="relative h-full w-full select-none">
+    <div className="relative h-full w-full select-none" style={{ background: "linear-gradient(180deg, var(--sea-2) 0%, var(--sea) 100%)" }}>
       <svg
         ref={svgRef}
         viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
@@ -181,18 +181,23 @@ export function RegionMap({
         style={{ touchAction: "pan-y" }}
         {...handlers}
       >
-        {/* The map art as it has always been drawn: one tinted outline with
-            thin borders, no sea and no neighbouring land. */}
+        {/* Geography first: the neighbouring land sits under the places we visit,
+            so countries keep their real position and shape instead of floating
+            apart. Visited countries are warm; their neighbours stay quiet. */}
+        {regions?.context && <path d={regions.context} className="map-context" />}
         {coastline && (
           <path
             d={coastline}
-            fill="color-mix(in srgb, var(--muted) 12%, transparent)"
-            stroke="var(--muted)"
-            strokeWidth={1.2 * k}
+            fill="var(--land-visited)"
+            stroke="var(--land-visited-edge)"
+            strokeWidth={1.3 * k}
             strokeLinejoin="round"
             strokeLinecap="round"
             pointerEvents="none"
           />
+        )}
+        {regions?.islets && (
+          <path d={regions.islets} fill="var(--land-visited)" stroke="var(--land-visited-edge)" strokeWidth={1.3 * k} pointerEvents="none" />
         )}
         <g opacity={0.55} pointerEvents="none" dangerouslySetInnerHTML={{ __html: decorations }} />
 

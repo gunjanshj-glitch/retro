@@ -109,7 +109,7 @@ export default async function DestinationPage({
         </section>
 
         {/* Packages */}
-        <section className="mx-auto max-w-[1320px] px-5 pt-16 md:px-8 md:pt-24" aria-labelledby="packages-heading">
+        <section className="mx-auto max-w-[1320px] px-5 pt-14 md:px-8 md:pt-20" aria-labelledby="packages-heading">
           <div className="mb-7 max-w-2xl">
             <p className="eyebrow">Pick a trip, then make it yours</p>
             <h2 id="packages-heading" className="mt-2 font-display text-[34px] leading-[1.05] md:text-[46px]">
@@ -125,8 +125,8 @@ export default async function DestinationPage({
 
         {/* The atlas: index panel + live map */}
         <section
-          className="mt-16 pb-20 pt-14 md:mt-24 md:pb-24 md:pt-20"
-          style={{ background: "linear-gradient(180deg, var(--bg) 0, var(--surface) 140px, var(--surface) 100%)" }}
+          className="mt-4 pb-16 pt-10 md:mt-6 md:pb-20 md:pt-12"
+          style={{ background: "linear-gradient(180deg, var(--bg) 0, var(--surface) 80px, var(--surface) 100%)" }}
           aria-labelledby="map-heading"
         >
           <div className="mx-auto max-w-[1320px] px-5 md:px-8">
