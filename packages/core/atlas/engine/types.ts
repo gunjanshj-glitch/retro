@@ -156,6 +156,15 @@ export const QuoteRequest = z.object({
    * substitutes these. A key that no longer matches a line is ignored.
    */
   lineOverrides: z.record(z.string(), LineOverride).default({}),
+  /**
+   * The agency's margin, as a share of actual cost, set by hand in the quote
+   * editor. Null leaves it to the policy (regressive bands, luxury rate and the
+   * contingency + margin clamp). Any value here replaces the policy rate and
+   * the clamp for every category that has no override of its own.
+   */
+  marginPct: z.number().min(0).max(1).nullable().default(null),
+  /** Per-category margin (share of that category's cost), keyed by component. Beats `marginPct`. */
+  componentMarginPct: z.record(z.string(), z.number().min(0).max(1)).default({}),
   /** Charges an admin added by hand, on top of what the engine priced. */
   customLines: z.array(CustomCostLine).max(50).default([]),
   /**
@@ -348,6 +357,11 @@ export type QuoteTotals = {
   perPerson: number;
   /** Set when the published package floor bound the result. */
   flooredToPackage: string | null;
+  /**
+   * The agency's margin in rupees per category, present only when the admin set
+   * a margin by hand. Without it the margin is spread pro rata to cost.
+   */
+  marginByComponent?: Record<string, number>;
 };
 
 export type QuoteWarning = {

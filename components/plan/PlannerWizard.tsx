@@ -55,6 +55,8 @@ function defaultRequest(): QuoteRequest {
     excludedClusterIds: [],
     excludedLineKeys: [],
     lineOverrides: {},
+    marginPct: null,
+    componentMarginPct: {},
     customLines: [],
     sightseeingMode: "auto",
     addedActivityCodes: [],

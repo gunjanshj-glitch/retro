@@ -46,6 +46,24 @@ export function allocateMarkup(base: ReadonlyMap<string, number>, hidden: number
   return out;
 }
 
+/**
+ * Contingency + margin per category: what the traveller's price carries on top
+ * of each category's cost. With a hand-set margin it is each category's own
+ * contingency plus its own margin; otherwise it is shared pro rata to cost.
+ */
+export function hiddenByComponent(quotation: Quotation): Map<string, number> {
+  const t = quotation.totals;
+  const base = new Map<string, number>();
+  for (const item of quotation.lineItems) base.set(item.component, (base.get(item.component) ?? 0) + item.totalInr);
+  if (!t.marginByComponent) return allocateMarkup(base, t.contingency + t.agentMarkup);
+  const contRate = t.directCost > 0 ? t.contingency / t.directCost : 0;
+  const out = new Map<string, number>();
+  for (const [component, amount] of base) {
+    if (amount > 0) out.set(component, amount * contRate + (t.marginByComponent[component] ?? 0));
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // Adjustments
 // ---------------------------------------------------------------------------
@@ -189,14 +207,13 @@ export type BreakdownRow = { key: string; label: string; amountInr: number };
  */
 export function componentBreakdown(quotation: Quotation, packageInr: number): BreakdownRow[] {
   const engineTotal = quotation.totals.total;
-  const hidden = quotation.totals.contingency + quotation.totals.agentMarkup;
 
   const base = new Map<string, number>();
   for (const item of quotation.lineItems) {
     base.set(item.component, (base.get(item.component) ?? 0) + item.totalInr);
   }
 
-  const share = allocateMarkup(base, hidden);
+  const share = hiddenByComponent(quotation);
 
   const raw = [...base.entries()]
     .map(([component, amount]) => ({ component, amount: amount + (share.get(component) ?? 0) }))
@@ -230,8 +247,10 @@ export type CategoryMargin = {
   label: string;
   /** What suppliers charge for this category (every ticked line). */
   costInr: number;
-  /** The agency's share folded into this category's price. */
+  /** The agency's share folded into this category's price (contingency + margin). */
   cutInr: number;
+  /** The margin part of the cut, as a share of this category's cost. Null with no cost. */
+  marginPct: number | null;
   /** What the traveller's page shows for this category. */
   sellInr: number;
 };
@@ -282,11 +301,20 @@ export function summariseMargin(quotation: Quotation, adj: QuoteAdjustments): Ma
   const cost = new Map<string, number>();
   for (const item of quotation.lineItems) cost.set(item.component, (cost.get(item.component) ?? 0) + item.totalInr);
 
+  const contingencyRate = t.directCost > 0 ? t.contingency / t.directCost : 0;
   const categories: CategoryMargin[] = componentBreakdown(quotation, priced.packageInr)
     .filter((r) => r.key !== "taxes")
     .map((r) => {
       const costOfCategory = Math.round(cost.get(r.key) ?? 0);
-      return { key: r.key, label: r.label, costInr: costOfCategory, cutInr: r.amountInr - costOfCategory, sellInr: r.amountInr };
+      const cutOfCategory = r.amountInr - costOfCategory;
+      return {
+        key: r.key,
+        label: r.label,
+        costInr: costOfCategory,
+        cutInr: cutOfCategory,
+        marginPct: costOfCategory > 0 ? (cutOfCategory - costOfCategory * contingencyRate) / costOfCategory : null,
+        sellInr: r.amountInr,
+      };
     });
 
   const cutInr = priced.totalInr - costInr - taxInr;

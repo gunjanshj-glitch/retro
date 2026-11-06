@@ -11,7 +11,7 @@ import type { TransportMode } from "@retro/core/atlas/schema";
 import { formatDuration, formatInr } from "@retro/core/atlas/engine/text";
 import policy from "@/content/quote-policy.json";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { allocateMarkup, COMPONENT_LABEL } from "@retro/core/quote-pricing";
+import { COMPONENT_LABEL, hiddenByComponent } from "@retro/core/quote-pricing";
 import { SendForApprovalModal } from "./SendForApprovalModal";
 import { btnGhost, btnInk, cardClass, chipClass, chipStyle, optionCardStyle } from "./theme";
 
@@ -115,14 +115,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
 
   // Contingency + agent margin are computed by the engine but never shown on
   // their own — they are folded into each category in proportion to its cost.
-  const markupAllocation = useMemo(() => {
-    const hiddenMarkup = quote.totals.contingency + quote.totals.agentMarkup;
-    const baseByComponent = new Map<string, number>();
-    for (const item of quote.lineItems) {
-      baseByComponent.set(item.component, (baseByComponent.get(item.component) ?? 0) + item.totalInr);
-    }
-    return allocateMarkup(baseByComponent, hiddenMarkup);
-  }, [quote]);
+  const markupAllocation = useMemo(() => hiddenByComponent(quote), [quote]);
 
   // The flight fare is a same-day approximation, not a fixed price — this
   // note is one click away rather than always on screen.

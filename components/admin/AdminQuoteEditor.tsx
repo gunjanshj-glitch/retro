@@ -304,7 +304,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
       <Section title="5 · Cost, agency cut & rates" hint="What it costs, what the agency keeps, and every charge behind each category (admin only)" open>
         {quote ? (
           <div className="flex flex-col gap-6">
-            <MarginPanel quote={quote} adjustments={adjustments} />
+            <MarginPanel quote={quote} adjustments={adjustments} request={request ?? undefined} onChange={editRequest} />
             <PriceSplitPanel quote={quote} adjustments={adjustments} onChange={editRequest} />
           </div>
         ) : (

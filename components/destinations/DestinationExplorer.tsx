@@ -372,7 +372,7 @@ function PackageRail({
     <div className="min-w-0">
       <div className="mb-2 flex items-center justify-between gap-2">
         <p className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
-          Show a package
+          See a package&apos;s route on the map
         </p>
         {packages.length > 2 && (
           <div className="flex gap-1.5">

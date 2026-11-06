@@ -454,12 +454,16 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   // switched lines off, replaced a rate or added a charge, the figure is theirs:
   // raising it back to the published "from" price would silently undo their edit.
   const handEdited =
-    request.excludedLineKeys.length > 0 || Object.keys(request.lineOverrides).length > 0 || request.customLines.length > 0;
+    request.excludedLineKeys.length > 0 ||
+    Object.keys(request.lineOverrides).length > 0 ||
+    request.customLines.length > 0 ||
+    request.marginPct != null ||
+    Object.keys(request.componentMarginPct).length > 0;
   if (handEdited && referencePackage) {
     warnings.push({
       level: "info",
       audience: "internal",
-      message: `Price lines were edited by hand, so the published "from" price for ${referencePackage.name} is not applied as a floor.`,
+      message: `Price lines or the margin were edited by hand, so the published "from" price for ${referencePackage.name} is not applied as a floor.`,
     });
   }
   if (

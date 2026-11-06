@@ -58,9 +58,9 @@ const FEATURES: Feature[] = [
 
 export function FeatureRow() {
   return (
-    <div className="grid grid-cols-1 gap-y-8 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-7 sm:gap-x-8 lg:grid-cols-4">
       {FEATURES.map((f) => (
-        <div key={f.label} className="flex items-start gap-4">
+        <div key={f.label} className="flex flex-col items-start gap-3 sm:flex-row sm:gap-4">
           <span
             aria-hidden="true"
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border"
@@ -76,7 +76,7 @@ export function FeatureRow() {
             <p className="text-[15px] font-bold" style={{ color: "var(--ink)" }}>
               {f.label}
             </p>
-            <p className="mt-1 text-sm leading-relaxed" style={{ color: "var(--ink-2)" }}>
+            <p className="mt-1 text-sm leading-snug sm:leading-relaxed" style={{ color: "var(--ink-2)" }}>
               {f.description}
             </p>
           </div>

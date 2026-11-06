@@ -803,11 +803,27 @@ export function priceQuotation(input: PricingInput): {
   const baseRate = request.hotelStar === "Luxury 5 Star" ? MARKUP.luxuryMarkup : MARKUP.baseAgentMarkup;
   const markupRate = Math.max(MARKUP.minAgentMarkup, baseRate - band.reduction);
   let agentMarkup = costBeforeMarkup * markupRate;
-  // The commercial rule is that contingency + agent margin, combined, must
-  // land between 10% and 15% of the direct cost — not a flat rate, since the
-  // regressive bands above and the luxury rate can otherwise push it outside
-  // that band. Contingency is fixed, so the clamp is absorbed by the margin.
-  if (directCost > 0) {
+  // A margin the admin typed in wins over the policy: it is applied to each
+  // category's actual cost and is not pulled back into the 10-15% band, because
+  // setting it is the point.
+  let marginByComponent: Record<string, number> | undefined;
+  const marginSetByHand = request.marginPct != null || Object.keys(request.componentMarginPct).length > 0;
+  if (marginSetByHand) {
+    const cost = new Map<string, number>();
+    for (const i of items) cost.set(i.component, (cost.get(i.component) ?? 0) + i.totalInr);
+    marginByComponent = {};
+    agentMarkup = 0;
+    for (const [component, amount] of cost) {
+      const rate = request.componentMarginPct[component] ?? request.marginPct ?? markupRate;
+      const m = amount * rate;
+      marginByComponent[component] = Math.round(m);
+      agentMarkup += m;
+    }
+  } else if (directCost > 0) {
+    // The commercial rule is that contingency + agent margin, combined, must
+    // land between 10% and 15% of the direct cost - not a flat rate, since the
+    // regressive bands above and the luxury rate can otherwise push it outside
+    // that band. Contingency is fixed, so the clamp is absorbed by the margin.
     const combined = contingency + agentMarkup;
     const minCombined = directCost * MARKUP.contingencyMarginRange.min;
     const maxCombined = directCost * MARKUP.contingencyMarginRange.max;
@@ -833,6 +849,7 @@ export function priceQuotation(input: PricingInput): {
       // Derived from the rounded total so the two always reconcile.
       perPerson: Math.round(total / Math.max(1, pax.total)),
       flooredToPackage: null,
+      ...(marginByComponent ? { marginByComponent } : {}),
     },
   };
 }
