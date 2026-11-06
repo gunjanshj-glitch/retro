@@ -15,6 +15,8 @@ import { displayName } from "@/lib/display-names";
 import { RegionMap } from "@/components/map/RegionMap";
 import { groupDisplayName, markerKey, type MapMarker, type RegionLayer, type RegionMarkers } from "@/lib/map-svg";
 import type { Group } from "@/content/schema";
+import { useHorizontalScroll } from "@/lib/use-horizontal-scroll";
+import { ScrollArrowButton } from "@/components/ui/ScrollArrowButton";
 
 type Props = {
   destinationSlug: string;
@@ -32,9 +34,6 @@ type Props = {
 /** One row of the index: a country/state, possibly several map groupings merged by name. */
 type Entry = { label: string; keys: Set<string>; count: number; places: MapMarker[] };
 
-/** Package chips shown before "Show all"; India alone has three dozen packages. */
-const PACKAGE_CHIPS = 8;
-
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export function DestinationExplorer({
@@ -51,7 +50,6 @@ export function DestinationExplorer({
   const [packageId, setPackageId] = useState<number | null>(null);
   const [hot, setHot] = useState<string | null>(null);
   const [active, setActive] = useState<MapMarker | null>(null);
-  const [showAllPackages, setShowAllPackages] = useState(false);
 
   const entries = useMemo<Entry[]>(() => {
     const byLabel = new Map<string, Entry>();
@@ -178,43 +176,12 @@ export function DestinationExplorer({
         </div>
 
         {!selectedEntry && packagesWithPlaces.length > 0 && (
-          <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
-              Show a package
-            </p>
-            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Show a package on the map">
-              {(showAllPackages ? packagesWithPlaces : packagesWithPlaces.slice(0, PACKAGE_CHIPS)).map((g) => {
-                const on = g.id === packageId;
-                return (
-                  <button
-                    key={g.id}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => togglePackage(g.id)}
-                    className="min-h-9 rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-colors"
-                    style={{
-                      borderColor: on ? "var(--ink)" : "var(--line)",
-                      background: on ? "var(--ink)" : "var(--card)",
-                      color: on ? "#fff" : "var(--ink)",
-                    }}
-                  >
-                    {g.packageName}
-                  </button>
-                );
-              })}
-              {packagesWithPlaces.length > PACKAGE_CHIPS && (
-                <button
-                  type="button"
-                  onClick={() => setShowAllPackages((v) => !v)}
-                  aria-expanded={showAllPackages}
-                  className="min-h-9 rounded-full px-3 py-1.5 text-[13px] font-bold underline-offset-2 hover:underline"
-                  style={{ color: "var(--accent)" }}
-                >
-                  {showAllPackages ? "Show fewer" : `Show all ${packagesWithPlaces.length}`}
-                </button>
-              )}
-            </div>
-          </div>
+          <PackageRail
+            packages={packagesWithPlaces}
+            covers={packageCovers}
+            activeId={packageId}
+            onToggle={togglePackage}
+          />
         )}
 
         <ul className="-mx-2 grid max-h-[420px] gap-0.5 overflow-auto px-2" style={{ scrollbarWidth: "thin" }}>
@@ -389,5 +356,73 @@ function Kbd({ children }: { children: React.ReactNode }) {
     <kbd className="rounded-md border border-b-2 px-1.5 py-px text-xs font-bold" style={{ borderColor: "var(--line)", background: "var(--card)", fontFamily: "inherit" }}>
       {children}
     </kbd>
+  );
+}
+
+/** "Show a package": one horizontal, swipeable row of small cards (India has three dozen packages). */
+function PackageRail({
+  packages,
+  covers,
+  activeId,
+  onToggle,
+}: {
+  packages: Group[];
+  covers: Record<number, string>;
+  activeId: number | null;
+  onToggle: (id: number) => void;
+}) {
+  const { scrollerRef, atStart, atEnd, nudge } = useHorizontalScroll<HTMLDivElement>();
+  return (
+    <div className="min-w-0">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <p className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
+          Show a package
+        </p>
+        {packages.length > 2 && (
+          <div className="flex gap-1.5">
+            <ScrollArrowButton dir="left" onClick={() => nudge(-1, 150)} disabled={atStart} label="Scroll packages left" />
+            <ScrollArrowButton dir="right" onClick={() => nudge(1, 150)} disabled={atEnd} label="Scroll packages right" />
+          </div>
+        )}
+      </div>
+      <div
+        ref={scrollerRef}
+        className="no-scrollbar -mx-1 flex snap-x gap-2.5 overflow-x-auto scroll-smooth px-1 pb-1"
+        role="group"
+        aria-label="Show a package on the map"
+      >
+        {packages.map((g) => {
+          const on = g.id === activeId;
+          const img = covers[g.id];
+          return (
+            <button
+              key={g.id}
+              type="button"
+              aria-pressed={on}
+              onClick={() => onToggle(g.id)}
+              className="group w-[132px] shrink-0 snap-start overflow-hidden rounded-2xl border text-left transition-shadow hover:shadow-md"
+              style={{ borderColor: on ? "var(--ink)" : "var(--line)", background: "var(--card)", boxShadow: on ? "0 0 0 2px var(--ink)" : undefined }}
+            >
+              <span className="relative block aspect-[4/3] overflow-hidden" style={{ background: "var(--surface)" }}>
+                {img && <img src={img} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}
+                {on && (
+                  <span className="absolute right-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "var(--ink)", color: "#fff" }}>
+                    On map
+                  </span>
+                )}
+              </span>
+              <span className="block p-2.5">
+                <span className="line-clamp-2 block text-[13px] font-bold leading-snug">{g.packageName}</span>
+                {g.offer?.days && (
+                  <span className="mt-0.5 block text-xs" style={{ color: "var(--muted)" }}>
+                    {g.offer.days} days
+                  </span>
+                )}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
