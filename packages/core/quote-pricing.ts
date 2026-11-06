@@ -221,6 +221,91 @@ export function componentBreakdown(quotation: Quotation, packageInr: number): Br
   return rows;
 }
 
+// ---------------------------------------------------------------------------
+// Agency view: what it costs, what the agency keeps
+// ---------------------------------------------------------------------------
+
+export type CategoryMargin = {
+  key: string;
+  label: string;
+  /** What suppliers charge for this category (every ticked line). */
+  costInr: number;
+  /** The agency's share folded into this category's price. */
+  cutInr: number;
+  /** What the traveller's page shows for this category. */
+  sellInr: number;
+};
+
+export type MarginSummary = {
+  /** Actual cost: every ticked line at its (possibly hand-edited) rate. */
+  costInr: number;
+  /** The 3% buffer for cost movement before booking. Part of the agency's cut. */
+  contingencyInr: number;
+  /** The agency's margin. Absorbs a pinned price, so the parts always add up. */
+  marginInr: number;
+  /** GST and fees: collected for the taxman, not the agency's. */
+  taxInr: number;
+  /** Engine price, or the pinned figure, before extra lines. */
+  packageInr: number;
+  /** Extra charges less discounts the admin added in Pricing & terms. */
+  extrasInr: number;
+  /** What the traveller pays (without optional extras they may tick). */
+  totalInr: number;
+  /** Total less cost less tax: contingency + margin + extras. Negative means a loss. */
+  cutInr: number;
+  /** The cut as a share of cost, or null when there is no cost. */
+  cutPct: number | null;
+  /** How far a pinned package price moves the total from the engine's own. */
+  pinnedByInr: number;
+  /** Name of the published package the price was raised to, if it was. */
+  flooredTo: string | null;
+  /** Per category, in the same order the traveller sees them. */
+  categories: CategoryMargin[];
+};
+
+/**
+ * Splits a quote into what it costs and what the agency keeps. The traveller's
+ * page folds the cut into each category's price; this is the same arithmetic
+ * laid out openly, so the agency can see its real margin on every category.
+ * Cost, contingency, margin and tax always add up to the package price.
+ */
+export function summariseMargin(quotation: Quotation, adj: QuoteAdjustments): MarginSummary {
+  const t = quotation.totals;
+  const priced = priceQuote(t.total, adj);
+  const factor = t.total > 0 ? priced.packageInr / t.total : 1;
+
+  const taxInr = Math.round((t.salesVat + t.paymentAndFx) * factor);
+  const costInr = t.directCost;
+  const contingencyInr = t.contingency;
+  const marginInr = priced.packageInr - costInr - taxInr - contingencyInr;
+
+  const cost = new Map<string, number>();
+  for (const item of quotation.lineItems) cost.set(item.component, (cost.get(item.component) ?? 0) + item.totalInr);
+
+  const categories: CategoryMargin[] = componentBreakdown(quotation, priced.packageInr)
+    .filter((r) => r.key !== "taxes")
+    .map((r) => {
+      const costOfCategory = Math.round(cost.get(r.key) ?? 0);
+      return { key: r.key, label: r.label, costInr: costOfCategory, cutInr: r.amountInr - costOfCategory, sellInr: r.amountInr };
+    });
+
+  const cutInr = priced.totalInr - costInr - taxInr;
+  return {
+    costInr,
+    contingencyInr,
+    marginInr,
+    taxInr,
+    packageInr: priced.packageInr,
+    extrasInr: priced.adjustmentsInr,
+    totalInr: priced.totalInr,
+    cutInr,
+    cutPct: costInr > 0 ? cutInr / costInr : null,
+    pinnedByInr: priced.packageInr - t.total,
+    flooredTo: t.flooredToPackage,
+    categories,
+  };
+}
+
 export type PublicDay = {
   dayNumber: number;
   date: string;

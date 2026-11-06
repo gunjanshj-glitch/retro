@@ -378,6 +378,8 @@ export type Quotation = {
   suggestions: PlannedActivity[];
   /** Every outing at every stay with its status, for the admin's sightseeing picker. */
   sightseeingOptions?: SightseeingOption[];
+  /** Exchange-rate moves applied to rates quoted in a foreign currency, so the admin can see the quote is not on the card's own conversion. */
+  fx?: { currency: string; liveInrPerUnit: number; cardInrPerUnit: number; factor: number; rowsAffected: number }[];
   /**
    * Planner guidance drawn from the destination files for exactly this trip —
    * how transfers really work in each city, what to do and avoid for this kind

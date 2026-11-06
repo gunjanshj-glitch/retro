@@ -57,7 +57,15 @@ shortcuts), their note, and the **quote editor**:
    behaviour (untick one and the next-ranked place may take its time); *I choose
    the places* plans exactly the ticked places and never backfills. A ticked place
    the days cannot fit stays ticked and is flagged "No room yet".
-5. **Price split & rates** — every charge behind each category. Tick to charge
+5. **Cost, agency cut & rates** — opens with what the trip actually costs, what
+   the agency keeps and what the traveller pays, per category: *your cost*,
+   *agency cut* (contingency plus margin, and any extra lines) and *traveller
+   sees*. The traveller's page folds the cut into each category's price; this lays
+   it out openly, and a pinned package price or a published-price floor lands in the
+   margin. GST is shown apart: it is not the agency's to keep. It also says how
+   much of the cost rests on live, contracted, estimated or hand-set rates, and when
+   rates in USD/EUR were repriced at today's exchange rate. Below that is every
+   charge behind each category. Tick to charge
    for it, **type the quantity or rate** to replace the engine's figure with the
    real one (the engine's number stays visible beside it, with a Reset), or
    **add a charge** the engine has no rate for. Typed amounts are the agency's own
@@ -71,10 +79,12 @@ shortcuts), their note, and the **quote editor**:
    set how long the quote stays open, and write a note to the traveller.
 7. **Preview** — the quote page exactly as the traveller will see it.
 
-The send dialog shows the total against the version already sent, the
-traveller-facing category breakdown, and what was hand-edited (internal only). The
-side card shows the direct cost, and warns, without blocking, if the total is
-below it.
+The send dialog shows the total against the version already sent, the cost and
+agency cut, the traveller-facing category breakdown, and what was hand-edited
+(internal only). The side card shows the direct cost and the agency cut, and warns,
+without blocking, if the total is below cost plus GST. The Worker also refuses a
+send whose own lines, cost chain and total do not add up, which is what a stale or
+half-loaded editor produces.
 
 *Save draft* stores work in progress (the traveller sees nothing). *Send final
 quote* creates a numbered revision, moves the request to `quoted` and emails the

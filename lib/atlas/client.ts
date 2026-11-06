@@ -8,6 +8,7 @@
  * keeps the initial payload to roughly 140 KB gzipped.
  */
 import type { CoreBundle, DestinationBundle, Route, VisaRule } from "@retro/core/atlas/schema";
+import type { FxRates } from "@retro/core/atlas/engine/fx";
 import type { Quotation } from "@retro/core/atlas/engine/types";
 import { ISO3_TO_ISO2 } from "@retro/core/atlas/iso";
 
@@ -105,6 +106,9 @@ export async function loadLiveRates(query: {
   month?: string;
   cityName?: string;
   star?: string;
+  carrier?: "LCC" | "FSC";
+  /** Echoed back in the rate's key so the caller can look the fare up by its own id. */
+  fareKey?: string;
   countryCode?: string;
   placeId?: string;
   checkin?: string;
@@ -178,6 +182,75 @@ export async function loadHotelLiveRates(
     for (const [k, v] of found) if (v.component === "hotel") merged.set(k, v);
   }
   return merged;
+}
+
+/**
+ * Live return fares for the countries the trip flies into and out of. The
+ * engine prices airfare per destination country, so each fare is keyed by that
+ * country's id (`flight:${departureCity}:${countryId}:${carrier}`), searched on
+ * the airport of the first (arrival) or last (departure) stay in it.
+ */
+export async function loadFlightLiveRates(
+  core: CoreBundle,
+  quote: Pick<Quotation, "stays" | "request">,
+): Promise<LiveRateMap> {
+  const { request } = quote;
+  const merged: LiveRateMap = new Map();
+  if (!request.includeFlight) return merged;
+
+  const ordered = [...quote.stays].sort((a, b) => a.position - b.position);
+  const ends = [ordered[0], ordered[ordered.length - 1]].filter(Boolean);
+  const month = request.startDate.slice(0, 7);
+  const seen = new Set<string>();
+  const searches: Promise<LiveRateMap>[] = [];
+
+  for (const stay of ends) {
+    const countryId = core.places.find((p) => p.id === stay.placeId)?.countryId;
+    const iata = core.placeAirports?.[stay.placeId]?.iata;
+    if (!countryId || !iata || seen.has(countryId)) continue;
+    seen.add(countryId);
+    searches.push(
+      loadLiveRates({ origin: request.departureCity, destinationIata: iata, month, carrier: request.carrier, fareKey: countryId }),
+    );
+  }
+
+  for (const found of await Promise.all(searches)) {
+    for (const [k, v] of found) if (v.component === "flight") merged.set(k, v);
+  }
+  return merged;
+}
+
+/** Hotels and flights in one pass; either may come back empty. */
+export async function loadQuoteLiveRates(
+  core: CoreBundle,
+  quote: Pick<Quotation, "stays" | "request" | "pax">,
+): Promise<LiveRateMap> {
+  const [hotels, flights] = await Promise.all([loadHotelLiveRates(core, quote), loadFlightLiveRates(core, quote)]);
+  return new Map([...hotels, ...flights]);
+}
+
+let fxOnce: Promise<FxRates | undefined> | null = null;
+
+/**
+ * Today's USD and EUR rates in rupees, for repricing rates quoted in those
+ * currencies. Fetched once per page load; any failure, including the backend
+ * having no route to the provider, leaves the card's own conversion in place.
+ */
+export function loadFxRates(): Promise<FxRates | undefined> {
+  fxOnce ??= (async () => {
+    try {
+      const res = await fetch("/api/live-rates?fx=1", { signal: AbortSignal.timeout(4000) });
+      if (!res.ok) return undefined;
+      const body = (await res.json()) as { fx?: FxRates | null };
+      return body.fx && body.fx.rates && body.fx.fetchedAt ? body.fx : undefined;
+    } catch {
+      return undefined;
+    }
+  })().then((fx) => {
+    if (!fx) fxOnce = null; // retry on the next call rather than caching a miss for the whole session
+    return fx;
+  });
+  return fxOnce;
 }
 
 // ---------------------------------------------------------------------------

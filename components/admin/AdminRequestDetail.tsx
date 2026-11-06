@@ -227,6 +227,16 @@ function SummaryCard({
             <dd className="tabular-nums">{formatInr(summary.directCostInr)}</dd>
           </div>
         )}
+        {summary?.cutInr != null && (
+          <div className="flex justify-between gap-3">
+            <dt style={{ color: "var(--muted)" }}>Agency cut</dt>
+            <dd className="tabular-nums font-semibold" style={{ color: summary.cutInr < 0 ? "var(--danger)" : undefined }}>
+              {summary.cutInr < 0 ? "−" : ""}
+              {formatInr(Math.abs(summary.cutInr))}
+              {summary.cutPct != null && <span className="font-normal" style={{ color: "var(--muted)" }}> ({(summary.cutPct * 100).toFixed(1)}%)</span>}
+            </dd>
+          </div>
+        )}
         <div className="mt-1 flex items-baseline justify-between gap-3 border-t pt-2" style={{ borderColor: "var(--line-strong)" }}>
           <dt className="font-bold">Final total</dt>
           <dd className="font-display text-xl tabular-nums" style={{ color: "var(--ink)" }}>

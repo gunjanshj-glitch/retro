@@ -57,6 +57,7 @@ async function fetchFlight(
   destination: string,
   month: string,
   carrier: "LCC" | "FSC",
+  fareKey: string,
 ): Promise<LiveRate | null> {
   if (!env.TRAVELPAYOUTS_TOKEN) return null;
 
@@ -91,10 +92,67 @@ async function fetchFlight(
 
   return {
     component: "flight",
-    key: `${origin}:${destination}:${carrier}`,
+    // The engine looks a fare up by the destination country's id, which the
+    // caller passes as `fareKey`; the airport code only drives the search.
+    key: `${origin}:${fareKey}:${carrier}`,
     inr: cheapest,
     fetchedAt: new Date().toISOString(),
   };
+}
+
+/** Currencies the rate card quotes in. Anything else has no rows to rescale. */
+const FX_CURRENCIES = ["USD", "EUR"] as const;
+
+export type FxResult = { rates: Record<string, number>; fetchedAt: string };
+
+/**
+ * Rupees per unit of each card currency, from the ECB's reference rates via
+ * Frankfurter (free, no key), with a second public provider as the fallback.
+ * Both are daily rates, so a six-hour cache loses nothing.
+ */
+async function fetchFx(): Promise<FxResult | null> {
+  const rates: Record<string, number> = {};
+  await Promise.all(
+    FX_CURRENCIES.map(async (ccy) => {
+      try {
+        const res = await fetch(`https://api.frankfurter.dev/v1/latest?base=${ccy}&symbols=INR`, { signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) });
+        if (!res.ok) return;
+        const inr = ((await res.json()) as { rates?: { INR?: number } }).rates?.INR;
+        if (typeof inr === "number" && inr > 0) rates[ccy] = inr;
+      } catch {
+        /* try the fallback below */
+      }
+    }),
+  );
+  if (Object.keys(rates).length < FX_CURRENCIES.length) {
+    try {
+      const res = await fetch("https://open.er-api.com/v6/latest/USD", { signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) });
+      if (res.ok) {
+        const body = (await res.json()) as { rates?: Record<string, number> };
+        const usdInr = body.rates?.INR;
+        const eur = body.rates?.EUR;
+        if (usdInr && usdInr > 0) rates.USD ??= usdInr;
+        if (usdInr && eur && eur > 0) rates.EUR ??= usdInr / eur;
+      }
+    } catch {
+      /* no rate is better than a bad one */
+    }
+  }
+  return Object.keys(rates).length ? { rates, fetchedAt: new Date().toISOString() } : null;
+}
+
+async function handleFx(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  const headers = { "Cache-Control": `public, max-age=${CACHE_SECONDS}` };
+  const key = "fx:inr";
+  if (env.RATE_CACHE) {
+    const hit = (await env.RATE_CACHE.get(key, "json")) as FxResult | null;
+    if (hit) return json({ rates: [], fx: hit, cached: true }, { headers });
+  }
+  // Only a cache miss reaches the upstream, so only a miss counts against the caller.
+  if (await limitByIp(request, env, "live-fx", 30, 600)) return json({ rates: [], fx: null, cached: false }, { headers: { "Cache-Control": "public, max-age=300" } });
+  const fx = await fetchFx();
+  if (fx && env.RATE_CACHE) ctx.waitUntil(env.RATE_CACHE.put(key, JSON.stringify(fx), { expirationTtl: CACHE_SECONDS }));
+  return json({ rates: [], fx, cached: false }, { headers: fx ? headers : { "Cache-Control": "public, max-age=300" } });
 }
 
 export type Party = { adults: number; childAges: number[]; rooms: number };
@@ -227,7 +285,9 @@ export async function handleLiveRates(
   ctx: ExecutionContext,
 ): Promise<Response> {
   const url = new URL(request.url);
+  if (url.searchParams.get("fx") === "1") return handleFx(request, env, ctx);
   const origin = url.searchParams.get("origin") ?? "";
+  const fareKey = url.searchParams.get("fareKey") ?? "";
   const destinationIata = url.searchParams.get("destinationIata") ?? "";
   const month = url.searchParams.get("month") ?? "";
   const carrier = (url.searchParams.get("carrier") ?? "FSC") as "LCC" | "FSC";
@@ -248,6 +308,7 @@ export async function handleLiveRates(
   const none = () => json({ rates: [], cached: false }, { headers: { "Cache-Control": "public, max-age=300" } });
   const wantsFlight = Boolean(origin && destinationIata && month);
   const wantsHotel = Boolean(cityName && countryCode && checkin && checkout);
+  if (wantsFlight && fareKey && !/^[a-z0-9-]{1,60}$/.test(fareKey)) return none();
   if (wantsFlight && !(/^[A-Z]{3}$/.test(origin) && /^[A-Z]{3}$/.test(destinationIata) && /^\d{4}-\d{2}$/.test(month) && (carrier === "LCC" || carrier === "FSC"))) return none();
   if (wantsHotel) {
     const stay = (Date.parse(checkout) - Date.parse(checkin)) / 86_400_000;
@@ -259,7 +320,7 @@ export async function handleLiveRates(
   // in particular, or one traveller's room count is served to the next.
   const partyKey = `${party.adults}:${party.childAges.join(",")}:${party.rooms}`;
   const cacheKey =
-    `live:${origin}:${destinationIata}:${month}:${carrier}:` +
+    `live:${origin}:${destinationIata}:${fareKey}:${month}:${carrier}:` +
     `${cityName}:${countryCode}:${checkin}:${checkout}:${partyKey}:${hotelStars ?? ""}:${placeId}:${star}`;
 
   const respond = (rates: LiveRate[], cached: boolean) =>
@@ -277,7 +338,7 @@ export async function handleLiveRates(
 
   const results = await Promise.allSettled([
     origin && destinationIata && month
-      ? fetchFlight(env, origin, destinationIata, month, carrier)
+      ? fetchFlight(env, origin, destinationIata, month, carrier, fareKey || destinationIata)
       : Promise.resolve(null),
     cityName && countryCode && checkin && checkout
       ? fetchHotel(env, cityName, countryCode, checkin, checkout, party, `${placeId}:${star}`, hotelStars)

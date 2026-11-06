@@ -28,6 +28,7 @@ import type {
   QuoteWarning,
 } from "./types";
 import { planDays, type GroupProfile } from "./dayplan";
+import { applyLiveFx, type FxAdjustment, type FxRates } from "./fx";
 import { indiaGroundApplies, indiaRoadFirst, priceQuotation, resolvePax, type LiveRate } from "./pricing";
 import { normaliseKey, formatDuration } from "./text";
 import { filterRealisticSelection } from "./bounds";
@@ -50,6 +51,8 @@ export type EngineData = {
   /** Only the destinations referenced by the request need to be loaded. */
   bundles: Map<string, DestinationBundle>;
   liveRates?: Map<string, LiveRate>;
+  /** Today's exchange rates, to keep rates quoted in USD/EUR in step with the rupee. */
+  fxRates?: FxRates;
   /**
    * Disables the published-package price floor. Used by the calibration
    * harness, which must see the engine's own unassisted number — with the
@@ -183,7 +186,7 @@ function groupProfile(request: QuoteRequest): GroupProfile {
 
 export function generateQuotation(request: QuoteRequest, data: EngineData): Quotation {
   const warnings: QuoteWarning[] = [];
-  const { core, bundles } = data;
+  const { core, bundles, applied: fxApplied } = applyLiveFx(data.core, data.bundles, data.fxRates);
 
   const summaries = new Map<string, PlaceSummary>(core.placeSummaries.map((s) => [s.placeId, s]));
   const names = new Map(core.places.map((p) => [p.id, p.name]));
@@ -512,6 +515,21 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
           `Land component rates came to ₹${Math.round(landPerPerson).toLocaleString("en-IN")} per person ` +
           `against a published land-only "from" of ₹${referencePackage.priceFromInr.toLocaleString("en-IN")}.`,
       });
+      // The uplift is the agency's, not a tax: book it as margin and re-derive
+      // GST so direct cost + contingency + margin + GST + fees still adds up to
+      // the total. Leaving the gap unallocated made the traveller's "Taxes &
+      // fees" row swallow it.
+      const uplift = newTotal - totals.total;
+      const markup = policy.markup;
+      const preTax = uplift / ((1 + markup.salesVat) * (1 + markup.paymentGatewayFee + markup.fxBuffer));
+      totals.agentMarkup = Math.round(totals.agentMarkup + preTax);
+      const afterMarkup = totals.costBeforeMarkup + totals.agentMarkup;
+      totals.paymentAndFx = Math.max(
+        0,
+        Math.round(afterMarkup * (1 + markup.salesVat) * (markup.paymentGatewayFee + markup.fxBuffer)),
+      );
+      // GST takes up the rounding, so the parts add up to the total exactly.
+      totals.salesVat = newTotal - afterMarkup - totals.paymentAndFx;
       totals.total = newTotal;
       totals.perPerson = Math.round(newTotal / Math.max(1, pax.total));
       totals.flooredToPackage = referencePackage.name;
@@ -541,7 +559,8 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       message: "Travel insurance is excluded from this quote — add it back any time from the trip options.",
     });
   }
-  const estimatedCount = lineItems.filter((i) => i.source === "estimated").length;  if (estimatedCount) {
+  const estimatedCount = lineItems.filter((i) => i.source === "estimated").length;
+  if (estimatedCount) {
     warnings.push({
       level: "info",
       audience: "internal",
@@ -606,6 +625,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     warnings,
     suggestions,
     sightseeingOptions: plan.options,
+    fx: fxApplied.length ? fxApplied : undefined,
     planningNotes: planningNotes(
       stays, bundles, request.tripStyle, request.travellerType, request.childAges,
     ),
@@ -614,4 +634,5 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
 }
 
 export { styleScore };
+export type { FxAdjustment, FxRates };
 export type { Quotation, QuoteRequest } from "./types";

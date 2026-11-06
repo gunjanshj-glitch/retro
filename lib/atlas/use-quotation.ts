@@ -10,8 +10,9 @@
  * the trip is priced again with whatever came back.
  */
 import { useEffect, useMemo, useState } from "react";
-import { loadCore, loadDestinations, loadHotelLiveRates, loadRoutes, loadVisaRules } from "./client";
+import { loadCore, loadDestinations, loadFxRates, loadQuoteLiveRates, loadRoutes, loadVisaRules } from "./client";
 import { generateQuotation } from "@retro/core/atlas/engine";
+import type { FxRates } from "@retro/core/atlas/engine/fx";
 import type { LiveRate } from "@retro/core/atlas/engine/pricing";
 import type { CoreBundle, DestinationBundle, Route, VisaRule } from "@retro/core/atlas/schema";
 import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
@@ -78,28 +79,43 @@ export function useQuotation(request: QuoteRequest, enabled = true): QuotationEn
 
   const [live, setLive] = useState<{ key: string; rates: Map<string, LiveRate> } | null>(null);
 
+  // Today's exchange rates, fetched once. Until they arrive (or if they never do)
+  // the card's own conversion stands.
+  const [fx, setFx] = useState<FxRates | undefined>(undefined);
+  useEffect(() => {
+    let cancelled = false;
+    loadFxRates().then((rates) => {
+      if (!cancelled && rates) setFx(rates);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const baseQuote: Quotation | null = useMemo(() => {
     if (!enabled || !core || !routes || !visaRules || !request.placeIds.length || !bundlesReady) return null;
     try {
-      return generateQuotation(request, { core, routes, visaRules, bundles });
+      return generateQuotation(request, { core, routes, visaRules, bundles, fxRates: fx });
     } catch {
       return null;
     }
-  }, [core, routes, visaRules, bundles, bundlesReady, request, enabled]);
+  }, [core, routes, visaRules, bundles, bundlesReady, request, enabled, fx]);
 
-  // Everything the hotel search depends on. Live prices never feed back into it
-  // (stays and rooms do not move with price), so the second pass cannot loop.
+  // Everything the hotel and flight searches depend on. Live prices never feed
+  // back into it (stays and rooms do not move with price), so the second pass
+  // cannot loop.
   const hotelSearchKey = baseQuote
     ? JSON.stringify([
         baseQuote.stays.map((s) => [s.placeId, s.nights, s.position]),
         request.startDate, request.hotelStar, request.adults, request.childAges, baseQuote.pax.rooms,
+        request.includeFlight, request.departureCity, request.carrier,
       ])
     : null;
 
   useEffect(() => {
     if (!core || !baseQuote || !hotelSearchKey) return;
     let cancelled = false;
-    loadHotelLiveRates(core, baseQuote).then((rates) => {
+    loadQuoteLiveRates(core, baseQuote).then((rates) => {
       if (!cancelled) setLive({ key: hotelSearchKey, rates });
     });
     return () => {
@@ -117,11 +133,11 @@ export function useQuotation(request: QuoteRequest, enabled = true): QuotationEn
     if (!baseQuote || !core || !routes || !visaRules) return baseQuote;
     if (!liveRates?.size) return baseQuote;
     try {
-      return generateQuotation(request, { core, routes, visaRules, bundles, liveRates });
+      return generateQuotation(request, { core, routes, visaRules, bundles, liveRates, fxRates: fx });
     } catch {
       return baseQuote;
     }
-  }, [baseQuote, liveRates, core, routes, visaRules, bundles, request]);
+  }, [baseQuote, liveRates, core, routes, visaRules, bundles, request, fx]);
 
   return { core, quote, error };
 }

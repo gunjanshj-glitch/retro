@@ -22,9 +22,10 @@ import { formatInr } from "@retro/core/atlas/engine/text";
 import { QuoteRequest } from "@retro/core/atlas/engine/types";
 import type { Quotation } from "@retro/core/atlas/engine/types";
 import { adminSaveDraft, adminSendTripQuote, type AdminRequestDetail } from "@/lib/auth-client";
-import { buildPublicQuote, emptyAdjustments, priceQuote, type QuoteAdjustments } from "@retro/core/quote-pricing";
+import { buildPublicQuote, emptyAdjustments, priceQuote, summariseMargin, type QuoteAdjustments } from "@retro/core/quote-pricing";
 import type { RequestStatus } from "@retro/core/quote-workflow";
 import { PricingPanel } from "./PricingPanel";
+import { MarginPanel } from "./MarginPanel";
 import { PriceSplitPanel } from "./PriceSplitPanel";
 import { SightseeingPanel } from "./SightseeingPanel";
 
@@ -79,6 +80,10 @@ export type EditorSummary = {
   engineTotalInr: number | null;
   /** What the suppliers charge: the sum of every ticked line, before margin and tax. */
   directCostInr: number | null;
+  /** What the agency keeps: total less cost less tax. Negative means a loss. */
+  cutInr: number | null;
+  /** The cut as a share of cost. */
+  cutPct: number | null;
   totalInr: number | null;
   dueNowInr: number | null;
   /** Hand edits in this quote: replaced rates, added charges, switched-off lines. */
@@ -169,9 +174,14 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
   }, [quote, request?.customLines.length]);
 
   const directCostInr = quote?.totals.directCost ?? null;
+  const margin = useMemo(() => (quote ? summariseMargin(quote, adjustments) : null), [quote, adjustments]);
+  const cutInr = margin?.cutInr ?? null;
+  const cutPct = margin?.cutPct ?? null;
+  // Judged after GST: tax is collected for the taxman, so a total that clears the
+  // cost but not cost plus tax still loses money.
   const warning =
-    priced && directCostInr != null && priced.totalInr > 0 && priced.totalInr < directCostInr
-      ? `The total is ${formatInr(directCostInr - priced.totalInr)} below your direct cost of ${formatInr(directCostInr)}. The agency would lose money on this quote.`
+    priced && directCostInr != null && priced.totalInr > 0 && cutInr != null && cutInr < 0
+      ? `After GST this quote is ${formatInr(-cutInr)} below your direct cost of ${formatInr(directCostInr)}. The agency would lose money on it.`
       : null;
 
   const body = useCallback(() => {
@@ -218,6 +228,8 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
     onSummary({
       engineTotalInr: quote?.totals.total ?? null,
       directCostInr,
+      cutInr,
+      cutPct,
       totalInr: priced?.totalInr ?? null,
       dueNowInr: priced?.dueNowInr ?? null,
       edits,
@@ -226,7 +238,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
       savedAt,
       problem,
     });
-  }, [quote, directCostInr, priced?.totalInr, priced?.dueNowInr, edits, warning, dirty, savedAt, problem, onSummary]);
+  }, [quote, directCostInr, cutInr, cutPct, priced?.totalInr, priced?.dueNowInr, edits, warning, dirty, savedAt, problem, onSummary]);
 
   useEffect(() => {
     actionsRef.current = { saveDraft, requestSend: () => setConfirmSend(true), busy };
@@ -289,8 +301,15 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         {quote ? <SightseeingPanel quote={quote} request={request} onChange={editRequest} /> : <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>}
       </Section>
 
-      <Section title="5 · Price split & rates" hint="Every charge behind each category: untick, change the rate or quantity, or add a charge (admin only)" open>
-        {quote ? <PriceSplitPanel quote={quote} onChange={editRequest} /> : <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>}
+      <Section title="5 · Cost, agency cut & rates" hint="What it costs, what the agency keeps, and every charge behind each category (admin only)" open>
+        {quote ? (
+          <div className="flex flex-col gap-6">
+            <MarginPanel quote={quote} adjustments={adjustments} />
+            <PriceSplitPanel quote={quote} adjustments={adjustments} onChange={editRequest} />
+          </div>
+        ) : (
+          <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>
+        )}
       </Section>
 
       <Section title="6 · Pricing & terms" hint="Fixed price, discounts, optional extras, deposit, validity" open>
@@ -340,6 +359,15 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
                         {formatInr(Math.abs(priced.totalInr - previousSent.totalInr))})
                       </span>
                     )}
+                  </dd>
+                </div>
+              )}
+              {margin && (
+                <div className="flex justify-between gap-3">
+                  <dt style={{ color: "var(--muted)" }}>Cost / agency cut</dt>
+                  <dd className="tabular-nums">
+                    {formatInr(margin.costInr)} / <span className="font-semibold" style={{ color: margin.cutInr < 0 ? "var(--danger)" : undefined }}>{margin.cutInr < 0 ? "−" : ""}{formatInr(Math.abs(margin.cutInr))}</span>
+                    {margin.cutPct != null && <span style={{ color: "var(--muted)" }}> ({(margin.cutPct * 100).toFixed(1)}%)</span>}
                   </dd>
                 </div>
               )}

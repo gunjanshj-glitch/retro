@@ -17,11 +17,13 @@
  */
 import { formatInr } from "@retro/core/atlas/engine/text";
 import type { CostComponent, LineItem, LineOverride, QuoteRequest, Quotation } from "@retro/core/atlas/engine/types";
-import { COMPONENT_LABEL, componentBreakdown } from "@retro/core/quote-pricing";
+import { COMPONENT_LABEL, emptyAdjustments, summariseMargin, type QuoteAdjustments } from "@retro/core/quote-pricing";
 import { btnSmall } from "@/components/plan/theme";
 
 type Props = {
   quote: Quotation;
+  /** The pricing terms, so each category shows the cut after a pinned package price. */
+  adjustments?: QuoteAdjustments;
   onChange: (next: (r: QuoteRequest) => QuoteRequest) => void;
   disabled?: boolean;
 };
@@ -125,10 +127,10 @@ function TextField({ value, onCommit, label, disabled }: { value: string; onComm
   );
 }
 
-export function PriceSplitPanel({ quote, onChange, disabled }: Props) {
+export function PriceSplitPanel({ quote, adjustments, onChange, disabled }: Props) {
   const active = quote.lineItems;
   const off = quote.excludedLineItems ?? [];
-  const shown = new Map(componentBreakdown(quote, quote.totals.total).map((r) => [r.key, r.amountInr]));
+  const split = new Map(summariseMargin(quote, adjustments ?? emptyAdjustments()).categories.map((c) => [c.key, c]));
   const overrides = quote.request.lineOverrides;
   const customCount = quote.request.customLines.length;
 
@@ -204,7 +206,7 @@ export function PriceSplitPanel({ quote, onChange, disabled }: Props) {
       <p className="text-sm" style={{ color: "var(--muted)" }}>
         Every charge in the quote is here. <strong style={{ color: "var(--ink)" }}>Tick</strong> a line to charge for it,{" "}
         <strong style={{ color: "var(--ink)" }}>type</strong> the quantity or rate to replace the engine&apos;s figure with the real one, or{" "}
-        <strong style={{ color: "var(--ink)" }}>add a charge</strong> the engine doesn&apos;t know about. Amounts are your cost; margin and tax are added on top. Travellers see only the category totals.
+        <strong style={{ color: "var(--ink)" }}>add a charge</strong> the engine doesn&apos;t know about. Amounts are your cost; the agency cut and tax are added on top (see the table above). Travellers see only the category totals.
       </p>
 
       {(off.length > 0 || editedKeys.length > 0 || customCount > 0) && (
@@ -251,8 +253,11 @@ export function PriceSplitPanel({ quote, onChange, disabled }: Props) {
                 </span>
               </span>
               <span className="text-sm tabular-nums">
-                <span style={{ color: "var(--muted)" }}>base {formatInr(base)} · traveller sees </span>
-                <span className="font-bold" style={{ color: "var(--ink)" }}>{formatInr(shown.get(component) ?? 0)}</span>
+                <span style={{ color: "var(--muted)" }}>
+                  cost {formatInr(base)} · cut {(split.get(component)?.cutInr ?? 0) < 0 ? "−" : "+"}
+                  {formatInr(Math.abs(split.get(component)?.cutInr ?? 0))} · traveller sees{" "}
+                </span>
+                <span className="font-bold" style={{ color: "var(--ink)" }}>{formatInr(split.get(component)?.sellInr ?? 0)}</span>
               </span>
             </summary>
             <div className="border-t p-4" style={{ borderColor: "var(--line)" }}>

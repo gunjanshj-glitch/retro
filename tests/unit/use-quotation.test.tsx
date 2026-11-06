@@ -10,7 +10,8 @@ vi.mock("@/lib/atlas/client", () => ({
   loadCore: async () => ({ places: [{ id: "a", slug: "a" }, { id: "b", slug: "b" }] }),
   loadRoutes: async () => [],
   loadVisaRules: async () => [],
-  loadHotelLiveRates: async () => new Map(),
+  loadQuoteLiveRates: async () => new Map(),
+  loadFxRates: async () => undefined,
   // Destination data arrives only when the test releases it.
   loadDestinations: (slugs: string[]) =>
     new Promise((resolve) => {

@@ -216,6 +216,33 @@ type ParsedQuoteBody = {
   note: string | null;
 };
 
+/**
+ * Whether the quote's totals agree with its own lines and with each other.
+ * Returns what disagrees, or null. A quote raised to a published package price
+ * is exempt from the chain check: older clients booked that uplift outside it.
+ */
+export function totalsMismatch(totals: Record<string, unknown>, lineItems: unknown[]): string | null {
+  const num = (k: string) => (typeof totals[k] === "number" && Number.isFinite(totals[k]) ? (totals[k] as number) : null);
+  const parts = ["directCost", "contingency", "agentMarkup", "salesVat", "paymentAndFx"].map(num);
+  const total = num("total");
+  if (total == null || total < 0) return "the total is not a valid amount";
+  // Older clients omit the parts entirely; only judge what is there.
+  if (parts.some((p) => p == null)) return null;
+  const [direct, contingency, markup, vat, fees] = parts as number[];
+  let lines = 0;
+  for (const item of lineItems) {
+    const t = isRecord(item) ? item.totalInr : undefined;
+    if (typeof t !== "number" || !Number.isFinite(t)) return "a price line has no valid amount";
+    lines += t;
+  }
+  const slack = (n: number) => Math.max(5, Math.abs(n) * 0.001);
+  if (Math.abs(lines - direct) > slack(direct)) return "the lines do not match the direct cost";
+  if (!totals.flooredToPackage && Math.abs(direct + contingency + markup + vat + fees - total) > slack(total)) {
+    return "the cost, margin and tax do not match the total";
+  }
+  return null;
+}
+
 /** Structural checks on what the editor sends. The admin is trusted; this
  *  guards against a malformed or truncated body, not a hostile one. */
 function parseQuoteBody(body: unknown): { ok: true; value: ParsedQuoteBody } | { ok: false; error: string } {
@@ -233,6 +260,12 @@ function parseQuoteBody(body: unknown): { ok: true; value: ParsedQuoteBody } | {
   }
   const adjustments = parseAdjustments(body.adjustments);
   if (!adjustments.ok) return adjustments;
+
+  // The Worker has no rate card to reprice from, so it cannot recompute the
+  // total. It can still refuse a payload whose own parts do not add up, which
+  // is what a half-loaded or stale editor produces.
+  const mismatch = totalsMismatch(q.totals, q.lineItems);
+  if (mismatch) return { ok: false, error: `The prices in this quote do not add up (${mismatch}). Reload the editor and try again.` };
 
   let validUntil: string | null = null;
   if (body.validUntil != null && body.validUntil !== "") {

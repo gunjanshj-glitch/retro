@@ -209,12 +209,18 @@ A second-level check over the compiled card, in [`workers/api/src/live-rates.ts`
 | --- | --- | --- |
 | Flights | Travelpayouts Aviasales Data API | Free, self-serve token, 600 req/min, returns the IATA carrier code so LCC vs full-service is derivable. |
 | Hotels | LiteAPI | Free sandbox key, no card, real bookable rates. |
+| Exchange rates (USD, EUR → ₹) | Frankfurter (ECB reference rates), falling back to `open.er-api.com` | Free, **no key**. Rates quoted in a foreign currency are rescaled by how far the rupee has moved since the card was built; see below. |
 | Visa requirement | `imorte/passport-index-data`, vendored at build time | MIT, 199 × 199 pairs. No runtime call needed. |
+| Train fares | The transport graph, hand-authored per route (composed or distance-based where a route is missing) | Indian Railways publishes no fare or availability API, and IRCTC's is partner-only. Fares there are a regulated tariff, so a curated table is stable; a live feed would add seat availability, not price. |
 | Attraction tickets | The workbook, hand-curated | No viable free source exists — OpenTripMap is dead, Wikidata has 23 priced items in all of India, and OSM's `charge` tag is effectively unpopulated. |
 
 Amadeus Self-Service is **deprecated** (every `amadeus4dev` repo is archived) and is deliberately not used.
 
 A live figure only overrides the baseline when it is fresh (< 24h) and within a plausible distance of it; it is then marked up by a per-component volatility margin so the quote survives movement before booking. A figure more than 60% away from the baseline is clamped rather than trusted, so one bad API response cannot wreck a quotation. **With no keys configured the whole layer no-ops** and the compiled card is used — the site is fully functional without any integration.
+
+**Flights are matched by country, not airport.** The engine prices a fare per destination country, so the client asks for the arrival and departure country's fare on the airport of the first and last stay and gets it back under `flight:${departureCity}:${countryId}:${carrier}`, which is the key the engine reads. (Until this was fixed the client never requested flights and the keys did not match, so the flight feed was unreachable even with a token.)
+
+**Exchange rates.** `GET /api/live-rates?fx=1` returns rupees per USD and EUR. [`fx.ts`](../packages/core/atlas/engine/fx.ts) compares each against the rate the card was built at (the median conversion across its rows) and rescales every rate quoted in that currency: hotels, transfers, meals and activities. Moves under 0.5% are ignored as noise, moves over 20% as a bad feed, and a feed older than 72 hours is not used. Rates estimated in rupees carry no currency and are not touched. The admin's *Cost* panel says when this applied.
 
 ### Configuration
 
@@ -225,6 +231,8 @@ Set on the **backend Worker** (`atlas-api`), all optional — see [deployment.md
 | `TRAVELPAYOUTS_TOKEN` | `wrangler secret put` | Live flight fares |
 | `LITEAPI_KEY` | `wrangler secret put` | Live hotel rates |
 | `RATE_CACHE` | KV binding in `workers/api/wrangler.toml` | Cross-request caching |
+
+Exchange rates need no variable: they come from a keyless public feed.
 
 ## Known gaps
 
