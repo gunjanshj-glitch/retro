@@ -1586,9 +1586,9 @@ describe("margin allocation across traveller-facing categories", () => {
     const rows = componentBreakdown(q, q.totals.total);
     const row = rows.find((r) => r.key === "local-transport")!;
     const base = q.lineItems.filter((l) => l.component === "local-transport").reduce((a, l) => a + l.totalInr, 0);
-    const wholeQuoteLoading = (q.totals.total - q.totals.directCost) / q.totals.directCost;
-    // The row may exceed base by the quote-wide loading, not by double it.
-    expect(row.amountInr / base).toBeLessThan(1 + wholeQuoteLoading + 0.02);
+    // Transport carries its own 20% margin plus the 3% contingency, so the row
+    // is about 1.23x its cost - not inflated by the (lower) quote-wide loading.
+    expect(row.amountInr / base).toBeCloseTo(1.23, 1);
   });
 });
 

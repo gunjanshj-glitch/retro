@@ -38,7 +38,15 @@ describe("hand-set margin", () => {
   const auto = quote();
 
   it("leaves the policy margin alone when nothing is set", () => {
-    expect(auto.totals.marginByComponent).toBeUndefined();
+    const cost = (c: string) => auto.lineItems.filter((l) => l.component === c).reduce((s, l) => s + l.totalInr, 0);
+    const by = auto.totals.marginByComponent!;
+    expect(by.hotel).toBeCloseTo(cost("hotel") * 0.1, -1);
+    for (const c of ["airport-transfer", "local-transport", "ground-transport", "intercity-transport"]) {
+      if (cost(c) > 0) expect(by[c]).toBeCloseTo(cost(c) * 0.2, -1);
+    }
+    for (const c of Object.keys(by)) {
+      if (!["hotel", "airport-transfer", "local-transport", "ground-transport", "intercity-transport"].includes(c)) expect(by[c]).toBe(0);
+    }
   });
 
   it("an overall margin replaces the policy rate: margin = cost x pct, cost unchanged", () => {

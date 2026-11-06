@@ -527,6 +527,19 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       const markup = policy.markup;
       const preTax = uplift / ((1 + markup.salesVat) * (1 + markup.paymentGatewayFee + markup.fxBuffer));
       totals.agentMarkup = Math.round(totals.agentMarkup + preTax);
+      // Keep the per-category margins summing to the margin: the uplift is
+      // spread over categories in proportion to cost, the remainder (rounding)
+      // lands on the largest.
+      if (totals.marginByComponent && totals.directCost > 0) {
+        const byCost = new Map<string, number>();
+        for (const i of lineItems) byCost.set(i.component, (byCost.get(i.component) ?? 0) + i.totalInr);
+        const next: Record<string, number> = { ...totals.marginByComponent };
+        for (const [c, amt] of byCost) next[c] = Math.round((next[c] ?? 0) + (preTax * amt) / totals.directCost);
+        const largest = [...byCost.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+        const gap = totals.agentMarkup - Object.values(next).reduce((a, b) => a + b, 0);
+        if (largest) next[largest] = (next[largest] ?? 0) + gap;
+        totals.marginByComponent = next;
+      }
       const afterMarkup = totals.costBeforeMarkup + totals.agentMarkup;
       totals.paymentAndFx = Math.max(
         0,

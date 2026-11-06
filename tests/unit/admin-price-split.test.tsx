@@ -71,10 +71,10 @@ describe("admin price split: editing the actual amount", () => {
     const rate = screen.getByLabelText(`Rate in rupees for ${hotel.label}`) as HTMLInputElement;
     expect(rate.value).toBe(String(hotel.unitPriceInr));
 
-    fireEvent.change(rate, { target: { value: "9,999" } });
+    fireEvent.change(rate, { target: { value: "99,999" } });
     fireEvent.blur(rate);
 
-    expect((screen.getByLabelText(`Rate in rupees for ${hotel.label}`) as HTMLInputElement).value).toBe("9999");
+    expect((screen.getByLabelText(`Rate in rupees for ${hotel.label}`) as HTMLInputElement).value).toBe("99999");
     expect(total()).toBeGreaterThan(before);
     expect(screen.getByText("edited")).toBeTruthy();
     expect(screen.getByText(new RegExp(`engine said ${hotel.quantity} × ₹`))).toBeTruthy();

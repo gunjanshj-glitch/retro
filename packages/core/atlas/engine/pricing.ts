@@ -792,43 +792,21 @@ export function priceQuotation(input: PricingInput): {
   const directCost = items.reduce((a, i) => a + i.totalInr, 0);
   const contingency = directCost * MARKUP.contingency;
   const costBeforeMarkup = directCost + contingency;
-  // Real tour-operator commission is regressive, not flat: a bigger booking
-  // already clears the fixed cost of servicing it, so the percentage margin
-  // steps down as the per-person direct cost rises (see MARKUP.regressiveBands
-  // in content/quote-policy.json).
-  const perPersonCost = pax.total > 0 ? costBeforeMarkup / pax.total : costBeforeMarkup;
-  const band =
-    MARKUP.regressiveBands.find((b) => perPersonCost <= b.maxPerPersonInr) ??
-    MARKUP.regressiveBands[MARKUP.regressiveBands.length - 1];
-  const baseRate = request.hotelStar === "Luxury 5 Star" ? MARKUP.luxuryMarkup : MARKUP.baseAgentMarkup;
-  const markupRate = Math.max(MARKUP.minAgentMarkup, baseRate - band.reduction);
-  let agentMarkup = costBeforeMarkup * markupRate;
-  // A margin the admin typed in wins over the policy: it is applied to each
-  // category's actual cost and is not pulled back into the 10-15% band, because
-  // setting it is the point.
-  let marginByComponent: Record<string, number> | undefined;
-  const marginSetByHand = request.marginPct != null || Object.keys(request.componentMarginPct).length > 0;
-  if (marginSetByHand) {
-    const cost = new Map<string, number>();
-    for (const i of items) cost.set(i.component, (cost.get(i.component) ?? 0) + i.totalInr);
-    marginByComponent = {};
-    agentMarkup = 0;
-    for (const [component, amount] of cost) {
-      const rate = request.componentMarginPct[component] ?? request.marginPct ?? markupRate;
-      const m = amount * rate;
-      marginByComponent[component] = Math.round(m);
-      agentMarkup += m;
-    }
-  } else if (directCost > 0) {
-    // The commercial rule is that contingency + agent margin, combined, must
-    // land between 10% and 15% of the direct cost - not a flat rate, since the
-    // regressive bands above and the luxury rate can otherwise push it outside
-    // that band. Contingency is fixed, so the clamp is absorbed by the margin.
-    const combined = contingency + agentMarkup;
-    const minCombined = directCost * MARKUP.contingencyMarginRange.min;
-    const maxCombined = directCost * MARKUP.contingencyMarginRange.max;
-    if (combined < minCombined) agentMarkup += minCombined - combined;
-    else if (combined > maxCombined) agentMarkup -= combined - maxCombined;
+  // Margin is a share of each category's own cost: the policy sets it per
+  // category (content/quote-policy.json markup.componentMargin), and an admin
+  // can override any category, or the whole quote, per quote. It is not pulled
+  // back into any band, because the rates are the commercial rule.
+  const cost = new Map<string, number>();
+  for (const i of items) cost.set(i.component, (cost.get(i.component) ?? 0) + i.totalInr);
+  const marginByComponent: Record<string, number> = {};
+  let agentMarkup = 0;
+  for (const [component, amount] of cost) {
+    const policyRate =
+      (MARKUP.componentMargin as Record<string, number>)[component] ?? MARKUP.defaultMargin;
+    const rate = request.componentMarginPct[component] ?? request.marginPct ?? policyRate;
+    const m = amount * rate;
+    marginByComponent[component] = Math.round(m);
+    agentMarkup += m;
   }
   const afterMarkup = costBeforeMarkup + agentMarkup;
   const salesVat = afterMarkup * MARKUP.salesVat;
@@ -849,7 +827,7 @@ export function priceQuotation(input: PricingInput): {
       // Derived from the rounded total so the two always reconcile.
       perPerson: Math.round(total / Math.max(1, pax.total)),
       flooredToPackage: null,
-      ...(marginByComponent ? { marginByComponent } : {}),
+      marginByComponent,
     },
   };
 }
