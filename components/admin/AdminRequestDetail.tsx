@@ -221,6 +221,12 @@ function SummaryCard({
           <dt style={{ color: "var(--muted)" }}>Engine now</dt>
           <dd className="tabular-nums">{summary?.engineTotalInr != null ? formatInr(summary.engineTotalInr) : "…"}</dd>
         </div>
+        {summary?.directCostInr != null && (
+          <div className="flex justify-between gap-3">
+            <dt style={{ color: "var(--muted)" }}>Your direct cost</dt>
+            <dd className="tabular-nums">{formatInr(summary.directCostInr)}</dd>
+          </div>
+        )}
         <div className="mt-1 flex items-baseline justify-between gap-3 border-t pt-2" style={{ borderColor: "var(--line-strong)" }}>
           <dt className="font-bold">Final total</dt>
           <dd className="font-display text-xl tabular-nums" style={{ color: "var(--ink)" }}>
@@ -238,6 +244,16 @@ function SummaryCard({
       {summary?.problem && (
         <p role="status" className="mt-3 rounded-lg px-3 py-2 text-xs font-semibold" style={{ background: "var(--warning-soft)", color: "var(--warning)" }}>
           {summary.problem}
+        </p>
+      )}
+      {!summary?.problem && summary?.warning && (
+        <p role="status" className="mt-3 rounded-lg px-3 py-2 text-xs font-semibold" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>
+          {summary.warning}
+        </p>
+      )}
+      {summary && (summary.edits.rates > 0 || summary.edits.added > 0 || summary.edits.off > 0) && (
+        <p className="mt-3 text-xs" style={{ color: "var(--muted)" }}>
+          Hand-edited: {[summary.edits.rates > 0 && `${summary.edits.rates} rate${summary.edits.rates === 1 ? "" : "s"}`, summary.edits.added > 0 && `${summary.edits.added} added`, summary.edits.off > 0 && `${summary.edits.off} off`].filter(Boolean).join(" · ")}
         </p>
       )}
       <p className="mt-3 text-xs" style={{ color: "var(--muted)" }}>

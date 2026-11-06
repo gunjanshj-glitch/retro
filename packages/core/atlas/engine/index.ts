@@ -308,6 +308,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     mealPlan: policy.meals.plans[request.mealPlan],
     excludedClusterIds: new Set(request.excludedClusterIds),
     pinnedClusterIds: new Set(request.pinnedClusterIds),
+    sightseeingMode: request.sightseeingMode,
     transportPreference: request.transportPreference,
     legModes: request.legModes,
     roadFirst: indiaGroundApplies(core, stays.map((s) => s.placeId)) ? indiaRoadFirst() : null,
@@ -446,9 +447,22 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   });
 
   // --- 5. reconcile against the published package --------------------------
+  // The floor protects against under-quoting an *engine* price. Once an admin has
+  // switched lines off, replaced a rate or added a charge, the figure is theirs:
+  // raising it back to the published "from" price would silently undo their edit.
+  const handEdited =
+    request.excludedLineKeys.length > 0 || Object.keys(request.lineOverrides).length > 0 || request.customLines.length > 0;
+  if (handEdited && referencePackage) {
+    warnings.push({
+      level: "info",
+      audience: "internal",
+      message: `Price lines were edited by hand, so the published "from" price for ${referencePackage.name} is not applied as a floor.`,
+    });
+  }
   if (
     policy.guardrails.enforcePackageFloor &&
     !data.ignorePackageFloor &&
+    !handEdited &&
     referencePackage &&
     // Only floor when the quote genuinely covers that package's scope; a
     // two-night taster of a fourteen-night package should not inherit its price.
@@ -591,6 +605,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     },
     warnings,
     suggestions,
+    sightseeingOptions: plan.options,
     planningNotes: planningNotes(
       stays, bundles, request.tripStyle, request.travellerType, request.childAges,
     ),

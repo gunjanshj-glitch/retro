@@ -26,6 +26,7 @@ import { buildPublicQuote, emptyAdjustments, priceQuote, type QuoteAdjustments }
 import type { RequestStatus } from "@retro/core/quote-workflow";
 import { PricingPanel } from "./PricingPanel";
 import { PriceSplitPanel } from "./PriceSplitPanel";
+import { SightseeingPanel } from "./SightseeingPanel";
 
 const primaryBtn = btnPrimary;
 const ghostBtn = btnGhost;
@@ -76,8 +77,14 @@ type Props = {
 
 export type EditorSummary = {
   engineTotalInr: number | null;
+  /** What the suppliers charge: the sum of every ticked line, before margin and tax. */
+  directCostInr: number | null;
   totalInr: number | null;
   dueNowInr: number | null;
+  /** Hand edits in this quote: replaced rates, added charges, switched-off lines. */
+  edits: { rates: number; added: number; off: number };
+  /** Worth a look but not a reason to stop the send. */
+  warning: string | null;
   dirty: boolean;
   savedAt: string | null;
   problem: string | null;
@@ -152,6 +159,21 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
               ? "Give every extra line a description."
               : null;
 
+  const edits = useMemo(() => {
+    if (!quote) return { rates: 0, added: 0, off: 0 };
+    return {
+      rates: quote.lineItems.concat(quote.excludedLineItems ?? []).filter((i) => i.override).length,
+      added: request?.customLines.length ?? 0,
+      off: quote.excludedLineItems?.length ?? 0,
+    };
+  }, [quote, request?.customLines.length]);
+
+  const directCostInr = quote?.totals.directCost ?? null;
+  const warning =
+    priced && directCostInr != null && priced.totalInr > 0 && priced.totalInr < directCostInr
+      ? `The total is ${formatInr(directCostInr - priced.totalInr)} below your direct cost of ${formatInr(directCostInr)}. The agency would lose money on this quote.`
+      : null;
+
   const body = useCallback(() => {
     if (!request || !quote) return null;
     return { request, quotation: slimQuotation(quote), adjustments, validUntil, note, baseUpdatedAt: baseRef.current };
@@ -195,13 +217,16 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
   useEffect(() => {
     onSummary({
       engineTotalInr: quote?.totals.total ?? null,
+      directCostInr,
       totalInr: priced?.totalInr ?? null,
       dueNowInr: priced?.dueNowInr ?? null,
+      edits,
+      warning,
       dirty,
       savedAt,
       problem,
     });
-  }, [quote, priced?.totalInr, priced?.dueNowInr, dirty, savedAt, problem, onSummary]);
+  }, [quote, directCostInr, priced?.totalInr, priced?.dueNowInr, edits, warning, dirty, savedAt, problem, onSummary]);
 
   useEffect(() => {
     actionsRef.current = { saveDraft, requestSend: () => setConfirmSend(true), busy };
@@ -223,6 +248,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
 
   const originalEstimate = detail.estimateInr;
   const moved = quote ? quote.totals.total - originalEstimate : 0;
+  const previousSent = detail.revisions.find((r) => r.status === "sent") ?? null;
   const publicPreview = quote
     ? buildPublicQuote(quote, adjustments, { validUntil: new Date(`${validUntil}T23:59:59+05:30`).toISOString(), note: note.trim() || null })
     : null;
@@ -251,7 +277,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         <WorldMapPicker core={core} selected={request.placeIds} onChange={setPlaces} />
       </Section>
 
-      <Section title="3 · Itinerary, inclusions & optional items" hint="Switch flights/visa/insurance, choose sightseeing, adjust nights and transport" open>
+      <Section title="3 · Itinerary, inclusions & optional items" hint="Switch flights/visa/insurance, adjust nights and transport" open>
         {quote ? (
           <QuotationView quote={quote} request={request} onChange={editRequest} destinationSummary={destinationSummary} mode="admin" />
         ) : (
@@ -259,11 +285,15 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         )}
       </Section>
 
-      <Section title="4 · Price split" hint="Every charge behind each category; untick to remove (admin only)" open>
+      <Section title="4 · Sightseeing" hint="Every place at every destination, ticked or not; choose exactly which are in" open>
+        {quote ? <SightseeingPanel quote={quote} request={request} onChange={editRequest} /> : <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>}
+      </Section>
+
+      <Section title="5 · Price split & rates" hint="Every charge behind each category: untick, change the rate or quantity, or add a charge (admin only)" open>
         {quote ? <PriceSplitPanel quote={quote} onChange={editRequest} /> : <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>}
       </Section>
 
-      <Section title="5 · Pricing & terms" hint="Fixed price, discounts, optional extras, deposit, validity" open>
+      <Section title="6 · Pricing & terms" hint="Fixed price, discounts, optional extras, deposit, validity" open>
         <PricingPanel
           engineTotalInr={quote?.totals.total ?? 0}
           adjustments={adjustments}
@@ -281,7 +311,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         />
       </Section>
 
-      <Section title="6 · Preview as the traveller will see it" hint="Exactly what the quote page will show">
+      <Section title="7 · Preview as the traveller will see it" hint="Exactly what the quote page will show">
         {publicPreview ? <QuoteOffer quote={publicPreview} selected={[]} version={undefined} /> : <p style={{ color: "var(--muted)" }}>Nothing to preview yet.</p>}
       </Section>
 
@@ -299,6 +329,20 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
                 <dt style={{ color: "var(--muted)" }}>Total</dt>
                 <dd className="font-display text-xl tabular-nums" style={{ color: "var(--ink)" }}>{formatInr(priced.totalInr)}</dd>
               </div>
+              {previousSent && (
+                <div className="flex justify-between gap-3">
+                  <dt style={{ color: "var(--muted)" }}>Replaces v{previousSent.version}</dt>
+                  <dd className="tabular-nums">
+                    {formatInr(previousSent.totalInr)}
+                    {priced.totalInr !== previousSent.totalInr && (
+                      <span className="ml-1.5 font-semibold" style={{ color: priced.totalInr > previousSent.totalInr ? "var(--warning)" : "var(--success)" }}>
+                        ({priced.totalInr > previousSent.totalInr ? "+" : "−"}
+                        {formatInr(Math.abs(priced.totalInr - previousSent.totalInr))})
+                      </span>
+                    )}
+                  </dd>
+                </div>
+              )}
               {priced.dueNowInr < priced.totalInr && (
                 <div className="flex justify-between gap-3">
                   <dt style={{ color: "var(--muted)" }}>Due to confirm</dt>
@@ -310,6 +354,38 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
                 <dd>{validUntil}</dd>
               </div>
             </dl>
+            {publicPreview && publicPreview.breakdown.length > 0 && (
+              <details className="mt-3 rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: "var(--line)" }}>
+                <summary className="cursor-pointer font-semibold">What the traveller will see, by category</summary>
+                <ul className="mt-2 flex flex-col gap-1">
+                  {publicPreview.breakdown.map((row) => (
+                    <li key={row.key} className="flex justify-between gap-3">
+                      <span style={{ color: "var(--muted)" }}>{row.label}</span>
+                      <span className="tabular-nums">{formatInr(row.amountInr)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+            {(edits.rates > 0 || edits.added > 0 || edits.off > 0 || request.sightseeingMode === "manual") && (
+              <p className="mt-3 text-xs" style={{ color: "var(--muted)" }}>
+                Hand-edited (internal, the traveller doesn&apos;t see this):{" "}
+                {[
+                  edits.rates > 0 && `${edits.rates} rate${edits.rates === 1 ? "" : "s"} changed`,
+                  edits.added > 0 && `${edits.added} charge${edits.added === 1 ? "" : "s"} added`,
+                  edits.off > 0 && `${edits.off} line${edits.off === 1 ? "" : "s"} switched off`,
+                  request.sightseeingMode === "manual" && "sightseeing chosen by hand",
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+                .
+              </p>
+            )}
+            {warning && (
+              <p role="alert" className="mt-3 rounded-xl border px-3.5 py-3 text-xs font-semibold" style={toneStyle.danger}>
+                {warning}
+              </p>
+            )}
             {detail.status === "accepted" && (
               <p className="mt-4 rounded-xl border px-3.5 py-3 text-xs font-semibold" style={toneStyle.warning}>
                 The traveller has already accepted the previous quote. Sending this clears that acceptance and they will need to accept again.

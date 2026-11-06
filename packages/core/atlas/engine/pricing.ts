@@ -421,6 +421,20 @@ export function priceQuotation(input: PricingInput): {
       totalInr: Math.round(quantity * calibrated),
       locked, source, placeId,
     };
+
+    // An admin's own rate or quantity replaces the engine's. The line is priced
+    // first so what the engine had said is kept next to it, and it is billed as
+    // typed (rounded rupees x quantity), not through the calibration above.
+    const ov = request.lineOverrides[key];
+    if (ov && (ov.unitPriceInr !== undefined || ov.quantity !== undefined)) {
+      const qty = ov.quantity ?? quantity;
+      const rate = ov.unitPriceInr ?? calibrated;
+      line.override = { unitPriceInr: line.unitPriceInr, quantity: line.quantity };
+      line.quantity = qty;
+      line.unitPriceInr = Math.round(rate);
+      line.totalInr = Math.round(qty * rate);
+      line.source = "manual";
+    }
     (switchedOff.has(key) ? skipped : items).push(line);
   };
 
@@ -748,6 +762,30 @@ export function priceQuotation(input: PricingInput): {
         `${tripDays} day(s) x ${pax.total} traveller(s)`,
         tripDays * pax.total, "person-day", rate.perPersonPerDayInr, false, rate.source, null);
     }
+  }
+
+  // --- charges the admin added by hand ---------------------------------------
+  // For a rate the engine has no card for. Billed as typed and loaded with
+  // contingency, margin and tax like every other line, and switchable off the
+  // same way.
+  for (const c of request.customLines) {
+    if (c.quantity <= 0 || c.unitPriceInr <= 0) continue;
+    const key = `custom|${c.id}`;
+    const line: LineItem = {
+      key,
+      component: c.component,
+      label: c.label,
+      detail: "Added by the agency",
+      quantity: c.quantity,
+      unit: "unit",
+      unitPriceInr: Math.round(c.unitPriceInr),
+      totalInr: Math.round(c.quantity * c.unitPriceInr),
+      locked: false,
+      source: "manual",
+      placeId: null,
+      custom: true,
+    };
+    (switchedOff.has(key) ? skipped : items).push(line);
   }
 
   // --- totals --------------------------------------------------------------

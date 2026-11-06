@@ -52,10 +52,29 @@ shortcuts), their note, and the **quote editor**:
 3. **Itinerary & optional items** — the planner's quotation view: switch flights,
    visa and insurance on or off, choose sightseeing, move nights, change a leg's
    transport mode. Every change re-prices live.
-4. **Pricing & terms** — pin a fixed package price, add charges or discounts,
+4. **Sightseeing** — every outing at every destination with its own tick,
+   whether or not the planner scheduled it. *Planner fills the days* keeps the old
+   behaviour (untick one and the next-ranked place may take its time); *I choose
+   the places* plans exactly the ticked places and never backfills. A ticked place
+   the days cannot fit stays ticked and is flagged "No room yet".
+5. **Price split & rates** — every charge behind each category. Tick to charge
+   for it, **type the quantity or rate** to replace the engine's figure with the
+   real one (the engine's number stays visible beside it, with a Reset), or
+   **add a charge** the engine has no rate for. Typed amounts are the agency's own
+   cost: contingency, margin and GST are applied on top, and the category totals
+   the traveller sees re-price. Edits live in the stored `QuoteRequest`
+   (`lineOverrides`, `customLines`, `excludedLineKeys`), so they survive saving a
+   draft and reopening it. Once any line is hand-edited the published-package
+   price floor is not applied, so it cannot silently undo the edit.
+6. **Pricing & terms** — pin a fixed package price, add charges or discounts,
    offer **optional extras** (tick-boxes the traveller may add), take a deposit,
    set how long the quote stays open, and write a note to the traveller.
-5. **Preview** — the quote page exactly as the traveller will see it.
+7. **Preview** — the quote page exactly as the traveller will see it.
+
+The send dialog shows the total against the version already sent, the
+traveller-facing category breakdown, and what was hand-edited (internal only). The
+side card shows the direct cost, and warns, without blocking, if the total is
+below it.
 
 *Save draft* stores work in progress (the traveller sees nothing). *Send final
 quote* creates a numbered revision, moves the request to `quoted` and emails the

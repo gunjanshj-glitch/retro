@@ -32,6 +32,48 @@ export type Pace = z.infer<typeof Pace>;
 export const TransportPreference = z.enum(["fastest", "balanced", "cheapest"]);
 export type TransportPreference = z.infer<typeof TransportPreference>;
 
+/** Mirrors the Quotation_Calculation sheet's cost components. */
+export const CostComponent = z.enum([
+  "hotel",
+  "flight",
+  "airport-transfer",
+  "local-transport",
+  /** All-in daily vehicle on an all-India trip: airport, intercity and sightseeing together. */
+  "ground-transport",
+  "intercity-transport",
+  "sightseeing",
+  "meals",
+  "visa",
+  "insurance",
+  "city-tax",
+]);
+export type CostComponent = z.infer<typeof CostComponent>;
+
+/**
+ * An admin's replacement for what the engine priced a line at. Either field may
+ * be left out to keep the engine's figure. Rupees are the agency's own cost —
+ * contingency, margin and tax are still applied on top, exactly as for any line.
+ */
+export const LineOverride = z.object({
+  unitPriceInr: z.number().min(0).max(100_000_000).optional(),
+  quantity: z.number().min(0).max(100_000).optional(),
+});
+export type LineOverride = z.infer<typeof LineOverride>;
+
+/**
+ * A charge the admin adds to a category by hand (a rate the engine has no card
+ * for). Priced like any other line, so it carries margin and tax.
+ */
+export const CustomCostLine = z.object({
+  /** Stable id; the line's `LineItem.key` is `custom|<id>`. */
+  id: z.string().regex(/^[A-Za-z0-9-]{1,40}$/),
+  component: CostComponent,
+  label: z.string().trim().min(1).max(120),
+  quantity: z.number().min(0).max(100_000),
+  unitPriceInr: z.number().min(0).max(100_000_000),
+});
+export type CustomCostLine = z.infer<typeof CustomCostLine>;
+
 export const QuoteRequest = z.object({
   /** Places chosen on the map, or resolved from the "explore" questionnaire. */
   placeIds: z.array(z.string()).min(1),
@@ -108,6 +150,20 @@ export const QuoteRequest = z.object({
    * `LineItem.key`). The trip itself is unchanged; the charge is just not billed.
    */
   excludedLineKeys: z.array(z.string()).default([]),
+  /**
+   * Admin rate/quantity replacements, keyed by `LineItem.key`. The engine still
+   * prices the line first (so the original is kept for reference) and then
+   * substitutes these. A key that no longer matches a line is ignored.
+   */
+  lineOverrides: z.record(z.string(), LineOverride).default({}),
+  /** Charges an admin added by hand, on top of what the engine priced. */
+  customLines: z.array(CustomCostLine).max(50).default([]),
+  /**
+   * "auto" lets the planner fill each day from its own ranking, so removing a
+   * place pulls in the next one. "manual" plans exactly the places in
+   * `pinnedClusterIds` and nothing else: the admin's list is the itinerary.
+   */
+  sightseeingMode: z.enum(["auto", "manual"]).default("auto"),
   addedActivityCodes: z.array(z.string()).default([]),
   /**
    * Clusters the traveller explicitly asked to include from the "you could
@@ -247,23 +303,6 @@ export type PlaceStay = {
 // Pricing
 // ---------------------------------------------------------------------------
 
-/** Mirrors the Quotation_Calculation sheet's cost components. */
-export const CostComponent = z.enum([
-  "hotel",
-  "flight",
-  "airport-transfer",
-  "local-transport",
-  /** All-in daily vehicle on an all-India trip: airport, intercity and sightseeing together. */
-  "ground-transport",
-  "intercity-transport",
-  "sightseeing",
-  "meals",
-  "visa",
-  "insurance",
-  "city-tax",
-]);
-export type CostComponent = z.infer<typeof CostComponent>;
-
 export type LineItem = {
   /** Stable id for this charge (component + label), so an admin can switch it off and on. */
   key: string;
@@ -279,6 +318,23 @@ export type LineItem = {
   /** Where the rate came from, so the quote can be audited. */
   source: "workbook" | "estimated" | "live" | "manual";
   placeId: string | null;
+  /** Set when an admin replaced the rate and/or quantity. Holds what the engine had priced. */
+  override?: { unitPriceInr: number; quantity: number };
+  /** True for a charge an admin added by hand rather than one the engine priced. */
+  custom?: boolean;
+};
+
+/** Where a sightseeing outing stands in the itinerary (admin view). */
+export type SightseeingStatus = "planned" | "unscheduled" | "excluded";
+
+/**
+ * Every outing available at a stay, whether or not it made the itinerary, so
+ * the admin can see and switch any of them. Never shown to the traveller.
+ */
+export type SightseeingOption = PlannedActivity & {
+  placeId: string;
+  placeName: string;
+  status: SightseeingStatus;
 };
 
 export type QuoteTotals = {
@@ -320,6 +376,8 @@ export type Quotation = {
   warnings: QuoteWarning[];
   /** Items the traveller could add, with their price impact. */
   suggestions: PlannedActivity[];
+  /** Every outing at every stay with its status, for the admin's sightseeing picker. */
+  sightseeingOptions?: SightseeingOption[];
   /**
    * Planner guidance drawn from the destination files for exactly this trip —
    * how transfers really work in each city, what to do and avoid for this kind

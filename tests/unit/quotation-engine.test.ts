@@ -1604,3 +1604,157 @@ describe("Indian hotel rates", () => {
     }
   });
 });
+
+describe("admin overriding rates, quantities and adding charges", () => {
+  const places = ["ha-noi", "danang", "hochiminh", "phu-quoc"];
+  const base = () => quote({ placeIds: places, nights: 11, hotelStar: "5 Star" });
+
+  it("replaces a line's rate, keeps the engine's figure beside it, and re-prices everything above it", () => {
+    const full = base();
+    const target = full.lineItems.find((l) => l.component === "hotel")!;
+    const edited = quote({
+      placeIds: places, nights: 11, hotelStar: "5 Star",
+      lineOverrides: { [target.key]: { unitPriceInr: 5000 } },
+    });
+    const line = edited.lineItems.find((l) => l.key === target.key)!;
+    expect(line.unitPriceInr).toBe(5000);
+    expect(line.quantity).toBe(target.quantity);
+    expect(line.totalInr).toBe(Math.round(target.quantity * 5000));
+    expect(line.source).toBe("manual");
+    expect(line.override).toEqual({ unitPriceInr: target.unitPriceInr, quantity: target.quantity });
+    // Direct cost moves by exactly the change in that line, and the total follows it.
+    expect(edited.totals.directCost - full.totals.directCost).toBe(line.totalInr - target.totalInr);
+    expect(edited.totals.total).not.toBe(full.totals.total);
+  });
+
+  it("replaces a quantity independently of the rate", () => {
+    const full = base();
+    const target = full.lineItems.find((l) => l.component === "hotel")!;
+    const edited = quote({
+      placeIds: places, nights: 11, hotelStar: "5 Star",
+      lineOverrides: { [target.key]: { quantity: target.quantity + 2 } },
+    });
+    const line = edited.lineItems.find((l) => l.key === target.key)!;
+    expect(line.quantity).toBe(target.quantity + 2);
+    expect(line.unitPriceInr).toBe(target.unitPriceInr);
+    expect(line.totalInr).toBeGreaterThan(target.totalInr);
+  });
+
+  it("an override of an empty object, or of a line that no longer exists, changes nothing", () => {
+    const full = base();
+    const target = full.lineItems[0];
+    const same = quote({
+      placeIds: places, nights: 11, hotelStar: "5 Star",
+      lineOverrides: { [target.key]: {}, "hotel|A place that is not on this trip": { unitPriceInr: 1 } },
+    });
+    expect(same.totals.total).toBe(full.totals.total);
+    expect(same.lineItems.every((l) => !l.override)).toBe(true);
+  });
+
+  it("an overridden line can still be switched off, and its override survives switching it back on", () => {
+    const full = base();
+    const target = full.lineItems.find((l) => l.component === "hotel")!;
+    const overrides = { [target.key]: { unitPriceInr: 7000 } };
+    const off = quote({ placeIds: places, nights: 11, hotelStar: "5 Star", lineOverrides: overrides, excludedLineKeys: [target.key] });
+    expect(off.lineItems.some((l) => l.key === target.key)).toBe(false);
+    expect(off.excludedLineItems?.find((l) => l.key === target.key)?.unitPriceInr).toBe(7000);
+  });
+
+  it("bills a charge the admin adds by hand, with margin and tax on top, and lets it be switched off", () => {
+    const full = base();
+    const added = quote({
+      placeIds: places, nights: 11, hotelStar: "5 Star",
+      customLines: [{ id: "c1", component: "local-transport", label: "Boat to Cat Ba", quantity: 2, unitPriceInr: 3000 }],
+    });
+    const line = added.lineItems.find((l) => l.key === "custom|c1")!;
+    expect(line).toMatchObject({ component: "local-transport", label: "Boat to Cat Ba", totalInr: 6000, custom: true, source: "manual" });
+    expect(added.totals.directCost - full.totals.directCost).toBe(6000);
+    // Loaded like any other cost, so the traveller pays more than the raw 6,000.
+    expect(added.totals.total - full.totals.total).toBeGreaterThan(6000);
+
+    const off = quote({
+      placeIds: places, nights: 11, hotelStar: "5 Star",
+      customLines: [{ id: "c1", component: "local-transport", label: "Boat to Cat Ba", quantity: 2, unitPriceInr: 3000 }],
+      excludedLineKeys: ["custom|c1"],
+    });
+    expect(off.totals.directCost).toBe(full.totals.directCost);
+    expect(off.excludedLineItems?.map((l) => l.key)).toContain("custom|c1");
+  });
+
+  it("rejects an added charge with no description or a malformed id", () => {
+    const bad = (customLines: unknown) => QuoteRequest.safeParse({ ...request({ placeIds: places, nights: 5 }), customLines }).success;
+    expect(bad([{ id: "ok-1", component: "meals", label: "Dinner", quantity: 1, unitPriceInr: 100 }])).toBe(true);
+    expect(bad([{ id: "ok-1", component: "meals", label: "   ", quantity: 1, unitPriceInr: 100 }])).toBe(false);
+    expect(bad([{ id: "has space", component: "meals", label: "Dinner", quantity: 1, unitPriceInr: 100 }])).toBe(false);
+    expect(bad([{ id: "ok-1", component: "not-a-component", label: "Dinner", quantity: 1, unitPriceInr: 100 }])).toBe(false);
+  });
+
+  it("does not undo a hand edit by raising the total back to the published package price", () => {
+    const lak = core.packages.find((p) => p.name === "Lakshadweep")!;
+    const args = { placeIds: lak.placeIds, nights: lak.nights, includeFlight: false };
+    const plain = quote(args);
+    expect(plain.totals.flooredToPackage).toBeTruthy();
+
+    const target = plain.lineItems.find((l) => l.component === "hotel")!;
+    const edited = quote({ ...args, lineOverrides: { [target.key]: { unitPriceInr: 1 } } });
+    expect(edited.totals.flooredToPackage).toBeNull();
+    expect(edited.totals.total).toBeLessThan(plain.totals.total);
+    expect(edited.warnings.some((w) => w.audience === "internal" && /not applied as a floor/.test(w.message))).toBe(true);
+  });
+});
+
+describe("admin sightseeing picker", () => {
+  // A single, well-documented stay with plenty of outings to choose between.
+  const placeIds = ["ha-noi"];
+  const nights = 4;
+  const planned = (q: ReturnType<typeof quote>) => new Set(q.days.flatMap((d) => d.activities.map((a) => a.clusterId)).filter(Boolean));
+
+  it("lists every outing at the stay, each with where it ended up", () => {
+    const q = quote({ placeIds, nights });
+    const options = q.sightseeingOptions!;
+    expect(options.length).toBeGreaterThan(0);
+    expect(new Set(options.map((o) => o.clusterId)).size).toBe(options.length);
+    const inDays = planned(q);
+    for (const o of options) {
+      expect(o.placeId).toBe("ha-noi");
+      expect(o.status === "planned").toBe(inDays.has(o.clusterId));
+    }
+  });
+
+  it("keeps a switched-off outing listed as 'excluded' instead of making it vanish", () => {
+    const q = quote({ placeIds, nights });
+    const victim = q.sightseeingOptions!.find((o) => o.status === "planned")!;
+    const after = quote({ placeIds, nights, excludedClusterIds: [victim.clusterId!] });
+    const same = after.sightseeingOptions!.find((o) => o.clusterId === victim.clusterId)!;
+    expect(same.status).toBe("excluded");
+    expect(planned(after).has(victim.clusterId)).toBe(false);
+    // Same set of outings is on offer either way.
+    expect(after.sightseeingOptions!.map((o) => o.clusterId).sort()).toEqual(q.sightseeingOptions!.map((o) => o.clusterId).sort());
+  });
+
+  it("in manual mode plans only what is ticked and never backfills", () => {
+    const auto = quote({ placeIds, nights });
+    const keep = auto.sightseeingOptions!.filter((o) => o.status === "planned").slice(0, 1).map((o) => o.clusterId!);
+    expect(keep).toHaveLength(1);
+
+    const none = quote({ placeIds, nights, sightseeingMode: "manual" });
+    expect(planned(none).size).toBe(0);
+    expect(none.lineItems.some((l) => l.component === "sightseeing")).toBe(false);
+    expect(none.sightseeingOptions!.every((o) => o.status === "unscheduled")).toBe(true);
+
+    const one = quote({ placeIds, nights, sightseeingMode: "manual", pinnedClusterIds: keep });
+    expect([...planned(one)]).toEqual(keep);
+    expect(one.sightseeingOptions!.filter((o) => o.status === "planned").map((o) => o.clusterId)).toEqual(keep);
+    // Everything not ticked is offered, not billed.
+    expect(one.suggestions.length).toBeGreaterThan(0);
+  });
+
+  it("a ticked place the days cannot fit stays ticked and is reported, not dropped", () => {
+    const q = quote({ placeIds, nights: 1 });
+    const ids = q.sightseeingOptions!.map((o) => o.clusterId!);
+    const all = quote({ placeIds, nights: 1, sightseeingMode: "manual", pinnedClusterIds: ids });
+    const stranded = all.sightseeingOptions!.filter((o) => o.status === "unscheduled");
+    expect(stranded.length).toBeGreaterThan(0);
+    expect(all.warnings.some((w) => /No room for/.test(w.message))).toBe(true);
+  });
+});

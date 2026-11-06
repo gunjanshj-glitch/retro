@@ -8,7 +8,7 @@
  */
 import type { Cluster, DestinationBundle, PurposeActivity, TransportMode, TripStyle } from "../schema";
 import policy from "../../../../content/quote-policy.json";
-import type { AirportLink, PlaceStay, PlannedActivity, PlannedDay, TransferLeg, TransportPreference } from "./types";
+import type { AirportLink, PlaceStay, PlannedActivity, PlannedDay, SightseeingOption, TransferLeg, TransportPreference } from "./types";
 import type { RouteLookup } from "./itinerary";
 import { formatDuration } from "./text";
 
@@ -144,6 +144,11 @@ export type DayPlanInput = {
   excludedClusterIds: Set<string>;
   /** Clusters the traveller asked for; packed ahead of the ranker's picks. */
   pinnedClusterIds: Set<string>;
+  /**
+   * "manual" plans only the pinned clusters; everything else is offered as an
+   * add-on rather than backfilling the day. Absent means "auto".
+   */
+  sightseeingMode?: "auto" | "manual";
   /** How hard to trade fare against journey time on intercity legs. */
   transportPreference: TransportPreference;
   /** Per-leg mode the traveller pinned, keyed by the arriving place's id. */
@@ -199,6 +204,8 @@ export type DayPlanResult = {
   days: PlannedDay[];
   /** Clusters that did not fit, offered as paid add-ons. */
   suggestions: PlannedActivity[];
+  /** Every cluster at every stay and where it ended up, for the admin's picker. */
+  options: SightseeingOption[];
   /**
    * Legs whose journey time did not fit inside the nights booked at the
    * destination it arrives at, even after giving it every day the stay had.
@@ -225,9 +232,11 @@ export function planDays(input: DayPlanInput): DayPlanResult {
     stays, startDate, style, pace, group, bundles, routes, mealPlan, excludedClusterIds,
     pinnedClusterIds, transportPreference, legModes, priceLookup, clusterBiasFor, roadFirst,
   } = input;
+  const manual = input.sightseeingMode === "manual";
 
   const days: PlannedDay[] = [];
   const suggestions: PlannedActivity[] = [];
+  const options: SightseeingOption[] = [];
   const transitOverflows: TransitOverflow[] = [];
 
   const totalNights = stays.reduce((a, s) => a + s.nights, 0);
@@ -246,8 +255,12 @@ export function planDays(input: DayPlanInput): DayPlanResult {
     const available = bundle?.clusters.length
       ? bundle.clusters
       : syntheticClusters(bundle, stay.placeId);
+    const candidates = available.filter((c) => !excludedClusterIds.has(c.id));
+    // In manual mode the admin's ticked list is the itinerary: only pinned
+    // clusters are planned and the rest wait as add-ons instead of backfilling.
+    const notChosen = manual ? candidates.filter((c) => !pinnedClusterIds.has(c.id)) : [];
     const queue = rankClusters(
-      available.filter((c) => !excludedClusterIds.has(c.id)),
+      manual ? candidates.filter((c) => pinnedClusterIds.has(c.id)) : candidates,
       bundle?.purposeActivities ?? [],
       style,
       clusterBiasFor?.(stay.placeId) ?? [],
@@ -505,10 +518,23 @@ export function planDays(input: DayPlanInput): DayPlanResult {
     }
 
     // Anything left over becomes an upsell rather than being silently dropped.
-    for (const cluster of queue) {
+    for (const cluster of [...queue, ...notChosen]) {
       suggestions.push(toActivity(cluster, (c) => priceLookup(stay.placeId, c)));
+    }
+
+    // Everything the stay has to offer, with where it landed. What is neither
+    // switched off nor left over made it into a day.
+    const leftover = new Set([...queue, ...notChosen].map((c) => c.id));
+    for (const cluster of available) {
+      const status = excludedClusterIds.has(cluster.id) ? "excluded" : leftover.has(cluster.id) ? "unscheduled" : "planned";
+      options.push({
+        ...toActivity(cluster, (c) => priceLookup(stay.placeId, c)),
+        placeId: stay.placeId,
+        placeName: stay.placeName,
+        status,
+      });
     }
   }
 
-  return { days, suggestions, transitOverflows };
+  return { days, suggestions, options, transitOverflows };
 }
