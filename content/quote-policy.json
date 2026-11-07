@@ -145,7 +145,7 @@
   },
   "markup": {
     "_comment": "Mirrors Markup_Tax_Rules and the Quotation_Calculation sheet. Applied in this order.",
-    "contingency": 0.03,
+    "contingency": 0,
     "_marginComment": "Agency margin is set per category as a share of that category's own cost - exactly two margins: accommodation 10% (per night, since hotel cost is nights x rate) and transport 20%. Every other category carries none. The admin can still override any category, or the whole quote, per quote.",
     "componentMargin": {
       "hotel": 0.1,
@@ -182,7 +182,7 @@
     "_clampComment": "A live figure more than this far from the baseline is treated as suspect and clamped, so one bad API response cannot wreck a quotation.",
     "clampDeviation": 0.6,
     "_bookingVarianceComment": "Margin added to a fare read live from Google Flights for the traveller's own dates, cabin and route. That figure is what anyone sees on the internet today, so it is used as is and never clamped to the rate card; airlines reprice between quoting and ticketing, so by policy no buffer is added (0): the cheapest live fare is shown as is, and the quote says the actual price is confirmed on the final quotation. Raise it only if you want a cushion. The larger volatilityMargin above still applies to the monthly cached fares, which are only an approximation of the price on the day.",
-    "bookingVariance": { "flight": 0 }
+    "bookingVariance": { "flight": 0, "hotel": 0 }
   },
 
   "guardrails": {

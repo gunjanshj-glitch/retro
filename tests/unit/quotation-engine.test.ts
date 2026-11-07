@@ -266,10 +266,28 @@ describe("live-rate override", () => {
     expect(resolveRate(1000, "workbook", undefined, "hotel")).toEqual({ inr: 1000, source: "workbook" });
   });
 
-  it("applies a volatility margin to an accepted live rate", () => {
-    const out = resolveRate(1000, "workbook", { component: "hotel", key: "k", inr: 1100, fetchedAt: fresh() }, "hotel");
+  it("applies a volatility margin to an accepted approximate live rate", () => {
+    const out = resolveRate(1000, "workbook", { component: "flight", key: "k", inr: 1100, fetchedAt: fresh() }, "flight");
     expect(out.source).toBe("live");
-    expect(out.inr).toBeCloseTo(1100 * 1.08, 5);
+    expect(out.inr).toBeCloseTo(1100 * 1.12, 5);
+  });
+
+  it("uses a live hotel rate as quoted, even when it is far below the card", () => {
+    const cheap = resolveRate(10_000, "estimated", { component: "hotel", key: "k", inr: 3000, fetchedAt: fresh() }, "hotel");
+    expect(cheap).toMatchObject({ inr: 3000, source: "live" });
+    const dear = resolveRate(10_000, "estimated", { component: "hotel", key: "k", inr: 14_000, fetchedAt: fresh() }, "hotel");
+    expect(dear.inr).toBe(14_000);
+  });
+
+  it("drops a live hotel rate that is plainly a bad response", () => {
+    for (const inr of [500, 80_000]) {
+      const out = resolveRate(10_000, "estimated", { component: "hotel", key: "k", inr, fetchedAt: fresh() }, "hotel");
+      expect(out).toEqual({ inr: 10_000, source: "estimated" });
+    }
+  });
+
+  it("charges no contingency", () => {
+    expect(policy.markup.contingency).toBe(0);
   });
 
   it("ignores a stale live rate", () => {

@@ -226,6 +226,10 @@ export function seasonMultiplier(summary: PlaceSummary | undefined, month: numbe
 // Live-rate override
 // ---------------------------------------------------------------------------
 
+/** A live hotel rate outside this band of the card is treated as a bad response, not a price. */
+const HOTEL_LIVE_FLOOR = 0.2;
+const HOTEL_LIVE_CEILING = 5;
+
 export type LiveRate = {
   component: "flight" | "hotel" | "activity";
   key: string;
@@ -268,6 +272,19 @@ export function resolveRate(
   // airlines repricing before ticketing.
   if (live.provider === "google-flights") {
     const variance = (cfg as { bookingVariance?: Partial<Record<string, number>> }).bookingVariance?.[component] ?? 0;
+    return { inr: live.inr * (1 + variance), source: "live", live };
+  }
+
+  // A live hotel rate is the price the supplier is quoting for these dates, so
+  // like a flight it is used as is. Clamping it to the card would stop a card
+  // that is too high from ever being undercut. Only a figure so far from the
+  // card that it is plainly a bad response (a total mistaken for a nightly
+  // rate, say) is dropped in favour of the card.
+  if (component === "hotel") {
+    if (baseline > 0 && (live.inr < baseline * HOTEL_LIVE_FLOOR || live.inr > baseline * HOTEL_LIVE_CEILING)) {
+      return { inr: baseline, source: baselineSource };
+    }
+    const variance = (cfg as { bookingVariance?: Partial<Record<string, number>> }).bookingVariance?.hotel ?? 0;
     return { inr: live.inr * (1 + variance), source: "live", live };
   }
 
@@ -494,16 +511,18 @@ export function priceQuotation(input: PricingInput): {
     const live = liveRates.get(`hotel:${stay.placeId}:${request.hotelStar}`);
     const resolved = resolveRate(rate.inr * season, rate.source, live, "hotel");
 
+    // The calibration factors were fitted to the rate card, so a live rate skips them.
+    const calibrateHotel = resolved.source !== "live";
     push("hotel", `${stay.placeName} — ${request.hotelStar}`,
       `${stay.nights} night(s) x ${pax.rooms} room(s), ${request.hotelZone}, room with breakfast`,
-      stay.nights * pax.rooms, "room-night", resolved.inr, true, resolved.source, stay.placeId);
+      stay.nights * pax.rooms, "room-night", resolved.inr, true, resolved.source, stay.placeId, calibrateHotel);
 
     if (pax.extraBeds) {
       const band = OCC.childBands.find((b) => b.roomPolicy === "extraBed");
       push("hotel", `${stay.placeName} — extra bed`,
         `${pax.extraBeds} child bed(s) x ${stay.nights} night(s)`,
         stay.nights * pax.extraBeds, "bed-night",
-        resolved.inr * (band?.extraBedFactor ?? 0.35), true, resolved.source, stay.placeId);
+        resolved.inr * (band?.extraBedFactor ?? 0.35), true, resolved.source, stay.placeId, calibrateHotel);
     }
 
     const tax = cityTax.get(stay.placeId);
