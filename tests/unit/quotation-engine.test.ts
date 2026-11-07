@@ -611,8 +611,8 @@ describe("international airfare", () => {
     const fare = q.lineItems.find((i) => i.component === "flight")!;
     expect(fare.source).toBe("live");
     expect(fare.unitPriceInr).toBe(Math.round(20000 * (1 + policy.liveRates.bookingVariance.flight)));
-    expect(fare.detail).toContain("may change before ticketing");
-    expect(q.warnings.some((w) => w.audience === "traveller" && /may differ/.test(w.message))).toBe(true);
+    expect(fare.detail).toContain("confirmed on the final quotation");
+    expect(q.warnings.some((w) => w.audience === "traveller" && /confirmed on the final quotation/.test(w.message))).toBe(true);
   });
 
   it("omits airfare entirely when the traveller asked for a land-only quote", () => {

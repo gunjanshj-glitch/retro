@@ -612,7 +612,7 @@ export function priceQuotation(input: PricingInput): {
     ) => {
       const heads = faresFor(destCountryId);
       const checked = resolved.source === "live" && resolved.live?.provider === "google-flights"
-        ? `; live Google Flights fare checked ${resolved.live.fetchedAt.slice(11, 16)} UTC, may change before ticketing`
+        ? `; live Google Flights fare checked ${resolved.live.fetchedAt.slice(11, 16)} UTC, actual price is confirmed on the final quotation`
         : "";
       const calibrate = resolved.source !== "live";
       push("flight", label, `${detail}${checked}`, heads.adults, "person", perAdultInr, false, resolved.source, null, calibrate);

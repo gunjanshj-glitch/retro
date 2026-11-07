@@ -570,8 +570,8 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       level: "info",
       audience: "traveller",
       message: live
-        ? "Airfare is the live fare for your route, dates and cabin as seen on Google Flights when this quote was prepared. Airlines change fares until the ticket is issued, so the price at booking may differ; a small allowance for this is included."
-        : "Airfare is a typical fare for this route, not a live price for your dates. Airlines change fares until the ticket is issued, so the price at booking may differ.",
+        ? "Airfare is the lowest live fare for your route, dates and cabin as seen on Google Flights when this quote was prepared. The actual price will be confirmed on the final quotation, as airlines change fares until the ticket is issued."
+        : "Airfare is a typical fare for this route, not a live price for your dates. The actual price will be confirmed on the final quotation, as airlines change fares until the ticket is issued.",
     });
   }
   if (!request.includeFlight) {
