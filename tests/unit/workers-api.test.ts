@@ -390,6 +390,28 @@ describe("live airfare from Google Flights", () => {
     expect(maxAge).toBeLessThanOrEqual(600);
   });
 
+  it("prices a trip that leaves today", async () => {
+    const fetchMock = vi.fn(async (_url: string) => new Response(JSON.stringify(offers), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = await worker.fetch(
+      new Request(`https://example.com/api/live-rates?${query({ outbound: iso(0), inbound: iso(7), month: iso(0).slice(0, 7) })}`),
+      env({ SERP_API: "key" }),
+      ctx,
+    );
+    expect(((await res.json()) as { rates: unknown[] }).rates).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("stops billing searches once the daily budget is spent", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify(offers), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    // The counter reports 6 searches today against a limit of 5.
+    const spent = { DB: fakeDb([{ n: 6 }]).database, ENVIRONMENT: "test", SERP_API: "key", SERP_DAILY_LIMIT: "5" } as Env;
+    const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query()}`), spent, ctx);
+    expect(res.status).toBe(200);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("keeps the browser copy of a live fare short", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(offers), { status: 200 })));
     const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query()}`), env({ SERP_API: "key" }), ctx);

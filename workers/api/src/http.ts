@@ -13,6 +13,8 @@ export type Env = {
 
   /** SerpApi key for Google Flights: the exact fare for the traveller's own route, dates and cabin. Optional. */
   SERP_API?: string;
+  /** Cap on billed Google Flights searches per day, across all visitors. Defaults to 300. */
+  SERP_DAILY_LIMIT?: string;
   /** Travelpayouts Aviasales Data API token. Optional. */
   TRAVELPAYOUTS_TOKEN?: string;
   /** LiteAPI sandbox or production key. Optional. */

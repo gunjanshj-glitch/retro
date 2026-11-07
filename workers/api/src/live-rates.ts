@@ -13,7 +13,7 @@
  */
 import type { Env } from "./http";
 import { json } from "./http";
-import { limitByIp } from "./rate-limit";
+import { limitByIp, overLimit } from "./rate-limit";
 
 export type LiveRate = {
   component: "flight" | "hotel";
@@ -42,6 +42,13 @@ const FLIGHT_BROWSER_SECONDS = 10 * 60;
 const EMPTY_BROWSER_SECONDS = 5 * 60;
 /** Google Flights sells about eleven months ahead. */
 const MAX_DAYS_AHEAD = 330;
+
+/** Google Flights searches the Worker may bill per day, across all visitors. `SERP_DAILY_LIMIT` overrides it. */
+const DEFAULT_SERP_DAILY_LIMIT = 300;
+function serpDailyLimit(env: Env): number {
+  const n = Number(env.SERP_DAILY_LIMIT);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : DEFAULT_SERP_DAILY_LIMIT;
+}
 
 /** Carriers that price as low-cost, so the engine can honour the LCC/FSC choice. */
 const LCC_CARRIERS = new Set([
@@ -423,7 +430,10 @@ export async function handleLiveRates(
   // Exact dates are optional (the month search still works without them), but when given they must be a real, bookable trip.
   const wantsExact = wantsFlight && Boolean(outbound && inbound);
   if (wantsExact) {
-    const ahead = (Date.parse(outbound) - Date.now()) / 86_400_000;
+    // A date string parses to midnight UTC, so measure from the start of today (UTC) rather than from
+    // this instant, or a trip leaving today is rejected for every hour after midnight.
+    const startOfToday = Math.floor(Date.now() / 86_400_000) * 86_400_000;
+    const ahead = (Date.parse(outbound) - startOfToday) / 86_400_000;
     const length = (Date.parse(inbound) - Date.parse(outbound)) / 86_400_000;
     const valid =
       /^\d{4}-\d{2}-\d{2}$/.test(outbound) && /^\d{4}-\d{2}-\d{2}$/.test(inbound) &&
@@ -458,7 +468,9 @@ export async function handleLiveRates(
   const flightFare = async (): Promise<LiveRate | null> => {
     if (!wantsFlight) return null;
     const key = fareKey || destinationIata;
-    if (wantsExact) {
+    // Every uncached Google Flights search is billed. The per-IP limit stops one visitor; this stops the
+    // total, so rotating addresses cannot drain the quota. Over budget, the monthly fare answers instead.
+    if (wantsExact && env.SERP_API && !(await overLimit(env, "serp-daily", "all", serpDailyLimit(env), 86_400))) {
       try {
         const exact = await fetchGoogleFlight(env, origin, destinationIata, outbound, inbound, cabin, carrier, key);
         if (exact) return exact;
