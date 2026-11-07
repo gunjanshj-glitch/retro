@@ -343,7 +343,7 @@ describe("live airfare from Google Flights", () => {
   });
 
   it("searches the exact dates and cabin and tags the fare as live from Google Flights", async () => {
-    const fetchMock = vi.fn(async () => new Response(JSON.stringify(offers), { status: 200 }));
+    const fetchMock = vi.fn(async (_url: string) => new Response(JSON.stringify(offers), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const q = query();
     const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${q}`), env({ SERP_API: "key" }), ctx);
@@ -351,7 +351,7 @@ describe("live airfare from Google Flights", () => {
 
     expect(body.rates).toHaveLength(1);
     expect(body.rates[0]).toMatchObject({ key: "CCU:south-east-asia-thailand:FSC", inr: 29500, provider: "google-flights" });
-    const called = new URL(String(fetchMock.mock.calls[0][0] as string));
+    const called = new URL(fetchMock.mock.calls[0][0]);
     expect(called.hostname).toBe("serpapi.com");
     expect(called.searchParams.get("outbound_date")).toBe(q.get("outbound"));
     expect(called.searchParams.get("return_date")).toBe(q.get("inbound"));
@@ -375,7 +375,7 @@ describe("live airfare from Google Flights", () => {
       { outbound: iso(500), inbound: iso(507), month: iso(500).slice(0, 7) }, // beyond what is on sale
       { outbound: iso(40), inbound: iso(39) }, // returns before it leaves
       { cabin: "First" },
-    ]) {
+    ] as Record<string, string>[]) {
       const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query(bad)}`), env({ SERP_API: "key" }), ctx);
       expect(((await res.json()) as { rates: unknown[] }).rates).toEqual([]);
     }
