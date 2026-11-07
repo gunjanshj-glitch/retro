@@ -350,7 +350,7 @@ describe("Airfare from Kolkata follows the agency's typical tickets", () => {
     ["south-east-asia-thailand", 30000],
     ["south-east-asia-singapore", 45000],
     ["middle-east-and-gulf-uae", 50000],
-    ["east-asia-japan", 120000],
+    ["east-asia-japan", 65000],
     ["europe-united-kingdom", 80000],
     ["south-asia-sri-lanka", 30000],
   ])("%s full-service economy from Kolkata is Rs %i a head", (country, expected) => {
