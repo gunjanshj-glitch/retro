@@ -340,9 +340,10 @@ describe("Kailash Mansarovar", () => {
 describe("Airfare from Kolkata follows the agency's typical tickets", () => {
   const fare = (country: string, place: string) => {
     const q = quote({ placeIds: [place], nights: 4, adults: 2, includeFlight: true, carrier: "FSC", departureCity: "CCU", startDate: "2027-02-10" });
-    const f = q.lineItems.find((l) => l.component === "flight");
-    expect(f, country).toBeDefined();
-    return f!.unitPriceInr;
+    // A return ticket is shown as two legs (out and home); a head's fare is both.
+    const legs = q.lineItems.filter((l) => l.component === "flight");
+    expect(legs, country).toHaveLength(2);
+    return legs.reduce((sum, l) => sum + l.unitPriceInr, 0);
   };
   const place = (countryId: string) => core.places.find((p) => p.countryId === countryId)!.id;
 
@@ -359,7 +360,7 @@ describe("Airfare from Kolkata follows the agency's typical tickets", () => {
 
   it("a low-cost carrier stays cheaper than the full-service fare", () => {
     const q = quote({ placeIds: [place("south-east-asia-thailand")], nights: 4, adults: 2, includeFlight: true, carrier: "LCC", departureCity: "CCU", startDate: "2027-02-10" });
-    const lcc = q.lineItems.find((l) => l.component === "flight")!.unitPriceInr;
+    const lcc = q.lineItems.filter((l) => l.component === "flight").reduce((sum, l) => sum + l.unitPriceInr, 0);
     expect(lcc).toBeLessThan(30000);
   });
 });

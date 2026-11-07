@@ -127,6 +127,47 @@ function TextField({ value, onCommit, label, disabled }: { value: string; onComm
   );
 }
 
+/**
+ * Every flight in the trip on one screen: the international legs (with how each
+ * fare was reached) and any flights between stops. Edit a leg's rate in the
+ * Airfare or Intercity group below.
+ */
+function FlightLegs({ lines }: { lines: LineItem[] }) {
+  const international = lines.filter((i) => i.component === "flight");
+  const internal = lines.filter((i) => i.component === "intercity-transport" && /^flight\b/.test(i.detail));
+  if (!international.length && !internal.length) return null;
+  const total = [...international, ...internal].reduce((s, i) => s + i.totalInr, 0);
+  return (
+    <section className="rounded-xl border bg-[var(--card)] p-4" style={{ borderColor: "var(--line)" }} aria-label="Flight legs">
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+        <h4 className="font-semibold">Flight legs</h4>
+        <span className="text-sm tabular-nums" style={{ color: "var(--muted)" }}>
+          {international.length + internal.length} leg{international.length + internal.length === 1 ? "" : "s"} · cost{" "}
+          <strong style={{ color: "var(--ink)" }}>{formatInr(total)}</strong>
+        </span>
+      </div>
+      <ul className="flex flex-col divide-y divide-[var(--line)] text-sm">
+        {[...international, ...internal].map((i) => (
+          <li key={i.key} className="flex flex-wrap items-baseline justify-between gap-x-3 py-2">
+            <span className="min-w-0">
+              {i.label}
+              {i.fare && (
+                <span className="block text-xs" style={{ color: "var(--muted)" }}>
+                  rate card {formatInr(i.fare.tableInr)}
+                  {i.fare.liveInr != null ? ` · live ${formatInr(i.fare.liveInr)} + ${formatInr(i.fare.volatilityInr)} buffer` : " · no live fare"} per person
+                </span>
+              )}
+            </span>
+            <span className="tabular-nums">
+              {i.quantity} × {formatInr(i.unitPriceInr)} = <strong>{formatInr(i.totalInr)}</strong>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function PriceSplitPanel({ quote, adjustments, onChange, disabled }: Props) {
   const active = quote.lineItems;
   const off = quote.excludedLineItems ?? [];
@@ -237,6 +278,8 @@ export function PriceSplitPanel({ quote, adjustments, onChange, disabled }: Prop
         </p>
       )}
 
+      <FlightLegs lines={active} />
+
       {rows.map(([component, g]) => {
         const base = g.on.reduce((s, i) => s + i.totalInr, 0);
         const all = [...g.on, ...g.off];
@@ -310,6 +353,14 @@ export function PriceSplitPanel({ quote, adjustments, onChange, disabled }: Prop
                           <span className="mt-0.5 block text-xs" style={{ color: "var(--muted)" }}>
                             {item.detail}
                             {item.source === "estimated" ? " · estimated" : ""}
+                          </span>
+                        )}
+                        {!customId && item.fare && (
+                          <span className="mt-0.5 block text-xs" style={{ color: "var(--muted)" }}>
+                            Fare per person: rate card {formatInr(item.fare.tableInr)}
+                            {item.fare.liveInr != null
+                              ? ` · live ${formatInr(item.fare.liveInr)} + ${formatInr(item.fare.volatilityInr)} price-movement buffer`
+                              : " · no live fare used"}
                           </span>
                         )}
                         <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs" style={{ color: "var(--muted)" }}>

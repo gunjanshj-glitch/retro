@@ -540,11 +540,14 @@ describe("international airfare", () => {
   const flightItems = (q: ReturnType<typeof quote>) =>
     q.lineItems.filter((i) => i.component === "flight");
 
-  it("charges one return fare when the trip starts and ends in the same country", () => {
+  it("charges one return fare, shown as an outbound and a homeward leg, when the trip starts and ends in the same country", () => {
     const q = quote({ placeIds: ["cairo", "luxor"], nights: 5, includeFlight: true });
     const flights = flightItems(q);
-    expect(flights).toHaveLength(1);
-    expect(flights[0].detail).toContain("round trip");
+    expect(flights).toHaveLength(2);
+    expect(flights.every((f) => f.detail.includes("return ticket"))).toBe(true);
+    // Each direction is half the fare, so the admin can price them separately.
+    expect(flights[0].unitPriceInr).toBe(flights[1].unitPriceInr);
+    expect(flights[0].fare?.tableInr).toBeGreaterThan(0);
   });
 
   it("prices an open jaw when the trip ends in a different country from where it started", () => {

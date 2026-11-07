@@ -331,6 +331,12 @@ export type LineItem = {
   override?: { unitPriceInr: number; quantity: number };
   /** True for a charge an admin added by hand rather than one the engine priced. */
   custom?: boolean;
+  /**
+   * How a flight leg's per-person fare was reached (admin view): the rate-card
+   * figure, the live fare when one was fresh enough to use, and the volatility
+   * margin added on top of a live fare.
+   */
+  fare?: { tableInr: number; liveInr: number | null; volatilityInr: number };
 };
 
 /** Where a sightseeing outing stands in the itinerary (admin view). */

@@ -415,6 +415,7 @@ export function priceQuotation(input: PricingInput): {
     source: RateSource,
     placeId: string | null,
     calibrate = true,
+    extra?: Pick<LineItem, "fare">,
   ) => {
     // Calibration is applied here so every component is corrected the same way,
     // whatever priced it. An agency's own flat rate is already the real figure,
@@ -431,6 +432,7 @@ export function priceQuotation(input: PricingInput): {
       unitPriceInr: Math.round(calibrated),
       totalInr: Math.round(quantity * calibrated),
       locked, source, placeId,
+      ...(extra?.fare ? { fare: extra.fare } : {}),
     };
 
     // An admin's own rate or quantity replaces the engine's. The line is priced
@@ -533,7 +535,19 @@ export function priceQuotation(input: PricingInput): {
         if (refMid > 0) baseline = anchor * (baseline / refMid);
       }
       const live = liveRates.get(`flight:${request.departureCity}:${destCountryId}:${request.carrier}`);
-      return resolveRate(baseline, band.source, live, "flight");
+      const resolved = resolveRate(baseline, band.source, live, "flight");
+      // What the admin sees behind the number: the rate-card fare, the live fare
+      // that replaced it (if any) and the volatility margin added to that.
+      const usedLive = resolved.source === "live";
+      const clamped = usedLive ? resolved.inr / (1 + policy.liveRates.volatilityMargin.flight) : null;
+      return {
+        ...resolved,
+        fare: {
+          tableInr: Math.round(baseline),
+          liveInr: clamped == null ? null : Math.round(clamped),
+          volatilityInr: clamped == null ? 0 : Math.round(resolved.inr - clamped),
+        },
+      };
     };
 
     const carrierNote = (band: FlightBand) => {
@@ -550,23 +564,30 @@ export function priceQuotation(input: PricingInput): {
 
     const inboundBand = selectBand(inboundCountry);
 
-    if (inboundBand && inboundCountry === outboundCountry) {
-      const resolved = fareOf(inboundBand, inboundCountry);
-      push("flight", `Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand)}, ${inboundBand.cabin}, round trip`,
-        pax.total, "person", resolved.inr, false, resolved.source, null);
-    } else if (inboundBand) {
-      const outboundBand = selectBand(outboundCountry) ?? inboundBand;
+    // Every ticket is shown as two legs so the admin can price each direction on
+    // its own. A round trip to one country is half the return fare each way; an
+    // open-jaw ticket is half of each country's return fare.
+    if (inboundBand) {
+      const outboundBand = inboundCountry === outboundCountry ? inboundBand : (selectBand(outboundCountry) ?? inboundBand);
       const inboundResolved = fareOf(inboundBand, inboundCountry);
-      const outboundResolved = fareOf(outboundBand, outboundCountry);
+      const outboundResolved = inboundCountry === outboundCountry ? inboundResolved : fareOf(outboundBand, outboundCountry);
+      const roundTrip = inboundCountry === outboundCountry;
+      const legFare = (f: { tableInr: number; liveInr: number | null; volatilityInr: number }) => ({
+        tableInr: Math.round(f.tableInr / 2),
+        liveInr: f.liveInr == null ? null : Math.round(f.liveInr / 2),
+        volatilityInr: Math.round(f.volatilityInr / 2),
+      });
+      const ticket = roundTrip ? "one way of a return ticket" : "one way of an open-jaw ticket";
 
       push("flight", `Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand)}, ${inboundBand.cabin}, one way of an open-jaw ticket`,
-        pax.total, "person", inboundResolved.inr / 2, false, inboundResolved.source, null);
+        `${carrierNote(inboundBand)}, ${inboundBand.cabin}, ${ticket}`,
+        pax.total, "person", inboundResolved.inr / 2, false, inboundResolved.source, null, true,
+        { fare: legFare(inboundResolved.fare) });
 
       push("flight", `Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
-        `${carrierNote(outboundBand)}, ${outboundBand.cabin}, one way of an open-jaw ticket`,
-        pax.total, "person", outboundResolved.inr / 2, false, outboundResolved.source, null);
+        `${carrierNote(outboundBand)}, ${outboundBand.cabin}, ${ticket}`,
+        pax.total, "person", outboundResolved.inr / 2, false, outboundResolved.source, null, true,
+        { fare: legFare(outboundResolved.fare) });
     }
   }
 
