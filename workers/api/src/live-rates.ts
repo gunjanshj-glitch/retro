@@ -20,12 +20,24 @@ export type LiveRate = {
   key: string;
   inr: number;
   fetchedAt: string;
+  /** `google-flights` is exact for the traveller's dates and cabin; `travelpayouts` is a cached monthly minimum. */
+  provider?: "google-flights" | "travelpayouts";
 };
 
 const CACHE_SECONDS = 6 * 60 * 60;
 /** An empty answer is remembered briefly, so a route with no data does not hit the paid upstream on every keystroke. */
 const EMPTY_CACHE_SECONDS = 15 * 60;
 const UPSTREAM_TIMEOUT_MS = 8000;
+/** A flight is worth waiting for: Google Flights searches routinely take 5 to 10 seconds. */
+const FLIGHT_TIMEOUT_MS = 20_000;
+/**
+ * Fares move through the day and a SerpApi search is billed, so a fare is
+ * reused for a couple of hours: fresh enough to be what anyone sees, cheap
+ * enough that the same route does not cost a search per visitor.
+ */
+const FLIGHT_CACHE_SECONDS = 2 * 60 * 60;
+/** Google Flights sells about eleven months ahead. */
+const MAX_DAYS_AHEAD = 330;
 
 /** Carriers that price as low-cost, so the engine can honour the LCC/FSC choice. */
 const LCC_CARRIERS = new Set([
@@ -43,8 +55,81 @@ async function fromCache(env: Env, key: string): Promise<LiveRate[] | null> {
 
 async function toCache(env: Env, key: string, rates: LiveRate[]): Promise<void> {
   if (env.RATE_CACHE) {
-    await env.RATE_CACHE.put(key, JSON.stringify(rates), { expirationTtl: rates.length ? CACHE_SECONDS : EMPTY_CACHE_SECONDS });
+    const ttl = rates.length ? (rates.some((r) => r.component === "flight") ? FLIGHT_CACHE_SECONDS : CACHE_SECONDS) : EMPTY_CACHE_SECONDS;
+    await env.RATE_CACHE.put(key, JSON.stringify(rates), { expirationTtl: ttl });
   }
+}
+
+export type Cabin = "Economy" | "Premium Economy" | "Business";
+/** Google Flights `travel_class`: 1 economy, 2 premium economy, 3 business. */
+const TRAVEL_CLASS: Record<Cabin, number> = { Economy: 1, "Premium Economy": 2, Business: 3 };
+
+type SerpOffer = { price?: number; flights?: { flight_number?: string }[] };
+
+/**
+ * Cheapest offer in the traveller's carrier class. An offer is low-cost only if
+ * every leg is on a low-cost carrier (the IATA code leads the flight number).
+ * With none in the class the cheapest of all is used, as the Aviasales path
+ * does, so a route nobody flies low-cost still gets a fare.
+ */
+export function cheapestOffer(offers: SerpOffer[], carrier: "LCC" | "FSC"): number | null {
+  const priced = offers.filter((o) => typeof o.price === "number" && o.price > 0);
+  if (!priced.length) return null;
+  const inClass = priced.filter((o) => {
+    const legs = o.flights ?? [];
+    if (!legs.length) return false;
+    const allLcc = legs.every((l) => LCC_CARRIERS.has((l.flight_number ?? "").split(" ")[0].toUpperCase()));
+    return carrier === "LCC" ? allLcc : !allLcc;
+  });
+  return Math.min(...(inClass.length ? inClass : priced).map((o) => o.price!));
+}
+
+/**
+ * The fare Google Flights shows for this route on these dates, via SerpApi.
+ * One adult is searched: `price` is the total for everyone searched, and the
+ * engine scales a per-person fare to the party (children and infants pay less).
+ */
+async function fetchGoogleFlight(
+  env: Env,
+  origin: string,
+  destination: string,
+  outbound: string,
+  inbound: string,
+  cabin: Cabin,
+  carrier: "LCC" | "FSC",
+  fareKey: string,
+): Promise<LiveRate | null> {
+  if (!env.SERP_API) return null;
+
+  const url = new URL("https://serpapi.com/search.json");
+  url.searchParams.set("engine", "google_flights");
+  url.searchParams.set("departure_id", origin);
+  url.searchParams.set("arrival_id", destination);
+  url.searchParams.set("outbound_date", outbound);
+  url.searchParams.set("return_date", inbound);
+  url.searchParams.set("type", "1"); // round trip
+  url.searchParams.set("travel_class", String(TRAVEL_CLASS[cabin]));
+  url.searchParams.set("adults", "1");
+  url.searchParams.set("currency", "INR");
+  url.searchParams.set("gl", "in");
+  url.searchParams.set("hl", "en");
+  url.searchParams.set("api_key", env.SERP_API);
+
+  const res = await fetch(url.toString(), { signal: AbortSignal.timeout(FLIGHT_TIMEOUT_MS) });
+  if (!res.ok) return null;
+  const body = (await res.json()) as { error?: string; best_flights?: SerpOffer[]; other_flights?: SerpOffer[] };
+  if (body.error) return null;
+
+  const cheapest = cheapestOffer([...(body.best_flights ?? []), ...(body.other_flights ?? [])], carrier);
+  if (cheapest == null) return null;
+
+  return {
+    component: "flight",
+    key: `${origin}:${fareKey}:${carrier}`,
+    inr: cheapest,
+    fetchedAt: new Date().toISOString(),
+    provider: "google-flights",
+  };
 }
 
 /**
@@ -97,6 +182,7 @@ async function fetchFlight(
     key: `${origin}:${fareKey}:${carrier}`,
     inr: cheapest,
     fetchedAt: new Date().toISOString(),
+    provider: "travelpayouts",
   };
 }
 
@@ -291,6 +377,9 @@ export async function handleLiveRates(
   const destinationIata = url.searchParams.get("destinationIata") ?? "";
   const month = url.searchParams.get("month") ?? "";
   const carrier = (url.searchParams.get("carrier") ?? "FSC") as "LCC" | "FSC";
+  const outbound = url.searchParams.get("outbound") ?? "";
+  const inbound = url.searchParams.get("inbound") ?? "";
+  const cabin = (url.searchParams.get("cabin") ?? "Economy") as Cabin;
   const cityName = url.searchParams.get("cityName") ?? "";
   const countryCode = url.searchParams.get("countryCode") ?? "";
   const checkin = url.searchParams.get("checkin") ?? "";
@@ -310,6 +399,16 @@ export async function handleLiveRates(
   const wantsHotel = Boolean(cityName && countryCode && checkin && checkout);
   if (wantsFlight && fareKey && !/^[a-z0-9-]{1,60}$/.test(fareKey)) return none();
   if (wantsFlight && !(/^[A-Z]{3}$/.test(origin) && /^[A-Z]{3}$/.test(destinationIata) && /^\d{4}-\d{2}$/.test(month) && (carrier === "LCC" || carrier === "FSC"))) return none();
+  // Exact dates are optional (the month search still works without them), but when given they must be a real, bookable trip.
+  const wantsExact = wantsFlight && Boolean(outbound && inbound);
+  if (wantsExact) {
+    const ahead = (Date.parse(outbound) - Date.now()) / 86_400_000;
+    const length = (Date.parse(inbound) - Date.parse(outbound)) / 86_400_000;
+    const valid =
+      /^\d{4}-\d{2}-\d{2}$/.test(outbound) && /^\d{4}-\d{2}-\d{2}$/.test(inbound) &&
+      ahead >= 0 && ahead <= MAX_DAYS_AHEAD && length >= 1 && length <= 60 && cabin in TRAVEL_CLASS;
+    if (!valid || outbound.slice(0, 7) !== month) return none();
+  }
   if (wantsHotel) {
     const stay = (Date.parse(checkout) - Date.parse(checkin)) / 86_400_000;
     const validStay = /^\d{4}-\d{2}-\d{2}$/.test(checkin) && /^\d{4}-\d{2}-\d{2}$/.test(checkout) && stay >= 1 && stay <= 30;
@@ -320,12 +419,12 @@ export async function handleLiveRates(
   // in particular, or one traveller's room count is served to the next.
   const partyKey = `${party.adults}:${party.childAges.join(",")}:${party.rooms}`;
   const cacheKey =
-    `live:${origin}:${destinationIata}:${fareKey}:${month}:${carrier}:` +
+    `live:${origin}:${destinationIata}:${fareKey}:${month}:${carrier}:${outbound}:${inbound}:${cabin}:` +
     `${cityName}:${countryCode}:${checkin}:${checkout}:${partyKey}:${hotelStars ?? ""}:${placeId}:${star}`;
 
   const respond = (rates: LiveRate[], cached: boolean) =>
     json({ rates, cached }, {
-      headers: { "Cache-Control": `public, max-age=${CACHE_SECONDS}` },
+      headers: { "Cache-Control": `public, max-age=${rates.some((r) => r.component === "flight") ? FLIGHT_CACHE_SECONDS : CACHE_SECONDS}` },
     });
 
   const cached = await fromCache(env, cacheKey);
@@ -336,10 +435,23 @@ export async function handleLiveRates(
     if (await limitByIp(request, env, "live-rates", 90, 600)) return none();
   }
 
+  // The traveller's own dates and cabin first; the monthly minimum only when that finds nothing.
+  const flightFare = async (): Promise<LiveRate | null> => {
+    if (!wantsFlight) return null;
+    const key = fareKey || destinationIata;
+    if (wantsExact) {
+      try {
+        const exact = await fetchGoogleFlight(env, origin, destinationIata, outbound, inbound, cabin, carrier, key);
+        if (exact) return exact;
+      } catch {
+        /* fall through to the approximate fare */
+      }
+    }
+    return fetchFlight(env, origin, destinationIata, month, carrier, key);
+  };
+
   const results = await Promise.allSettled([
-    origin && destinationIata && month
-      ? fetchFlight(env, origin, destinationIata, month, carrier, fareKey || destinationIata)
-      : Promise.resolve(null),
+    flightFare(),
     cityName && countryCode && checkin && checkout
       ? fetchHotel(env, cityName, countryCode, checkin, checkout, party, `${placeId}:${star}`, hotelStars)
       : Promise.resolve(null),
@@ -351,7 +463,7 @@ export async function handleLiveRates(
     .filter((r): r is LiveRate => r != null);
 
   // Remember "nothing" only when an upstream was actually asked; with no keys configured it would just burn KV writes.
-  if (rates.length || env.TRAVELPAYOUTS_TOKEN || env.LITEAPI_KEY) ctx.waitUntil(toCache(env, cacheKey, rates));
+  if (rates.length || env.SERP_API || env.TRAVELPAYOUTS_TOKEN || env.LITEAPI_KEY) ctx.waitUntil(toCache(env, cacheKey, rates));
 
   return respond(rates, false);
 }

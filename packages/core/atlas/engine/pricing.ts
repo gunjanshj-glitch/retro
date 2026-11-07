@@ -231,6 +231,13 @@ export type LiveRate = {
   key: string;
   inr: number;
   fetchedAt: string;
+  /**
+   * Where a flight fare came from. `google-flights` is the fare for the
+   * traveller's own route, dates and cabin, so it is what they would see on the
+   * internet today; `travelpayouts` is a cached monthly minimum, only an
+   * approximation. Absent (hotels) behaves like the approximate kind.
+   */
+  provider?: "google-flights" | "travelpayouts";
 };
 
 /**
@@ -243,7 +250,7 @@ export function resolveRate(
   baselineSource: RateSource,
   live: LiveRate | undefined,
   component: keyof typeof policy.liveRates.volatilityMargin,
-): { inr: number; source: RateSource } {
+): { inr: number; source: RateSource; live?: LiveRate } {
   const cfg = policy.liveRates;
   if (!cfg.enabled || !live || !Number.isFinite(live.inr) || live.inr <= 0) {
     return { inr: baseline, source: baselineSource };
@@ -254,13 +261,39 @@ export function resolveRate(
     return { inr: baseline, source: baselineSource };
   }
 
+  // A fare read for this exact route, date and cabin is the real price, not an
+  // estimate of it. Clamping it to the rate card would put back the very
+  // error it exists to correct (a baseline that is too high could never be
+  // undercut), so it is trusted as is and carries only the small allowance for
+  // airlines repricing before ticketing.
+  if (live.provider === "google-flights") {
+    const variance = (cfg as { bookingVariance?: Partial<Record<string, number>> }).bookingVariance?.[component] ?? 0;
+    return { inr: live.inr * (1 + variance), source: "live", live };
+  }
+
   // A wildly different live figure is more likely a bad response than a real
   // price, so clamp it rather than trusting it outright.
   const lower = baseline * (1 - cfg.clampDeviation);
   const upper = baseline * (1 + cfg.clampDeviation);
   const clamped = baseline > 0 ? Math.min(upper, Math.max(lower, live.inr)) : live.inr;
 
-  return { inr: clamped * (1 + cfg.volatilityMargin[component]), source: "live" };
+  return { inr: clamped * (1 + cfg.volatilityMargin[component]), source: "live", live };
+}
+
+/**
+ * Share of the adult airfare each age pays. Infants on a lap and children are
+ * sold at a fraction of the adult fare, and only inside the traveller's own
+ * country does a child pay in full.
+ */
+export function fareFactorForAge(age: number, domestic: boolean): number {
+  const cf = (policy as { airfare?: { childFare?: {
+    infantMaxAge: number; infantFactor: number; childMaxAge: number;
+    internationalChildFactor: number; domesticChildFactor: number;
+  } } }).airfare?.childFare;
+  if (!cf) return 1;
+  if (age <= cf.infantMaxAge) return cf.infantFactor;
+  if (age <= cf.childMaxAge) return domestic ? cf.domesticChildFactor : cf.internationalChildFactor;
+  return 1;
 }
 
 // ---------------------------------------------------------------------------
@@ -548,25 +581,66 @@ export function priceQuotation(input: PricingInput): {
     const inboundCountry = countryOf.get(firstPlace.placeId);
     const outboundCountry = countryOf.get(lastPlace.placeId);
 
+    // Adults, children and infants are separate lines at their own share of the
+    // fare. A live fare is already the real price, so it is not run through the
+    // calibration factors that were fitted to the rate card.
+    const iso3Of = new Map(core.countries.map((c: { id: string; iso3: string | null }) => [c.id, c.iso3]));
+    const faresFor = (destCountryId: string | undefined) => {
+      const domestic = !!destCountryId && iso3Of.get(destCountryId) === request.nationality;
+      let children = 0;
+      let infants = 0;
+      let childShare = 0;
+      let infantShare = 0;
+      for (const age of request.childAges) {
+        const f = fareFactorForAge(age, domestic);
+        if (f < 0.5) { infants++; infantShare += f; } else { children++; childShare += f; }
+      }
+      return {
+        adults: request.adults,
+        children, infants,
+        childFactor: children ? childShare / children : 1,
+        infantFactor: infants ? infantShare / infants : 1,
+      };
+    };
+
+    const pushFare = (
+      label: string,
+      detail: string,
+      perAdultInr: number,
+      resolved: { source: RateSource; live?: LiveRate },
+      destCountryId: string | undefined,
+    ) => {
+      const heads = faresFor(destCountryId);
+      const checked = resolved.source === "live" && resolved.live?.provider === "google-flights"
+        ? `; live Google Flights fare checked ${resolved.live.fetchedAt.slice(11, 16)} UTC, may change before ticketing`
+        : "";
+      const calibrate = resolved.source !== "live";
+      push("flight", label, `${detail}${checked}`, heads.adults, "person", perAdultInr, false, resolved.source, null, calibrate);
+      push("flight", `${label} — children`, `${detail}, child fare`, heads.children, "person",
+        perAdultInr * heads.childFactor, false, resolved.source, null, calibrate);
+      push("flight", `${label} — infants`, `${detail}, infant on lap`, heads.infants, "person",
+        perAdultInr * heads.infantFactor, false, resolved.source, null, calibrate);
+    };
+
     const inboundBand = selectBand(inboundCountry);
 
     if (inboundBand && inboundCountry === outboundCountry) {
       const resolved = fareOf(inboundBand, inboundCountry);
-      push("flight", `Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
+      pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
         `${carrierNote(inboundBand)}, ${inboundBand.cabin}, round trip`,
-        pax.total, "person", resolved.inr, false, resolved.source, null);
+        resolved.inr, resolved, inboundCountry);
     } else if (inboundBand) {
       const outboundBand = selectBand(outboundCountry) ?? inboundBand;
       const inboundResolved = fareOf(inboundBand, inboundCountry);
       const outboundResolved = fareOf(outboundBand, outboundCountry);
 
-      push("flight", `Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
+      pushFare(`Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
         `${carrierNote(inboundBand)}, ${inboundBand.cabin}, one way of an open-jaw ticket`,
-        pax.total, "person", inboundResolved.inr / 2, false, inboundResolved.source, null);
+        inboundResolved.inr / 2, inboundResolved, inboundCountry);
 
-      push("flight", `Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
+      pushFare(`Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
         `${carrierNote(outboundBand)}, ${outboundBand.cabin}, one way of an open-jaw ticket`,
-        pax.total, "person", outboundResolved.inr / 2, false, outboundResolved.source, null);
+        outboundResolved.inr / 2, outboundResolved, outboundCountry);
     }
   }
 

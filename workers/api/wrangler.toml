@@ -12,6 +12,7 @@
 #     -> copy the printed id into [[kv_namespaces]] below
 #   npx wrangler d1 migrations apply atlas --remote
 #
+#   npx wrangler secret put SERP_API              # optional: exact Google Flights fares (SerpApi)
 #   npx wrangler secret put TRAVELPAYOUTS_TOKEN   # optional
 #   npx wrangler secret put LITEAPI_KEY           # optional
 #

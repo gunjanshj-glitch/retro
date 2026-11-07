@@ -1,7 +1,7 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { afterEach, describe, expect, it, beforeEach, vi } from "vitest";
 import worker from "@/workers/api/src/index";
 import type { Env } from "@/workers/api/src/http";
-import { occupanciesFor, partyFromQuery } from "@/workers/api/src/live-rates";
+import { cheapestOffer, occupanciesFor, partyFromQuery } from "@/workers/api/src/live-rates";
 
 /**
  * A stand-in for D1 that records what was bound, so the handlers can be tested
@@ -311,5 +311,74 @@ describe("hotel live-rate wiring", () => {
     ) as { countries: { iso3: string | null }[] };
     const { ISO3_TO_ISO2 } = await import("@retro/core/atlas/iso");
     for (const c of core.countries) if (c.iso3) expect(ISO3_TO_ISO2[c.iso3]).toMatch(/^[A-Z]{2}$/);
+  });
+});
+
+describe("live airfare from Google Flights", () => {
+  const day = 86_400_000;
+  const iso = (offsetDays: number) => new Date(Date.now() + offsetDays * day).toISOString().slice(0, 10);
+  const query = (extra: Record<string, string> = {}) => {
+    const outbound = iso(40);
+    return new URLSearchParams({
+      origin: "CCU", destinationIata: "BKK", month: outbound.slice(0, 7), carrier: "FSC",
+      fareKey: "south-east-asia-thailand", outbound, inbound: iso(47), cabin: "Business", ...extra,
+    });
+  };
+  const offers = {
+    best_flights: [
+      { price: 31000, flights: [{ flight_number: "TG 314" }] },
+      { price: 26000, flights: [{ flight_number: "6E 1089" }] },
+    ],
+    other_flights: [{ price: 29500, flights: [{ flight_number: "AI 332" }, { flight_number: "AI 111" }] }],
+  };
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("picks the cheapest fare in the traveller's carrier class", () => {
+    expect(cheapestOffer([...offers.best_flights, ...offers.other_flights], "FSC")).toBe(29500);
+    expect(cheapestOffer([...offers.best_flights, ...offers.other_flights], "LCC")).toBe(26000);
+    // Nobody flies low-cost on this route: still quote the cheapest fare there is.
+    expect(cheapestOffer([{ price: 40000, flights: [{ flight_number: "TG 1" }] }], "LCC")).toBe(40000);
+    expect(cheapestOffer([], "FSC")).toBeNull();
+  });
+
+  it("searches the exact dates and cabin and tags the fare as live from Google Flights", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify(offers), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const q = query();
+    const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${q}`), env({ SERP_API: "key" }), ctx);
+    const body = (await res.json()) as { rates: { key: string; inr: number; provider: string }[] };
+
+    expect(body.rates).toHaveLength(1);
+    expect(body.rates[0]).toMatchObject({ key: "CCU:south-east-asia-thailand:FSC", inr: 29500, provider: "google-flights" });
+    const called = new URL(String(fetchMock.mock.calls[0][0] as string));
+    expect(called.hostname).toBe("serpapi.com");
+    expect(called.searchParams.get("outbound_date")).toBe(q.get("outbound"));
+    expect(called.searchParams.get("return_date")).toBe(q.get("inbound"));
+    expect(called.searchParams.get("travel_class")).toBe("3");
+    expect(called.searchParams.get("adults")).toBe("1");
+    expect(called.searchParams.get("currency")).toBe("INR");
+  });
+
+  it("falls back to no rate, not an error, when SerpApi fails", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 500 })));
+    const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query()}`), env({ SERP_API: "key" }), ctx);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { rates: unknown[] }).rates).toEqual([]);
+  });
+
+  it("does not spend a billed search on dates that cannot be booked", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify(offers), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    for (const bad of [
+      { outbound: iso(-3), inbound: iso(4), month: iso(-3).slice(0, 7) }, // in the past
+      { outbound: iso(500), inbound: iso(507), month: iso(500).slice(0, 7) }, // beyond what is on sale
+      { outbound: iso(40), inbound: iso(39) }, // returns before it leaves
+      { cabin: "First" },
+    ]) {
+      const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query(bad)}`), env({ SERP_API: "key" }), ctx);
+      expect(((await res.json()) as { rates: unknown[] }).rates).toEqual([]);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

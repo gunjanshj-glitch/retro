@@ -561,6 +561,19 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   if (!lineItems.some((i) => i.component === "flight") && request.includeFlight) {
     warnings.push({ level: "warning", audience: "traveller", message: "No airfare band for this destination; flights quoted separately." });
   }
+  const flightLines = lineItems.filter((i) => i.component === "flight");
+  if (flightLines.length) {
+    // Airlines reprice minute to minute, so the quote says plainly which kind of
+    // figure the airfare is and that it can move before the ticket is issued.
+    const live = flightLines.every((i) => i.source === "live");
+    warnings.push({
+      level: "info",
+      audience: "traveller",
+      message: live
+        ? "Airfare is the live fare for your route, dates and cabin as seen on Google Flights when this quote was prepared. Airlines change fares until the ticket is issued, so the price at booking may differ; a small allowance for this is included."
+        : "Airfare is a typical fare for this route, not a live price for your dates. Airlines change fares until the ticket is issued, so the price at booking may differ.",
+    });
+  }
   if (!request.includeFlight) {
     warnings.push({
       level: "info",

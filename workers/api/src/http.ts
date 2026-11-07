@@ -11,6 +11,8 @@ export type Env = {
    *  only genuinely stateful dependency. */
   DB: D1Database;
 
+  /** SerpApi key for Google Flights: the exact fare for the traveller's own route, dates and cabin. Optional. */
+  SERP_API?: string;
   /** Travelpayouts Aviasales Data API token. Optional. */
   TRAVELPAYOUTS_TOKEN?: string;
   /** LiteAPI sandbox or production key. Optional. */

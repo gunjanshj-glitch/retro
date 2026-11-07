@@ -108,7 +108,7 @@ export function useQuotation(request: QuoteRequest, enabled = true): QuotationEn
     ? JSON.stringify([
         baseQuote.stays.map((s) => [s.placeId, s.nights, s.position]),
         request.startDate, request.hotelStar, request.adults, request.childAges, baseQuote.pax.rooms,
-        request.includeFlight, request.departureCity, request.carrier,
+        request.includeFlight, request.departureCity, request.carrier, request.cabin, request.nights,
       ])
     : null;
 

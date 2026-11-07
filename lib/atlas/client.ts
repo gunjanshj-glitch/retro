@@ -91,9 +91,19 @@ export async function loadDestinations(
 // Live rates (optional second-level check)
 // ---------------------------------------------------------------------------
 
-export type LiveRateResponse = {
-  rates: { component: "flight" | "hotel"; key: string; inr: number; fetchedAt: string }[];
+export type LiveRateItem = {
+  component: "flight" | "hotel";
+  key: string;
+  inr: number;
+  fetchedAt: string;
+  provider?: "google-flights" | "travelpayouts";
 };
+
+export type LiveRateResponse = { rates: LiveRateItem[] };
+
+/** A flight search reads Google Flights live, which routinely takes 5 to 10 seconds. */
+const FLIGHT_TIMEOUT_MS = 20_000;
+const DEFAULT_TIMEOUT_MS = 4_000;
 
 /**
  * Asks the backend Worker for live fares. Any failure — including no API keys
@@ -107,6 +117,10 @@ export async function loadLiveRates(query: {
   cityName?: string;
   star?: string;
   carrier?: "LCC" | "FSC";
+  /** Exact travel dates (ISO) and cabin, so the fare is the one on sale for this trip rather than a monthly minimum. */
+  outbound?: string;
+  inbound?: string;
+  cabin?: string;
   /** Echoed back in the rate's key so the caller can look the fare up by its own id. */
   fareKey?: string;
   countryCode?: string;
@@ -117,15 +131,15 @@ export async function loadLiveRates(query: {
   adults?: number;
   childAges?: number[];
   rooms?: number;
-}): Promise<Map<string, { component: "flight" | "hotel"; key: string; inr: number; fetchedAt: string }>> {
-  const map = new Map<string, { component: "flight" | "hotel"; key: string; inr: number; fetchedAt: string }>();
+}): Promise<Map<string, LiveRateItem>> {
+  const map = new Map<string, LiveRateItem>();
   try {
     const params = new URLSearchParams(
       Object.entries(query)
         .filter(([, v]) => v != null)
         .map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : String(v)]),
     );
-    const res = await fetch(`/api/live-rates?${params}`, { signal: AbortSignal.timeout(4000) });
+    const res = await fetch(`/api/live-rates?${params}`, { signal: AbortSignal.timeout(query.destinationIata ? FLIGHT_TIMEOUT_MS : DEFAULT_TIMEOUT_MS) });
     if (!res.ok) return map;
     const body = (await res.json()) as LiveRateResponse;
     for (const rate of body.rates ?? []) map.set(`${rate.component}:${rate.key}`, rate);
@@ -201,6 +215,8 @@ export async function loadFlightLiveRates(
   const ordered = [...quote.stays].sort((a, b) => a.position - b.position);
   const ends = [ordered[0], ordered[ordered.length - 1]].filter(Boolean);
   const month = request.startDate.slice(0, 7);
+  // Return date of the trip: the traveller flies home on the last day.
+  const inbound = new Date(Date.parse(`${request.startDate}T00:00:00Z`) + request.nights * 86_400_000).toISOString().slice(0, 10);
   const seen = new Set<string>();
   const searches: Promise<LiveRateMap>[] = [];
 
@@ -210,7 +226,10 @@ export async function loadFlightLiveRates(
     if (!countryId || !iata || seen.has(countryId)) continue;
     seen.add(countryId);
     searches.push(
-      loadLiveRates({ origin: request.departureCity, destinationIata: iata, month, carrier: request.carrier, fareKey: countryId }),
+      loadLiveRates({
+        origin: request.departureCity, destinationIata: iata, month, carrier: request.carrier, fareKey: countryId,
+        outbound: request.startDate, inbound, cabin: request.cabin,
+      }),
     );
   }
 

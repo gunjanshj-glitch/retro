@@ -70,6 +70,7 @@ rate card is used, which is a fully working site.
 
 ```bash
 cd workers/api
+npx wrangler secret put SERP_API            # Google Flights fares via SerpApi
 npx wrangler secret put TRAVELPAYOUTS_TOKEN
 npx wrangler secret put LITEAPI_KEY
 ```
