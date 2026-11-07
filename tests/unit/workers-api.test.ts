@@ -381,4 +381,19 @@ describe("live airfare from Google Flights", () => {
     }
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("does not let a failed search stick to the route for hours", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 500 })));
+    const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query()}`), env({ SERP_API: "key" }), ctx);
+    const maxAge = Number(/max-age=(\d+)/.exec(res.headers.get("Cache-Control") ?? "")?.[1]);
+    expect(maxAge).toBeGreaterThan(0);
+    expect(maxAge).toBeLessThanOrEqual(600);
+  });
+
+  it("keeps the browser copy of a live fare short", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(offers), { status: 200 })));
+    const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query()}`), env({ SERP_API: "key" }), ctx);
+    const maxAge = Number(/max-age=(\d+)/.exec(res.headers.get("Cache-Control") ?? "")?.[1]);
+    expect(maxAge).toBeLessThanOrEqual(600);
+  });
 });

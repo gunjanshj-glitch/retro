@@ -36,6 +36,10 @@ const FLIGHT_TIMEOUT_MS = 20_000;
  * enough that the same route does not cost a search per visitor.
  */
 const FLIGHT_CACHE_SECONDS = 2 * 60 * 60;
+/** The monthly Travelpayouts fare stands in when Google Flights gave nothing: keep it only briefly. */
+const FALLBACK_FLIGHT_CACHE_SECONDS = 15 * 60;
+const FLIGHT_BROWSER_SECONDS = 10 * 60;
+const EMPTY_BROWSER_SECONDS = 5 * 60;
 /** Google Flights sells about eleven months ahead. */
 const MAX_DAYS_AHEAD = 330;
 
@@ -53,10 +57,27 @@ async function fromCache(env: Env, key: string): Promise<LiveRate[] | null> {
   return null;
 }
 
+/**
+ * How long an answer may be reused. A real Google Flights fare keeps for a couple
+ * of hours; nothing, or only the approximate monthly fare, is retried soon, so a
+ * transient SerpApi failure does not pin a route to the static or monthly price.
+ */
+function ttlSeconds(rates: LiveRate[]): number {
+  if (!rates.length) return EMPTY_CACHE_SECONDS;
+  const flights = rates.filter((r) => r.component === "flight");
+  if (flights.some((r) => r.provider === "google-flights")) return FLIGHT_CACHE_SECONDS;
+  return flights.length ? FALLBACK_FLIGHT_CACHE_SECONDS : CACHE_SECONDS;
+}
+
+/** The browser and edge copy is kept short: the Worker's own cache already absorbs repeat searches. */
+function browserCacheSeconds(rates: LiveRate[]): number {
+  if (!rates.length) return EMPTY_BROWSER_SECONDS;
+  return rates.some((r) => r.component === "flight") ? FLIGHT_BROWSER_SECONDS : CACHE_SECONDS;
+}
+
 async function toCache(env: Env, key: string, rates: LiveRate[]): Promise<void> {
   if (env.RATE_CACHE) {
-    const ttl = rates.length ? (rates.some((r) => r.component === "flight") ? FLIGHT_CACHE_SECONDS : CACHE_SECONDS) : EMPTY_CACHE_SECONDS;
-    await env.RATE_CACHE.put(key, JSON.stringify(rates), { expirationTtl: ttl });
+    await env.RATE_CACHE.put(key, JSON.stringify(rates), { expirationTtl: ttlSeconds(rates) });
   }
 }
 
@@ -423,9 +444,7 @@ export async function handleLiveRates(
     `${cityName}:${countryCode}:${checkin}:${checkout}:${partyKey}:${hotelStars ?? ""}:${placeId}:${star}`;
 
   const respond = (rates: LiveRate[], cached: boolean) =>
-    json({ rates, cached }, {
-      headers: { "Cache-Control": `public, max-age=${rates.some((r) => r.component === "flight") ? FLIGHT_CACHE_SECONDS : CACHE_SECONDS}` },
-    });
+    json({ rates, cached }, { headers: { "Cache-Control": `public, max-age=${browserCacheSeconds(rates)}` } });
 
   const cached = await fromCache(env, cacheKey);
   if (cached) return respond(cached, true);
