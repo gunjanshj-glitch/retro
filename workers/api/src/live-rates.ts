@@ -22,6 +22,8 @@ export type LiveRate = {
   fetchedAt: string;
   /** `google-flights` is exact for the traveller's dates and cabin; `travelpayouts` is a cached monthly minimum. */
   provider?: "google-flights" | "travelpayouts";
+  /** Google Flights only: whether the cheapest fare is on low-cost airlines, so the quote can name it truthfully. */
+  lowCost?: boolean;
 };
 
 const CACHE_SECONDS = 6 * 60 * 60;
@@ -54,6 +56,7 @@ function serpDailyLimit(env: Env): number {
 const LCC_CARRIERS = new Set([
   "6E", "SG", "QP", "IX", "G8", "AK", "D7", "FD", "TR", "JT", "QZ", "VJ",
   "5J", "Z2", "PQ", "U2", "FR", "W6", "VY", "PC", "XY", "J9", "G9", "3L",
+  "XJ", "FZ", "I5", "3K", "JQ", "FY", "VZ", "XQ", "TO", "HV",
 ]);
 
 async function fromCache(env: Env, key: string): Promise<LiveRate[] | null> {
@@ -95,21 +98,24 @@ const TRAVEL_CLASS: Record<Cabin, number> = { Economy: 1, "Premium Economy": 2, 
 type SerpOffer = { price?: number; flights?: { flight_number?: string }[] };
 
 /**
- * Cheapest offer in the traveller's carrier class. An offer is low-cost only if
- * every leg is on a low-cost carrier (the IATA code leads the flight number).
- * With none in the class the cheapest of all is used, as the Aviasales path
- * does, so a route nobody flies low-cost still gets a fare.
+ * The cheapest offer Google Flights lists, whatever airline sells it. This is
+ * the price a person sees first on the site, and the quote is meant to match
+ * it. The traveller's low-cost or full-service preference used to filter the
+ * offers here, which priced a full-service traveller above the fare on screen
+ * whenever a low-cost airline was cheaper (Delhi to Singapore: 22% over).
+ * `lowCost` records whether every leg of that cheapest offer is low-cost (the
+ * IATA code leads the flight number), so the quote can say which it is.
  */
-export function cheapestOffer(offers: SerpOffer[], carrier: "LCC" | "FSC"): number | null {
-  const priced = offers.filter((o) => typeof o.price === "number" && o.price > 0);
-  if (!priced.length) return null;
-  const inClass = priced.filter((o) => {
-    const legs = o.flights ?? [];
-    if (!legs.length) return false;
-    const allLcc = legs.every((l) => LCC_CARRIERS.has((l.flight_number ?? "").split(" ")[0].toUpperCase()));
-    return carrier === "LCC" ? allLcc : !allLcc;
-  });
-  return Math.min(...(inClass.length ? inClass : priced).map((o) => o.price!));
+export function cheapestOffer(offers: SerpOffer[]): { price: number; lowCost: boolean } | null {
+  let best: SerpOffer | null = null;
+  for (const o of offers) {
+    if (typeof o.price !== "number" || !(o.price > 0)) continue;
+    if (!best || o.price < best.price!) best = o;
+  }
+  if (!best) return null;
+  const legs = best.flights ?? [];
+  const lowCost = legs.length > 0 && legs.every((l) => LCC_CARRIERS.has((l.flight_number ?? "").split(" ")[0].toUpperCase()));
+  return { price: best.price!, lowCost };
 }
 
 /**
@@ -148,15 +154,16 @@ async function fetchGoogleFlight(
   const body = (await res.json()) as { error?: string; best_flights?: SerpOffer[]; other_flights?: SerpOffer[] };
   if (body.error) return null;
 
-  const cheapest = cheapestOffer([...(body.best_flights ?? []), ...(body.other_flights ?? [])], carrier);
+  const cheapest = cheapestOffer([...(body.best_flights ?? []), ...(body.other_flights ?? [])]);
   if (cheapest == null) return null;
 
   return {
     component: "flight",
     key: `${origin}:${fareKey}:${carrier}`,
-    inr: cheapest,
+    inr: cheapest.price,
     fetchedAt: new Date().toISOString(),
     provider: "google-flights",
+    lowCost: cheapest.lowCost,
   };
 }
 

@@ -633,6 +633,22 @@ describe("international airfare", () => {
     expect(q.warnings.some((w) => w.audience === "traveller" && /confirmed on the final quotation/.test(w.message))).toBe(true);
   });
 
+  it("names the airline type of a live fare, not the carrier the traveller asked for", () => {
+    const placeIds = ["ha-noi"];
+    const countryId = core.places.find((p) => p.id === "ha-noi")!.countryId;
+    const priced = (lowCost: boolean) => {
+      const req = request({ placeIds, nights: 4, departureCity: "CCU", carrier: "FSC" });
+      const liveRates = new Map([[`flight:CCU:${countryId}:FSC`, {
+        component: "flight" as const, key: `CCU:${countryId}:FSC`, inr: 20000, fetchedAt: new Date().toISOString(), provider: "google-flights" as const, lowCost,
+      }]]);
+      return generateQuotation(req, { core, routes, visaRules, bundles: bundlesFor(placeIds), liveRates }).lineItems.find((i) => i.component === "flight")!;
+    };
+    // A full-service traveller is shown the cheapest fare on sale, and told when that is a low-cost airline.
+    expect(priced(true).detail).toContain("Low-cost carrier (cheapest fare on sale)");
+    expect(priced(false).detail).toContain("Full-service carrier (cheapest fare on sale)");
+    expect(priced(true).unitPriceInr).toBe(priced(false).unitPriceInr);
+  });
+
   it("omits airfare entirely when the traveller asked for a land-only quote", () => {
     const q = quote({ placeIds: ["cairo", "nairobi"], nights: 6, includeFlight: false });
     expect(flightItems(q)).toHaveLength(0);

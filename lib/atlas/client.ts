@@ -97,6 +97,7 @@ export type LiveRateItem = {
   inr: number;
   fetchedAt: string;
   provider?: "google-flights" | "travelpayouts";
+  lowCost?: boolean;
 };
 
 export type LiveRateResponse = { rates: LiveRateItem[] };

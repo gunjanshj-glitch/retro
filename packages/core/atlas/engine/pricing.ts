@@ -242,6 +242,8 @@ export type LiveRate = {
    * approximation. Absent (hotels) behaves like the approximate kind.
    */
   provider?: "google-flights" | "travelpayouts";
+  /** Google Flights only: the cheapest fare is on low-cost airlines. */
+  lowCost?: boolean;
 };
 
 /**
@@ -588,7 +590,12 @@ export function priceQuotation(input: PricingInput): {
       return resolveRate(baseline, band.source, live, "flight");
     };
 
-    const carrierNote = (band: FlightBand) => {
+    const carrierNote = (band: FlightBand, live?: LiveRate) => {
+      // A fare read from Google Flights is the cheapest on sale whoever flies it, so name the airline type it
+      // is actually on rather than the band the traveller asked for.
+      if (live?.provider === "google-flights" && typeof live.lowCost === "boolean") {
+        return live.lowCost ? "Low-cost carrier (cheapest fare on sale)" : "Full-service carrier (cheapest fare on sale)";
+      }
       const carrierLabel = band.carrier === "LCC" ? "Low-cost carrier" : "Full-service carrier";
       return band.carrier !== request.carrier
         ? `${carrierLabel} (no low-cost service on this route)`
@@ -646,7 +653,7 @@ export function priceQuotation(input: PricingInput): {
     if (inboundBand && inboundCountry === outboundCountry) {
       const resolved = fareOf(inboundBand, inboundCountry);
       pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand)}, ${inboundBand.cabin}, round trip`,
+        `${carrierNote(inboundBand, resolved.live)}, ${inboundBand.cabin}, round trip`,
         resolved.inr, resolved, inboundCountry);
     } else if (inboundBand) {
       const outboundBand = selectBand(outboundCountry) ?? inboundBand;
@@ -654,11 +661,11 @@ export function priceQuotation(input: PricingInput): {
       const outboundResolved = fareOf(outboundBand, outboundCountry);
 
       pushFare(`Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand)}, ${inboundBand.cabin}, one way of an open-jaw ticket`,
+        `${carrierNote(inboundBand, inboundResolved.live)}, ${inboundBand.cabin}, one way of an open-jaw ticket`,
         inboundResolved.inr / 2, inboundResolved, inboundCountry);
 
       pushFare(`Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
-        `${carrierNote(outboundBand)}, ${outboundBand.cabin}, one way of an open-jaw ticket`,
+        `${carrierNote(outboundBand, outboundResolved.live)}, ${outboundBand.cabin}, one way of an open-jaw ticket`,
         outboundResolved.inr / 2, outboundResolved, outboundCountry);
     }
   }

@@ -334,12 +334,16 @@ describe("live airfare from Google Flights", () => {
 
   afterEach(() => vi.unstubAllGlobals());
 
-  it("picks the cheapest fare in the traveller's carrier class", () => {
-    expect(cheapestOffer([...offers.best_flights, ...offers.other_flights], "FSC")).toBe(29500);
-    expect(cheapestOffer([...offers.best_flights, ...offers.other_flights], "LCC")).toBe(26000);
-    // Nobody flies low-cost on this route: still quote the cheapest fare there is.
-    expect(cheapestOffer([{ price: 40000, flights: [{ flight_number: "TG 1" }] }], "LCC")).toBe(40000);
-    expect(cheapestOffer([], "FSC")).toBeNull();
+  it("picks the cheapest fare Google Flights lists, whatever the airline", () => {
+    const all = [...offers.best_flights, ...offers.other_flights];
+    // The 6E fare is on screen, so it is the price: a full-service traveller is not quoted the 29,500 above it.
+    expect(cheapestOffer(all)).toEqual({ price: 26000, lowCost: true });
+    expect(cheapestOffer([{ price: 40000, flights: [{ flight_number: "TG 1" }] }])).toEqual({ price: 40000, lowCost: false });
+    // A mixed itinerary is low-cost only if every leg is (XJ is Thai AirAsia X).
+    expect(cheapestOffer([{ price: 1, flights: [{ flight_number: "FD 121" }, { flight_number: "XJ 606" }] }])).toEqual({ price: 1, lowCost: true });
+    expect(cheapestOffer([{ price: 1, flights: [{ flight_number: "6E 1" }, { flight_number: "TG 2" }] }])?.lowCost).toBe(false);
+    expect(cheapestOffer([{ price: 0 }, { price: undefined }])).toBeNull();
+    expect(cheapestOffer([])).toBeNull();
   });
 
   it("searches the exact dates and cabin and tags the fare as live from Google Flights", async () => {
@@ -347,10 +351,10 @@ describe("live airfare from Google Flights", () => {
     vi.stubGlobal("fetch", fetchMock);
     const q = query();
     const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${q}`), env({ SERP_API: "key" }), ctx);
-    const body = (await res.json()) as { rates: { key: string; inr: number; provider: string }[] };
+    const body = (await res.json()) as { rates: { key: string; inr: number; provider: string; lowCost?: boolean }[] };
 
     expect(body.rates).toHaveLength(1);
-    expect(body.rates[0]).toMatchObject({ key: "CCU:south-east-asia-thailand:FSC", inr: 29500, provider: "google-flights" });
+    expect(body.rates[0]).toMatchObject({ key: "CCU:south-east-asia-thailand:FSC", inr: 26000, provider: "google-flights", lowCost: true });
     const called = new URL(fetchMock.mock.calls[0][0]);
     expect(called.hostname).toBe("serpapi.com");
     expect(called.searchParams.get("outbound_date")).toBe(q.get("outbound"));
