@@ -80,6 +80,14 @@
 
   "airfare": {
     "_comment": "The agency's typical return economy ticket per person from Kolkata (CCU), full-service carrier, by destination country (agency answer, Nov 2026). The engine anchors that carrier/cabin on CCU to this figure and scales every other origin, carrier and cabin by the rate card's own ratio to it, so cheaper carriers and other cities stay cheaper. Countries not listed use the rate card's fare unchanged. Vietnam is not listed: it keeps the 1.9 flight factor fitted to the agency's retrieved multi-leg itinerary (about INR 59,000).",
+    "_childFareComment": "Airlines sell an infant (under 2, on a lap) at about a tenth of the adult fare and a child (2 to 11) at about three quarters internationally. Inside the traveller's own country a child pays the full fare. Charging every head the adult fare overpriced any family trip.",
+    "childFare": {
+      "infantMaxAge": 1,
+      "infantFactor": 0.1,
+      "childMaxAge": 11,
+      "internationalChildFactor": 0.75,
+      "domesticChildFactor": 1
+    },
     "ccuEconomyFullServiceInr": {
       "south-east-asia-thailand": 30000,
       "south-east-asia-singapore": 45000,
@@ -88,7 +96,7 @@
       "middle-east-and-gulf-turkey": 70000,
       "south-east-asia-indonesia": 45000,
       "south-asia-sri-lanka": 30000,
-      "east-asia-japan": 120000,
+      "east-asia-japan": 65000,
       "europe-united-kingdom": 80000,
       "europe-france": 80000,
       "europe-italy": 80000,
@@ -137,7 +145,7 @@
   },
   "markup": {
     "_comment": "Mirrors Markup_Tax_Rules and the Quotation_Calculation sheet. Applied in this order.",
-    "contingency": 0.03,
+    "contingency": 0,
     "_marginComment": "Agency margin is set per category as a share of that category's own cost - exactly two margins: accommodation 10% (per night, since hotel cost is nights x rate) and transport 20%. Every other category carries none. The admin can still override any category, or the whole quote, per quote.",
     "componentMargin": {
       "hotel": 0.1,
@@ -172,7 +180,9 @@
     "maxAgeHours": 24,
     "volatilityMargin": { "flight": 0.12, "hotel": 0.08, "activity": 0.05 },
     "_clampComment": "A live figure more than this far from the baseline is treated as suspect and clamped, so one bad API response cannot wreck a quotation.",
-    "clampDeviation": 0.6
+    "clampDeviation": 0.6,
+    "_bookingVarianceComment": "Margin added to a fare read live from Google Flights for the traveller's own dates, cabin and route. That figure is what anyone sees on the internet today, so it is used as is and never clamped to the rate card; airlines reprice between quoting and ticketing, so by policy no buffer is added (0): the cheapest live fare is shown as is, and the quote says the actual price is confirmed on the final quotation. Raise it only if you want a cushion. The larger volatilityMargin above still applies to the monthly cached fares, which are only an approximation of the price on the day.",
+    "bookingVariance": { "flight": 0, "hotel": 0 }
   },
 
   "guardrails": {

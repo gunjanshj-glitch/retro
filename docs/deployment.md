@@ -70,6 +70,9 @@ rate card is used, which is a fully working site.
 
 ```bash
 cd workers/api
+npx wrangler secret put SERP_API            # Google Flights fares via SerpApi
+# Optional: cap billed Google Flights searches per day across all visitors (default 300).
+# Over the cap the Worker serves the monthly fare instead. Set it in [vars] as SERP_DAILY_LIMIT.
 npx wrangler secret put TRAVELPAYOUTS_TOKEN
 npx wrangler secret put LITEAPI_KEY
 ```

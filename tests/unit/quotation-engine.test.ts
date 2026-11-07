@@ -266,16 +266,43 @@ describe("live-rate override", () => {
     expect(resolveRate(1000, "workbook", undefined, "hotel")).toEqual({ inr: 1000, source: "workbook" });
   });
 
-  it("applies a volatility margin to an accepted live rate", () => {
-    const out = resolveRate(1000, "workbook", { component: "hotel", key: "k", inr: 1100, fetchedAt: fresh() }, "hotel");
+  it("applies a volatility margin to an accepted approximate live rate", () => {
+    const out = resolveRate(1000, "workbook", { component: "flight", key: "k", inr: 1100, fetchedAt: fresh() }, "flight");
     expect(out.source).toBe("live");
-    expect(out.inr).toBeCloseTo(1100 * 1.08, 5);
+    expect(out.inr).toBeCloseTo(1100 * 1.12, 5);
+  });
+
+  it("uses a live hotel rate as quoted, even when it is far below the card", () => {
+    const cheap = resolveRate(10_000, "estimated", { component: "hotel", key: "k", inr: 3000, fetchedAt: fresh() }, "hotel");
+    expect(cheap).toMatchObject({ inr: 3000, source: "live" });
+    const dear = resolveRate(10_000, "estimated", { component: "hotel", key: "k", inr: 14_000, fetchedAt: fresh() }, "hotel");
+    expect(dear.inr).toBe(14_000);
+  });
+
+  it("drops a live hotel rate that is plainly a bad response", () => {
+    for (const inr of [500, 80_000]) {
+      const out = resolveRate(10_000, "estimated", { component: "hotel", key: "k", inr, fetchedAt: fresh() }, "hotel");
+      expect(out).toEqual({ inr: 10_000, source: "estimated" });
+    }
+  });
+
+  it("charges no contingency", () => {
+    expect(policy.markup.contingency).toBe(0);
   });
 
   it("ignores a stale live rate", () => {
     const old = new Date(Date.now() - 72 * 3600_000).toISOString();
     const out = resolveRate(1000, "workbook", { component: "flight", key: "k", inr: 5, fetchedAt: old }, "flight");
     expect(out).toEqual({ inr: 1000, source: "workbook" });
+  });
+
+  it("trusts a Google Flights fare for the traveller's own dates instead of clamping it to the card", () => {
+    // A baseline that is too high could never be undercut if the real fare were clamped to it.
+    const cheap = resolveRate(1000, "estimated", { component: "flight", key: "k", inr: 300, fetchedAt: fresh(), provider: "google-flights" }, "flight");
+    expect(cheap.source).toBe("live");
+    expect(cheap.inr).toBeCloseTo(300 * (1 + policy.liveRates.bookingVariance.flight), 5);
+    const dear = resolveRate(1000, "estimated", { component: "flight", key: "k", inr: 5000, fetchedAt: fresh(), provider: "google-flights" }, "flight");
+    expect(dear.inr).toBeCloseTo(5000 * (1 + policy.liveRates.bookingVariance.flight), 5);
   });
 
   it("clamps an implausible live rate instead of trusting it", () => {
@@ -574,6 +601,36 @@ describe("international airfare", () => {
 
     expect(total(multi)).toBeLessThan(total(single) * 1.6);
     expect(total(multi)).toBeGreaterThan(total(single) * 0.5);
+  });
+
+  it("charges infants and children a share of the adult fare, not all of it", () => {
+    const adultsOnly = quote({ placeIds: ["bangkok"], nights: 5, departureCity: "CCU" });
+    const family = quote({ placeIds: ["bangkok"], nights: 5, departureCity: "CCU", childAges: [5, 1] });
+    const adult = flightItems(adultsOnly)[0];
+    const lines = flightItems(family);
+    const child = lines.find((l) => l.label.endsWith("children"));
+    const infant = lines.find((l) => l.label.endsWith("infants"));
+    expect(lines.find((l) => !/children|infants/.test(l.label))!.quantity).toBe(2);
+    expect(child!.unitPriceInr).toBeCloseTo(adult.unitPriceInr * policy.airfare.childFare.internationalChildFactor, -1);
+    expect(infant!.unitPriceInr).toBeCloseTo(adult.unitPriceInr * policy.airfare.childFare.infantFactor, -1);
+    // Four heads at the full fare would have been the old total.
+    expect(lines.reduce((n, l) => n + l.totalInr, 0)).toBeLessThan(adult.unitPriceInr * 4 * 0.8);
+  });
+
+  it("prices a live fare as seen, without the rate-card calibration factors", () => {
+    // Vietnam carries a 1.9 flight calibration; a real fare must not be scaled by it.
+    const placeIds = ["ha-noi"];
+    const req = request({ placeIds, nights: 4, departureCity: "CCU" });
+    const countryId = core.places.find((p) => p.id === "ha-noi")!.countryId;
+    const liveRates = new Map([[`flight:CCU:${countryId}:FSC`, {
+      component: "flight" as const, key: `CCU:${countryId}:FSC`, inr: 20000, fetchedAt: new Date().toISOString(), provider: "google-flights" as const,
+    }]]);
+    const q = generateQuotation(req, { core, routes, visaRules, bundles: bundlesFor(placeIds), liveRates });
+    const fare = q.lineItems.find((i) => i.component === "flight")!;
+    expect(fare.source).toBe("live");
+    expect(fare.unitPriceInr).toBe(Math.round(20000 * (1 + policy.liveRates.bookingVariance.flight)));
+    expect(fare.detail).toContain("confirmed on the final quotation");
+    expect(q.warnings.some((w) => w.audience === "traveller" && /confirmed on the final quotation/.test(w.message))).toBe(true);
   });
 
   it("omits airfare entirely when the traveller asked for a land-only quote", () => {

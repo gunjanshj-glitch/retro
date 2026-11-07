@@ -118,11 +118,12 @@ jobs:
           FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
           X_CLIENT_ID: ${{ secrets.X_CLIENT_ID }}
           X_CLIENT_SECRET: ${{ secrets.X_CLIENT_SECRET }}
+          SERP_API: ${{ secrets.SERP_API }}
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
           LITEAPI_KEY: ${{ secrets.LITEAPI_KEY }}
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
         run: |
-          for name in GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET FACEBOOK_CLIENT_ID FACEBOOK_CLIENT_SECRET X_CLIENT_ID X_CLIENT_SECRET TRAVELPAYOUTS_TOKEN LITEAPI_KEY GOOGLE_PLACES_API_KEY; do
+          for name in GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET FACEBOOK_CLIENT_ID FACEBOOK_CLIENT_SECRET X_CLIENT_ID X_CLIENT_SECRET SERP_API TRAVELPAYOUTS_TOKEN LITEAPI_KEY GOOGLE_PLACES_API_KEY; do
             value="${!name}"
             if [ -n "$value" ]; then
               printf '%s' "$value" | npx wrangler secret put "$name" --env=""

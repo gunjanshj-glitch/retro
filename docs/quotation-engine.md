@@ -104,7 +104,7 @@ Every rate row carries a `source` of `workbook`, `estimated`, `live` or `manual`
    ```
    direct cost = hotel + flight + transfers + local transport + intercity
                + sightseeing + meals + visa + insurance + city tax
-   + contingency (3%)
+   + contingency (0% — set in quote-policy.json `markup.contingency`)
    + agent markup (15%, or 20% for luxury)
    + sales/VAT
    + payment gateway + FX buffer (2% + 2%)
@@ -207,7 +207,7 @@ A second-level check over the compiled card, in [`workers/api/src/live-rates.ts`
 
 | Category | Source | Why |
 | --- | --- | --- |
-| Flights | Travelpayouts Aviasales Data API | Free, self-serve token, 600 req/min, returns the IATA carrier code so LCC vs full-service is derivable. |
+| Flights | **SerpApi Google Flights** (`SERP_API`), exact route, dates and cabin; Travelpayouts Aviasales cached monthly minimum as the fallback | The first is the fare anyone sees on Google Flights for the trip. The second is free and carries the carrier code, so LCC vs full-service is derivable, but it is only a month's cheapest cached fare. |
 | Hotels | LiteAPI | Free sandbox key, no card, real bookable rates. |
 | Exchange rates (USD, EUR → ₹) | Frankfurter (ECB reference rates), falling back to `open.er-api.com` | Free, **no key**. Rates quoted in a foreign currency are rescaled by how far the rupee has moved since the card was built; see below. |
 | Visa requirement | `imorte/passport-index-data`, vendored at build time | MIT, 199 × 199 pairs. No runtime call needed. |
@@ -217,6 +217,10 @@ A second-level check over the compiled card, in [`workers/api/src/live-rates.ts`
 Amadeus Self-Service is **deprecated** (every `amadeus4dev` repo is archived) and is deliberately not used.
 
 A live figure only overrides the baseline when it is fresh (< 24h) and within a plausible distance of it; it is then marked up by a per-component volatility margin so the quote survives movement before booking. A figure more than 60% away from the baseline is clamped rather than trusted, so one bad API response cannot wreck a quotation. **With no keys configured the whole layer no-ops** and the compiled card is used — the site is fully functional without any integration.
+
+**Live hotel rates are used as quoted.** A live hotel rate is not clamped to the card, not calibrated, and carries `liveRates.bookingVariance.hotel` (0 by default). Only a rate under 20% or over 5x the card is dropped as a bad response and the card is used instead.
+
+**Flight fares are real-time and exact.** The client sends the trip's own outbound and return dates and cabin; the Worker asks SerpApi for one adult's round-trip fare (SerpApi's `price` is the total for everyone searched, so a per-person fare is searched and scaled by the engine), takes the cheapest offer in the carrier class and caches it for two hours. Such a fare (`provider: "google-flights"`) is used as is: it is **not clamped to the rate card** (a baseline that is too high could otherwise never be undercut), **not calibrated** (the factors were fitted to the card), and carries `liveRates.bookingVariance.flight` on top (0 by default, so the cheapest fare is shown as is). The quote says in plain words that the actual price is confirmed on the final quotation, with the time the fare was checked. If SerpApi has no answer the Worker falls back to the monthly Travelpayouts figure, and then to the card. Infants and children pay `airfare.childFare` shares of the adult fare, on their own lines.
 
 **Flights are matched by country, not airport.** The engine prices a fare per destination country, so the client asks for the arrival and departure country's fare on the airport of the first and last stay and gets it back under `flight:${departureCity}:${countryId}:${carrier}`, which is the key the engine reads. (Until this was fixed the client never requested flights and the keys did not match, so the flight feed was unreachable even with a token.)
 
