@@ -649,6 +649,30 @@ describe("international airfare", () => {
     expect(priced(true).unitPriceInr).toBe(priced(false).unitPriceInr);
   });
 
+  it("charges exactly the fare read for the cabin asked for, and labels it with that cabin", () => {
+    // Stand-in fares, one per Google Flights travel_class (the real DEL-SIN ones were 44,499 / 76,102 / 102,865).
+    const fares = { Economy: 44499, "Premium Economy": 76102, Business: 102865 } as const;
+    const placeIds = ["ha-noi"];
+    const place = core.places.find((p) => p.id === "ha-noi")!;
+    for (const carrier of ["FSC", "LCC"] as const) {
+      for (const cabin of ["Economy", "Premium Economy", "Business"] as const) {
+        const liveRates = new Map([[`flight:DEL:${place.countryId}:${carrier}`, {
+          component: "flight" as const, key: `DEL:${place.countryId}:${carrier}`, inr: fares[cabin],
+          fetchedAt: new Date().toISOString(), provider: "google-flights" as const, lowCost: false,
+        }]]);
+        const req = request({ placeIds, nights: 5, departureCity: "DEL", carrier, cabin, adults: 2, childAges: [] });
+        const q = generateQuotation(req, { core, routes, visaRules, bundles: bundlesFor(placeIds), liveRates });
+        const line = q.lineItems.find((i) => i.component === "flight" && i.unitPriceInr > 0)!;
+        expect(line.unitPriceInr).toBe(fares[cabin]);
+        expect(line.totalInr).toBe(fares[cabin] * 2);
+        expect(line.detail).toContain(cabin);
+        for (const other of ["Economy", "Premium Economy", "Business"].filter((c) => c !== cabin)) {
+          expect(line.detail.replace(cabin, "")).not.toContain(other);
+        }
+      }
+    }
+  });
+
   it("omits airfare entirely when the traveller asked for a land-only quote", () => {
     const q = quote({ placeIds: ["cairo", "nairobi"], nights: 6, includeFlight: false });
     expect(flightItems(q)).toHaveLength(0);

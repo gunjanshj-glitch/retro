@@ -602,6 +602,11 @@ export function priceQuotation(input: PricingInput): {
         : carrierLabel;
     };
 
+    // A fare read from Google Flights was searched in the cabin the traveller chose, so say that cabin, not
+    // the cabin of whichever rate-card band stood in as the baseline (an Economy band when no Business one exists).
+    const cabinOf = (band: FlightBand, live?: LiveRate) =>
+      live?.provider === "google-flights" ? request.cabin : band.cabin;
+
     const firstPlace = stays[0];
     const lastPlace = stays[stays.length - 1];
     const inboundCountry = countryOf.get(firstPlace.placeId);
@@ -653,7 +658,7 @@ export function priceQuotation(input: PricingInput): {
     if (inboundBand && inboundCountry === outboundCountry) {
       const resolved = fareOf(inboundBand, inboundCountry);
       pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand, resolved.live)}, ${inboundBand.cabin}, round trip`,
+        `${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip`,
         resolved.inr, resolved, inboundCountry);
     } else if (inboundBand) {
       const outboundBand = selectBand(outboundCountry) ?? inboundBand;
@@ -661,11 +666,11 @@ export function priceQuotation(input: PricingInput): {
       const outboundResolved = fareOf(outboundBand, outboundCountry);
 
       pushFare(`Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand, inboundResolved.live)}, ${inboundBand.cabin}, one way of an open-jaw ticket`,
+        `${carrierNote(inboundBand, inboundResolved.live)}, ${cabinOf(inboundBand, inboundResolved.live)}, one way of an open-jaw ticket`,
         inboundResolved.inr / 2, inboundResolved, inboundCountry);
 
       pushFare(`Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
-        `${carrierNote(outboundBand, outboundResolved.live)}, ${outboundBand.cabin}, one way of an open-jaw ticket`,
+        `${carrierNote(outboundBand, outboundResolved.live)}, ${cabinOf(outboundBand, outboundResolved.live)}, one way of an open-jaw ticket`,
         outboundResolved.inr / 2, outboundResolved, outboundCountry);
     }
   }

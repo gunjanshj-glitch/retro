@@ -371,6 +371,27 @@ describe("live airfare from Google Flights", () => {
     expect(((await res.json()) as { rates: unknown[] }).rates).toEqual([]);
   });
 
+  it("never answers a premium or business search with the Economy monthly fare", async () => {
+    const calls: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      calls.push(new URL(url).hostname);
+      return url.includes("travelpayouts")
+        ? new Response(JSON.stringify({ data: [{ price: 18000, airline: "AI" }] }), { status: 200 })
+        : new Response("nope", { status: 500 }); // SerpApi has nothing for these dates
+    }));
+    const ask = async (cabin: string) => {
+      calls.length = 0;
+      const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query({ cabin })}`), env({ SERP_API: "key", TRAVELPAYOUTS_TOKEN: "t" }), ctx);
+      return ((await res.json()) as { rates: { inr: number }[] }).rates;
+    };
+
+    expect(await ask("Business")).toEqual([]);
+    expect(await ask("Premium Economy")).toEqual([]);
+    expect(calls).not.toContain("api.travelpayouts.com");
+    // Economy is the class that data describes, so it may still stand in.
+    expect((await ask("Economy")).map((r) => r.inr)).not.toEqual([]);
+  });
+
   it("does not spend a billed search on dates that cannot be booked", async () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify(offers), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);

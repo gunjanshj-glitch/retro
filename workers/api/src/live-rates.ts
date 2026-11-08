@@ -485,6 +485,10 @@ export async function handleLiveRates(
         /* fall through to the approximate fare */
       }
     }
+    // The monthly minimum is an Economy fare. Offered for a premium or business cabin it would be a
+    // different class of ticket priced as if it were the one asked for, so those get no fare and the
+    // quote keeps its own business-class rate card, flagged as an approximation.
+    if (cabin !== "Economy") return null;
     return fetchFlight(env, origin, destinationIata, month, carrier, key);
   };
 
