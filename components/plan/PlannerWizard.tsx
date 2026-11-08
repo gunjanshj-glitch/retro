@@ -70,7 +70,7 @@ export function PlannerWizard() {
   const [mode, setMode] = useState<Mode>("known");
   const [request, setRequest] = useState<QuoteRequest>(defaultRequest);
 
-  const { core, quote, error } = useQuotation(request, step === "quote");
+  const { core, quote, error, pending } = useQuotation(request, step === "quote");
 
   // Human-readable place list for a final-approval request's subject/summary
   // line only — the engine and the stored snapshot both deal exclusively in
@@ -264,6 +264,7 @@ export function PlannerWizard() {
             onChange={setRequest}
             onBack={() => setStep("options")}
             destinationSummary={destinationSummary}
+            pricing={pending}
           />
         ) : (
           <div className="flex items-center gap-3 py-16" role="status" style={{ color: "var(--muted)" }}>

@@ -22,6 +22,12 @@ export type QuotationEngine = {
   quote: Quotation | null;
   /** Set when the catalogue itself could not be loaded. */
   error: string | null;
+  /**
+   * True while the live flight and hotel search for this request, or today's
+   * exchange rates, are still on their way. `quote` is then the rate-card price,
+   * which the live figures are about to replace, so it must not be shown as a price.
+   */
+  pending: boolean;
 };
 
 /** `enabled` lets a caller (the planner) defer pricing until it is needed. */
@@ -82,10 +88,13 @@ export function useQuotation(request: QuoteRequest, enabled = true): QuotationEn
   // Today's exchange rates, fetched once. Until they arrive (or if they never do)
   // the card's own conversion stands.
   const [fx, setFx] = useState<FxRates | undefined>(undefined);
+  const [fxSettled, setFxSettled] = useState(false);
   useEffect(() => {
     let cancelled = false;
     loadFxRates().then((rates) => {
-      if (!cancelled && rates) setFx(rates);
+      if (cancelled) return;
+      if (rates) setFx(rates);
+      setFxSettled(true);
     });
     return () => {
       cancelled = true;
@@ -139,5 +148,9 @@ export function useQuotation(request: QuoteRequest, enabled = true): QuotationEn
     }
   }, [baseQuote, liveRates, core, routes, visaRules, bundles, request, fx]);
 
-  return { core, quote, error };
+  // The search has answered for this request (an empty answer counts), and so have
+  // the exchange rates. Until then the number on screen is going to move.
+  const pending = Boolean(baseQuote) && (!fxSettled || !(live && live.key === hotelSearchKey));
+
+  return { core, quote, error, pending };
 }

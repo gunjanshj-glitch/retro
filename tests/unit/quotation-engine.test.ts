@@ -16,7 +16,7 @@ import {
   hotelStarForStyle,
   isHotelStarAvailable,
 } from "@retro/core/atlas/engine/bounds";
-import { componentBreakdown } from "@retro/core/quote-pricing";
+import { componentBreakdown, hiddenByComponent } from "@retro/core/quote-pricing";
 import policy from "@/content/quote-policy.json";
 
 const DIR = path.join("public", "atlas");
@@ -947,6 +947,22 @@ describe("published package price is land-only", () => {
     // the comparison used the land share rather than an all-in total.
     expect(land.totals.perPerson).toBeGreaterThanOrEqual(Math.floor(floor) - 1);
     expect(land.totals.perPerson).toBeLessThan(pkg.priceFromInr * 1.05);
+  });
+
+  it("never loads the package-floor uplift onto the airfare line", () => {
+    // The floor lifts the land package to its published price. That uplift was spread
+    // over every category, flights included, so the airfare line the traveller reads
+    // came out above the fare Google Flights quoted.
+    const allIn = quote({ placeIds, nights, includeFlight: true, ...cheapest });
+    expect(allIn.totals.flooredToPackage).toBeTruthy();
+
+    const fare = allIn.lineItems.filter((i) => i.component === "flight").reduce((a, i) => a + i.totalInr, 0);
+    const shown = fare + (hiddenByComponent(allIn).get("flight") ?? 0);
+    expect(shown).toBe(fare);
+
+    // The category margins still add up to the margin once the uplift is allocated.
+    const byComponent = Object.values(allIn.totals.marginByComponent ?? {}).reduce((a, b) => a + b, 0);
+    expect(byComponent).toBe(allIn.totals.agentMarkup);
   });
 
   it("tells the traveller plainly when a quote carries no airfare", () => {

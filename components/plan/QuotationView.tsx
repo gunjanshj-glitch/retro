@@ -82,9 +82,15 @@ type Props = {
    * and no earlier step to return to.
    */
   mode?: "traveller" | "admin";
+  /**
+   * Live fares are still being fetched, so every figure here is about to change.
+   * They are hidden rather than shown and then replaced, and the quote cannot be
+   * sent until they settle.
+   */
+  pricing?: boolean;
 };
 
-export function QuotationView({ quote, request, onChange, onBack, destinationSummary, mode = "traveller" }: Props) {
+export function QuotationView({ quote, request, onChange, onBack, destinationSummary, mode = "traveller", pricing = false }: Props) {
   const grouped = useMemo(() => {
     const map = new Map<string, typeof quote.lineItems>();
     for (const item of quote.lineItems) {
@@ -129,7 +135,10 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
   const [approvalOpen, setApprovalOpen] = useState(false);
   const [sentId, setSentId] = useState<string | null>(null);
 
-  const handleRequestFinalQuotation = () => requireAuth(() => setApprovalOpen(true));
+  const handleRequestFinalQuotation = () => {
+    if (pricing) return;
+    requireAuth(() => setApprovalOpen(true));
+  };
 
   const excludedClusters = new Set(request.excludedClusterIds);
 
@@ -221,10 +230,10 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
               Total for the group
             </p>
             <p className="font-display text-4xl tabular-nums sm:text-5xl" style={{ color: "var(--ink)" }}>
-              {formatInr(quote.totals.total)}
+              {pricing ? "…" : formatInr(quote.totals.total)}
             </p>
-            <p className="text-sm tabular-nums" style={{ color: "var(--muted)" }}>
-              {formatInr(quote.totals.perPerson)} per person
+            <p className="text-sm tabular-nums" style={{ color: "var(--muted)" }} role={pricing ? "status" : undefined}>
+              {pricing ? "Checking today's live fares…" : `${formatInr(quote.totals.perPerson)} per person`}
             </p>
           </div>
         </div>
@@ -689,7 +698,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                       {isOn ? "Remove" : "Add"}
                     </button>
                   )}
-                  <span className="min-w-[88px] text-right font-semibold tabular-nums">{formatInr(displayTotal)}</span>
+                  <span className="min-w-[88px] text-right font-semibold tabular-nums">{pricing ? "…" : formatInr(displayTotal)}</span>
                 </span>
               </div>
             );
@@ -706,7 +715,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
             amount > 0 ? (
               <div key={label} className="flex justify-between">
                 <dt style={{ color: "var(--muted)" }}>{label}</dt>
-                <dd className="tabular-nums">{formatInr(amount)}</dd>
+                <dd className="tabular-nums">{pricing ? "…" : formatInr(amount)}</dd>
               </div>
             ) : null,
           )}
@@ -716,7 +725,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
           >
             <dt className="font-bold">Total</dt>
             <dd className="font-display text-2xl tabular-nums" style={{ color: "var(--ink)" }}>
-              {formatInr(quote.totals.total)}
+              {pricing ? "…" : formatInr(quote.totals.total)}
             </dd>
           </div>
         </dl>
@@ -741,7 +750,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
             <button
               type="button"
               onClick={handleRequestFinalQuotation}
-              disabled={Boolean(sentId)}
+              disabled={Boolean(sentId) || pricing}
               className={`${btnInk} shadow-[var(--shadow)] disabled:opacity-80`}
             >
               {sentId ? (

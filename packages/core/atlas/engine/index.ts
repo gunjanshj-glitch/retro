@@ -529,12 +529,20 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       totals.agentMarkup = Math.round(totals.agentMarkup + preTax);
       // Keep the per-category margins summing to the margin: the uplift is
       // spread over categories in proportion to cost, the remainder (rounding)
-      // lands on the largest.
+      // lands on the largest. The floor is a land-package figure, so when the
+      // package does not include the flight the uplift stays off the airfare
+      // line: that line is the fare as read, with nothing added to it.
       if (totals.marginByComponent && totals.directCost > 0) {
         const byCost = new Map<string, number>();
-        for (const i of lineItems) byCost.set(i.component, (byCost.get(i.component) ?? 0) + i.totalInr);
+        for (const i of lineItems) {
+          if (i.component === "flight" && !pkg?.priceIncludesFlight) continue;
+          byCost.set(i.component, (byCost.get(i.component) ?? 0) + i.totalInr);
+        }
+        const spread = [...byCost.values()].reduce((a, b) => a + b, 0);
         const next: Record<string, number> = { ...totals.marginByComponent };
-        for (const [c, amt] of byCost) next[c] = Math.round((next[c] ?? 0) + (preTax * amt) / totals.directCost);
+        if (spread > 0) {
+          for (const [c, amt] of byCost) next[c] = Math.round((next[c] ?? 0) + (preTax * amt) / spread);
+        }
         const largest = [...byCost.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
         const gap = totals.agentMarkup - Object.values(next).reduce((a, b) => a + b, 0);
         if (largest) next[largest] = (next[largest] ?? 0) + gap;
