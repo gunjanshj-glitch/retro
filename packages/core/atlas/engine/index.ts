@@ -32,6 +32,7 @@ import { applyLiveFx, type FxAdjustment, type FxRates } from "./fx";
 import { indiaGroundApplies, indiaRoadFirst, isDomesticTrip, priceQuotation, resolvePax, type LiveRate } from "./pricing";
 import { normaliseKey, formatDuration } from "./text";
 import { filterRealisticSelection } from "./bounds";
+import { airportDistanceKm, chooseAirport, type GatewayInfo } from "./gateway";
 
 /** Default trip style for each traveller type; the planner lets it be changed. */
 export const STYLE_FOR_TRAVELLER: Record<TravellerType, TripStyle> = {
@@ -262,10 +263,30 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     if (p.lat != null && p.lon != null) placePoints.set(p.id, { lat: p.lat, lon: p.lon });
   }
 
+  // A trip that flies in from abroad starts and ends at the airport city where
+  // it can (Bangkok, Pattaya, Bangkok), rather than ending at a satellite town
+  // two hours from the airport on the morning of the flight.
+  const international = !isDomesticTrip(core, placeIds, request.nationality);
   const stays = buildStays(
     placeIds, nights, summaries, request.tripStyle, routeLookup, names, request.nightOverrides,
-    gateway, placePoints,
+    gateway, placePoints, international ? core : null,
   );
+  if (stays.length > placeIds.length) {
+    const first = stays[0];
+    const last = stays[stays.length - 1];
+    const returned = [...new Set(stays.filter((s) => (s.visit ?? 0) > 0).map((s) => s.placeId))];
+    for (const id of returned) {
+      const city = names.get(id) ?? id;
+      const where = [first, last].filter((s) => s.placeId === id).length === 2 ? "at both ends" : "at the end";
+      warnings.push({
+        level: "info",
+        audience: "traveller",
+        message:
+          `The trip lands and departs from ${city}, which has the international airport. The nights there are split ` +
+          `${where} of the trip, so the flight home starts from a hotel near the airport rather than from a long road transfer.`,
+      });
+    }
+  }
 
   // --- 3. plan the days ----------------------------------------------------
   const pricer = buildActivityPricer(bundles);
@@ -300,7 +321,49 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     if (skipped.length) skippedRuleCount.set(stay.placeId, skipped.length);
   }
 
+  // The airport each end of the trip uses: the place's listed airport, or the
+  // cheapest of its metro's airports when a live fare says so.
+  const gatewayFor = (placeId: string): GatewayInfo | null => {
+    const countryId = core.places.find((p) => p.id === placeId)?.countryId;
+    const fare = data.liveRates?.get(`flight:${request.departureCity}:${countryId}:${request.carrier}`);
+    const chosen = chooseAirport(core, placeId, fare?.provider === "google-flights" ? fare.airportIata : undefined);
+    if (!chosen) return null;
+    return {
+      iata: chosen.airport.iata,
+      name: chosen.airport.name,
+      placeId,
+      placeName: names.get(placeId) ?? placeId,
+      distanceKm: airportDistanceKm(core, placeId),
+      alternatives: chosen.alternatives,
+      basis: chosen.basis,
+    };
+  };
+  const arrivalGateway = international && stays.length ? gatewayFor(stays[0].placeId) : null;
+  let departureGateway = international && stays.length ? gatewayFor(stays[stays.length - 1].placeId) : null;
+  // A round trip flies home from the airport it landed at when that airport also serves the last stay.
+  if (arrivalGateway && departureGateway && departureGateway.iata !== arrivalGateway.iata) {
+    const sameCountry =
+      core.places.find((p) => p.id === stays[0].placeId)?.countryId ===
+      core.places.find((p) => p.id === stays[stays.length - 1].placeId)?.countryId;
+    const shared = departureGateway.alternatives.find((a) => a.iata === arrivalGateway.iata);
+    if (sameCountry && shared) {
+      departureGateway = { ...departureGateway, iata: shared.iata, name: shared.name, basis: arrivalGateway.basis };
+    }
+  }
+  // By road from the airport at about 50 km/h on a 1.3x winding path, never under 45 minutes.
+  const roadMinutes = (g: GatewayInfo | null) =>
+    g?.distanceKm != null ? Math.max(45, Math.round(((g.distanceKm * 1.3) / 50) * 60)) : null;
+
   const plan = planDays({
+    gateways:
+      arrivalGateway && departureGateway
+        ? {
+            arrival: { iata: arrivalGateway.iata, name: arrivalGateway.name },
+            arrivalMinutes: roadMinutes(arrivalGateway),
+            departure: { iata: departureGateway.iata, name: departureGateway.name },
+            departureMinutes: roadMinutes(departureGateway),
+          }
+        : null,
     stays,
     startDate: request.startDate,
     style: request.tripStyle,
@@ -428,9 +491,11 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   // Finally, the destination knowledge that should shape the trip rather than
   // just price it: travelling in a month the destination itself rates poorly,
   // and places documented as a bad fit for this kind of trip.
-  warnings.push(...seasonalityWarnings(stays, plan.days, bundles));
+  // One entry per place: a place visited twice is still one place to warn about.
+  const stayPerPlace = stays.filter((s) => !s.visit);
+  warnings.push(...seasonalityWarnings(stayPerPlace, plan.days, bundles));
   warnings.push(
-    ...suitabilityWarnings(stays, bundles, request.tripStyle, request.travellerType, request.childAges),
+    ...suitabilityWarnings(stayPerPlace, bundles, request.tripStyle, request.travellerType, request.childAges),
   );
 
   // --- 4. price -------------------------------------------------------------
@@ -447,6 +512,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     liveRates: data.liveRates ?? new Map(),
     activityPrices,
     referencePackageId: referencePackage?.id ?? null,
+    gateways: arrivalGateway && departureGateway ? { arrival: arrivalGateway, departure: departureGateway } : null,
   });
 
   // --- 5. reconcile against the published package --------------------------
@@ -669,9 +735,21 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     sightseeingOptions: plan.options,
     fx: fxApplied.length ? fxApplied : undefined,
     planningNotes: planningNotes(
-      stays, bundles, request.tripStyle, request.travellerType, request.childAges,
+      stayPerPlace, bundles, request.tripStyle, request.travellerType, request.childAges,
     ),
     appliedRules,
+    ...(arrivalGateway && departureGateway
+      ? {
+          gateways: {
+            home: {
+              code: request.departureCity,
+              label: (core.departureCities ?? []).find((c) => c.code === request.departureCity)?.label ?? request.departureCity,
+            },
+            arrival: arrivalGateway,
+            departure: departureGateway,
+          },
+        }
+      : {}),
   };
 }
 

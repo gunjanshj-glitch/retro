@@ -10,6 +10,7 @@ import type { Cluster, DestinationBundle, PurposeActivity, TransportMode, TripSt
 import policy from "../../../../content/quote-policy.json";
 import type { AirportLink, PlaceStay, PlannedActivity, PlannedDay, SightseeingOption, TransferLeg, TransportPreference } from "./types";
 import type { RouteLookup } from "./itinerary";
+import type { AirportRef } from "./gateway";
 import { formatDuration } from "./text";
 
 const DAY = policy.dayPlanning;
@@ -167,6 +168,17 @@ export type DayPlanInput = {
    * exactly as it did before.
    */
   clusterBiasFor?: (placeId: string) => { tokens: string[]; bias: number }[];
+  /**
+   * The airports the trip lands at and leaves from, and how long the road from
+   * each to its hotel takes. Present on a trip that flies in from abroad, so the
+   * first and last days name the airport instead of a bare "Airport".
+   */
+  gateways?: {
+    arrival: AirportRef;
+    arrivalMinutes: number | null;
+    departure: AirportRef;
+    departureMinutes: number | null;
+  } | null;
 };
 
 /**
@@ -230,7 +242,7 @@ export type TransitOverflow = {
 export function planDays(input: DayPlanInput): DayPlanResult {
   const {
     stays, startDate, style, pace, group, bundles, routes, mealPlan, excludedClusterIds,
-    pinnedClusterIds, transportPreference, legModes, priceLookup, clusterBiasFor, roadFirst,
+    pinnedClusterIds, transportPreference, legModes, priceLookup, clusterBiasFor, roadFirst, gateways,
   } = input;
   const manual = input.sightseeingMode === "manual";
 
@@ -243,52 +255,65 @@ export function planDays(input: DayPlanInput): DayPlanResult {
   const totalDays = totalNights + 1;
   let dayNumber = 0;
 
+  // A place can be visited twice (Bangkok, Pattaya, Bangkok). Its outings are
+  // ranked once and shared across the visits, so none repeats, and what is left
+  // over is offered once, after the last visit.
+  const lastVisit = new Map<string, number>();
+  stays.forEach((s, i) => lastVisit.set(s.placeId, i));
+  const planned = new Map<string, { available: Cluster[]; queue: Cluster[]; notChosen: Cluster[] }>();
+
   for (let stayIndex = 0; stayIndex < stays.length; stayIndex++) {
     const stay = stays[stayIndex];
     const bundle = bundles.get(stay.placeId);
     const isFirst = stayIndex === 0;
     const isLast = stayIndex === stays.length - 1;
 
-    // Rank once per stay, then consume the queue across that stay's days so a
+    // Rank once per place, then consume the queue across that place's days so a
     // cluster is never repeated. Places with no clusters of their own fall back
     // to their priced activities so the days are neither empty nor free.
-    const available = bundle?.clusters.length
-      ? bundle.clusters
-      : syntheticClusters(bundle, stay.placeId);
-    // Switched-off outings are still planned, so they hold their slot and the
-    // traveller can tick them again; they are split out of the billed list
-    // once the day is packed.
-    const candidates = available;
-    // In manual mode the admin's ticked list is the itinerary: only pinned
-    // clusters are planned and the rest wait as add-ons instead of backfilling.
-    const notChosen = manual ? candidates.filter((c) => !pinnedClusterIds.has(c.id)) : [];
-    const queue = rankClusters(
-      manual ? candidates.filter((c) => pinnedClusterIds.has(c.id)) : candidates,
-      bundle?.purposeActivities ?? [],
-      style,
-      clusterBiasFor?.(stay.placeId) ?? [],
-    );
-
-    // Anything the traveller explicitly asked for jumps the queue, so it is
-    // packed before the ranker's own preferences. `sort` is stable, so the
-    // ranking order still decides within each group. It does not get special
-    // treatment on capacity: it competes for the same daily budget, which is
-    // what keeps a day inside the sightseeing cap no matter what is pinned.
-    if (pinnedClusterIds.size) {
-      queue.sort(
-        (a, b) => Number(pinnedClusterIds.has(b.id)) - Number(pinnedClusterIds.has(a.id)),
+    let state = planned.get(stay.placeId);
+    if (!state) {
+      const available = bundle?.clusters.length
+        ? bundle.clusters
+        : syntheticClusters(bundle, stay.placeId);
+      // Switched-off outings are still planned, so they hold their slot and the
+      // traveller can tick them again; they are split out of the billed list
+      // once the day is packed.
+      const candidates = available;
+      // In manual mode the admin's ticked list is the itinerary: only pinned
+      // clusters are planned and the rest wait as add-ons instead of backfilling.
+      const notChosen = manual ? candidates.filter((c) => !pinnedClusterIds.has(c.id)) : [];
+      const queue = rankClusters(
+        manual ? candidates.filter((c) => pinnedClusterIds.has(c.id)) : candidates,
+        bundle?.purposeActivities ?? [],
+        style,
+        clusterBiasFor?.(stay.placeId) ?? [],
       );
+
+      // Anything the traveller explicitly asked for jumps the queue, so it is
+      // packed before the ranker's own preferences. `sort` is stable, so the
+      // ranking order still decides within each group. It does not get special
+      // treatment on capacity: it competes for the same daily budget, which is
+      // what keeps a day inside the sightseeing cap no matter what is pinned.
+      if (pinnedClusterIds.size) {
+        queue.sort(
+          (a, b) => Number(pinnedClusterIds.has(b.id)) - Number(pinnedClusterIds.has(a.id)),
+        );
+      }
+      state = { available, queue, notChosen };
+      planned.set(stay.placeId, state);
     }
+    const { available, queue, notChosen } = state;
 
     // The arrival leg into this place: an airport transfer for the first stay,
     // an intercity hop thereafter.
     let transfer: TransferLeg | null = null;
     if (isFirst) {
       transfer = {
-        from: "Airport",
+        from: gateways ? `${gateways.arrival.name} (${gateways.arrival.iata})` : "Airport",
         to: stay.placeName,
         mode: "transfer",
-        durationMinutes: 60,
+        durationMinutes: gateways?.arrivalMinutes ?? 60,
         onsiteMode: null,
         priceInr: 0, // priced separately as an airport transfer line item
         estimated: false,
@@ -299,11 +324,14 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       };
     } else {
       const previous = stays[stayIndex - 1];
+      // Returning to a place already visited needs its own key, so the traveller
+      // can pin the way back to Bangkok without changing the way out of it.
+      const legKey = stay.visit ? `${stay.placeId}#${stay.visit}` : stay.placeId;
       // Every viable mode, best-first for the trip's preference. The
       // traveller can pin a different one per leg; if the pinned mode is no
       // longer offered (they changed destinations), fall back to the best.
       const choices = routes.options(previous.placeId, stay.placeId, transportPreference, group.paxTotal);
-      const pinned = legModes[stay.placeId];
+      const pinned = legModes[legKey];
       const roadHop =
         roadFirst && transportPreference !== "fastest"
           ? choices.find(
@@ -336,6 +364,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
         userChosen: Boolean(pinned && hop && hop.mode === pinned),
         car: hop?.car,
         ...(inVehicle(hop?.mode) ? { includedInVehicle: true } : {}),
+        legKey,
       };
     }
 
@@ -379,8 +408,9 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       };
       // Same airport at both ends means there is no flight to take.
       if (!(out && inn && out.iata === inn.iata)) {
-        if (out) build(`air-out:${stay.placeId}`, "to-airport", out, previous.placeName);
-        if (inn) build(`air-in:${stay.placeId}`, "from-airport", inn, stay.placeName);
+        const visitKey = stay.visit ? `${stay.placeId}#${stay.visit}` : stay.placeId;
+        if (out) build(`air-out:${visitKey}`, "to-airport", out, previous.placeName);
+        if (inn) build(`air-in:${visitKey}`, "from-airport", inn, stay.placeName);
       }
       if (links.length) transfer = { ...transfer, airportLinks: links };
     }
@@ -432,6 +462,10 @@ export function planDays(input: DayPlanInput): DayPlanResult {
           : "full";
 
       let budget = dayBudget(pace, group, kind);
+      // The road to the airport is part of the last day.
+      if (isDepartureDay && gateways?.departureMinutes) {
+        budget = Math.max(0, budget - gateways.departureMinutes / 60);
+      }
 
       // A long transfer eats into the same 24 hours as sightseeing — and,
       // spread over several days, each day only absorbs its own share of the
@@ -482,7 +516,14 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       used = activities.reduce((sum, a) => sum + a.hours, 0);
 
       const notes: string[] = [];
-      if (isArrivalDay && isFirst) notes.push("Arrival and hotel check-in");
+      if (isArrivalDay && isFirst) {
+        notes.push(
+          gateways
+            ? `Land at ${gateways.arrival.name} (${gateways.arrival.iata}), transfer to ${stay.placeName} and check in` +
+                (gateways.arrivalMinutes ? ` — about ${formatDuration(gateways.arrivalMinutes)} by road` : "")
+            : "Arrival and hotel check-in",
+        );
+      }
       if (isArrivalDay && !isFirst && transfer) {
         notes.push(
           transferDays > 1
@@ -494,7 +535,14 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       if (isTransitContinuation && transfer) {
         notes.push(`Still travelling from ${transfer.from} to ${transfer.to} — day ${d + 1} of ${transferDays}`);
       }
-      if (isDepartureDay) notes.push("Check-out and departure transfer");
+      if (isDepartureDay) {
+        notes.push(
+          gateways
+            ? `Check out and transfer to ${gateways.departure.name} (${gateways.departure.iata}) for the flight home` +
+                (gateways.departureMinutes ? ` — about ${formatDuration(gateways.departureMinutes)} by road` : "")
+            : "Check-out and departure transfer",
+        );
+      }
       // Nothing fit this day's budget and it is not otherwise spoken for
       // (arrival/transfer/departure) — the stay is longer than there is
       // content to fill at this pace. Flagged as `isFreeDay` rather than left
@@ -524,8 +572,16 @@ export function planDays(input: DayPlanInput): DayPlanResult {
           dinner: mealPlan.dinner && !isDepartureDay,
         },
         notes,
+        ...(gateways && isArrivalDay && isFirst
+          ? { airport: { kind: "arrival" as const, ...gateways.arrival } }
+          : gateways && isDepartureDay
+            ? { airport: { kind: "departure" as const, ...gateways.departure } }
+            : {}),
       });
     }
+
+    // A place visited again is not finished with: its queue carries on.
+    if (lastVisit.get(stay.placeId) !== stayIndex) continue;
 
     // Anything left over becomes an upsell rather than being silently dropped.
     for (const cluster of [...queue, ...notChosen]) {

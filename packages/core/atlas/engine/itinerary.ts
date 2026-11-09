@@ -12,6 +12,7 @@ import {
   type GeoPoint,
 } from "./geo";
 import { driveMinutesFor, estimateCarTrip, type CarEstimate } from "./roadcar";
+import { bookendGateways } from "./gateway";
 
 // ---------------------------------------------------------------------------
 // Reference package matching
@@ -1076,6 +1077,11 @@ export function buildStays(
   overrides: Record<string, number> = {},
   gateway: Gateway | null = null,
   points: Map<string, GeoPoint> = new Map(),
+  /**
+   * Set for a trip that flies in from abroad: both ends of the route are then
+   * moved to the airport city where the trip allows it (see `bookendGateways`).
+   */
+  airports: CoreBundle | null = null,
 ): PlaceStay[] {
   const nights = allocateNights(placeIds, totalNights, summaries, style, overrides);
   const ordered = sequencePlaces(
@@ -1084,10 +1090,18 @@ export function buildStays(
     gateway,
     points,
   );
-  return ordered.map((placeId, position) => ({
-    placeId,
-    placeName: names.get(placeId) ?? placeId,
-    nights: nights.get(placeId) ?? 0,
-    position,
-  }));
+  const visits = ordered.map((placeId) => ({ placeId, nights: nights.get(placeId) ?? 0 }));
+  const route = airports ? bookendGateways(airports, visits) : visits;
+  const seen = new Map<string, number>();
+  return route.map((v, position) => {
+    const visit = seen.get(v.placeId) ?? 0;
+    seen.set(v.placeId, visit + 1);
+    return {
+      placeId: v.placeId,
+      placeName: names.get(v.placeId) ?? v.placeId,
+      nights: v.nights,
+      position,
+      visit,
+    };
+  });
 }

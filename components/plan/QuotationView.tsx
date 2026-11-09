@@ -5,7 +5,7 @@
  * levers a traveller can pull. Structural land-package costs are shown as
  * locked; everything else can be dropped or added, and the price recomputes.
  */
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
 import type { TransportMode } from "@retro/core/atlas/schema";
 import { formatDuration, formatInr } from "@retro/core/atlas/engine/text";
@@ -192,12 +192,20 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
   // longer in `quote.stays` — but its slider has to stay, or there would be no
   // way to bring it back. Remember every name we have seen, and list each
   // destination the traveller picked, in itinerary order first.
-  const stayNames = useRef(new Map<string, string>());
-  for (const s of quote.stays) stayNames.current.set(s.placeId, s.placeName);
+  const [seenNames, setSeenNames] = useState<Record<string, string>>({});
+  const staleNames = quote.stays.filter((s) => seenNames[s.placeId] !== s.placeName);
+  if (staleNames.length) {
+    // Adjusting state while rendering is React's way to derive state from props without an effect or a ref.
+    setSeenNames({ ...seenNames, ...Object.fromEntries(staleNames.map((s) => [s.placeId, s.placeName])) });
+  }
+  const nameOf = (placeId: string) =>
+    quote.stays.find((s) => s.placeId === placeId)?.placeName ?? seenNames[placeId] ?? placeId;
   const nightSliders = useMemo(() => {
-    const byPlace = new Map(quote.stays.map((s) => [s.placeId, s.nights]));
+    // A place visited twice (Bangkok, Pattaya, Bangkok) is still one slider, for all its nights.
+    const byPlace = new Map<string, number>();
+    for (const s of quote.stays) byPlace.set(s.placeId, (byPlace.get(s.placeId) ?? 0) + s.nights);
     const ordered = [
-      ...quote.stays.map((s) => s.placeId),
+      ...byPlace.keys(),
       ...request.placeIds.filter((id) => !byPlace.has(id)),
     ];
     return ordered.map((placeId) => ({
@@ -215,7 +223,8 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
     () =>
       quote.days
         .filter((d) => d.isTransferDay && d.transfer && d.transfer.alternatives.length > 0)
-        .map((d) => ({ placeId: d.placeId, leg: d.transfer! })),
+        // Keyed by the leg, not the place: the way back to Bangkok is not the way out of it.
+        .map((d) => ({ placeId: d.transfer!.legKey ?? d.placeId, leg: d.transfer! })),
     [quote.days],
   );
 
@@ -288,6 +297,36 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
         )}
       </section>
 
+      {/* ---- flights ---- */}
+      {quote.gateways && (
+        <section className="flex flex-col gap-3" aria-label="Flights" data-testid="flights-card">
+          <h3 className="font-display text-2xl md:text-[28px]">Your flights</h3>
+          <div className={`${cardClass} flex flex-col gap-3 p-4 sm:p-5`}>
+            <FlightRoute
+              kind="Outbound"
+              from={`${quote.gateways.home.label} (${quote.gateways.home.code})`}
+              to={quote.gateways.arrival}
+              date={quote.days[0]?.date}
+            />
+            <FlightRoute
+              kind="Return"
+              from={quote.gateways.departure}
+              to={`${quote.gateways.home.label} (${quote.gateways.home.code})`}
+              date={quote.days[quote.days.length - 1]?.date}
+            />
+            {(quote.gateways.arrival.alternatives.length > 1 || quote.gateways.departure.alternatives.length > 1) && (
+              <p className="text-xs" style={{ color: "var(--muted)" }}>
+                {quote.gateways.arrival.alternatives.map((a) => a.iata).join(" and ")} both serve{" "}
+                {quote.gateways.arrival.placeName}.{" "}
+                {quote.gateways.arrival.basis === "cheapest-fare"
+                  ? `The cheapest fare on your dates lands at ${quote.gateways.arrival.iata}.`
+                  : `We plan on ${quote.gateways.arrival.iata}, the airport with the most direct flights, and switch to the other only when its live fare is lower.`}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* ---- adjusters ---- */}
       <section className="flex flex-col gap-4">
         <h3 className="font-display text-2xl md:text-[28px]">Adjust the trip</h3>
@@ -296,7 +335,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
         </p>
         <div className="grid gap-4 md:grid-cols-2">
           {nightSliders.map((stay) => {
-            const placeName = stayNames.current.get(stay.placeId) ?? stay.placeId;
+            const placeName = nameOf(stay.placeId);
             return (
             <div
               key={stay.placeId}
@@ -548,6 +587,15 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                     <span className="sr-only">Day {day.dayNumber} · </span>
                     {day.placeName}
                   </span>
+                  {day.airport && (
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                      style={{ background: "var(--sun-soft, var(--surface))", color: "var(--ink)", border: "1px solid var(--line)" }}
+                      data-testid={`airport-${day.airport.kind}`}
+                    >
+                      {day.airport.kind === "arrival" ? "Land" : "Fly home"} · {day.airport.iata}
+                    </span>
+                  )}
                 </span>
                 <span
                   className="rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums"
@@ -873,5 +921,23 @@ function InfoIcon() {
       <path d="M12 11v5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <circle cx="12" cy="7.8" r="1.1" fill="currentColor" />
     </svg>
+  );
+}
+
+type FlightEnd = string | { iata: string; name: string; placeName: string };
+
+/** One direction of the airfare: where it leaves from and where it lands. */
+function FlightRoute({ kind, from, to, date }: { kind: string; from: FlightEnd; to: FlightEnd; date?: string }) {
+  const label = (end: FlightEnd) => (typeof end === "string" ? end : `${end.name} (${end.iata})`);
+  return (
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <span className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: "var(--muted)" }}>
+        {kind}
+        {date ? ` · ${date}` : ""}
+      </span>
+      <span className="font-semibold">
+        {label(from)} → {label(to)}
+      </span>
+    </div>
   );
 }

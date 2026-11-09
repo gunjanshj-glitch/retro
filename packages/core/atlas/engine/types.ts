@@ -9,6 +9,7 @@ import {
   TravellerType,
   TripStyle,
 } from "../schema";
+import type { GatewayInfo } from "./gateway";
 import type { PlanningNote } from "./advisories";
 import type { CarEstimate } from "./roadcar";
 
@@ -280,6 +281,12 @@ export type TransferLeg = {
   includedInVehicle?: boolean;
   /** Ground links to and from the airports, when this leg is a flight. */
   airportLinks?: AirportLink[];
+  /**
+   * Key the traveller's chosen mode for this leg is stored under. The place id
+   * for the first arrival at a place; a later return to the same place gets its
+   * own (`bangkok#1`), so pinning one leg does not change the other.
+   */
+  legKey?: string;
 };
 
 export type PlannedDay = {
@@ -306,6 +313,8 @@ export type PlannedDay = {
   hotelPlaceId: string | null;
   meals: { breakfast: boolean; lunch: boolean; dinner: boolean };
   notes: string[];
+  /** The airport the traveller lands at on this day, or leaves from, when it is an international flight day. */
+  airport?: { kind: "arrival" | "departure"; iata: string; name: string };
 };
 
 export type PlaceStay = {
@@ -314,6 +323,12 @@ export type PlaceStay = {
   nights: number;
   /** Order in the routed sequence. */
   position: number;
+  /**
+   * Which visit to this place this is, counting from 0. A trip that returns to
+   * the airport city for its last nights (Bangkok, Pattaya, Bangkok) visits it
+   * twice, and the two stays share one `placeId`.
+   */
+  visit?: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -421,6 +436,16 @@ export type Quotation = {
    * trip genuinely meets.
    */
   appliedRules: AppliedRule[];
+  /**
+   * Where the international flights land and leave from. Absent on a trip with
+   * no flight in or out (a domestic trip, or one with no places).
+   */
+  gateways?: {
+    /** Where the flight starts and ends its journey home, e.g. Kolkata (CCU). */
+    home: { code: string; label: string };
+    arrival: GatewayInfo;
+    departure: GatewayInfo;
+  };
 };
 
 /** A decision rule that fired, with where it came from and what it asked for. */

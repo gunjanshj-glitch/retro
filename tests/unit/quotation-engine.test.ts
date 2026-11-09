@@ -1313,7 +1313,7 @@ describe("multi-day transfers", () => {
   it("never lets transit swallow the final stay's departure day", () => {
     const q = quote({ placeIds, nights: 2, legModes: { "cape-town": "bus" } });
     const last = q.days[q.days.length - 1];
-    expect(last.notes).toContain("Check-out and departure transfer");
+    expect(last.notes.join(" ")).toMatch(/Check.out and transfer to .+ for the flight home/);
   });
 
   it("does not change a short transfer's single-day plan at all", () => {

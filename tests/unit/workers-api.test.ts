@@ -364,6 +364,59 @@ describe("live airfare from Google Flights", () => {
     expect(called.searchParams.get("currency")).toBe("INR");
   });
 
+  describe("a metro with two airports", () => {
+    const leg = (flight_number: string, arrival: string) => ({ flight_number, arrival_airport: { id: arrival } });
+    const metroOffers = {
+      best_flights: [{ price: 35067, flights: [leg("FD 121", "DMK")] }],
+      other_flights: [
+        { price: 26650, flights: [leg("VZ 771", "BKK")] },
+        { price: 43652, flights: [leg("6E 6138", "HYD"), leg("6E 1509", "BKK")] },
+      ],
+    };
+
+    it("reports where the cheapest offer lands, from the last leg of the journey", () => {
+      expect(cheapestOffer([...metroOffers.best_flights, ...metroOffers.other_flights])).toMatchObject({ price: 26650, airport: "BKK" });
+      expect(cheapestOffer([{ price: 43652, flights: metroOffers.other_flights[1].flights }])?.airport).toBe("BKK");
+      expect(cheapestOffer([{ price: 5, flights: [{ flight_number: "TG 1" }] }])?.airport).toBeUndefined();
+    });
+
+    it("searches both airports in one billed call and names the airport of the cheapest fare", async () => {
+      const fetchMock = vi.fn(async (_url: string) => new Response(JSON.stringify(metroOffers), { status: 200 }));
+      vi.stubGlobal("fetch", fetchMock);
+      const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query({ destinationIata: "BKK,DMK", cabin: "Economy" })}`), env({ SERP_API: "key" }), ctx);
+      const body = (await res.json()) as { rates: { inr: number; airportIata?: string }[] };
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get("arrival_id")).toBe("BKK,DMK");
+      expect(body.rates[0]).toMatchObject({ inr: 26650, airportIata: "BKK" });
+    });
+
+    it("lets the cheaper airport win when it is the other one", async () => {
+      const dmkCheaper = { best_flights: [{ price: 18000, flights: [leg("FD 121", "DMK")] }], other_flights: metroOffers.other_flights };
+      vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(dmkCheaper), { status: 200 })));
+      const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query({ destinationIata: "BKK,DMK", cabin: "Economy" })}`), env({ SERP_API: "key" }), ctx);
+      expect(((await res.json()) as { rates: { airportIata?: string }[] }).rates[0].airportIata).toBe("DMK");
+    });
+
+    it("never reports an airport that was not searched", async () => {
+      const stray = { best_flights: [{ price: 9000, flights: [leg("XX 1", "UTP")] }] };
+      vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(stray), { status: 200 })));
+      const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query({ destinationIata: "BKK,DMK", cabin: "Economy" })}`), env({ SERP_API: "key" }), ctx);
+      const rate = ((await res.json()) as { rates: { inr: number; airportIata?: string }[] }).rates[0];
+      expect(rate.inr).toBe(9000);
+      expect(rate.airportIata).toBeUndefined();
+    });
+
+    it("rejects a malformed or oversized airport list before any billed search", async () => {
+      const fetchMock = vi.fn(async () => new Response(JSON.stringify(metroOffers), { status: 200 }));
+      vi.stubGlobal("fetch", fetchMock);
+      for (const destinationIata of ["BKK,DM", "bkk,dmk", "BKK,,DMK", "AAA,BBB,CCC,DDD,EEE", "BKK;DMK"]) {
+        const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query({ destinationIata })}`), env({ SERP_API: "key" }), ctx);
+        expect(((await res.json()) as { rates: unknown[] }).rates).toEqual([]);
+      }
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
   it("falls back to no rate, not an error, when SerpApi fails", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 500 })));
     const res = await worker.fetch(new Request(`https://example.com/api/live-rates?${query()}`), env({ SERP_API: "key" }), ctx);

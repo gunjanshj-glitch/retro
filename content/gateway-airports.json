@@ -1,0 +1,18 @@
+{
+  "_about": "Airports the quote flies in and out of. A place served by an airport more than satelliteMinKm away (Pattaya from Bangkok, Kyoto from Osaka, Interlaken from Zurich) is a satellite: the trip should land and depart at the airport's own city, not make the traveller cross the country on the day they fly. metroAirports lists the airports that serve one metro area, so the cheapest can be searched in a single query; the place's own listed airport always comes first and wins a tie.",
+  "satelliteMinKm": 75,
+  "metroAirports": [
+    [
+      { "iata": "BKK", "name": "Suvarnabhumi Airport" },
+      { "iata": "DMK", "name": "Don Mueang International Airport" }
+    ],
+    [
+      { "iata": "HND", "name": "Tokyo Haneda Airport" },
+      { "iata": "NRT", "name": "Narita International Airport" }
+    ],
+    [
+      { "iata": "LHR", "name": "London Heathrow Airport" },
+      { "iata": "LGW", "name": "London Gatwick Airport" }
+    ]
+  ]
+}

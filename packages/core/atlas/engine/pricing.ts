@@ -29,6 +29,7 @@ import type {
   QuoteTotals,
 } from "./types";
 import { formatDuration } from "./text";
+import type { GatewayInfo } from "./gateway";
 
 const OCC = policy.occupancy;
 const VEH = policy.vehicles;
@@ -244,6 +245,8 @@ export type LiveRate = {
   provider?: "google-flights" | "travelpayouts";
   /** Google Flights only: the cheapest fare is on low-cost airlines. */
   lowCost?: boolean;
+  /** Google Flights only: the airport the cheapest fare lands at (BKK or DMK when both were searched). */
+  airportIata?: string;
 };
 
 /**
@@ -333,6 +336,8 @@ export type PricingInput = {
   activityPrices: Map<string, { code: string | null; price: number; source: RateSource }>;
   /** Scopes the calibration factors to the matched package. */
   referencePackageId?: string | null;
+  /** The airports the trip lands at and leaves from, named on the airfare and airport transfer lines. */
+  gateways?: { arrival: GatewayInfo; departure: GatewayInfo } | null;
 };
 
 function index<T extends { placeId: string }>(rows: T[]): Map<string, T[]> {
@@ -502,7 +507,19 @@ export function priceQuotation(input: PricingInput): {
   };
 
   // --- hotel ---------------------------------------------------------------
-  for (const stay of stays) {
+  // A place visited twice (Bangkok, Pattaya, Bangkok) is one hotel line with its
+  // nights added up: the rate, the season and the city tax are the place's.
+  const hotelStays: { placeId: string; placeName: string; nights: number; visits: number[] }[] = [];
+  for (const s of stays) {
+    const seen = hotelStays.find((h) => h.placeId === s.placeId);
+    if (seen) {
+      seen.nights += s.nights;
+      seen.visits.push(s.nights);
+    } else {
+      hotelStays.push({ placeId: s.placeId, placeName: s.placeName, nights: s.nights, visits: [s.nights] });
+    }
+  }
+  for (const stay of hotelStays) {
     if (!stay.nights) continue;
     const rate =
       hotels.get(stay.placeId)?.find((h) => h.star === request.hotelStar && h.zone === request.hotelZone) ??
@@ -516,7 +533,7 @@ export function priceQuotation(input: PricingInput): {
     // The calibration factors were fitted to the rate card, so a live rate skips them.
     const calibrateHotel = resolved.source !== "live";
     push("hotel", `${stay.placeName} — ${request.hotelStar}`,
-      `${stay.nights} night(s) x ${pax.rooms} room(s), ${request.hotelZone}, room with breakfast`,
+      `${stay.nights} night(s)${stay.visits.length > 1 ? ` (${stay.visits.join(" + ")}, either side of the other stops)` : ""} x ${pax.rooms} room(s), ${request.hotelZone}, room with breakfast`,
       stay.nights * pax.rooms, "room-night", resolved.inr, true, resolved.source, stay.placeId, calibrateHotel);
 
     if (pax.extraBeds) {
@@ -609,6 +626,21 @@ export function priceQuotation(input: PricingInput): {
 
     const firstPlace = stays[0];
     const lastPlace = stays[stays.length - 1];
+
+    // Which airports the ticket joins, in words, so the line says where the
+    // flight goes from and to rather than only the city the traveller picked.
+    const homeCity = (core.departureCities ?? []).find((c) => c.code === request.departureCity)?.label;
+    const home = homeCity ? `${homeCity} (${request.departureCity})` : request.departureCity;
+    const at = (g: GatewayInfo) => `${g.name} (${g.iata})`;
+    const routeNote = (kind: "round-trip" | "out" | "home"): string => {
+      const g = input.gateways;
+      if (!g) return "";
+      if (kind === "out") return `${home} to ${at(g.arrival)}; `;
+      if (kind === "home") return `${at(g.departure)} to ${home}; `;
+      return g.arrival.iata === g.departure.iata
+        ? `${home} to ${at(g.arrival)} and back from the same airport; `
+        : `${home} to ${at(g.arrival)}, back from ${at(g.departure)}; `;
+    };
     const inboundCountry = countryOf.get(firstPlace.placeId);
     const outboundCountry = countryOf.get(lastPlace.placeId);
 
@@ -658,7 +690,7 @@ export function priceQuotation(input: PricingInput): {
     if (inboundBand && inboundCountry === outboundCountry) {
       const resolved = fareOf(inboundBand, inboundCountry);
       pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip`,
+        `${routeNote("round-trip")}${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip`,
         resolved.inr, resolved, inboundCountry);
     } else if (inboundBand) {
       const outboundBand = selectBand(outboundCountry) ?? inboundBand;
@@ -666,11 +698,11 @@ export function priceQuotation(input: PricingInput): {
       const outboundResolved = fareOf(outboundBand, outboundCountry);
 
       pushFare(`Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${carrierNote(inboundBand, inboundResolved.live)}, ${cabinOf(inboundBand, inboundResolved.live)}, one way of an open-jaw ticket`,
+        `${routeNote("out")}${carrierNote(inboundBand, inboundResolved.live)}, ${cabinOf(inboundBand, inboundResolved.live)}, one way of an open-jaw ticket`,
         inboundResolved.inr / 2, inboundResolved, inboundCountry);
 
       pushFare(`Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
-        `${carrierNote(outboundBand, outboundResolved.live)}, ${cabinOf(outboundBand, outboundResolved.live)}, one way of an open-jaw ticket`,
+        `${routeNote("home")}${carrierNote(outboundBand, outboundResolved.live)}, ${cabinOf(outboundBand, outboundResolved.live)}, one way of an open-jaw ticket`,
         outboundResolved.inr / 2, outboundResolved, outboundCountry);
     }
   }
@@ -718,12 +750,12 @@ export function priceQuotation(input: PricingInput): {
       const departInr = depart?.inr ?? fallbackFor(stay.placeId, "Hotel→Airport");
       if (arriveInr && index === 0) {
         push("airport-transfer", `Airport to hotel — ${placeName.get(stay.placeId)}`,
-          `${vehicle.count} x ${vehicle.label}`, vehicle.count, "vehicle",
+          `${input.gateways ? `From ${input.gateways.arrival.name} (${input.gateways.arrival.iata}), ` : ""}${vehicle.count} x ${vehicle.label}`, vehicle.count, "vehicle",
           arriveInr * vehicle.factor, true, arrive?.source ?? "estimated", stay.placeId);
       }
       if (departInr && index === stays.length - 1) {
         push("airport-transfer", `Hotel to airport — ${placeName.get(stay.placeId)}`,
-          `${vehicle.count} x ${vehicle.label}`, vehicle.count, "vehicle",
+          `${input.gateways ? `To ${input.gateways.departure.name} (${input.gateways.departure.iata}), ` : ""}${vehicle.count} x ${vehicle.label}`, vehicle.count, "vehicle",
           departInr * vehicle.factor, true, depart?.source ?? "estimated", stay.placeId);
       }
     }

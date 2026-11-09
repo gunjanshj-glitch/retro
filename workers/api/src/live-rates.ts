@@ -24,6 +24,8 @@ export type LiveRate = {
   provider?: "google-flights" | "travelpayouts";
   /** Google Flights only: whether the cheapest fare is on low-cost airlines, so the quote can name it truthfully. */
   lowCost?: boolean;
+  /** Google Flights only: the airport the cheapest fare lands at, which matters when a metro's airports were searched together. */
+  airportIata?: string;
 };
 
 const CACHE_SECONDS = 6 * 60 * 60;
@@ -95,7 +97,10 @@ export type Cabin = "Economy" | "Premium Economy" | "Business";
 /** Google Flights `travel_class`: 1 economy, 2 premium economy, 3 business. */
 const TRAVEL_CLASS: Record<Cabin, number> = { Economy: 1, "Premium Economy": 2, Business: 3 };
 
-type SerpOffer = { price?: number; flights?: { flight_number?: string }[] };
+type SerpOffer = {
+  price?: number;
+  flights?: { flight_number?: string; arrival_airport?: { id?: string } }[];
+};
 
 /**
  * The cheapest offer Google Flights lists, whatever airline sells it. This is
@@ -106,7 +111,7 @@ type SerpOffer = { price?: number; flights?: { flight_number?: string }[] };
  * `lowCost` records whether every leg of that cheapest offer is low-cost (the
  * IATA code leads the flight number), so the quote can say which it is.
  */
-export function cheapestOffer(offers: SerpOffer[]): { price: number; lowCost: boolean } | null {
+export function cheapestOffer(offers: SerpOffer[]): { price: number; lowCost: boolean; airport?: string } | null {
   let best: SerpOffer | null = null;
   for (const o of offers) {
     if (typeof o.price !== "number" || !(o.price > 0)) continue;
@@ -115,7 +120,9 @@ export function cheapestOffer(offers: SerpOffer[]): { price: number; lowCost: bo
   if (!best) return null;
   const legs = best.flights ?? [];
   const lowCost = legs.length > 0 && legs.every((l) => LCC_CARRIERS.has((l.flight_number ?? "").split(" ")[0].toUpperCase()));
-  return { price: best.price!, lowCost };
+  // The last leg of the outbound journey lands at the destination airport.
+  const airport = legs.length ? legs[legs.length - 1].arrival_airport?.id?.toUpperCase() : undefined;
+  return { price: best.price!, lowCost, ...(airport && /^[A-Z]{3}$/.test(airport) ? { airport } : {}) };
 }
 
 /**
@@ -164,6 +171,8 @@ async function fetchGoogleFlight(
     fetchedAt: new Date().toISOString(),
     provider: "google-flights",
     lowCost: cheapest.lowCost,
+    // Only an airport that was asked for: a stray code from upstream is not shown as the landing airport.
+    ...(cheapest.airport && destination.split(",").includes(cheapest.airport) ? { airportIata: cheapest.airport } : {}),
   };
 }
 
@@ -433,7 +442,8 @@ export async function handleLiveRates(
   const wantsFlight = Boolean(origin && destinationIata && month);
   const wantsHotel = Boolean(cityName && countryCode && checkin && checkout);
   if (wantsFlight && fareKey && !/^[a-z0-9-]{1,60}$/.test(fareKey)) return none();
-  if (wantsFlight && !(/^[A-Z]{3}$/.test(origin) && /^[A-Z]{3}$/.test(destinationIata) && /^\d{4}-\d{2}$/.test(month) && (carrier === "LCC" || carrier === "FSC"))) return none();
+  // One airport, or up to four serving the same metro (BKK,DMK) searched together for the cheapest.
+  if (wantsFlight && !(/^[A-Z]{3}$/.test(origin) && /^[A-Z]{3}(,[A-Z]{3}){0,3}$/.test(destinationIata) && /^\d{4}-\d{2}$/.test(month) && (carrier === "LCC" || carrier === "FSC"))) return none();
   // Exact dates are optional (the month search still works without them), but when given they must be a real, bookable trip.
   const wantsExact = wantsFlight && Boolean(outbound && inbound);
   if (wantsExact) {
@@ -489,7 +499,8 @@ export async function handleLiveRates(
     // different class of ticket priced as if it were the one asked for, so those get no fare and the
     // quote keeps its own business-class rate card, flagged as an approximation.
     if (cabin !== "Economy") return null;
-    return fetchFlight(env, origin, destinationIata, month, carrier, key);
+    // The monthly fare is one airport's: the first, which is the place's own.
+    return fetchFlight(env, origin, destinationIata.split(",")[0], month, carrier, key);
   };
 
   const results = await Promise.allSettled([

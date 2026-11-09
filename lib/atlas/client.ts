@@ -11,6 +11,7 @@ import type { CoreBundle, DestinationBundle, Route, VisaRule } from "@retro/core
 import type { FxRates } from "@retro/core/atlas/engine/fx";
 import type { Quotation } from "@retro/core/atlas/engine/types";
 import { ISO3_TO_ISO2 } from "@retro/core/atlas/iso";
+import { airportAlternatives } from "@retro/core/atlas/engine/gateway";
 
 const BASE = "/atlas";
 
@@ -98,6 +99,7 @@ export type LiveRateItem = {
   fetchedAt: string;
   provider?: "google-flights" | "travelpayouts";
   lowCost?: boolean;
+  airportIata?: string;
 };
 
 export type LiveRateResponse = { rates: LiveRateItem[] };
@@ -223,7 +225,8 @@ export async function loadFlightLiveRates(
 
   for (const stay of ends) {
     const countryId = core.places.find((p) => p.id === stay.placeId)?.countryId;
-    const iata = core.placeAirports?.[stay.placeId]?.iata;
+    // The place's airport, plus the others serving its metro (BKK and DMK), searched together for the cheapest.
+    const iata = airportAlternatives(core, stay.placeId).map((a) => a.iata).join(",");
     if (!countryId || !iata || seen.has(countryId)) continue;
     seen.add(countryId);
     searches.push(
