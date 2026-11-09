@@ -4,6 +4,7 @@ import path from "node:path";
 import { CoreBundle, type DestinationBundle, type Route, type VisaRule } from "@retro/core/atlas/schema";
 import { generateQuotation, STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
 import { QuoteRequest } from "@retro/core/atlas/engine/types";
+import { allocateNights } from "@retro/core/atlas/engine/itinerary";
 import type { LiveRate } from "@retro/core/atlas/engine/pricing";
 import {
   airportAlternatives,
@@ -399,5 +400,147 @@ describe("every airport in the catalogue that has both an airport city and a sat
       }
     }
     expect(failures).toEqual([]);
-  });
+  }, 120_000);
+});
+
+describe("any combination of foreign places keeps the airport city at both ends of the route", () => {
+  const iso3 = new Map(core.countries.map((c) => [c.id, c.iso3]));
+  const countryName = new Map(core.countries.map((c) => [c.id, c.name.trim().toLowerCase()]));
+  const placeOf = (id: string) => core.places.find((p) => p.id === id)!;
+  const wholeCountry = (id: string) =>
+    countryName.get(placeOf(id).countryId) === placeOf(id).name.trim().toLowerCase() ||
+    /^(france|germany|spain|poland|norway|sweden|denmark|finland|iceland)$/.test(id);
+  const nested = (a: string, b: string) => placeOf(a).parentPlaceId === b || placeOf(b).parentPlaceId === a;
+
+  // Places that have an airport, are abroad, and are real towns rather than whole countries.
+  const pool = core.places.filter(
+    (p) => iso3.get(p.countryId) !== "IND" && core.placeAirports[p.id] && !wholeCountry(p.id),
+  );
+  const compatible = (ids: string[]) =>
+    ids.every((a, i) => ids.every((b, j) => i === j || (placeOf(a).countryId === placeOf(b).countryId && !nested(a, b))));
+
+  // Mulberry32: a fixed seed, so a failure is reproducible.
+  const rng = (seed: number) => () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+
+  function check(ids: string[], nights: number, label: string): string[] {
+    const out: string[] = [];
+    let q;
+    try {
+      q = quote(ids, nights, { departureCity: "DEL" });
+    } catch (error) {
+      return [`${label} threw ${(error as Error).message}`];
+    }
+    if (q.stays.length === 0) return out; // the request itself was refused, which is not under test
+    const tag = `${label} ${nights}n [${summary(q)}]`;
+    const first = q.stays[0];
+    const last = q.stays[q.stays.length - 1];
+    const onTrip = new Set(q.stays.map((s) => s.placeId));
+    const cityFor = (satellite: string) =>
+      [...onTrip].some((id) => id !== satellite && !isSatellite(core, id) && core.placeAirports[id]?.iata === core.placeAirports[satellite]?.iata);
+
+    // The traveller never ends the trip at a satellite when its airport city is also on the trip.
+    if (isSatellite(core, last.placeId) && cityFor(last.placeId)) out.push(`${tag} ends at satellite ${last.placeId}`);
+    // ...and starts at one only when the airport city it would be reached through had a single night to give.
+    // That city is the nearest non-satellite stop sharing the airport, as in bookendGateways.
+    const gatewayCity = (satellite: string) =>
+      [...onTrip]
+        .filter((id) => id !== satellite && !isSatellite(core, id) && core.placeAirports[id]?.iata === core.placeAirports[satellite]?.iata)
+        .sort((a, b) => (airportDistanceKm(core, a) ?? 0) - (airportDistanceKm(core, b) ?? 0))[0];
+    const entryCity = isSatellite(core, first.placeId) ? gatewayCity(first.placeId) : undefined;
+    const entryCityNights = entryCity ? q.stays.filter((s) => s.placeId === entryCity).reduce((a, s) => a + s.nights, 0) : 0;
+    if (entryCity && entryCityNights >= 2 && q.stays.length > 1) {
+      out.push(`${tag} starts at satellite ${first.placeId} though ${entryCity} has ${entryCityNights} nights`);
+    }
+    // The engine may lengthen a trip (each place needs a night) or drop a place it cannot fit, so the
+    // trip's real length is the number of days less one, not what was asked for. Whatever it settled on,
+    // splitting a stop across two visits must not change how many nights any place gets: the baseline is
+    // the allocation itself, which already applies each place's own minimum and maximum nights.
+    const tripNights = q.days.length - 1;
+    if (nightsTotal(q) !== tripNights) out.push(`${tag} stays total ${nightsTotal(q)} nights over a ${tripNights}-night trip`);
+    const summaries = new Map(core.placeSummaries.map((x) => [x.placeId, x]));
+    const baseline = allocateNights(ids, tripNights, summaries, STYLE_FOR_TRAVELLER.couple, {});
+    for (const [id, expected] of baseline) {
+      if (expected === 0 && !onTrip.has(id)) continue;
+      const got = q.stays.filter((s) => s.placeId === id).reduce((a, s) => a + s.nights, 0);
+      if (got !== expected) out.push(`${tag} ${id} has ${got} nights, the allocation gave ${expected}`);
+    }
+    for (const id of onTrip) {
+      if (!ids.includes(id)) out.push(`${tag} added ${id}, which was not asked for`);
+    }
+    if (q.stays.some((s, i) => i > 0 && s.placeId === q.stays[i - 1].placeId)) out.push(`${tag} repeats a stop back to back`);
+    if (q.stays.some((s) => s.nights <= 0)) out.push(`${tag} has a zero-night stop`);
+    if (!q.days[0].airport || !q.days[q.days.length - 1].airport) out.push(`${tag} first or last day has no airport`);
+    const clusters = q.days.flatMap((d) => d.activities.map((a) => a.clusterId)).filter(Boolean);
+    if (new Set(clusters).size !== clusters.length) out.push(`${tag} plans an outing twice`);
+    const hotelLines = q.lineItems.filter((i) => i.component === "hotel");
+    const labels = hotelLines.map((i) => i.label);
+    if (new Set(labels).size !== labels.length) out.push(`${tag} has two hotel lines with the same label`);
+    const flight = q.lineItems.find((i) => i.component === "flight" && i.totalInr > 0);
+    if (flight && !/\([A-Z]{3}\)/.test(flight.detail ?? "")) out.push(`${tag} flight line names no airport: ${flight.detail}`);
+    if (!q.gateways) out.push(`${tag} has no gateways`);
+    return out;
+  }
+
+  it("holds for every airport city with one to three of its satellites, in any order, at 2 to 14 nights", () => {
+    const byAirport = new Map<string, string[]>();
+    for (const p of pool) byAirport.set(core.placeAirports[p.id].iata, [...(byAirport.get(core.placeAirports[p.id].iata) ?? []), p.id]);
+    const failures: string[] = [];
+    let cases = 0;
+    for (const [iata, ids] of byAirport) {
+      const cities = ids.filter((id) => !isSatellite(core, id));
+      const sats = ids.filter((id) => isSatellite(core, id));
+      if (!cities.length || !sats.length) continue;
+      const city = cities[0];
+      const sets: string[][] = [];
+      for (const s of sats.slice(0, 3)) {
+        if (compatible([city, s])) sets.push([city, s], [s, city]);
+      }
+      const two = sats.filter((s) => compatible([city, s])).slice(0, 2);
+      if (two.length === 2 && compatible([city, ...two])) sets.push([city, ...two], [two[0], city, two[1]], [...two, city]);
+      for (const set of sets) {
+        for (const nights of [2, 3, 4, 5, 7, 9, 14]) {
+          cases++;
+          failures.push(...check(set, nights, `${iata} ${set.join("+")}`));
+        }
+      }
+    }
+    expect(cases).toBeGreaterThan(400);
+    expect(failures).toEqual([]);
+  }, 120_000);
+
+  it("holds for seeded random 2 to 4 place trips in one country anywhere in the catalogue", () => {
+    const rand = rng(20261109);
+    const pick = <T,>(arr: T[]) => arr[Math.floor(rand() * arr.length)];
+    const failures: string[] = [];
+    let cases = 0;
+    for (let i = 0; i < 400; i++) {
+      const anchor = pick(pool);
+      const sameCountry = pool.filter((p) => p.countryId === anchor.countryId);
+      const size = 2 + Math.floor(rand() * 3);
+      const ids = [anchor.id];
+      for (let guard = 0; guard < 30 && ids.length < size; guard++) {
+        const next = pick(sameCountry).id;
+        if (!ids.includes(next) && compatible([...ids, next])) ids.push(next);
+      }
+      if (ids.length < 2) continue;
+      const nights = Math.max(ids.length, 3 + Math.floor(rand() * 12));
+      cases++;
+      failures.push(...check(ids, nights, `random#${i} ${ids.join("+")}`));
+    }
+    expect(cases).toBeGreaterThan(300);
+    expect(failures).toEqual([]);
+  }, 120_000);
+
+  it("holds for Bangkok and Pattaya at every length from 2 to 21 nights, in both input orders", () => {
+    const failures: string[] = [];
+    for (let nights = 2; nights <= 21; nights++) {
+      for (const ids of [["bangkok", "pattaya"], ["pattaya", "bangkok"]]) failures.push(...check(ids, nights, ids.join("+")));
+    }
+    expect(failures).toEqual([]);
+  }, 120_000);
 });
