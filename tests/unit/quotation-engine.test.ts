@@ -1824,6 +1824,85 @@ describe("admin overriding rates, quantities and adding charges", () => {
   });
 });
 
+describe("switching day-by-day outings off and on", () => {
+  const placeIds = ["ha-noi"];
+  const nights = 4;
+  const rows = (q: ReturnType<typeof quote>) =>
+    q.days.map((d) =>
+      [...d.activities, ...d.excludedActivities]
+        .sort((a, b) => (a.slot ?? 0) - (b.slot ?? 0))
+        .map((a) => a.clusterId),
+    );
+  const billed = (q: ReturnType<typeof quote>) => q.days.flatMap((d) => d.activities.map((a) => a.clusterId));
+
+  it("keeps an unticked outing on its day, unbilled, so it can be ticked again", () => {
+    const base = quote({ placeIds, nights });
+    const victim = base.days.flatMap((d) => d.activities).find((a) => a.clusterId && a.pricePerPersonInr > 0)!;
+    const off = quote({ placeIds, nights, excludedClusterIds: [victim.clusterId!] });
+
+    const day = off.days.find((d) => d.excludedActivities.some((a) => a.clusterId === victim.clusterId));
+    expect(day).toBeDefined();
+    expect(billed(off)).not.toContain(victim.clusterId);
+    // Every row of every day is exactly where it was: nothing reshuffles.
+    expect(rows(off)).toEqual(rows(base));
+    // It costs nothing and no longer counts against the day's hours.
+    expect(off.totals.total).toBeLessThan(base.totals.total);
+    const was = base.days.find((d) => d.dayNumber === day!.dayNumber)!;
+    expect(day!.activeHours).toBeCloseTo(was.activeHours - victim.hours, 1);
+  });
+
+  it("restores the identical quote when the outing is ticked again", () => {
+    const base = quote({ placeIds, nights });
+    const id = base.days.flatMap((d) => d.activities)[0].clusterId!;
+    const off = quote({ placeIds, nights, excludedClusterIds: [id] });
+    const back = quote({ placeIds, nights, excludedClusterIds: [] });
+    expect(off.totals.total).not.toBe(base.totals.total);
+    expect(back.totals.total).toBe(base.totals.total);
+    expect(back.days).toEqual(base.days);
+  });
+
+  it("lets every outing be switched off together, keeping every row, and each priced back on", () => {
+    const base = quote({ placeIds, nights });
+    const ids = base.days.flatMap((d) => d.activities.map((a) => a.clusterId!)).filter(Boolean);
+    expect(ids.length).toBeGreaterThan(1);
+
+    const none = quote({ placeIds, nights, excludedClusterIds: ids });
+    expect(billed(none)).toHaveLength(0);
+    expect(rows(none)).toEqual(rows(base));
+    expect(none.lineItems.some((l) => l.component === "sightseeing")).toBe(false);
+
+    // Ticking them back one at a time only ever adds cost, never loses a row.
+    let previous = none.totals.total;
+    const remaining = [...ids];
+    while (remaining.length) {
+      remaining.pop();
+      const q = quote({ placeIds, nights, excludedClusterIds: remaining });
+      expect(rows(q)).toEqual(rows(base));
+      expect(q.totals.total).toBeGreaterThanOrEqual(previous);
+      previous = q.totals.total;
+    }
+    expect(previous).toBe(base.totals.total);
+  });
+
+  it("does not offer an unticked outing as a suggestion", () => {
+    const base = quote({ placeIds, nights });
+    const id = base.days.flatMap((d) => d.activities)[0].clusterId!;
+    const off = quote({ placeIds, nights, excludedClusterIds: [id] });
+    expect(off.suggestions.map((s) => s.clusterId)).not.toContain(id);
+  });
+
+  it("keeps a ticked outing's row in manual mode when it is switched off", () => {
+    const auto = quote({ placeIds, nights });
+    const keep = auto.sightseeingOptions!.filter((o) => o.status === "planned").slice(0, 2).map((o) => o.clusterId!);
+    const manual = quote({ placeIds, nights, sightseeingMode: "manual", pinnedClusterIds: keep });
+    const off = quote({
+      placeIds, nights, sightseeingMode: "manual", pinnedClusterIds: keep, excludedClusterIds: [keep[0]],
+    });
+    expect(rows(off)).toEqual(rows(manual));
+    expect(billed(off)).toEqual(billed(manual).filter((id) => id !== keep[0]));
+  });
+});
+
 describe("admin sightseeing picker", () => {
   // A single, well-documented stay with plenty of outings to choose between.
   const placeIds = ["ha-noi"];

@@ -203,6 +203,8 @@ export type PlannedActivity = {
   /** Locked items are structural (transfers) and cannot be deselected. */
   locked: boolean;
   pricePerPersonInr: number;
+  /** Position within its day, so a switched-off outing can be shown in place. */
+  slot?: number;
 };
 
 /** One selectable way of making a leg, as offered to the traveller. */
@@ -292,6 +294,12 @@ export type PlannedDay = {
   isFreeDay: boolean;
   transfer: TransferLeg | null;
   activities: PlannedActivity[];
+  /**
+   * Outings the traveller switched off. They keep the slot they were planned
+   * into so the row stays on the page and can be ticked again, but they are
+   * not billed and do not count towards `activeHours`.
+   */
+  excludedActivities: PlannedActivity[];
   activeHours: number;
   budgetHours: number;
   /** Hotel is null on the final day, when the traveller flies home. */

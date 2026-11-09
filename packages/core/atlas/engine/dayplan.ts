@@ -255,7 +255,10 @@ export function planDays(input: DayPlanInput): DayPlanResult {
     const available = bundle?.clusters.length
       ? bundle.clusters
       : syntheticClusters(bundle, stay.placeId);
-    const candidates = available.filter((c) => !excludedClusterIds.has(c.id));
+    // Switched-off outings are still planned, so they hold their slot and the
+    // traveller can tick them again; they are split out of the billed list
+    // once the day is packed.
+    const candidates = available;
     // In manual mode the admin's ticked list is the itinerary: only pinned
     // clusters are planned and the rest wait as add-ons instead of backfilling.
     const notChosen = manual ? candidates.filter((c) => !pinnedClusterIds.has(c.id)) : [];
@@ -439,7 +442,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
         budget = Math.max(0, budget - Math.min(usableMinutesPerDay, minutesLeft) / 60);
       }
 
-      const activities: PlannedActivity[] = [];
+      const placed: PlannedActivity[] = [];
       let used = 0;
 
       /** Walking tolerance is a property of the cluster, not of the day. */
@@ -457,20 +460,26 @@ export function planDays(input: DayPlanInput): DayPlanResult {
         const index = queue.findIndex((c) => used + c.durationHours <= allowanceFor(c));
         if (index < 0) break;
         const [cluster] = queue.splice(index, 1);
-        activities.push(toActivity(cluster, (c) => priceLookup(stay.placeId, c)));
+        placed.push({ ...toActivity(cluster, (c) => priceLookup(stay.placeId, c)), slot: placed.length });
         used += cluster.durationHours;
       }
 
       // A full-day cluster never fits a relaxed day with young children, but
       // dropping it entirely would leave the traveller with an empty itinerary.
       // Shorten the visit instead, which is what an agent actually does.
-      if (!activities.length && queue.length && budget >= DAY.minPartialVisitHours) {
+      if (!placed.length && queue.length && budget >= DAY.minPartialVisitHours) {
         const cluster = queue.shift()!;
         const hours = Math.min(cluster.durationHours, Math.max(DAY.minPartialVisitHours, allowanceFor(cluster)));
         const activity = toActivity(cluster, (c) => priceLookup(stay.placeId, c));
-        activities.push({ ...activity, hours: Number(hours.toFixed(1)) });
+        placed.push({ ...activity, hours: Number(hours.toFixed(1)), slot: 0 });
         used += hours;
       }
+
+      // Split what is billed from what the traveller has switched off. The
+      // day's hours count only what is still in the plan.
+      const activities = placed.filter((a) => !(a.clusterId && excludedClusterIds.has(a.clusterId)));
+      const excludedActivities = placed.filter((a) => a.clusterId && excludedClusterIds.has(a.clusterId));
+      used = activities.reduce((sum, a) => sum + a.hours, 0);
 
       const notes: string[] = [];
       if (isArrivalDay && isFirst) notes.push("Arrival and hotel check-in");
@@ -490,7 +499,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       // (arrival/transfer/departure) — the stay is longer than there is
       // content to fill at this pace. Flagged as `isFreeDay` rather than left
       // as a silent gap, so the caller can warn the traveller about it.
-      const isFreeDay = !activities.length && !notes.length;
+      const isFreeDay = !placed.length && !notes.length;
       if (isFreeDay) notes.push("Free day at leisure");
 
       days.push({
@@ -504,6 +513,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
         isFreeDay,
         transfer: isArrivalDay ? transfer : null,
         activities,
+        excludedActivities,
         activeHours: Number(used.toFixed(1)),
         budgetHours: Number(budget.toFixed(1)),
         // No hotel on the very last day — the traveller flies home.
@@ -519,6 +529,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
 
     // Anything left over becomes an upsell rather than being silently dropped.
     for (const cluster of [...queue, ...notChosen]) {
+      if (excludedClusterIds.has(cluster.id)) continue; // switched off and never placed: nothing to offer
       suggestions.push(toActivity(cluster, (c) => priceLookup(stay.placeId, c)));
     }
 

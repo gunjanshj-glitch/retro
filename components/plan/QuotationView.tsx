@@ -5,7 +5,7 @@
  * levers a traveller can pull. Structural land-package costs are shown as
  * locked; everything else can be dropped or added, and the price recomputes.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
 import type { TransportMode } from "@retro/core/atlas/schema";
 import { formatDuration, formatInr } from "@retro/core/atlas/engine/text";
@@ -154,11 +154,8 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
       excludedClusterIds: turningOff
         ? [...request.excludedClusterIds, clusterId]
         : request.excludedClusterIds.filter((id) => id !== clusterId),
-      // Dropping something the traveller had previously asked for must also
-      // release the pin, or the planner would keep forcing it back in.
-      pinnedClusterIds: turningOff
-        ? request.pinnedClusterIds.filter((id) => id !== clusterId)
-        : request.pinnedClusterIds,
+      // The pin is kept on purpose: a switched-off outing stays planned in its
+      // slot (unbilled), so ticking it again puts it back exactly where it was.
     });
   };
 
@@ -178,6 +175,36 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
       excludedClusterIds: request.excludedClusterIds.filter((id) => id !== clusterId),
     });
   };
+
+  /**
+   * Withdrawing a request for a suggested outing that did not fit. It is not
+   * in any day, so there is nothing to switch off: it simply goes back to
+   * being an ordinary suggestion that can be requested again.
+   */
+  const removeRequest = (clusterId: string) => {
+    onChange({
+      ...request,
+      pinnedClusterIds: request.pinnedClusterIds.filter((id) => id !== clusterId),
+    });
+  };
+
+  // A destination slid down to 0 nights leaves the itinerary, so it is no
+  // longer in `quote.stays` — but its slider has to stay, or there would be no
+  // way to bring it back. Remember every name we have seen, and list each
+  // destination the traveller picked, in itinerary order first.
+  const stayNames = useRef(new Map<string, string>());
+  for (const s of quote.stays) stayNames.current.set(s.placeId, s.placeName);
+  const nightSliders = useMemo(() => {
+    const byPlace = new Map(quote.stays.map((s) => [s.placeId, s.nights]));
+    const ordered = [
+      ...quote.stays.map((s) => s.placeId),
+      ...request.placeIds.filter((id) => !byPlace.has(id)),
+    ];
+    return ordered.map((placeId) => ({
+      placeId,
+      nights: byPlace.get(placeId) ?? 0,
+    }));
+  }, [quote.stays, request.placeIds]);
 
   const setNights = (placeId: string, nights: number) => {
     onChange({ ...request, nightOverrides: { ...request.nightOverrides, [placeId]: nights } });
@@ -268,13 +295,15 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
           Slide nights between destinations and the price follows.
         </p>
         <div className="grid gap-4 md:grid-cols-2">
-          {quote.stays.map((stay) => (
+          {nightSliders.map((stay) => {
+            const placeName = stayNames.current.get(stay.placeId) ?? stay.placeId;
+            return (
             <div
               key={stay.placeId}
               className={`${cardClass} p-4 sm:p-5`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-semibold">{stay.placeName}</span>
+                <span className="font-semibold">{placeName}</span>
                 <span
                   className="rounded-full px-2.5 py-0.5 text-sm font-bold tabular-nums"
                   style={{ background: "var(--surface)", color: "var(--ink)" }}
@@ -289,10 +318,16 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                 value={stay.nights}
                 onChange={(e) => setNights(stay.placeId, Number(e.target.value))}
                 className="mt-3 h-8 w-full accent-[var(--accent)]"
-                aria-label={`Nights in ${stay.placeName}`}
+                aria-label={`Nights in ${placeName}`}
               />
+              {stay.nights === 0 && (
+                <p className="mt-1 text-xs" style={{ color: "var(--muted)" }}>
+                  Not in this trip — slide right to add it back.
+                </p>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -533,9 +568,11 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                 </p>
               )}
 
-              {day.activities.length > 0 && (
+              {day.activities.length + day.excludedActivities.length > 0 && (
                 <ul className="mt-3 flex flex-col gap-2">
-                  {day.activities.map((a) => {
+                  {[...day.activities, ...day.excludedActivities]
+                    .sort((x, y) => (x.slot ?? 0) - (y.slot ?? 0))
+                    .map((a) => {
                     const off = a.clusterId ? excludedClusters.has(a.clusterId) : false;
                     return (
                       <li key={`${day.dayNumber}-${a.clusterId ?? a.title}`} className="flex items-start gap-3">
@@ -583,7 +620,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                 <button
                   key={s.clusterId ?? s.title}
                   type="button"
-                  onClick={() => s.clusterId && (pinned ? toggleCluster(s.clusterId) : addCluster(s.clusterId))}
+                  onClick={() => s.clusterId && (pinned ? removeRequest(s.clusterId) : addCluster(s.clusterId))}
                   aria-pressed={pinned}
                   className="rounded-2xl border-[1.5px] p-4 text-left transition-[border-color,box-shadow] hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-sm)]"
                   style={optionCardStyle(pinned)}
