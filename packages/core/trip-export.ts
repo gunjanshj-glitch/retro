@@ -69,16 +69,3 @@ export function buildTripItinerary(quote: Quotation, meta: { requestId?: string;
     note: "Estimate only. Our team will confirm every rate in your final quote.",
   };
 }
-
-/** Browser-only: saves the itinerary as a .json file (triggers the download). */
-export function downloadTripItinerary(quote: Quotation, meta: { requestId?: string; destinationSummary?: string } = {}) {
-  const data = JSON.stringify(buildTripItinerary(quote, meta), null, 2);
-  const url = URL.createObjectURL(new Blob([data], { type: "application/json" }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `itinerary-${meta.requestId?.slice(0, 8) ?? "trip"}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}

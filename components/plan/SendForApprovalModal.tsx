@@ -13,7 +13,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "rea
 import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
 import { formatInr } from "@retro/core/atlas/engine/text";
 import { createFinalRequest, type AuthUser } from "@/lib/auth-client";
-import { downloadTripItinerary } from "@retro/core/trip-export";
+import { downloadTripItinerary } from "@/lib/trip-download";
 import { isValidEmail, normalisePhone } from "@retro/core/quote-workflow";
 import { btnGhost, btnPrimary, fieldClass, onAccent } from "./theme";
 
