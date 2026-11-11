@@ -833,6 +833,8 @@ DIRANG_A_APPLE & KIWI ORCHARDS
 *****Optional:*****
 
 * Nyukmadung War Memorial
+* Nag Temple
+* Monpa Village
 * Sela Pass
 * Sangti Sheep Farm
 * Apple & Kiwi Orchards
@@ -1332,6 +1334,35 @@ rather than:
 *****recommended_duration:***** 1–2 hours
 
 *****walking_intensity:***** LOW
+
+---
+
+## CLUSTER 13 — NAG TEMPLE
+
+*****attractions:*****
+
+* Nag Temple
+* Local shrine
+* Valley views
+
+*****recommended_duration:***** 1 hour
+
+*****walking_intensity:***** LOW
+
+---
+
+## CLUSTER 14 — MONPA VILLAGE
+
+*****attractions:*****
+
+* Monpa village
+* Traditional stone houses
+* Local handicrafts
+* Village life
+
+*****recommended_duration:***** 1–2 hours
+
+*****walking_intensity:***** LOW → MEDIUM
 
 ---
 

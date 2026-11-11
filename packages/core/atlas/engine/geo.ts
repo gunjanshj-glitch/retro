@@ -79,15 +79,28 @@ export const MODE_FARE: Record<TransportMode, { fixedInr: number; perKmInr: numb
   cruise: { fixedInr: 6000, perKmInr: 9 },
 };
 
+/**
+ * Road legs in hill country (Arunachal, Sikkim, the Himalayan states) wind far
+ * more and run far slower than the plains figures: Dirang to Tawang is about
+ * 140 km and four hours, not 80 minutes. Applied to road modes only.
+ */
+export const HILL_ROAD = { detour: 1.7, kmh: 38 } as const;
+const ROAD_MODES = new Set<TransportMode>(["bus", "private_vehicle", "shared_vehicle"]);
+
 export function deriveDurationMinutes(
   mode: TransportMode,
   distanceKm: number,
   regionId: string,
+  hill = false,
 ): number {
   const profile = MODE_PROFILES[mode];
-  const kmh =
-    mode === "train" && HIGH_SPEED_RAIL_REGIONS.has(regionId) ? HIGH_SPEED_RAIL_KMH : profile.kmh;
-  const travelled = distanceKm * profile.detour;
+  const hillRoad = hill && ROAD_MODES.has(mode);
+  const kmh = hillRoad
+    ? HILL_ROAD.kmh
+    : mode === "train" && HIGH_SPEED_RAIL_REGIONS.has(regionId)
+      ? HIGH_SPEED_RAIL_KMH
+      : profile.kmh;
+  const travelled = distanceKm * (hillRoad ? HILL_ROAD.detour : profile.detour);
   return Math.round(profile.overheadMin + (travelled / kmh) * 60);
 }
 

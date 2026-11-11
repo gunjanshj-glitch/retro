@@ -338,6 +338,12 @@ export type PricingInput = {
   referencePackageId?: string | null;
   /** The airports the trip lands at and leaves from, named on the airfare and airport transfer lines. */
   gateways?: { arrival: GatewayInfo; departure: GatewayInfo } | null;
+  /**
+   * How a domestic trip reaches its port of entry from home. When present it
+   * replaces the country-level airfare band: the ticket is priced for the real
+   * journey (home to the port) in the mode the traveller picked, flight or train.
+   */
+  entry?: { mode: "flight" | "train"; homeLabel: string; hubName: string; hubCode: string; minutes: number; oneWayFareInr: number } | null;
 };
 
 function index<T extends { placeId: string }>(rows: T[]): Map<string, T[]> {
@@ -672,22 +678,38 @@ export function priceQuotation(input: PricingInput): {
       perAdultInr: number,
       resolved: { source: RateSource; live?: LiveRate },
       destCountryId: string | undefined,
+      component: CostComponent = "flight",
     ) => {
       const heads = faresFor(destCountryId);
       const checked = resolved.source === "live" && resolved.live?.provider === "google-flights"
         ? `; live Google Flights fare checked ${resolved.live.fetchedAt.slice(11, 16)} UTC, actual price is confirmed on the final quotation`
         : "";
       const calibrate = resolved.source !== "live";
-      push("flight", label, `${detail}${checked}`, heads.adults, "person", perAdultInr, false, resolved.source, null, calibrate);
-      push("flight", `${label} — children`, `${detail}, child fare`, heads.children, "person",
+      push(component, label, `${detail}${checked}`, heads.adults, "person", perAdultInr, false, resolved.source, null, calibrate);
+      push(component, `${label} — children`, `${detail}, child fare`, heads.children, "person",
         perAdultInr * heads.childFactor, false, resolved.source, null, calibrate);
-      push("flight", `${label} — infants`, `${detail}, infant on lap`, heads.infants, "person",
+      push(component, `${label} — infants`, `${detail}, infant on lap`, heads.infants, "person",
         perAdultInr * heads.infantFactor, false, resolved.source, null, calibrate);
     };
 
     const inboundBand = selectBand(inboundCountry);
+    const entry = input.entry;
 
-    if (inboundBand && inboundCountry === outboundCountry) {
+    if (entry) {
+      // A trip inside the traveller's own country: the ticket is home to the
+      // port of entry, not "to the first destination", and it is the traveller's
+      // choice whether that is a flight or a train.
+      const flying = entry.mode === "flight";
+      pushFare(
+        `${flying ? "Return airfare" : "Return train fare"} — ${entry.homeLabel} to ${entry.hubName}`,
+        `${entry.homeLabel} to ${entry.hubName} (${entry.hubCode}) and back, ${flying ? "economy" : "AC train"}, ` +
+          `about ${formatDuration(entry.minutes)} each way; typical fare, confirmed on the final quotation`,
+        entry.oneWayFareInr * 2,
+        { source: "estimated" },
+        inboundCountry,
+        flying ? "flight" : "intercity-transport",
+      );
+    } else if (inboundBand && inboundCountry === outboundCountry) {
       const resolved = fareOf(inboundBand, inboundCountry);
       pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
         `${routeNote("round-trip")}${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip`,

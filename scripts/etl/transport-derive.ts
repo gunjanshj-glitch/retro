@@ -52,6 +52,8 @@ export function deriveTransport(
   coords: Map<string, GeoPoint>,
   placeCountry: Map<string, string>,
   countryRegion: Map<string, string>,
+  /** Places in hill country, where road legs are slower (see `HILL_ROAD`). */
+  hillPlaces: Set<string> = new Set(),
 ): TransportDerivation {
   let durationsDerived = 0;
   let faresDerived = 0;
@@ -82,7 +84,8 @@ export function deriveTransport(
 
       if (durationMinutes == null) {
         if (distanceKm != null && distanceKm > 0) {
-          durationMinutes = deriveDurationMinutes(option.mode, distanceKm, regionId);
+          const hill = hillPlaces.has(route.originPlaceId ?? "") || hillPlaces.has(route.destPlaceId ?? "");
+          durationMinutes = deriveDurationMinutes(option.mode, distanceKm, regionId, hill);
           durationSource = "estimated";
           durationsDerived++;
         } else {

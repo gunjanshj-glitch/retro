@@ -259,11 +259,13 @@ describe("a satellite on its own, or a trip with no airport city", () => {
     expect(flight.detail).toMatch(/to Suvarnabhumi Airport \(BKK\), back from Phuket International Airport \(HKT\)/);
   });
 
-  it("leaves a trip inside India alone, with no airport and no flight in", () => {
+  it("leaves a trip inside India without international gateways, but names its port of entry", () => {
     const q = quote(["agra", "jaipur"], 4, { departureCity: "DEL", includeFlight: false });
     expect(q.stays.every((s) => !s.visit)).toBe(true);
     expect(q.gateways).toBeUndefined();
-    expect(q.days.every((d) => !d.airport)).toBe(true);
+    expect(q.portOfEntry?.code).toBeTruthy();
+    expect(q.days[0].airport?.kind).toBe("arrival");
+    expect(q.lineItems.some((i) => i.component === "flight")).toBe(false);
   });
 });
 
@@ -272,7 +274,7 @@ describe("the airport comes from the cheapest live fare", () => {
     new Map([
       [
         "flight:CCU:south-east-asia-thailand:FSC",
-        { component: "flight", key: "CCU:south-east-asia-thailand:FSC", inr, fetchedAt: "2026-11-09T05:00:00Z", provider: "google-flights", lowCost: true, airportIata },
+        { component: "flight", key: "CCU:south-east-asia-thailand:FSC", inr, fetchedAt: new Date().toISOString(), provider: "google-flights", lowCost: true, airportIata },
       ],
     ]);
 

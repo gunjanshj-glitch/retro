@@ -334,10 +334,10 @@ export type DestinationContent = {
 };
 
 function parseFile(raw: string, placeId: string): DestinationContent {
-  // A third of the corpus writes fields as `**key:** value` rather than
+  // A third of the corpus writes fields as `**key:** value` (the Arunachal files use `*****key:*****`) rather than
   // `key:`. Flatten that first so every downstream reader sees one form.
   const md = raw.replace(
-    /^([^\S\r\n]*)\*\*[^\S\r\n]*([A-Za-z][A-Za-z0-9_ /-]{1,40}?)[^\S\r\n]*:?[^\S\r\n]*\*\*[^\S\r\n]*:?[^\S\r\n]*/gm,
+    /^([^\S\r\n]*)\*{2,}[^\S\r\n]*([A-Za-z][A-Za-z0-9_ /-]{1,40}?)[^\S\r\n]*:?[^\S\r\n]*\*{2,}[^\S\r\n]*:?[^\S\r\n]*/gm,
     "$1$2: ",
   );
 

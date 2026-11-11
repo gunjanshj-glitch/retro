@@ -1,0 +1,156 @@
+{
+  "_about": "Overlay for what the authored transport files do not say. The region transport JSON only links place to place, so a destination whose guide says 'arrive at NJP station or Bagdogra airport' (Gangtok) had no train in the quote, and a trip had no notion of where the traveller actually enters the region. This file adds: hubs (the airports and stations a traveller really arrives at), railheads (the practical station for a place), portSubstitutes (airports with too little scheduled service to be a port of entry, replaced by the main one), hillStates (road speeds there are about half the plains figure), and roadHops (the real road from a hub to a place where the distance model is wrong). Add a row here, run `npm run build-atlas` or just reload; nothing else needs regenerating.",
+  "hubs": {
+    "GAU": {
+      "kind": "airport",
+      "name": "Lokpriya Gopinath Bordoloi Airport, Guwahati",
+      "lat": 26.1066,
+      "lon": 91.5852
+    },
+    "GHY": {
+      "kind": "rail",
+      "name": "Guwahati Railway Station",
+      "lat": 26.1822,
+      "lon": 91.751
+    },
+    "IXB": {
+      "kind": "airport",
+      "name": "Bagdogra Airport",
+      "lat": 26.6812,
+      "lon": 88.3286
+    },
+    "NJP": {
+      "kind": "rail",
+      "name": "New Jalpaiguri Railway Station",
+      "lat": 26.6786,
+      "lon": 88.4356
+    },
+    "PYG": {
+      "kind": "airport",
+      "name": "Pakyong Airport",
+      "lat": 27.2263,
+      "lon": 88.5879
+    },
+    "FKG": {
+      "kind": "rail",
+      "name": "Furkating Junction",
+      "lat": 26.4833,
+      "lon": 93.9167
+    },
+    "JRH": {
+      "kind": "airport",
+      "name": "Jorhat Airport",
+      "lat": 26.7315,
+      "lon": 94.1755
+    },
+    "DEL": {
+      "kind": "airport",
+      "name": "Indira Gandhi International Airport, Delhi",
+      "lat": 28.5562,
+      "lon": 77.1
+    }
+  },
+  "portSubstitutes": {
+    "TEZ": "GAU",
+    "AGR": "DEL"
+  },
+  "railheads": {
+    "gangtok": "NJP",
+    "namchi": "NJP",
+    "pelling": "NJP",
+    "lachen-and-lachung": "NJP",
+    "guwahati": "GHY",
+    "tawang": "GHY",
+    "dirang": "GHY",
+    "bhalukpong": "GHY",
+    "kaziranga": "FKG"
+  },
+  "hillStates": [
+    "india-india-arunachal-pradesh",
+    "india-india-sikkim",
+    "india-india-himachal-pradesh",
+    "india-india-uttarakhand",
+    "india-india-ladakh",
+    "india-india-meghalaya"
+  ],
+  "roadHops": [
+    {
+      "hub": "GAU",
+      "place": "tawang",
+      "km": 480,
+      "minutes": 720
+    },
+    {
+      "hub": "GAU",
+      "place": "dirang",
+      "km": 390,
+      "minutes": 600
+    },
+    {
+      "hub": "GAU",
+      "place": "bhalukpong",
+      "km": 215,
+      "minutes": 270
+    },
+    {
+      "hub": "GHY",
+      "place": "tawang",
+      "km": 480,
+      "minutes": 720
+    },
+    {
+      "hub": "GHY",
+      "place": "dirang",
+      "km": 390,
+      "minutes": 600
+    },
+    {
+      "hub": "GHY",
+      "place": "bhalukpong",
+      "km": 215,
+      "minutes": 270
+    },
+    {
+      "hub": "IXB",
+      "place": "gangtok",
+      "km": 120,
+      "minutes": 270
+    },
+    {
+      "hub": "NJP",
+      "place": "gangtok",
+      "km": 120,
+      "minutes": 270
+    },
+    {
+      "hub": "PYG",
+      "place": "gangtok",
+      "km": 30,
+      "minutes": 90
+    },
+    {
+      "hub": "IXB",
+      "place": "pelling",
+      "km": 140,
+      "minutes": 330
+    },
+    {
+      "hub": "NJP",
+      "place": "pelling",
+      "km": 140,
+      "minutes": 330
+    },
+    {
+      "hub": "NJP",
+      "place": "namchi",
+      "km": 100,
+      "minutes": 240
+    },
+    {
+      "hub": "IXB",
+      "place": "namchi",
+      "km": 100,
+      "minutes": 240
+    }
+  ]
+}

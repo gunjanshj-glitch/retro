@@ -13,6 +13,8 @@ import {
 } from "./geo";
 import { driveMinutesFor, estimateCarTrip, type CarEstimate } from "./roadcar";
 import { bookendGateways } from "./gateway";
+import { isHillState } from "./entry";
+import { HILL_ROAD } from "./geo";
 
 // ---------------------------------------------------------------------------
 // Reference package matching
@@ -448,6 +450,8 @@ export function buildRouteLookup(
 
   const countryOfPlace = new Map((places ?? []).map((p) => [p.id, p.countryId]));
   const regionOfCountry = new Map((countries ?? []).map((c) => [c.id, c.regionId]));
+  const hillPlaces = new Set<string>();
+  for (const p of places ?? []) if (isHillState(p.stateId)) hillPlaces.add(p.id);
   const islandOfPlace = new Map<string, string>();
   for (const p of places ?? []) if (p.island) islandOfPlace.set(p.id, p.island);
   const pointOfPlace = new Map<string, GeoPoint>();
@@ -744,11 +748,14 @@ export function buildRouteLookup(
     if (straightKm > (sameCountry ? CAR_MAX_KM_DOMESTIC : CAR_MAX_KM_CROSS_BORDER)) return base;
 
     const regionId = originCountry ? (regionOfCountry.get(originCountry) ?? "") : "";
-    const car = estimateCarTrip(straightKm, travellers, regionId);
+    // Hill roads wind and crawl: the same crow-flies hop is a longer, slower drive.
+    const hill = hillPlaces.has(originId) || hillPlaces.has(destId);
+    const carKm = hill ? straightKm * (HILL_ROAD.detour / 1.3) : straightKm;
+    const car = estimateCarTrip(carKm, travellers, regionId);
     const hit: RouteHit = {
       route: null,
       mode: "private_vehicle",
-      minutes: driveMinutesFor(straightKm),
+      minutes: hill ? Math.round(10 + ((straightKm * HILL_ROAD.detour) / HILL_ROAD.kmh) * 60) : driveMinutesFor(straightKm),
       priceInr: car.perPersonInr,
       estimated: true,
       distanceKm: Math.round(straightKm),
@@ -760,6 +767,36 @@ export function buildRouteLookup(
   };
 
   const optionsFor = (
+    originId: string,
+    destId: string,
+    preference: TransportPreference,
+    travellers: number,
+  ): RouteHit[] => {
+    return landFirst(originId, destId, optionsForUnranked(originId, destId, preference, travellers), preference);
+  };
+
+  /**
+   * Agency rule for a leg of 200 km or less: land first, water second, air last,
+   * whatever the fare. (Krabi to Koh Samui is a bus and a boat even though one
+   * airline flies it.) Past 200 km the traveller's fare-versus-time preference
+   * decides as before. Order within a class still follows the preference score.
+   */
+  const LAND_FIRST_KM = 200;
+  const MODE_CLASS: Record<string, number> = {
+    private_vehicle: 0, shared_vehicle: 0, bus: 0, train: 0, ferry: 1, seaplane: 1, cruise: 1, flight: 2,
+  };
+  const landFirst = (originId: string, destId: string, options: RouteHit[], preference: TransportPreference): RouteHit[] => {
+    const a = pointOfPlace.get(originId);
+    const b = pointOfPlace.get(destId);
+    if (!a || !b || options.length < 2) return options;
+    const km = haversineKm(a, b);
+    if (!Number.isFinite(km) || km > LAND_FIRST_KM) return options;
+    return [...options].sort(
+      (x, y) => (MODE_CLASS[x.mode] ?? 0) - (MODE_CLASS[y.mode] ?? 0) || scoreOf(x, preference) - scoreOf(y, preference),
+    );
+  };
+
+  const optionsForUnranked = (
     originId: string,
     destId: string,
     preference: TransportPreference,
@@ -938,8 +975,11 @@ function gatewayCost(
   gateway: Gateway | null,
   placeId: string,
   points: Map<string, GeoPoint>,
+  roadKm?: Map<string, number>,
 ): number {
   if (!gateway) return 0;
+  const road = roadKm?.get(placeId);
+  if (road != null) return road * GATEWAY_KM_WEIGHT;
   const point = points.get(placeId);
   if (!point) return 0;
   return haversineKm(gateway, point) * GATEWAY_KM_WEIGHT;
@@ -980,8 +1020,18 @@ export function sequencePlaces(
   lookup: RouteLookup,
   gateway: Gateway | null = null,
   points: Map<string, GeoPoint> = new Map(),
+  /**
+   * The trip enters and leaves through the same port (a domestic trip built
+   * around Guwahati), so both ends count equally and, where an order and its
+   * reverse tie, the one that starts nearest the port wins: the trip works
+   * outward from the gateway rather than ending its first day at the far end.
+   */
+  outAndBack = false,
+  /** Road kilometres from the gateway, where known: a hill road is longer than the crow flies. */
+  roadKm?: Map<string, number>,
 ): string[] {
   if (placeIds.length <= 1) return [...placeIds];
+  const exitWeight = outAndBack ? 1 : GATEWAY_EXIT_DISCOUNT;
 
   const cost = new Map<string, number>();
   const d = (a: string, b: string) => {
@@ -994,19 +1044,26 @@ export function sequencePlaces(
     return v;
   };
 
-  const entry = (id: string) => gatewayCost(gateway, id, points);
+  const entry = (id: string) => gatewayCost(gateway, id, points, roadKm);
 
   const tourLength = (tour: string[]) => {
-    let total = entry(tour[0]) + entry(tour[tour.length - 1]) * GATEWAY_EXIT_DISCOUNT;
+    let total = entry(tour[0]) + entry(tour[tour.length - 1]) * exitWeight;
     for (let i = 0; i < tour.length - 1; i++) total += d(tour[i], tour[i + 1]);
     return total;
   };
+
+  /** Same price either way round: start at the end nearest the port. */
+  const nearestFirst = (tour: string[]) =>
+    outAndBack && entry(tour[0]) > entry(tour[tour.length - 1]) + 1e-9 ? [...tour].reverse() : tour;
 
   // Two places still have two possible orders once the gateway is in play.
   if (placeIds.length === 2) {
     const forward = [placeIds[0], placeIds[1]];
     const reverse = [placeIds[1], placeIds[0]];
-    return tourLength(forward) <= tourLength(reverse) ? forward : reverse;
+    const f = tourLength(forward);
+    const r = tourLength(reverse);
+    if (outAndBack && Math.abs(f - r) < 1e-6) return nearestFirst(forward);
+    return f <= r ? forward : reverse;
   }
 
   let best: string[] = [...placeIds];
@@ -1057,13 +1114,13 @@ export function sequencePlaces(
       }
     }
 
-    if (length < bestLength) {
+    if (length < bestLength - 1e-9) {
       best = tour;
       bestLength = length;
     }
   }
 
-  return best;
+  return nearestFirst(best);
 }
 
 /** Combines allocation and sequencing into the ordered stay list. */
@@ -1082,6 +1139,12 @@ export function buildStays(
    * moved to the airport city where the trip allows it (see `bookendGateways`).
    */
   airports: CoreBundle | null = null,
+  /**
+   * Enter and leave through one port (see `sequencePlaces`). `satellite` says which
+   * places are too far from it to be a gateway city; `roadKm` is the road distance
+   * from it to each place.
+   */
+  port: { satellite: (id: string) => boolean; roadKm: Map<string, number> } | null = null,
 ): PlaceStay[] {
   const nights = allocateNights(placeIds, totalNights, summaries, style, overrides);
   const ordered = sequencePlaces(
@@ -1089,9 +1152,11 @@ export function buildStays(
     lookup,
     gateway,
     points,
+    Boolean(port),
+    port?.roadKm,
   );
   const visits = ordered.map((placeId) => ({ placeId, nights: nights.get(placeId) ?? 0 }));
-  const route = airports ? bookendGateways(airports, visits) : visits;
+  const route = airports ? bookendGateways(airports, visits, port?.satellite) : visits;
   const seen = new Map<string, number>();
   return route.map((v, position) => {
     const visit = seen.get(v.placeId) ?? 0;

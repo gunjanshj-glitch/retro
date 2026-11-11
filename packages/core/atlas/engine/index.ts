@@ -23,6 +23,7 @@ import { clusterBias, fireRules, type RuleEvaluation, type RuleFacts } from "./r
 import type {
   AppliedRule,
   PlannedActivity,
+  PortOfEntryInfo,
   Quotation,
   QuoteRequest,
   QuoteWarning,
@@ -32,7 +33,9 @@ import { applyLiveFx, type FxAdjustment, type FxRates } from "./fx";
 import { indiaGroundApplies, indiaRoadFirst, isDomesticTrip, priceQuotation, resolvePax, type LiveRate } from "./pricing";
 import { normaliseKey, formatDuration } from "./text";
 import { filterRealisticSelection } from "./bounds";
+import { haversineKm } from "./geo";
 import { airportDistanceKm, chooseAirport, type GatewayInfo } from "./gateway";
+import { choosePortOfEntry, clock, entryOptions, pickEntry, roadLeg, type Hub } from "./entry";
 
 /** Default trip style for each traveller type; the planner lets it be changed. */
 export const STYLE_FOR_TRAVELLER: Record<TravellerType, TripStyle> = {
@@ -267,9 +270,53 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   // it can (Bangkok, Pattaya, Bangkok), rather than ending at a satellite town
   // two hours from the airport on the morning of the flight.
   const international = !isDomesticTrip(core, placeIds, request.nationality);
+
+  // A trip inside the traveller's own country is built around a port of entry
+  // (Guwahati for Arunachal, Bagdogra/NJP for Sikkim): the route starts at the
+  // place nearest it, works outward and comes back through it.
+  const port = international ? null : choosePortOfEntry(core, placeIds);
+  const portPoint = port ? { lat: port.airport.lat, lon: port.airport.lon } : null;
+  // Rule: two cities within 200 km share an arrival airport (land at the
+  // airport city, visit the other, come back through it). Farther places are
+  // destinations in their own right and are not folded into the port's city.
+  const nearPort = (id: string) => {
+    const p = core.places.find((x) => x.id === id);
+    return !!port && !!p && p.lat != null && p.lon != null &&
+      haversineKm({ lat: p.lat, lon: p.lon }, port.airport) <= 200;
+  };
+  const bookendCore: CoreBundle | null = port
+    ? ({
+        ...core,
+        placeAirports: {
+          ...core.placeAirports,
+          ...Object.fromEntries(
+            placeIds.filter(nearPort).map((id) => [
+              id,
+              { iata: port.airport.code, name: port.airport.name, lat: port.airport.lat, lon: port.airport.lon, source: "primary" },
+            ]),
+          ),
+        },
+      } as CoreBundle)
+    : international
+      ? core
+      : null;
+  const roadKmToPort = new Map<string, number>();
+  if (port) {
+    for (const id of placeIds) {
+      const km = roadLeg(core, port.airport, id).km;
+      if (km != null) roadKmToPort.set(id, km);
+    }
+  }
   const stays = buildStays(
     placeIds, nights, summaries, request.tripStyle, routeLookup, names, request.nightOverrides,
-    gateway, placePoints, international ? core : null,
+    portPoint ?? gateway, placePoints, bookendCore,
+    port
+      ? {
+          // A place is a satellite of the port unless it is the port's own city.
+          satellite: (id) => nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > 40,
+          roadKm: roadKmToPort,
+        }
+      : null,
   );
   if (stays.length > placeIds.length) {
     const first = stays[0];
@@ -282,7 +329,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
         level: "info",
         audience: "traveller",
         message:
-          `The trip lands and departs from ${city}, which has the international airport. The nights there are split ` +
+          `The trip lands and departs from ${city}, which has the ${port ? "port of entry" : "international airport"}. The nights there are split ` +
           `${where} of the trip, so the flight home starts from a hotel near the airport rather than from a long road transfer.`,
       });
     }
@@ -350,20 +397,87 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       departureGateway = { ...departureGateway, iata: shared.iata, name: shared.name, basis: arrivalGateway.basis };
     }
   }
+  // A domestic trip: how the traveller reaches the port from home, the clock time
+  // they get there, and the road from the port to the first and last stay.
+  let portInfo: PortOfEntryInfo | undefined;
+  let entryForPricing: Parameters<typeof priceQuotation>[0]["entry"] = null;
+  let domesticGateways: Parameters<typeof planDays>[0]["gateways"] = null;
+  if (port && stays.length) {
+    const homeCity = (core.departureCities ?? []).find((c) => c.code === request.departureCity);
+    const homePoint = homeCity?.lat != null && homeCity.lon != null ? { lat: homeCity.lat, lon: homeCity.lon } : null;
+    const options = homePoint ? entryOptions(homePoint, port) : [];
+    const chosen = pickEntry(options, request.transportPreference, request.entryMode);
+    const hub: Hub = chosen?.hub ?? port.airport;
+    const firstStay = stays[0];
+    const lastStay = stays[stays.length - 1];
+    const inbound = roadLeg(core, hub, firstStay.placeId);
+    const outbound = roadLeg(core, hub, lastStay.placeId);
+    const homeLabel = homeCity ? `${homeCity.label} (${homeCity.code})` : request.departureCity;
+    domesticGateways = {
+      arrival: { iata: hub.code, name: hub.name, kind: hub.kind },
+      arrivalMinutes: inbound.minutes,
+      departure: { iata: hub.code, name: hub.name, kind: hub.kind },
+      departureMinutes: outbound.minutes,
+      arrivalClockMin: chosen?.arrivesAtMin ?? null,
+      daysEnRoute: chosen?.daysEnRoute ?? 0,
+    };
+    if (chosen) {
+      entryForPricing = {
+        mode: chosen.mode, homeLabel: homeCity?.label ?? request.departureCity, hubName: hub.name, hubCode: hub.code,
+        minutes: chosen.minutes, oneWayFareInr: chosen.fareInr,
+      };
+    }
+    const alt = hub.code === port.airport.code ? port.rail : port.airport;
+    portInfo = {
+      code: hub.code,
+      name: hub.name,
+      kind: hub.kind,
+      serves: port.servesPlaceIds.map((id) => names.get(id) ?? id),
+      entry: chosen
+        ? {
+            mode: chosen.mode,
+            from: homeLabel,
+            minutes: chosen.minutes,
+            fareInr: chosen.fareInr * 2,
+            arrivesAt: clock(chosen.arrivesAtMin),
+            daysEnRoute: chosen.daysEnRoute,
+            userChosen: Boolean(request.entryMode && request.entryMode === chosen.mode),
+            options: options.map((o) => ({
+              mode: o.mode, hub: o.hub.name, minutes: o.minutes, roundTripFareInr: o.fareInr * 2, arrivesAt: clock(o.arrivesAtMin),
+            })),
+          }
+        : null,
+      firstStay: { place: firstStay.placeName, ...inbound },
+      lastStay: { place: lastStay.placeName, ...outbound },
+      alternativeHub: alt ? { code: alt.code, name: alt.name, kind: alt.kind } : null,
+    };
+    if (outbound.minutes != null && outbound.minutes > 360) {
+      warnings.push({
+        level: "warning",
+        audience: "traveller",
+        message:
+          `The last day is a ${formatDuration(outbound.minutes)} drive from ${lastStay.placeName} back to ${hub.name}, ` +
+          "so a flight or train home the same day is not realistic. Book it for the next day, or add a night near the port.",
+      });
+    }
+  }
+
   // By road from the airport at about 50 km/h on a 1.3x winding path, never under 45 minutes.
   const roadMinutes = (g: GatewayInfo | null) =>
     g?.distanceKm != null ? Math.max(45, Math.round(((g.distanceKm * 1.3) / 50) * 60)) : null;
 
   const plan = planDays({
+    clusterDays: request.clusterDays,
     gateways:
-      arrivalGateway && departureGateway
+      domesticGateways ??
+      (arrivalGateway && departureGateway
         ? {
             arrival: { iata: arrivalGateway.iata, name: arrivalGateway.name },
             arrivalMinutes: roadMinutes(arrivalGateway),
             departure: { iata: departureGateway.iata, name: departureGateway.name },
             departureMinutes: roadMinutes(departureGateway),
           }
-        : null,
+        : null),
     stays,
     startDate: request.startDate,
     style: request.tripStyle,
@@ -422,6 +536,17 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
         `${formatDuration(overflow.durationMinutes)} — that needs ${overflow.daysRequired} day(s) of travel, ` +
         `more than the ${overflow.daysAvailable} available at ${overflow.to}. Add nights, or choose a faster ` +
         "mode for this leg.",
+    });
+  }
+
+  for (const u of plan.unplacedDayChoices) {
+    warnings.push({
+      level: "warning",
+      audience: "traveller",
+      message:
+        u.reason === "wrong-place"
+          ? `${u.title} cannot go on day ${u.day}: you are not at its destination that day.`
+          : `${u.title} did not fit on day ${u.day} without going over the ${policy.dayPlanning.maxSightseeingHoursPerDay}-hour daily sightseeing limit.`,
     });
   }
 
@@ -513,6 +638,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     activityPrices,
     referencePackageId: referencePackage?.id ?? null,
     gateways: arrivalGateway && departureGateway ? { arrival: arrivalGateway, departure: departureGateway } : null,
+    entry: entryForPricing,
   });
 
   // --- 5. reconcile against the published package --------------------------
@@ -738,6 +864,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       stayPerPlace, bundles, request.tripStyle, request.travellerType, request.childAges,
     ),
     appliedRules,
+    ...(portInfo ? { portOfEntry: portInfo } : {}),
     ...(arrivalGateway && departureGateway
       ? {
           gateways: {

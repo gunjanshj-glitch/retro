@@ -794,6 +794,7 @@ BHALUKPONG_A_NECHIPU PASS
 ****Priority 75–89:****
 
 * Pakke Tiger Reserve
+* Nameri National Park
 * Eaglenest Wildlife Sanctuary
 * Bomdila
 * Dirang
@@ -819,6 +820,7 @@ BHALUKPONG_A_NECHIPU PASS
 * Tipi orchids
 * Fort visit
 * Scenic drives
+* Nameri National Park nature walk
 
 ## Honeymoon
 
@@ -1299,6 +1301,19 @@ rather than:
 ****recommended_duration:**** Transit stop → 1 hour
 
 ****walking_intensity:**** LOW
+
+## CLUSTER 13 — NAMERI NATIONAL PARK
+
+****attractions:****
+
+* Nameri National Park
+* Jia Bhoroli River
+* Forest walks
+* Birdwatching
+
+****recommended_duration:**** Half day → Full day
+
+****walking_intensity:**** LOW → MEDIUM
 
 ---
 

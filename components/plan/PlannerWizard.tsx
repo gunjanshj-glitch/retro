@@ -62,6 +62,7 @@ function defaultRequest(): QuoteRequest {
     addedActivityCodes: [],
     pinnedClusterIds: [],
     nightOverrides: {},
+    clusterDays: {},
   };
 }
 

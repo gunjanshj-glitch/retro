@@ -12,6 +12,7 @@ import type { AirportLink, PlaceStay, PlannedActivity, PlannedDay, SightseeingOp
 import type { RouteLookup } from "./itinerary";
 import type { AirportRef } from "./gateway";
 import { formatDuration } from "./text";
+import { arrivalDay, clock } from "./entry";
 
 const DAY = policy.dayPlanning;
 
@@ -174,11 +175,25 @@ export type DayPlanInput = {
    * first and last days name the airport instead of a bare "Airport".
    */
   gateways?: {
-    arrival: AirportRef;
+    arrival: AirportRef & { kind?: "airport" | "rail" };
     arrivalMinutes: number | null;
-    departure: AirportRef;
+    departure: AirportRef & { kind?: "airport" | "rail" };
     departureMinutes: number | null;
+    /**
+     * Clock time (minutes after midnight) the traveller reaches the arrival
+     * port. When known, the first day only gets the daylight that is left once
+     * they are at the hotel; an evening arrival is a rest day.
+     */
+    arrivalClockMin?: number | null;
+    /** Whole days of travel before the arrival day (an overnight train is 1). */
+    daysEnRoute?: number;
   } | null;
+  /**
+   * The day (1-based, across the whole trip) the traveller wants an outing on,
+   * keyed by cluster id. Honoured only for a day spent at that outing's own
+   * destination and while the day stays under the daily sightseeing cap.
+   */
+  clusterDays?: Record<string, number>;
 };
 
 /**
@@ -226,6 +241,11 @@ export type DayPlanResult = {
    * this list is what tells the traveller the numbers do not add up.
    */
   transitOverflows: TransitOverflow[];
+  /**
+   * Outings the traveller put on a day that could not take them: a day at a
+   * different destination, or one the daily sightseeing cap left no room on.
+   */
+  unplacedDayChoices: { clusterId: string; title: string; day: number; reason: "wrong-place" | "no-room" }[];
 };
 
 export type TransitOverflow = {
@@ -250,6 +270,9 @@ export function planDays(input: DayPlanInput): DayPlanResult {
   const suggestions: PlannedActivity[] = [];
   const options: SightseeingOption[] = [];
   const transitOverflows: TransitOverflow[] = [];
+  const unplacedDayChoices: DayPlanResult["unplacedDayChoices"] = [];
+  const dayChoice = input.clusterDays ?? {};
+  const sightseeingCap = policy.dayPlanning.maxSightseeingHoursPerDay;
 
   const totalNights = stays.reduce((a, s) => a + s.nights, 0);
   const totalDays = totalNights + 1;
@@ -417,6 +440,13 @@ export function planDays(input: DayPlanInput): DayPlanResult {
 
     // Days spent at this place. The final stay gets one extra day for departure.
     const dayCount = stay.nights + (isLast ? 1 : 0);
+    const stayFirstDay = dayNumber + 1;
+    const stayLastDay = dayNumber + dayCount;
+    /** A cluster the traveller put on one of this stay's days, other than today. */
+    const reservedForAnotherDay = (c: Cluster, today: number) => {
+      const wanted = dayChoice[c.id];
+      return wanted != null && wanted >= stayFirstDay && wanted <= stayLastDay && wanted !== today;
+    };
 
     // A transfer that takes longer than one calendar day's realistic
     // waking-plus-rest window (`maxActiveHours`, 14h — the same "at least
@@ -467,10 +497,20 @@ export function planDays(input: DayPlanInput): DayPlanResult {
         budget = Math.max(0, budget - gateways.departureMinutes / 60);
       }
 
+      // The first day only has what is left of the daylight once the traveller
+      // is at the hotel: arriving in the evening leaves no trip at all, and
+      // below a few hours it is not worth planning an outing into.
+      let arrival: PlannedDay["arrival"];
+      if (isFirst && isArrivalDay && gateways?.arrivalClockMin != null) {
+        const a = arrivalDay(gateways.arrivalClockMin, gateways.arrivalMinutes ?? 60);
+        arrival = { atHotel: clock(a.hotelClockMin), restDay: a.restDay, usableHours: Number(a.usableHours.toFixed(1)) };
+        budget = Math.min(budget, a.usableHours);
+      }
+
       // A long transfer eats into the same 24 hours as sightseeing — and,
       // spread over several days, each day only absorbs its own share of the
       // remaining journey rather than the whole thing landing on day one.
-      if ((isArrivalDay || isTransitContinuation) && transfer?.durationMinutes) {
+      if ((isArrivalDay || isTransitContinuation) && transfer?.durationMinutes && !arrival) {
         const minutesElapsedBefore = d * usableMinutesPerDay;
         const minutesLeft = Math.max(0, transfer.durationMinutes - minutesElapsedBefore);
         budget = Math.max(0, budget - Math.min(usableMinutesPerDay, minutesLeft) / 60);
@@ -488,10 +528,21 @@ export function planDays(input: DayPlanInput): DayPlanResult {
         return budget * factor;
       };
 
+      // Outings the traveller put on this very day go in first, up to the daily
+      // sightseeing cap (not the day's budget: they asked for it).
+      for (const cluster of queue.filter((c) => dayChoice[c.id] === dayNumber)) {
+        if (used + cluster.durationHours > sightseeingCap + 1e-9) continue;
+        queue.splice(queue.indexOf(cluster), 1);
+        placed.push({ ...toActivity(cluster, (c) => priceLookup(stay.placeId, c)), slot: placed.length });
+        used += cluster.durationHours;
+      }
+
       // Best-first packing: take the highest-ranked cluster that still fits.
       let guard = 0;
       while (queue.length && guard++ < 50) {
-        const index = queue.findIndex((c) => used + c.durationHours <= allowanceFor(c));
+        const index = queue.findIndex(
+          (c) => !reservedForAnotherDay(c, dayNumber) && used + c.durationHours <= allowanceFor(c),
+        );
         if (index < 0) break;
         const [cluster] = queue.splice(index, 1);
         placed.push({ ...toActivity(cluster, (c) => priceLookup(stay.placeId, c)), slot: placed.length });
@@ -501,8 +552,9 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       // A full-day cluster never fits a relaxed day with young children, but
       // dropping it entirely would leave the traveller with an empty itinerary.
       // Shorten the visit instead, which is what an agent actually does.
-      if (!placed.length && queue.length && budget >= DAY.minPartialVisitHours) {
-        const cluster = queue.shift()!;
+      const partialIndex = queue.findIndex((c) => !reservedForAnotherDay(c, dayNumber));
+      if (!placed.length && partialIndex >= 0 && budget >= DAY.minPartialVisitHours) {
+        const [cluster] = queue.splice(partialIndex, 1);
         const hours = Math.min(cluster.durationHours, Math.max(DAY.minPartialVisitHours, allowanceFor(cluster)));
         const activity = toActivity(cluster, (c) => priceLookup(stay.placeId, c));
         placed.push({ ...activity, hours: Number(hours.toFixed(1)), slot: 0 });
@@ -517,12 +569,24 @@ export function planDays(input: DayPlanInput): DayPlanResult {
 
       const notes: string[] = [];
       if (isArrivalDay && isFirst) {
+        const verb = gateways?.arrival.kind === "rail" ? "Arrive at" : "Land at";
         notes.push(
           gateways
-            ? `Land at ${gateways.arrival.name} (${gateways.arrival.iata}), transfer to ${stay.placeName} and check in` +
+            ? `${verb} ${gateways.arrival.name} (${gateways.arrival.iata}), transfer to ${stay.placeName} and check in` +
                 (gateways.arrivalMinutes ? ` — about ${formatDuration(gateways.arrivalMinutes)} by road` : "")
             : "Arrival and hotel check-in",
         );
+        if (arrival) {
+          notes.push(
+            arrival.restDay
+              ? `Reach the hotel about ${arrival.atHotel} — too late in the day for sightseeing, so today is a rest day`
+              : `Reach the hotel about ${arrival.atHotel} — only ${arrival.usableHours}h of daylight is left, so today is kept light`,
+          );
+        }
+        if (gateways?.daysEnRoute) notes.push("The train leaves the evening before");
+        if (gateways?.arrivalClockMin != null && gateways.arrivalClockMin + (gateways.arrivalMinutes ?? 0) >= 22 * 60) {
+          notes.push("That is a late-night drive — consider staying near the arrival point and setting off in the morning");
+        }
       }
       if (isArrivalDay && !isFirst && transfer) {
         notes.push(
@@ -538,7 +602,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       if (isDepartureDay) {
         notes.push(
           gateways
-            ? `Check out and transfer to ${gateways.departure.name} (${gateways.departure.iata}) for the flight home` +
+            ? `Check out and transfer to ${gateways.departure.name} (${gateways.departure.iata}) for the ${gateways.departure.kind === "rail" ? "train" : "flight"} home` +
                 (gateways.departureMinutes ? ` — about ${formatDuration(gateways.departureMinutes)} by road` : "")
             : "Check-out and departure transfer",
         );
@@ -572,10 +636,11 @@ export function planDays(input: DayPlanInput): DayPlanResult {
           dinner: mealPlan.dinner && !isDepartureDay,
         },
         notes,
+        ...(arrival ? { arrival } : {}),
         ...(gateways && isArrivalDay && isFirst
-          ? { airport: { kind: "arrival" as const, ...gateways.arrival } }
+          ? { airport: { kind: "arrival" as const, iata: gateways.arrival.iata, name: gateways.arrival.name, ...(gateways.arrival.kind === "rail" ? { hub: "rail" as const } : {}) } }
           : gateways && isDepartureDay
-            ? { airport: { kind: "departure" as const, ...gateways.departure } }
+            ? { airport: { kind: "departure" as const, iata: gateways.departure.iata, name: gateways.departure.name, ...(gateways.departure.kind === "rail" ? { hub: "rail" as const } : {}) } }
             : {}),
       });
     }
@@ -603,5 +668,22 @@ export function planDays(input: DayPlanInput): DayPlanResult {
     }
   }
 
-  return { days, suggestions, options, transitOverflows };
+  // Day choices that never landed: wrong destination, or no room under the cap.
+  const idsOnDay = new Map<number, Set<string | null>>();
+  for (const d of days) idsOnDay.set(d.dayNumber, new Set(d.activities.concat(d.excludedActivities).map((a) => a.clusterId)));
+  const stayDays = new Map<string, number[]>();
+  for (const d of days) stayDays.set(d.placeId, [...(stayDays.get(d.placeId) ?? []), d.dayNumber]);
+  const everyCluster = new Map<string, { placeId: string; title: string }>();
+  for (const [placeId, st] of planned) for (const c of st.available) everyCluster.set(c.id, { placeId, title: c.name });
+  for (const [clusterId, day] of Object.entries(dayChoice)) {
+    const c = everyCluster.get(clusterId);
+    if (!c) continue;
+    if (!(stayDays.get(c.placeId) ?? []).includes(day)) {
+      unplacedDayChoices.push({ clusterId, title: c.title, day, reason: "wrong-place" });
+    } else if (!idsOnDay.get(day)?.has(clusterId)) {
+      unplacedDayChoices.push({ clusterId, title: c.title, day, reason: "no-room" });
+    }
+  }
+
+  return { days, suggestions, options, transitOverflows, unplacedDayChoices };
 }

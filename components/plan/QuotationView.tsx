@@ -159,19 +159,24 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
     });
   };
 
+  /** Days spent at the destination an outing belongs to: the only days it can go on. */
+  const daysForCluster = (clusterId: string) => {
+    const placeId = quote.sightseeingOptions?.find((o) => o.clusterId === clusterId)?.placeId;
+    return placeId ? quote.days.filter((d) => d.placeId === placeId) : [];
+  };
+
   /**
-   * Adding a suggested outing to the itinerary.
-   *
-   * A suggestion is a cluster that was never excluded — it simply did not fit
-   * the day budget — so toggling its exclusion would have removed it
-   * altogether. It has to be *pinned* instead, which pushes it to the front
-   * of the planner's queue while still respecting the daily sightseeing cap.
+   * Putting an outing on a chosen day. A suggestion is also pinned, so it is
+   * actually added; a planned outing is only moved.
    */
-  const addCluster = (clusterId: string) => {
-    if (request.pinnedClusterIds.includes(clusterId)) return;
+  const setClusterDay = (clusterId: string, day: number, add: boolean) => {
     onChange({
       ...request,
-      pinnedClusterIds: [...request.pinnedClusterIds, clusterId],
+      clusterDays: { ...request.clusterDays, [clusterId]: day },
+      pinnedClusterIds:
+        add && !request.pinnedClusterIds.includes(clusterId)
+          ? [...request.pinnedClusterIds, clusterId]
+          : request.pinnedClusterIds,
       excludedClusterIds: request.excludedClusterIds.filter((id) => id !== clusterId),
     });
   };
@@ -185,6 +190,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
     onChange({
       ...request,
       pinnedClusterIds: request.pinnedClusterIds.filter((id) => id !== clusterId),
+      clusterDays: Object.fromEntries(Object.entries(request.clusterDays).filter(([id]) => id !== clusterId)),
     });
   };
 
@@ -296,6 +302,56 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
           </ul>
         )}
       </section>
+
+      {/* ---- port of entry (trip inside the traveller's own country) ---- */}
+      {quote.portOfEntry && (
+        <section className="flex flex-col gap-3" aria-label="Port of entry" data-testid="port-of-entry-card">
+          <h3 className="font-display text-2xl md:text-[28px]">Your port of entry</h3>
+          <div className={`${cardClass} flex flex-col gap-3 p-4 sm:p-5`}>
+            <p className="font-semibold">
+              {quote.portOfEntry.name} ({quote.portOfEntry.code})
+            </p>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              The trip is planned around this gateway: it starts with the place nearest to it, works outward and
+              returns through it. It serves {quote.portOfEntry.serves.join(", ")}.
+              {quote.portOfEntry.firstStay.minutes != null &&
+                ` ${quote.portOfEntry.firstStay.place} is about ${formatDuration(quote.portOfEntry.firstStay.minutes)} by road.`}
+              {quote.portOfEntry.alternativeHub &&
+                ` ${quote.portOfEntry.alternativeHub.name} (${quote.portOfEntry.alternativeHub.code}) is the ${quote.portOfEntry.alternativeHub.kind === "rail" ? "nearest railhead" : "alternative airport"}.`}
+            </p>
+            {quote.portOfEntry.entry && (
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: "var(--muted)" }}>
+                  How do you get there from {quote.portOfEntry.entry.from}?
+                </span>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Flight or train to the port of entry">
+                  {quote.portOfEntry.entry.options.map((o) => {
+                    const active = o.mode === quote.portOfEntry!.entry!.mode;
+                    return (
+                      <button
+                        key={o.mode}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => onChange({ ...request, entryMode: o.mode })}
+                        className={chipClass}
+                        style={chipStyle(active)}
+                      >
+                        {o.mode === "flight" ? "Flight" : "Train"} · {formatDuration(o.minutes)} · {formatInr(o.roundTripFareInr)} pp return · reach {o.arrivesAt}
+                      </button>
+                    );
+                  })}
+                </div>
+                {quote.portOfEntry.entry.daysEnRoute > 0 && (
+                  <p className="text-xs" style={{ color: "var(--muted)" }}>
+                    The train leaves the evening before day 1.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* ---- flights ---- */}
       {quote.gateways && (
@@ -593,7 +649,9 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                       style={{ background: "var(--sun-soft, var(--surface))", color: "var(--ink)", border: "1px solid var(--line)" }}
                       data-testid={`airport-${day.airport.kind}`}
                     >
-                      {day.airport.kind === "arrival" ? "Land" : "Fly home"} · {day.airport.iata}
+                      {day.airport.kind === "arrival"
+                        ? day.airport.hub === "rail" ? "Arrive" : "Land"
+                        : day.airport.hub === "rail" ? "Train home" : "Fly home"} · {day.airport.iata}
                     </span>
                   )}
                 </span>
@@ -645,6 +703,24 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                               {a.attractions.slice(0, 4).join(" · ")}
                             </p>
                           )}
+                          {a.clusterId && !a.locked && daysForCluster(a.clusterId).length > 1 && (
+                            <label className="mt-1 flex items-center gap-2 text-xs" style={{ color: "var(--muted)" }}>
+                              Day
+                              <select
+                                className="rounded-md border px-1.5 py-0.5"
+                                style={{ borderColor: "var(--line)", background: "var(--surface)", color: "var(--ink)" }}
+                                value={day.dayNumber}
+                                aria-label={`Move ${a.title} to another day`}
+                                onChange={(e) => setClusterDay(a.clusterId!, Number(e.target.value), false)}
+                              >
+                                {daysForCluster(a.clusterId).map((d) => (
+                                  <option key={d.dayNumber} value={d.dayNumber}>
+                                    Day {d.dayNumber} · {d.date}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          )}
                         </div>
                       </li>
                     );
@@ -664,30 +740,16 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
           <div className="grid gap-3 md:grid-cols-2">
             {quote.suggestions.map((s) => {
               const pinned = s.clusterId ? request.pinnedClusterIds.includes(s.clusterId) : false;
+              const days = s.clusterId ? daysForCluster(s.clusterId) : [];
+              const chosenDay = s.clusterId ? request.clusterDays[s.clusterId] : undefined;
               return (
-                <button
+                <div
                   key={s.clusterId ?? s.title}
-                  type="button"
-                  onClick={() => s.clusterId && (pinned ? removeRequest(s.clusterId) : addCluster(s.clusterId))}
-                  aria-pressed={pinned}
-                  className="rounded-2xl border-[1.5px] p-4 text-left transition-[border-color,box-shadow] hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-sm)]"
+                  className="rounded-2xl border-[1.5px] p-4 text-left"
                   style={optionCardStyle(pinned)}
                 >
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="flex items-center gap-2 font-semibold">
-                      <span
-                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px]"
-                        style={
-                          pinned
-                            ? { background: "var(--ink)", borderColor: "var(--ink)", color: "#fff" }
-                            : { borderColor: "var(--line-strong)", color: "var(--ink)" }
-                        }
-                        aria-hidden="true"
-                      >
-                        {pinned ? <CheckIcon size={11} /> : <PlusIcon />}
-                      </span>
-                      {s.title}
-                    </span>
+                    <span className="font-semibold">{s.title}</span>
                     <span className="shrink-0 text-xs font-bold tabular-nums" style={{ color: "var(--accent)" }}>
                       +{formatInr(s.pricePerPersonInr)} pp
                     </span>
@@ -695,12 +757,33 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                   <p className="mt-1 text-xs" style={{ color: "var(--muted)" }}>
                     {s.hours}h · {s.attractions.slice(0, 3).join(" · ")}
                   </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <select
+                      className="rounded-md border px-2 py-1 text-sm"
+                      style={{ borderColor: "var(--line-strong)", background: "var(--surface)", color: "var(--ink)" }}
+                      aria-label={`Add ${s.title} to a day`}
+                      value={pinned && chosenDay ? chosenDay : ""}
+                      onChange={(e) => s.clusterId && e.target.value && setClusterDay(s.clusterId, Number(e.target.value), true)}
+                    >
+                      <option value="">Add to day…</option>
+                      {days.map((d) => (
+                        <option key={d.dayNumber} value={d.dayNumber}>
+                          Day {d.dayNumber} · {d.date}
+                        </option>
+                      ))}
+                    </select>
+                    {pinned && s.clusterId && (
+                      <button type="button" className="text-xs underline" onClick={() => removeRequest(s.clusterId!)}>
+                        Remove
+                      </button>
+                    )}
+                  </div>
                   {pinned && (
                     <p className="mt-1 text-xs font-semibold" style={{ color: "var(--warning)" }}>
-                      Requested — no room yet. Add a night to fit it in.
+                      {chosenDay ? `Requested for day ${chosenDay} — ` : "Requested — "}no room yet. Add a night or pick another day.
                     </p>
                   )}
-                </button>
+                </div>
               );
             })}
           </div>
@@ -892,14 +975,6 @@ function CheckIcon({ size = 14 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
     </svg>
   );
 }

@@ -14,6 +14,7 @@ import type { CoreBundle } from "@retro/core/atlas/schema";
 import { evaluatePlaceSelectability, type PlaceSelectability } from "@retro/core/atlas/engine/bounds";
 import { useZoomPan, ZOOM_MAX, ZOOM_MIN } from "@/lib/use-zoom-pan";
 import { pinMetrics, placePinLabels, selectVisiblePins, type DeclutterPin } from "@retro/core/map-declutter";
+import { buildRoutePath, routeStops, type RoutePoint } from "@/lib/route-path";
 import { countryBox, markerKey, type MapMarker, type RegionMarkers } from "@/lib/map-svg";
 
 type WorldRegion = {
@@ -251,6 +252,7 @@ export function WorldMapPicker({ core, selected, onChange }: Props) {
                   regionId={regionId}
                   placeByName={placeByName}
                   selectedSet={selectedSet}
+                  selectedOrder={selected}
                   selectability={selectability}
                   countryName={countryName}
                   hoveredPlace={hoveredPlace}
@@ -275,6 +277,8 @@ type RegionViewProps = {
   regionId: string;
   placeByName: Map<string, CoreBundle["places"][number]>;
   selectedSet: Set<string>;
+  /** Selected place ids in the order they were picked; the route line follows it. */
+  selectedOrder: string[];
   /** Selectability (allowed + reason) for every place in the catalogue,
    *  given the current selection. */
   selectability: Map<string, PlaceSelectability>;
@@ -288,7 +292,7 @@ type RegionViewProps = {
 };
 
 function RegionView({
-  regionId, placeByName, selectedSet, selectability, countryName, hoveredPlace, onHoverPlace, onToggle, onBack,
+  regionId, placeByName, selectedSet, selectedOrder, selectability, countryName, hoveredPlace, onHoverPlace, onToggle, onBack,
 }: RegionViewProps) {
   const asset = REGION_ASSET[regionId];
   // Held together so a stale response from the previous region can never be
@@ -403,10 +407,27 @@ function RegionView({
     return selectVisiblePins({ pins, pxPerUnit, widthPx: size.width, heightPx: size.height, zoom });
   }, [allPins, selectedSet, pxPerUnit, size.width, size.height, zoom]);
 
-  const shown = useMemo(
-    () => (selection ? allPins.filter((p) => selection.visible.has(p.key)) : []),
-    [selection, allPins],
-  );
+  const shown = useMemo(() => {
+    if (!selection) return [];
+    const visible = allPins.filter((p) => selection.visible.has(p.key));
+    // Paint chosen places last so a neighbour's pin or label can never sit on
+    // top of (and hide) a selected place's own name.
+    const chosen = (p: (typeof visible)[number]) => (p.place && selectedSet.has(p.place.id) ? 1 : 0);
+    return visible.sort((a, b) => chosen(a) - chosen(b));
+  }, [selection, allPins, selectedSet]);
+
+  // Route line: straight segments from one picked place to the next, in pick
+  // order. Drawn in the same map units as the pins, inside the same <svg>, so
+  // it uses their projection and moves with pan/zoom.
+  const route = useMemo(() => {
+    const positions = new Map<string, RoutePoint>();
+    for (const p of selectable) positions.set(p.place.id, { cx: p.cx, cy: p.cy });
+    return buildRoutePath(routeStops(selectedOrder, positions), {
+      k: 1 / pxPerUnit,
+      liftPx: 18 * PIN_SCALE * 0.6,
+      trimPx: 12,
+    });
+  }, [selectable, selectedOrder, pxPerUnit]);
 
   const labelSides = useMemo(
     () =>
@@ -415,13 +436,15 @@ function RegionView({
           .sort((a, b) => a.marker.level - b.marker.level || a.marker.rank - b.marker.rank)
           .map((p) => ({
             id: p.key,
+            // A chosen place must always keep its name, however crowded.
+            required: p.place ? selectedSet.has(p.place.id) : false,
             px: (p.cx - view.x) * pxPerUnit,
             py: (p.cy - view.y) * pxPerUnit,
             text: p.marker.level === 0 ? (p.marker.label ?? p.marker.name) : p.marker.name,
           })),
         metrics.radiusPx,
       ),
-    [shown, view.x, view.y, pxPerUnit, metrics.radiusPx],
+    [shown, selectedSet, view.x, view.y, pxPerUnit, metrics.radiusPx],
   );
   /**
    * Island nations are too small to survive the map simplification — Mauritius
@@ -579,6 +602,29 @@ function RegionView({
                 )}
               </g>
             ))}
+
+            {/* Route between picked places: under the pins, never takes a click. */}
+            {route.segments.length > 0 && (
+              <g pointerEvents="none" data-testid="route-line" aria-hidden="true">
+                <path
+                  d={route.d}
+                  fill="none"
+                  stroke="var(--sun-deep)"
+                  strokeWidth={2.5 / pxPerUnit}
+                  strokeLinecap="round"
+                  strokeDasharray={`${7 / pxPerUnit},${5 / pxPerUnit}`}
+                  opacity={0.9}
+                />
+                {route.arrows.map((a, i) => (
+                  <path
+                    key={i}
+                    d="M-5,-4.5 L5,0 L-5,4.5 Z"
+                    fill="var(--sun-deep)"
+                    transform={`translate(${a.x}, ${a.y}) rotate(${a.angle}) scale(${1 / pxPerUnit})`}
+                  />
+                ))}
+              </g>
+            )}
 
             {shown.map(({ marker, place, key, cx, cy }) => {
               const k = 1 / pxPerUnit;

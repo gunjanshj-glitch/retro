@@ -257,6 +257,12 @@ export type LabelItem = {
   px: number;
   py: number;
   text: string;
+  /**
+   * The label must be shown (a selected place). It claims space before any
+   * other label and, when no side is clear, still gets the least-bad one
+   * instead of being dropped.
+   */
+  required?: boolean;
 };
 
 type Rect = { x0: number; y0: number; x1: number; y1: number };
@@ -283,18 +289,30 @@ function circleHitsRect(cx: number, cy: number, r: number, rect: Rect): boolean 
 export function placePinLabels(items: LabelItem[], radiusPx: number): Map<string, "right" | "left"> {
   const out = new Map<string, "right" | "left">();
   const taken: Rect[] = [];
-  for (const item of items) {
+  // Required labels claim their space first so ordinary ones route around them.
+  const ordered = [...items.filter((i) => i.required), ...items.filter((i) => !i.required)];
+  for (const item of ordered) {
     const w = item.text.length * CHAR_WIDTH + 6;
     const sides: ["right" | "left", Rect][] = [
       ["right", { x0: item.px + radiusPx + 2, y0: item.py - LABEL_HEIGHT / 2, x1: item.px + radiusPx + 2 + w, y1: item.py + LABEL_HEIGHT / 2 }],
       ["left", { x0: item.px - radiusPx - 2 - w, y0: item.py - LABEL_HEIGHT / 2, x1: item.px - radiusPx - 2, y1: item.py + LABEL_HEIGHT / 2 }],
     ];
+    const clashes = (rect: Rect) =>
+      items.filter((o) => o.id !== item.id && circleHitsRect(o.px, o.py, radiusPx, rect)).length +
+      taken.filter((t) => rectsOverlap(t, rect)).length;
+    let placed = false;
     for (const [side, rect] of sides) {
-      const hitsPin = items.some((o) => o.id !== item.id && circleHitsRect(o.px, o.py, radiusPx, rect));
-      if (hitsPin || taken.some((t) => rectsOverlap(t, rect))) continue;
+      if (clashes(rect) > 0) continue;
       out.set(item.id, side);
       taken.push(rect);
+      placed = true;
       break;
+    }
+    if (!placed && item.required) {
+      // No clear side: take the one with the fewest collisions (right on a tie).
+      const [side, rect] = sides.reduce((best, cur) => (clashes(cur[1]) < clashes(best[1]) ? cur : best));
+      out.set(item.id, side);
+      taken.push(rect);
     }
   }
   return out;

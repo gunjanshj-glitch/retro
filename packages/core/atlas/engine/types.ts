@@ -186,6 +186,20 @@ export const QuoteRequest = z.object({
   pinnedClusterIds: z.array(z.string()).default([]),
   /** Manual override of the automatic night split, keyed by place id. */
   nightOverrides: z.record(z.string(), z.number().int().min(0)).default({}),
+  /**
+   * How the traveller gets from home to the trip's port of entry on a trip
+   * inside their own country. Absent means "the better of flight and train for
+   * the transport preference"; a flight is never ruled out because the trip is
+   * domestic.
+   */
+  entryMode: z.enum(["flight", "train"]).optional(),
+  /**
+   * Which day each outing is planned on, keyed by cluster id. Lets a tour that
+   * was planned (or that the traveller adds from "you could also add") be put on
+   * the day they want. The day must be one spent at the outing's own
+   * destination; any other is ignored and reported.
+   */
+  clusterDays: z.record(z.string(), z.number().int().min(1).max(120)).default({}),
 });
 export type QuoteRequest = z.infer<typeof QuoteRequest>;
 
@@ -314,7 +328,12 @@ export type PlannedDay = {
   meals: { breakfast: boolean; lunch: boolean; dinner: boolean };
   notes: string[];
   /** The airport the traveller lands at on this day, or leaves from, when it is an international flight day. */
-  airport?: { kind: "arrival" | "departure"; iata: string; name: string };
+  airport?: { kind: "arrival" | "departure"; iata: string; name: string; /** "rail" when the port of entry is a station. */ hub?: "airport" | "rail" };
+  /**
+   * Set on an arrival day: when the traveller reaches the hotel, and whether
+   * that leaves any of the day to plan. An evening arrival is a rest day.
+   */
+  arrival?: { atHotel: string; restDay: boolean; usableHours: number };
 };
 
 export type PlaceStay = {
@@ -440,12 +459,44 @@ export type Quotation = {
    * Where the international flights land and leave from. Absent on a trip with
    * no flight in or out (a domestic trip, or one with no places).
    */
+  /**
+   * The gateway a trip inside the traveller's own country is built around, and
+   * how they reach it from home. Shown to the traveller, and the thing the
+   * route is sequenced from.
+   */
+  portOfEntry?: PortOfEntryInfo;
   gateways?: {
     /** Where the flight starts and ends its journey home, e.g. Kolkata (CCU). */
     home: { code: string; label: string };
     arrival: GatewayInfo;
     departure: GatewayInfo;
   };
+};
+
+export type PortOfEntryInfo = {
+  code: string;
+  name: string;
+  kind: "airport" | "rail";
+  /** Selected places that hang off this port, nearest first. */
+  serves: string[];
+  /** How the traveller gets there from home, with every way on offer. */
+  entry: {
+    mode: "flight" | "train";
+    from: string;
+    minutes: number;
+    /** Round trip, per adult. */
+    fareInr: number;
+    /** Time of arrival at the port, "HH:MM". */
+    arrivesAt: string;
+    daysEnRoute: number;
+    userChosen: boolean;
+    options: { mode: "flight" | "train"; hub: string; minutes: number; roundTripFareInr: number; arrivesAt: string }[];
+  } | null;
+  /** The road from the port to the first stay, and from the last stay back to it. */
+  firstStay: { place: string; km: number | null; minutes: number | null };
+  lastStay: { place: string; km: number | null; minutes: number | null };
+  /** Another hub (the railway station, say) the traveller could use instead. */
+  alternativeHub: { code: string; name: string; kind: "airport" | "rail" } | null;
 };
 
 /** A decision rule that fired, with where it came from and what it asked for. */

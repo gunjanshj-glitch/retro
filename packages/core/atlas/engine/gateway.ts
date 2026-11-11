@@ -94,12 +94,17 @@ export function airportAlternatives(core: CoreBundle, placeId: string): AirportR
 }
 
 /** The airport city a satellite should be reached through: a trip stop that shares its airport. */
-function gatewayCityFor(core: CoreBundle, satelliteId: string, tripPlaceIds: Set<string>): string | null {
-  if (!isSatellite(core, satelliteId)) return null;
+function gatewayCityFor(
+  core: CoreBundle,
+  satelliteId: string,
+  tripPlaceIds: Set<string>,
+  satellite: (id: string) => boolean,
+): string | null {
+  if (!satellite(satelliteId)) return null;
   const iata = airportOf(core, satelliteId)?.iata;
   let best: { id: string; km: number } | null = null;
   for (const id of tripPlaceIds) {
-    if (id === satelliteId || isSatellite(core, id) || airportOf(core, id)?.iata !== iata) continue;
+    if (id === satelliteId || satellite(id) || airportOf(core, id)?.iata !== iata) continue;
     const km = airportDistanceKm(core, id) ?? 0;
     if (!best || km < best.km) best = { id, km };
   }
@@ -119,14 +124,19 @@ function gatewayCityFor(core: CoreBundle, satelliteId: string, tripPlaceIds: Set
  *
  * Total nights never change, and a place keeps every night it was allocated.
  */
-export function bookendGateways(core: CoreBundle, path: Visit[]): Visit[] {
+export function bookendGateways(
+  core: CoreBundle,
+  path: Visit[],
+  /** Decides what counts as a satellite; the default is distance to the listed airport. */
+  satellite: (id: string) => boolean = (id) => isSatellite(core, id),
+): Visit[] {
   if (path.length < 2) return path.map((v) => ({ ...v }));
   const route = path.map((v) => ({ ...v }));
   const tripPlaceIds = new Set(route.map((v) => v.placeId));
 
   const bookend = (side: "exit" | "entry") => {
     const end = side === "exit" ? route[route.length - 1] : route[0];
-    const cityId = gatewayCityFor(core, end.placeId, tripPlaceIds);
+    const cityId = gatewayCityFor(core, end.placeId, tripPlaceIds, satellite);
     if (!cityId) return;
 
     // Take from the visit with the most nights; ties go to the first one.

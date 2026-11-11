@@ -168,6 +168,14 @@ The transport graph is far sparser than its 1,463 routes suggest: 437 places sha
 Measured over every same-region place pair, this takes legs with no option at all from 6.6% to **0.1%**, and legs offering a real choice of modes to **85%**. Fares now track distance — a median of ₹900 under 300 km against ₹13,465 over 2,000 km, where before both were the same regional median.
 
 
+### Port of entry (trips inside the traveller's own country)
+
+[`entry.ts`](../packages/core/atlas/engine/entry.ts) picks the gateway a set of places hangs off (Guwahati for Arunachal, Bagdogra/NJP for Sikkim; thinly served airports such as Tezpur or Agra are replaced by the main one). The route starts at the place nearest the port, works outward and returns through it; a place within 200 km of the port's city is visited via it (rule 1a). Home to port is a **flight or train choice** (`entryMode`, else the better for the transport preference), priced per real distance, and sets the arrival clock time: an evening arrival makes day 1 a rest day, an afternoon one a light day. Legs of 200 km or less rank land, then water, then air. Hill-state roads use slower speeds.
+
+[`content/transport-patch.json`](../content/transport-patch.json) is the overlay for what the authored transport files omit: hubs (airports and stations), railheads per place, port substitutions, hill states and curated hub-to-place road hops. Add a row there to make a destination's guide-stated train or airport appear in quotes.
+
+Outings can be put on a chosen day (`clusterDays`); a day at another destination is refused and reported.
+
 ### Commercial policy
 
 Everything commercial lives in [`content/quote-policy.json`](../content/quote-policy.json) — room occupancy and child age bands, vehicle classes, day-planning budgets, meal plans, the markup chain, seasonality sensitivity, live-rate margins and guardrails. Changing a value there re-prices every quote on the next build.

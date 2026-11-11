@@ -36,6 +36,7 @@ import { normalise } from "./normalise";
 import { buildCountryCompatibility, defaultNightsFor } from "./compatibility";
 import { resolvePlaceCoords } from "./place-coords";
 import { deriveTransport } from "./transport-derive";
+import transportPatch from "../../content/transport-patch.json";
 import { buildSupplement } from "./europe-cities";
 
 const IN = {
@@ -248,8 +249,10 @@ async function main() {
   // made every mode look the same length and handed 84% of routes to a bus.
   const placeCountry = new Map(geo.places.map((p) => [p.id, p.countryId]));
   const countryRegion = new Map(geo.countries.map((c) => [c.id, c.regionId]));
+  const hillStates = new Set<string>(transportPatch.hillStates);
+  const hillPlaces = new Set(geo.places.filter((p) => p.stateId && hillStates.has(p.stateId)).map((p) => p.id));
   const derivedTransport = deriveTransport(
-    transport.routes, placeCoords.points, placeCountry, countryRegion,
+    transport.routes, placeCoords.points, placeCountry, countryRegion, hillPlaces,
   );
   transport.routes = derivedTransport.routes;
   console.log(
