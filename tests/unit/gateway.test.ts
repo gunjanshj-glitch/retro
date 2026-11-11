@@ -272,7 +272,7 @@ describe("the airport comes from the cheapest live fare", () => {
     new Map([
       [
         "flight:CCU:south-east-asia-thailand:FSC",
-        { component: "flight", key: "CCU:south-east-asia-thailand:FSC", inr, fetchedAt: new Date().toISOString(), provider: "google-flights", lowCost: true, airportIata },
+        { component: "flight", key: "CCU:south-east-asia-thailand:FSC", inr, fetchedAt: "2026-11-09T05:00:00Z", provider: "google-flights", lowCost: true, airportIata },
       ],
     ]);
 
