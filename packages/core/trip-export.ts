@@ -16,7 +16,19 @@ export function buildTripItinerary(quote: Quotation, meta: { requestId?: string;
       nights: r.nights,
       travellers: quote.pax,
     },
-    places: quote.stays.map((s) => ({ name: s.placeName, nights: s.nights, order: s.position + 1 })),
+    places: quote.stays.map((s, i) => {
+      // A place visited twice appears twice in `stays`; list its attractions once, on the first visit.
+      const first = quote.stays.findIndex((x) => x.placeId === s.placeId) === i;
+      const seen = new Set<string>();
+      const attractions = first
+        ? quote.days
+            .filter((d) => d.placeId === s.placeId)
+            .flatMap((d) => d.activities.filter((a) => !a.locked))
+            .filter((a) => !seen.has(a.title) && seen.add(a.title))
+            .map((a) => ({ title: a.title, hours: a.hours, includes: a.attractions, costPerPersonInr: a.pricePerPersonInr }))
+        : [];
+      return { name: s.placeName, nights: s.nights, order: s.position + 1, attractions };
+    }),
     days: quote.days.map((d) => ({
       day: d.dayNumber,
       date: d.date,
