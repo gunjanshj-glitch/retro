@@ -13,6 +13,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "rea
 import type { Quotation, QuoteRequest } from "@retro/core/atlas/engine/types";
 import { formatInr } from "@retro/core/atlas/engine/text";
 import { createFinalRequest, type AuthUser } from "@/lib/auth-client";
+import { downloadTripItinerary } from "@retro/core/trip-export";
 import { isValidEmail, normalisePhone } from "@retro/core/quote-workflow";
 import { btnGhost, btnPrimary, fieldClass, onAccent } from "./theme";
 
@@ -95,6 +96,12 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
       return;
     }
     setSentId(result.id);
+    // Temporary: hand the traveller their itinerary as a file on submit.
+    try {
+      downloadTripItinerary(quote, { requestId: result.id, destinationSummary });
+    } catch {
+      /* the request is saved either way; the button below retries */
+    }
     trackQuoteRequested(result.id, quote.totals.total);
     onSent(result.id);
   }
@@ -148,6 +155,9 @@ export function SendForApprovalModal({ user, request, quote, destinationSummary,
               <Link href={`/my-requests/view?id=${encodeURIComponent(sentId)}`} className={btnPrimary}>
                 Track this request
               </Link>
+              <button type="button" onClick={() => downloadTripItinerary(quote, { requestId: sentId, destinationSummary })} className={btnGhost}>
+                Download itinerary (JSON)
+              </button>
               <button type="button" onClick={onClose} className={btnGhost}>
                 Close
               </button>
