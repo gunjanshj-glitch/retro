@@ -15,6 +15,7 @@ import { driveMinutesFor, estimateCarTrip, type CarEstimate } from "./roadcar";
 import { bookendGateways } from "./gateway";
 import { isHillState } from "./entry";
 import { HILL_ROAD } from "./geo";
+import transportPatch from "../../../../content/transport-patch.json";
 
 // ---------------------------------------------------------------------------
 // Reference package matching
@@ -796,12 +797,44 @@ export function buildRouteLookup(
     );
   };
 
+  /**
+   * Pairs the agency drives rather than flies, priced per vehicle as one figure
+   * (content/transport-patch.json `vehicleFerries`): Krabi to Koh Samui is a car
+   * to Surat Thani and the car ferry across, in either direction.
+   */
+  type VehicleFerry = { a: string; b: string; carInr: number; ferryInr: number; minutes: number; km: number; via: string };
+  const vehicleFerryHit = (originId: string, destId: string, travellers: number): RouteHit | null => {
+    const hit = ((transportPatch as { vehicleFerries?: VehicleFerry[] }).vehicleFerries ?? []).find(
+      (v) => (v.a === originId && v.b === destId) || (v.a === destId && v.b === originId),
+    );
+    if (!hit) return null;
+    const country = countryOfPlace.get(originId);
+    const regionId = country ? (regionOfCountry.get(country) ?? "") : "";
+    const base = estimateCarTrip(hit.km, travellers, regionId);
+    const perVehicleInr = hit.carInr + hit.ferryInr;
+    const totalInr = perVehicleInr * base.vehicles;
+    const car: CarEstimate = {
+      ...base,
+      className: `${base.className} with the car ferry via ${hit.via}`,
+      roadKm: hit.km, billableKm: hit.km, drivingDays: 1,
+      perVehicleInr, totalInr, perPersonInr: Math.round(totalInr / Math.max(1, travellers)),
+      // The ferry is carried in the toll line: it is the one crossing charge on this leg.
+      breakdown: { fuelInr: 0, vehicleInr: hit.carInr * base.vehicles, tollsInr: hit.ferryInr * base.vehicles, driverInr: 0 },
+    };
+    return {
+      route: null, mode: "private_vehicle", minutes: hit.minutes, priceInr: car.perPersonInr,
+      estimated: false, distanceKm: hit.km, onsiteMode: null, car,
+    };
+  };
+
   const optionsForUnranked = (
     originId: string,
     destId: string,
     preference: TransportPreference,
     travellers: number,
   ): RouteHit[] => {
+    const fixed = vehicleFerryHit(originId, destId, travellers);
+    if (fixed) return [fixed];
     const all = withCar(originId, destId, baseOptionsFor(originId, destId, preference), preference, travellers);
     // Only one end (or each end) is an island: no train or road crosses the sea.
     // The authored tables still list a Ho Chi Minh City -> Phu Quoc "train".

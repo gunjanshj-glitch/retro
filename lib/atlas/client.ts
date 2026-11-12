@@ -242,17 +242,19 @@ export async function loadFlightLiveRates(
   const seen = new Set<string>();
   const searches: Promise<LiveRateMap>[] = [];
 
-  // In to one country, home from another: besides each country's round trip, ask Google Flights for the
-  // real open-jaw ticket (the third search), so the quote can take whichever is cheaper.
+  // In to one airport, home from another (a different country, or the same country through a different
+  // airport): besides the round trips, ask Google Flights for the real open-jaw ticket (the third search),
+  // so the quote can take whichever is cheaper.
   const countries = ends.map((s) => core.places.find((p) => p.id === s.placeId)?.countryId);
-  if (ends.length === 2 && countries[0] && countries[1] && countries[0] !== countries[1]) {
-    const to = airportAlternatives(core, ends[0].placeId).map((a) => a.iata).join(",");
-    const from = airportAlternatives(core, ends[1].placeId).map((a) => a.iata).join(",");
-    if (to && from) {
+  if (ends.length === 2 && ends[0].placeId !== ends[1].placeId && countries[0] && countries[1]) {
+    const toList = airportAlternatives(core, ends[0].placeId).map((a) => a.iata);
+    const fromList = airportAlternatives(core, ends[1].placeId).map((a) => a.iata);
+    if (toList.length && fromList.length && !toList.some((c) => fromList.includes(c))) {
       searches.push(
         loadLiveRates({
-          origin: request.departureCity, destinationIata: to, returnFrom: from, month, carrier: request.carrier,
-          fareKey: `jaw-${countries[0]}-${countries[1]}`, outbound: request.startDate, inbound, cabin: request.cabin,
+          origin: request.departureCity, destinationIata: toList.join(","), returnFrom: fromList.join(","), month,
+          carrier: request.carrier, fareKey: `jaw-${countries[0]}-${countries[1]}`,
+          outbound: request.startDate, inbound, cabin: request.cabin,
         }),
       );
     }

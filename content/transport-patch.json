@@ -199,5 +199,21 @@
       "km": 100,
       "minutes": 240
     }
+  ],
+  "vehicleFerries": [
+    {
+      "a": "krabi",
+      "b": "koh-samui",
+      "carInr": 7000,
+      "ferryInr": 3000,
+      "minutes": 300,
+      "km": 230,
+      "via": "Surat Thani and the Donsak car ferry",
+      "note": "Agency rule: when a trip holds both Krabi and Koh Samui, the leg is a private car plus the car ferry, not a flight. Rs 7,000 car + Rs 3,000 ferry per vehicle (agency figure; web guides give USD 190-460 per car, 4-6 hours, so it sits inside that range).",
+      "sources": [
+        "https://north-vietnam.com/travel-from-krabi-to-koh-samui-bus-ferry-flight/",
+        "https://www.rome2rio.com/s/Krabi/Ko-Samui"
+      ]
+    }
   ]
 }

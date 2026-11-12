@@ -604,7 +604,7 @@ describe("international airfare", () => {
       return q.lineItems.filter((i) => i.component === "flight" && !/children|infants/.test(i.label));
     };
 
-    it("is used as one itinerary when it beats half of each country's round trip", () => {
+    it("is priced as one itinerary in place of half of each country's round trip", () => {
       const lines = run(35000); // halves are (40000 + 44000) / 2 = 42000
       expect(lines).toHaveLength(1);
       expect(lines[0].label).toMatch(/^Open-jaw airfare/);
@@ -612,9 +612,11 @@ describe("international airfare", () => {
       expect(lines[0].unitPriceInr).toBe(Math.round(35000 * (1 + policy.liveRates.bookingVariance.flight)));
     });
 
-    it("is ignored when it costs more than that estimate", () => {
+    it("is the ticket even when it costs more than the estimate, because it is the real itinerary", () => {
       const lines = run(60000);
-      expect(lines.map((l) => l.label.split(" — ")[0])).toEqual(["Airfare out", "Airfare home"]);
+      expect(lines).toHaveLength(1);
+      expect(lines[0].label).toMatch(/^Open-jaw airfare/);
+      expect(lines[0].detail).toContain("round-trip estimate");
     });
 
     it("leaves the two-leg estimate alone when the search found no open-jaw fare", () => {

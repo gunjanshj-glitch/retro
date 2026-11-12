@@ -694,6 +694,28 @@ export function priceQuotation(input: PricingInput): {
         perAdultInr * heads.infantFactor, false, resolved.source, null, calibrate);
     };
 
+    // The real open-jaw ticket (in to one airport, home from another), priced as one itinerary by Google
+    // Flights. The itinerary really does fly home from a different airport, so this is the actual ticket
+    // whatever it costs; a round trip, or half of two round trips, only approximates it. Returns true when
+    // it pushed the line.
+    const openJaw = (estimate: number): boolean => {
+      const jaw = liveRates.get(`flight:${request.departureCity}:jaw-${inboundCountry}-${outboundCountry}:${request.carrier}`);
+      if (!jaw || jaw.provider !== "google-flights") return false;
+      const g = input.gateways;
+      const route = g
+        ? `${home} to ${at(g.arrival)}, back from ${at(g.departure)}`
+        : `${home} to ${placeName.get(firstPlace.placeId)}, back from ${placeName.get(lastPlace.placeId)}`;
+      pushFare(
+        `Open-jaw airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}, home from ${placeName.get(lastPlace.placeId)}`,
+        `${route}; ${request.cabin}, one ticket flying in to one airport and home from another, priced as a single itinerary ` +
+          `(the round-trip estimate for this trip was ${Math.round(estimate).toLocaleString("en-IN")} INR)`,
+        jaw.inr,
+        { source: "live", live: jaw },
+        inboundCountry,
+      );
+      return true;
+    };
+
     const inboundBand = selectBand(inboundCountry);
     const entry = input.entry;
 
@@ -713,31 +735,22 @@ export function priceQuotation(input: PricingInput): {
       );
     } else if (inboundBand && inboundCountry === outboundCountry) {
       const resolved = fareOf(inboundBand, inboundCountry);
-      pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-        `${routeNote("round-trip")}${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip`,
-        resolved.inr, resolved, inboundCountry);
+      const g = input.gateways;
+      if (g && g.arrival.iata !== g.departure.iata && openJaw(resolved.inr)) {
+        /* flies in and home from different airports: priced as one open-jaw ticket */
+      } else {
+        pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
+          `${routeNote("round-trip")}${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip`,
+          resolved.inr, resolved, inboundCountry);
+      }
     } else if (inboundBand) {
       const outboundBand = selectBand(outboundCountry) ?? inboundBand;
       const inboundResolved = fareOf(inboundBand, inboundCountry);
       const outboundResolved = fareOf(outboundBand, outboundCountry);
 
-      // The real open-jaw ticket, priced as one itinerary by Google Flights. Half of each country's round
-      // trip is only an approximation of it, so take the ticket when it is no dearer than that estimate.
-      const jaw = liveRates.get(`flight:${request.departureCity}:jaw-${inboundCountry}-${outboundCountry}:${request.carrier}`);
       const halves = (inboundResolved.inr + outboundResolved.inr) / 2;
-      if (jaw && jaw.provider === "google-flights" && jaw.inr <= halves) {
-        const g = input.gateways;
-        const route = g
-          ? `${home} to ${at(g.arrival)}, back from ${at(g.departure)}`
-          : `${home} to ${placeName.get(firstPlace.placeId)}, back from ${placeName.get(lastPlace.placeId)}`;
-        pushFare(
-          `Open-jaw airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}, home from ${placeName.get(lastPlace.placeId)}`,
-          `${route}; ${request.cabin}, one ticket flying in to one city and home from another, priced as a single itinerary ` +
-            `(no dearer than ${Math.round(halves).toLocaleString("en-IN")} INR, the cost of two separate round trips split in half)`,
-          jaw.inr,
-          { source: "live", live: jaw },
-          inboundCountry,
-        );
+      if (openJaw(halves)) {
+        /* priced as one open-jaw ticket */
       } else {
       pushFare(`Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
         `${routeNote("out")}${carrierNote(inboundBand, inboundResolved.live)}, ${cabinOf(inboundBand, inboundResolved.live)}, one way of an open-jaw ticket`,
