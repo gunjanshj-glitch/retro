@@ -26,6 +26,18 @@ export type LiveRate = {
   lowCost?: boolean;
   /** Google Flights only: the airport the cheapest fare lands at, which matters when a metro's airports were searched together. */
   airportIata?: string;
+  /** Domestic port searches only: the flights behind the fare, so the planner can pick one that lands in time. */
+  offers?: FlightOffer[];
+};
+
+/** A listed flight to the searched airport; clock times in minutes after midnight. `inr` is the round-trip fare for one adult. */
+export type FlightOffer = {
+  inr: number;
+  departsMin: number;
+  arrivesMin: number;
+  arrivesDayOffset: number;
+  airline?: string;
+  stops: number;
 };
 
 const CACHE_SECONDS = 6 * 60 * 60;
@@ -97,10 +109,43 @@ export type Cabin = "Economy" | "Premium Economy" | "Business";
 /** Google Flights `travel_class`: 1 economy, 2 premium economy, 3 business. */
 const TRAVEL_CLASS: Record<Cabin, number> = { Economy: 1, "Premium Economy": 2, Business: 3 };
 
-type SerpOffer = {
-  price?: number;
-  flights?: { flight_number?: string; arrival_airport?: { id?: string } }[];
+type SerpLeg = {
+  flight_number?: string;
+  airline?: string;
+  departure_airport?: { id?: string; time?: string };
+  arrival_airport?: { id?: string; time?: string };
 };
+type SerpOffer = { price?: number; flights?: SerpLeg[] };
+
+const clockOf = (t?: string): { min: number; day: string } | null => {
+  const m = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})/.exec(t ?? "");
+  return m ? { min: Number(m[2]) * 60 + Number(m[3]), day: m[1] } : null;
+};
+
+/**
+ * Every priced flight with its clock times, cheapest first, one per fare and
+ * arrival time. A leg whose times are missing is skipped rather than guessed.
+ */
+export function flightOffers(offers: SerpOffer[], limit = 15): FlightOffer[] {
+  const seen = new Set<string>();
+  const out: FlightOffer[] = [];
+  for (const o of offers) {
+    const legs = o.flights ?? [];
+    if (typeof o.price !== "number" || !(o.price > 0) || !legs.length) continue;
+    const dep = clockOf(legs[0].departure_airport?.time);
+    const arr = clockOf(legs[legs.length - 1].arrival_airport?.time);
+    if (!dep || !arr) continue;
+    const offset = Math.round((Date.parse(`${arr.day}T00:00:00Z`) - Date.parse(`${dep.day}T00:00:00Z`)) / 86_400_000);
+    const key = `${o.price}:${arr.min}:${offset}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({
+      inr: o.price, departsMin: dep.min, arrivesMin: arr.min, arrivesDayOffset: Math.max(0, offset),
+      ...(legs[0].airline ? { airline: legs[0].airline } : {}), stops: legs.length - 1,
+    });
+  }
+  return out.sort((a, b) => a.inr - b.inr).slice(0, limit);
+}
 
 /**
  * The cheapest offer Google Flights lists, whatever airline sells it. This is
@@ -161,8 +206,10 @@ async function fetchGoogleFlight(
   const body = (await res.json()) as { error?: string; best_flights?: SerpOffer[]; other_flights?: SerpOffer[] };
   if (body.error) return null;
 
-  const cheapest = cheapestOffer([...(body.best_flights ?? []), ...(body.other_flights ?? [])]);
+  const all = [...(body.best_flights ?? []), ...(body.other_flights ?? [])];
+  const cheapest = cheapestOffer(all);
   if (cheapest == null) return null;
+  const offers = fareKey.startsWith("port-") ? flightOffers(all) : [];
 
   return {
     component: "flight",
@@ -173,6 +220,7 @@ async function fetchGoogleFlight(
     lowCost: cheapest.lowCost,
     // Only an airport that was asked for: a stray code from upstream is not shown as the landing airport.
     ...(cheapest.airport && destination.split(",").includes(cheapest.airport) ? { airportIata: cheapest.airport } : {}),
+    ...(offers.length ? { offers } : {}),
   };
 }
 

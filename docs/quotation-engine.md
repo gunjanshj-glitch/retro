@@ -176,6 +176,8 @@ Measured over every same-region place pair, this takes legs with no option at al
 
 Outings can be put on a chosen day (`clusterDays`); a day at another destination is refused and reported.
 
+**Flights are chosen so the traveller can reach the hotel.** For a domestic trip the client makes one Google Flights search, home to the port airport, and the worker returns every listed flight with its clock times (`offers` on the live rate, key `flight:<home>:port-<iata>:<carrier>`). The engine takes the cheapest flight that lands early enough to reach the first stay (hotel by 19:00 on hill roads, 21:00 on plains) and prefers any option that does over a cheaper one that does not. If no listed flight lands in time, one night is added in the airport city, when the catalogue has a place within 40 km of the port (Guwahati for GAU), so the drive starts in the morning; the quote says so and the trip is one night longer. Where the airport has no such city, the quote warns that a night must be booked and is not priced. The same night is added at the end when the road from the last stay back to the port is over six hours. With no live data the engine uses its modelled 06:30 departure and says the fare is typical.
+
 ### Commercial policy
 
 Everything commercial lives in [`content/quote-policy.json`](../content/quote-policy.json) — room occupancy and child age bands, vehicle classes, day-planning budgets, meal plans, the markup chain, seasonality sensitivity, live-rate margins and guardrails. Changing a value there re-prices every quote on the next build.

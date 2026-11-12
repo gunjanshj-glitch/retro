@@ -1,0 +1,18 @@
+{
+  "_about": "Hand-entered activity rates (source: manual) from public web figures, for attractions the workbook does not price. Per adult, INR, Indian resident. They conflict between sources and none is an official tariff, so each is an estimate for agency review: replace with a supplier rate or a workbook row. Attractions with no published fee found (Dirang Dzong, Nag Temple, Monpa Village) are deliberately absent, not priced at zero. Tipi Orchid Research Centre is already in the workbook (about Rs 189), which wins; web figures for it range Rs 10 to Rs 50, so the workbook is the higher, safer number.",
+  "rates": [
+    {
+      "placeId": "bhalukpong",
+      "code": "BHALUKPONG_A_NAMERI NATIONAL PARK",
+      "inr": 370,
+      "unit": "Person",
+      "note": "Park entry Rs 20 plus river boating Rs 350 (Indian adult). Foreigners: Rs 250 + Rs 550. Another guide lists Rs 100 entry.",
+      "sources": [
+        "https://www.mapsofindia.com/maps/wildlife/nameri-national-park.html",
+        "https://traveltriangle.com/blog/nameri-national-park/",
+        "https://india-guide.in/destinations/nameri/timings/"
+      ],
+      "checked": "2026-11-12"
+    }
+  ]
+}

@@ -152,6 +152,37 @@ const TRAIN_DEPARTS_MIN = 17 * 60;
 /** An overnight coach leaves in the evening too. */
 const BUS_DEPARTS_MIN = 18 * 60;
 
+/** One flight Google Flights lists to the port, as the worker returns it. Times are clock minutes after midnight. */
+export type LiveOffer = {
+  /** Return fare for one adult. */
+  inr: number;
+  departsMin: number;
+  arrivesMin: number;
+  /** Whole days between departure and arrival (a red-eye lands the next day). */
+  arrivesDayOffset: number;
+  airline?: string;
+  stops: number;
+};
+
+/** Nobody drives a hill road after dark, and nobody should start a long plains drive late at night. */
+export const LAST_HOTEL_ARRIVAL_HILL_MIN = 19 * 60;
+export const LAST_HOTEL_ARRIVAL_PLAINS_MIN = 21 * 60;
+
+/** Where the traveller's own plan has to land: is the hotel reachable by the end of the day? */
+export function reachesHotelInTime(arrivesAtHubMin: number, roadMinutes: number | null, hill: boolean): boolean {
+  if (roadMinutes == null) return true;
+  const limit = hill ? LAST_HOTEL_ARRIVAL_HILL_MIN : LAST_HOTEL_ARRIVAL_PLAINS_MIN;
+  return arrivesAtHubMin + roadMinutes <= limit;
+}
+
+export type EntryContext = {
+  /** Road minutes from the port to the first stay. */
+  roadMinutes: number | null;
+  hill: boolean;
+  /** Live flights to the port, when the worker had any. */
+  offers?: LiveOffer[];
+};
+
 export type EntryOption = {
   mode: EntryMode;
   /** Hub the traveller arrives at by this mode. */
@@ -165,9 +196,14 @@ export type EntryOption = {
   arrivesAtMin: number;
   /** Whole days the journey runs into before the arrival day (an overnight train is 1). */
   daysEnRoute: number;
+  /** Reaches the first stay before the last safe arrival time. */
+  inTime: boolean;
+  /** The flight is a real listing for the traveller's dates, not the modelled schedule. */
+  live?: boolean;
+  airline?: string;
 };
 
-export function entryOptions(home: GeoPoint, port: PortOfEntry): EntryOption[] {
+export function entryOptions(home: GeoPoint, port: PortOfEntry, ctx: EntryContext = { roadMinutes: null, hill: false }): EntryOption[] {
   const out: EntryOption[] = [];
   // Home is already at the port (a Delhi traveller on a Delhi trip): nothing to book.
   if (haversineKm(home, port.airport) < 150) return out;
@@ -186,9 +222,34 @@ export function entryOptions(home: GeoPoint, port: PortOfEntry): EntryOption[] {
       fareInr: Math.round(fare.fixedInr + km * fare.perKmInr),
       arrivesAtMin: total % 1440,
       daysEnRoute: Math.floor(total / 1440),
+      inTime: reachesHotelInTime(total % 1440, ctx.roadMinutes, ctx.hill),
     });
   };
-  build("flight", port.airport);
+  const km = Math.round(haversineKm(home, port.airport));
+  const offers = ctx.offers ?? [];
+  if (offers.length) {
+    // Real flights: the cheapest one that lands early enough to reach the hotel the
+    // same day. If none does, the cheapest is still offered, flagged as not in time,
+    // and the planner puts a night near the airport instead.
+    const sameDay = offers.filter((o) => o.arrivesDayOffset === 0);
+    const fits = sameDay.filter((o) => reachesHotelInTime(o.arrivesMin, ctx.roadMinutes, ctx.hill));
+    const pool = fits.length ? fits : sameDay.length ? sameDay : offers;
+    const best = [...pool].sort((a, b) => a.inr - b.inr || a.arrivesMin - b.arrivesMin)[0];
+    out.push({
+      mode: "flight",
+      hub: port.airport,
+      km,
+      minutes: Math.max(30, best.arrivesMin + best.arrivesDayOffset * 1440 - best.departsMin),
+      fareInr: Math.round(best.inr / 2),
+      arrivesAtMin: best.arrivesMin,
+      daysEnRoute: best.arrivesDayOffset,
+      inTime: reachesHotelInTime(best.arrivesMin, ctx.roadMinutes, ctx.hill),
+      live: true,
+      ...(best.airline ? { airline: best.airline } : {}),
+    });
+  } else {
+    build("flight", port.airport);
+  }
   // A train is only a real answer where it is not absurdly far; 2,800 km is Delhi to Kanyakumari.
   if (port.rail) {
     const km = haversineKm(home, port.rail);
@@ -211,8 +272,12 @@ export function pickEntry(
   if (!options.length) return null;
   const pinned = chosen && options.find((o) => o.mode === chosen);
   if (pinned) return pinned;
+  // Only an option that reaches the hotel in time is recommended, whatever it costs more;
+  // when none does, the best of them is returned and the caller adds a night near the port.
+  const usable = options.filter((o) => o.inTime);
+  const pool = usable.length ? usable : options;
   const score = (o: EntryOption) => o.fareInr + (o.minutes / 60) * ENTRY_HOUR_VALUE[preference];
-  return [...options].sort((a, b) => score(a) - score(b))[0];
+  return [...pool].sort((a, b) => score(a) - score(b))[0];
 }
 
 // ---------------------------------------------------------------------------

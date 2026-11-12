@@ -35,7 +35,7 @@ import { normaliseKey, formatDuration } from "./text";
 import { filterRealisticSelection } from "./bounds";
 import { haversineKm } from "./geo";
 import { airportDistanceKm, chooseAirport, type GatewayInfo } from "./gateway";
-import { choosePortOfEntry, clock, entryOptions, pickEntry, roadLeg, type Hub } from "./entry";
+import { choosePortOfEntry, clock, entryOptions, isHillPlace, pickEntry, roadLeg, type Hub } from "./entry";
 
 /** Default trip style for each traveller type; the planner lets it be changed. */
 export const STYLE_FOR_TRAVELLER: Record<TravellerType, TripStyle> = {
@@ -307,17 +307,89 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       if (km != null) roadKmToPort.set(id, km);
     }
   }
-  const stays = buildStays(
+  const homeCityForEntry = (core.departureCities ?? []).find((c) => c.code === request.departureCity);
+  const homePointForEntry =
+    homeCityForEntry?.lat != null && homeCityForEntry.lon != null ? { lat: homeCityForEntry.lat, lon: homeCityForEntry.lon } : null;
+  const liveEntryFare = port
+    ? data.liveRates?.get(`flight:${request.departureCity}:port-${port.airport.code.toLowerCase()}:${request.carrier}`)
+    : undefined;
+
+  // The airport city as a place a traveller can sleep in: the catalogue place nearest the port, within 40 km.
+  const portCityId = (() => {
+    if (!port) return null;
+    let best: { id: string; km: number } | null = null;
+    for (const p of core.places) {
+      if (p.lat == null || p.lon == null) continue;
+      const km = haversineKm({ lat: p.lat, lon: p.lon }, port.airport);
+      if (km <= 40 && (!best || km < best.km)) best = { id: p.id, km };
+    }
+    return best?.id ?? null;
+  })();
+  let portNight: { place: string | null; why: string } | null = null;
+  const addPortNight = (why: string): boolean => {
+    if (portNight) return false;
+    if (portCityId && !placeIds.includes(portCityId)) {
+      placeIds = [...placeIds, portCityId];
+      nights += 1;
+      portNight = { place: names.get(portCityId) ?? portCityId, why };
+      warnings.push({
+        level: "info",
+        audience: "traveller",
+        message: `${why} A night in ${names.get(portCityId)} near the airport is added (the trip is ${nights} nights), so the drive starts in the morning.`,
+      });
+      return true;
+    }
+    if (!portCityId) {
+      portNight = { place: null, why };
+      warnings.push({
+        level: "warning",
+        audience: "traveller",
+        message: `${why} There is no hotel city next to ${port!.airport.name} in the catalogue to price a night in, so book a night near the airport yourself; it is not in this quote.`,
+      });
+    }
+    return false;
+  };
+  // Decide before sequencing: if no way of arriving reaches the nearest stay in time, the
+  // first night is spent at the airport city rather than on a late or night drive.
+  if (port && homePointForEntry && placeIds.length) {
+    const near = placeIds
+      .map((id) => ({ id, leg: roadLeg(core, port.airport, id) }))
+      .filter((x) => x.leg.minutes != null)
+      .sort((x, y) => x.leg.minutes! - y.leg.minutes!)[0];
+    const opts = entryOptions(homePointForEntry, port, {
+      roadMinutes: near?.leg.minutes ?? null,
+      hill: near ? isHillPlace(core, near.id) : false,
+      offers: liveEntryFare?.offers,
+    });
+    const pre = pickEntry(opts, request.transportPreference, request.entryMode);
+    if (pre && !pre.inTime && portCityId && !placeIds.includes(portCityId)) {
+      addPortNight(
+        `${pre.live ? "Every listed flight" : "The best way"} from ${homeCityForEntry?.label ?? request.departureCity} arrives about ${clock(pre.arrivesAtMin)}, ` +
+          `too late to reach ${names.get(near!.id) ?? "the first stay"} (${formatDuration(near?.leg.minutes ?? 0)} by road) before dark.`,
+      );
+    }
+  }
+  const stayArgs = () => [
     placeIds, nights, summaries, request.tripStyle, routeLookup, names, request.nightOverrides,
     portPoint ?? gateway, placePoints, bookendCore,
     port
       ? {
           // A place is a satellite of the port unless it is the port's own city.
-          satellite: (id) => nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > 40,
+          satellite: (id: string) => nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > 40,
           roadKm: roadKmToPort,
         }
       : null,
-  );
+  ] as const;
+  let stays = buildStays(...stayArgs());
+  // The last road home is too long for a flight or train the same day: spend the last night near the port.
+  if (port && stays.length) {
+    const lastLeg = roadLeg(core, port.airport, stays[stays.length - 1].placeId);
+    if (lastLeg.minutes != null && lastLeg.minutes > 360 && portCityId && !placeIds.includes(portCityId)) {
+      if (addPortNight(`The road from ${stays[stays.length - 1].placeName} back to ${port.airport.name} is ${formatDuration(lastLeg.minutes)}, too long to connect to a flight or train the same day.`)) {
+        stays = buildStays(...stayArgs());
+      }
+    }
+  }
   if (stays.length > placeIds.length) {
     const first = stays[0];
     const last = stays[stays.length - 1];
@@ -405,11 +477,17 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   if (port && stays.length) {
     const homeCity = (core.departureCities ?? []).find((c) => c.code === request.departureCity);
     const homePoint = homeCity?.lat != null && homeCity.lon != null ? { lat: homeCity.lat, lon: homeCity.lon } : null;
-    const options = homePoint ? entryOptions(homePoint, port) : [];
-    const chosen = pickEntry(options, request.transportPreference, request.entryMode);
-    const hub: Hub = chosen?.hub ?? port.airport;
     const firstStay = stays[0];
     const lastStay = stays[stays.length - 1];
+    const options = homePoint
+      ? entryOptions(homePoint, port, {
+          roadMinutes: roadLeg(core, port.airport, firstStay.placeId).minutes,
+          hill: isHillPlace(core, firstStay.placeId),
+          offers: liveEntryFare?.offers,
+        })
+      : [];
+    const chosen = pickEntry(options, request.transportPreference, request.entryMode);
+    const hub: Hub = chosen?.hub ?? port.airport;
     const inbound = roadLeg(core, hub, firstStay.placeId);
     const outbound = roadLeg(core, hub, lastStay.placeId);
     const homeLabel = homeCity ? `${homeCity.label} (${homeCity.code})` : request.departureCity;
@@ -425,11 +503,14 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       entryForPricing = {
         mode: chosen.mode, homeLabel: homeCity?.label ?? request.departureCity, hubName: hub.name, hubCode: hub.code,
         minutes: chosen.minutes, oneWayFareInr: chosen.fareInr,
+        ...(chosen.live ? { live: true as const, airline: chosen.airline } : {}),
       };
     }
     const alt = hub.code === port.airport.code ? port.rail : port.airport;
     portInfo = {
       code: hub.code,
+      airportCode: port.airport.code,
+      ...(portNight ? { portNight } : {}),
       name: hub.name,
       kind: hub.kind,
       serves: port.servesPlaceIds.map((id) => names.get(id) ?? id),
@@ -442,8 +523,9 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
             arrivesAt: clock(chosen.arrivesAtMin),
             daysEnRoute: chosen.daysEnRoute,
             userChosen: Boolean(request.entryMode && request.entryMode === chosen.mode),
+            ...(chosen.live ? { live: true, ...(chosen.airline ? { airline: chosen.airline } : {}) } : {}),
             options: options.map((o) => ({
-              mode: o.mode, hub: o.hub.name, minutes: o.minutes, roundTripFareInr: o.fareInr * 2, arrivesAt: clock(o.arrivesAtMin),
+              mode: o.mode, hub: o.hub.name, minutes: o.minutes, roundTripFareInr: o.fareInr * 2, arrivesAt: clock(o.arrivesAtMin), ...(o.live ? { live: true } : {}),
             })),
           }
         : null,
@@ -451,7 +533,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       lastStay: { place: lastStay.placeName, ...outbound },
       alternativeHub: alt ? { code: alt.code, name: alt.name, kind: alt.kind } : null,
     };
-    if (outbound.minutes != null && outbound.minutes > 360) {
+    if (outbound.minutes != null && outbound.minutes > 360 && !portNight) {
       warnings.push({
         level: "warning",
         audience: "traveller",

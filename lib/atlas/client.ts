@@ -100,6 +100,7 @@ export type LiveRateItem = {
   provider?: "google-flights" | "travelpayouts";
   lowCost?: boolean;
   airportIata?: string;
+  offers?: { inr: number; departsMin: number; arrivesMin: number; arrivesDayOffset: number; airline?: string; stops: number }[];
 };
 
 export type LiveRateResponse = { rates: LiveRateItem[] };
@@ -161,7 +162,7 @@ type LiveRateMap = Awaited<ReturnType<typeof loadLiveRates>>;
  */
 export async function loadHotelLiveRates(
   core: CoreBundle,
-  quote: Pick<Quotation, "stays" | "request" | "pax">,
+  quote: Pick<Quotation, "stays" | "request" | "pax"> & { portOfEntry?: Quotation["portOfEntry"] },
 ): Promise<LiveRateMap> {
   const { request, pax } = quote;
   const day = 86_400_000;
@@ -209,11 +210,27 @@ export async function loadHotelLiveRates(
  */
 export async function loadFlightLiveRates(
   core: CoreBundle,
-  quote: Pick<Quotation, "stays" | "request">,
+  quote: Pick<Quotation, "stays" | "request"> & { portOfEntry?: Quotation["portOfEntry"] },
 ): Promise<LiveRateMap> {
   const { request } = quote;
   const merged: LiveRateMap = new Map();
   if (!request.includeFlight) return merged;
+
+  // A trip inside the traveller's own country flies to its port of entry, not to
+  // each destination's country: one search, whose listed flights let the planner
+  // pick one that lands in time to reach the hotel.
+  if (quote.portOfEntry?.airportCode) {
+    const code = quote.portOfEntry.airportCode;
+    const found = await loadLiveRates({
+      origin: request.departureCity, destinationIata: code, month: request.startDate.slice(0, 7), carrier: request.carrier,
+      fareKey: `port-${code.toLowerCase()}`, outbound: request.startDate,
+      inbound: new Date(Date.parse(`${request.startDate}T00:00:00Z`) + request.nights * 86_400_000).toISOString().slice(0, 10),
+      cabin: request.cabin,
+    });
+    if (!found.size) console.warn(`No live flight fare for ${request.departureCity} to ${code}; the quotation uses a modelled fare and schedule.`);
+    for (const [k, v] of found) if (v.component === "flight") merged.set(k, v);
+    return merged;
+  }
 
   const ordered = [...quote.stays].sort((a, b) => a.position - b.position);
   const ends = [ordered[0], ordered[ordered.length - 1]].filter(Boolean);
@@ -246,7 +263,7 @@ export async function loadFlightLiveRates(
 /** Hotels and flights in one pass; either may come back empty. */
 export async function loadQuoteLiveRates(
   core: CoreBundle,
-  quote: Pick<Quotation, "stays" | "request" | "pax">,
+  quote: Pick<Quotation, "stays" | "request" | "pax"> & { portOfEntry?: Quotation["portOfEntry"] },
 ): Promise<LiveRateMap> {
   const [hotels, flights] = await Promise.all([loadHotelLiveRates(core, quote), loadFlightLiveRates(core, quote)]);
   return new Map([...hotels, ...flights]);

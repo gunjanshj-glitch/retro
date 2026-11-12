@@ -1415,7 +1415,7 @@
         "lng": 74.797,
         "type": "city",
         "group": 14,
-        "country": "Kashmir Cluster 1"
+        "country": "Kashmir"
       },
       {
         "name": "Sonmarg",
@@ -1423,7 +1423,7 @@
         "lng": 75.291,
         "type": "city",
         "group": 14,
-        "country": "Kashmir Cluster 1"
+        "country": "Kashmir"
       },
       {
         "name": "Gulmarg",
@@ -1431,7 +1431,7 @@
         "lng": 74.392,
         "type": "city",
         "group": 14,
-        "country": "Kashmir Cluster 1"
+        "country": "Kashmir"
       },
       {
         "name": "Pahalgam",
@@ -1439,7 +1439,7 @@
         "lng": 75.323,
         "type": "city",
         "group": 14,
-        "country": "Kashmir Cluster 1"
+        "country": "Kashmir"
       },
       {
         "name": "Amarnath",
@@ -1447,7 +1447,7 @@
         "lng": 74.26,
         "type": "city",
         "group": 14,
-        "country": "Kashmir Cluster 1"
+        "country": "Kashmir"
       },
       {
         "name": "Katra (Vaishno Devi)",
@@ -1455,63 +1455,63 @@
         "lng": 74.935,
         "type": "city",
         "group": 14,
-        "country": "Kashmir Cluster 1"
+        "country": "Kashmir"
       },
       {
         "name": "Yusmarg",
         "lat": 33.867,
         "lng": 74.617,
         "type": "city",
-        "group": 15,
-        "country": "Kashmir Cluster 2"
+        "group": 14,
+        "country": "Kashmir"
       },
       {
         "name": "Gurez Valley",
         "lat": 34.633,
         "lng": 74.833,
         "type": "city",
-        "group": 15,
-        "country": "Kashmir Cluster 2"
+        "group": 14,
+        "country": "Kashmir"
       },
       {
         "name": "Bangus Valley",
         "lat": 34.369,
         "lng": 74.066,
         "type": "city",
-        "group": 15,
-        "country": "Kashmir Cluster 2"
+        "group": 14,
+        "country": "Kashmir"
       },
       {
         "name": "Lolab Valley",
         "lat": 34.501,
         "lng": 74.405,
         "type": "city",
-        "group": 15,
-        "country": "Kashmir Cluster 2"
+        "group": 14,
+        "country": "Kashmir"
       },
       {
         "name": "Aharbal",
         "lat": 33.649,
         "lng": 74.783,
         "type": "city",
-        "group": 15,
-        "country": "Kashmir Cluster 2"
+        "group": 14,
+        "country": "Kashmir"
       },
       {
         "name": "Daksum",
         "lat": 33.609,
         "lng": 75.415,
         "type": "city",
-        "group": 15,
-        "country": "Kashmir Cluster 2"
+        "group": 14,
+        "country": "Kashmir"
       },
       {
         "name": "Sinthan Top",
         "lat": 33.582,
         "lng": 75.511,
         "type": "city",
-        "group": 15,
-        "country": "Kashmir Cluster 2"
+        "group": 14,
+        "country": "Kashmir"
       },
       {
         "name": "Leh",

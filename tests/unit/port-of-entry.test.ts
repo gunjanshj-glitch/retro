@@ -4,14 +4,15 @@ import path from "node:path";
 import { CoreBundle, type DestinationBundle, type Route, type VisaRule } from "@retro/core/atlas/schema";
 import { generateQuotation, STYLE_FOR_TRAVELLER } from "@retro/core/atlas/engine";
 import { QuoteRequest } from "@retro/core/atlas/engine/types";
-import { arrivalDay } from "@retro/core/atlas/engine/entry";
+import { arrivalDay, type LiveOffer } from "@retro/core/atlas/engine/entry";
+import type { LiveRate } from "@retro/core/atlas/engine/pricing";
 
 const DIR = path.join("public", "atlas");
 const core = CoreBundle.parse(JSON.parse(readFileSync(path.join(DIR, "core.json"), "utf8")));
 const routes = (JSON.parse(readFileSync(path.join(DIR, "routes.json"), "utf8")) as { routes: Route[] }).routes;
 const visaRules = (JSON.parse(readFileSync(path.join(DIR, "visa.json"), "utf8")) as { rules: VisaRule[] }).rules;
 
-function quote(placeIds: string[], nights: number, extra: Partial<QuoteRequest> = {}) {
+function quote(placeIds: string[], nights: number, extra: Partial<QuoteRequest> = {}, liveRates?: Map<string, LiveRate>) {
   const bundles = new Map<string, DestinationBundle>();
   for (const id of placeIds) {
     try { bundles.set(id, JSON.parse(readFileSync(path.join(DIR, "destinations", `${id}.json`), "utf8"))); } catch { /* none */ }
@@ -22,7 +23,7 @@ function quote(placeIds: string[], nights: number, extra: Partial<QuoteRequest> 
     mealPlan: "breakfast", food: "no-preference", pace: "balanced", includeVisa: false, includeInsurance: false, includeFlight: true,
     placeIds, nights, ...extra,
   });
-  return generateQuotation(request, { core, routes, visaRules, bundles, ignorePackageFloor: true });
+  return generateQuotation(request, { core, routes, visaRules, bundles, ignorePackageFloor: true, ...(liveRates ? { liveRates } : {}) });
 }
 
 describe("port of entry on a domestic trip", () => {
@@ -102,5 +103,36 @@ describe("outings placed on a chosen day", () => {
     const q = quote(["tawang"], 5, { clusterDays: { [moved.clusterId!]: first.dayNumber } });
     expect(q.days.find((d) => d.dayNumber === first.dayNumber)!.activities.some((a) => a.clusterId === moved.clusterId)).toBe(true);
     expect(q.days.find((d) => d.dayNumber === lastDay.dayNumber)!.activities.some((a) => a.clusterId === moved.clusterId)).toBe(false);
+  });
+});
+
+describe("flights chosen so the traveller can reach the hotel", () => {
+  const offer = (inr: number, h: number, m = 0): LiveOffer => ({ inr, departsMin: 6 * 60, arrivesMin: h * 60 + m, arrivesDayOffset: 0, stops: 0, airline: "Test Air" });
+  const live = (offers: LiveOffer[], port = "gau") =>
+    new Map<string, LiveRate>([[
+      `flight:DEL:port-${port}:FSC`,
+      { component: "flight", key: `DEL:port-${port}:FSC`, inr: Math.min(...offers.map((o) => o.inr)), fetchedAt: "2026-11-12T00:00:00Z", provider: "google-flights", offers },
+    ]]);
+
+  it("takes a dearer flight that lands in time over a cheaper one that does not", () => {
+    const q = quote(["gangtok"], 4, {}, live([offer(7000, 22, 30), offer(12000, 9, 15)], "ixb"));
+    expect(q.portOfEntry?.entry?.mode).toBe("flight");
+    expect(q.portOfEntry?.entry?.live).toBe(true);
+    expect(q.portOfEntry?.entry?.fareInr).toBe(12000);
+    expect(q.portOfEntry?.portNight).toBeUndefined();
+    expect(q.portOfEntry?.entry?.arrivesAt).toBe("09:15");
+  });
+
+  it("puts a night near the airport when every listed flight lands too late for the drive", () => {
+    const q = quote(["tawang", "dirang"], 6, {}, live([offer(7000, 22, 30), offer(9000, 21, 0)]));
+    expect(q.portOfEntry?.portNight?.place).toBe("Guwahati");
+    expect(q.stays[0].placeId).toBe("guwahati");
+    expect(q.stays.reduce((n, s) => n + s.nights, 0)).toBe(7);
+  });
+
+  it("does not add a night for the modelled schedule when it reaches the hotel in time", () => {
+    const q = quote(["gangtok"], 4);
+    expect(q.portOfEntry?.portNight).toBeUndefined();
+    expect(q.portOfEntry?.entry?.live).toBeUndefined();
   });
 });

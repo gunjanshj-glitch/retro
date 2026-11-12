@@ -245,6 +245,8 @@ export type LiveRate = {
   provider?: "google-flights" | "travelpayouts";
   /** Google Flights only: the cheapest fare is on low-cost airlines. */
   lowCost?: boolean;
+  /** Domestic port searches only: the listed flights behind the fare, with clock times. */
+  offers?: import("./entry").LiveOffer[];
   /** Google Flights only: the airport the cheapest fare lands at (BKK or DMK when both were searched). */
   airportIata?: string;
 };
@@ -343,7 +345,7 @@ export type PricingInput = {
    * replaces the country-level airfare band: the ticket is priced for the real
    * journey (home to the port) in the mode the traveller picked, flight or train.
    */
-  entry?: { mode: "flight" | "train" | "bus"; homeLabel: string; hubName: string; hubCode: string; minutes: number; oneWayFareInr: number } | null;
+  entry?: { mode: "flight" | "train" | "bus"; homeLabel: string; hubName: string; hubCode: string; minutes: number; oneWayFareInr: number; live?: boolean; airline?: string } | null;
 };
 
 function index<T extends { placeId: string }>(rows: T[]): Map<string, T[]> {
@@ -703,9 +705,9 @@ export function priceQuotation(input: PricingInput): {
       pushFare(
         `${flying ? "Return airfare" : entry.mode === "bus" ? "Return coach fare" : "Return train fare"} — ${entry.homeLabel} to ${entry.hubName}`,
         `${entry.homeLabel} to ${entry.hubName} (${entry.hubCode}) and back, ${flying ? "economy" : entry.mode === "bus" ? "AC sleeper coach" : "AC train"}, ` +
-          `about ${formatDuration(entry.minutes)} each way; typical fare, confirmed on the final quotation`,
+          `about ${formatDuration(entry.minutes)} each way; ${entry.live ? `lowest listed fare that lands in time${entry.airline ? ` (${entry.airline})` : ""}, as on Google Flights` : "typical fare"}, confirmed on the final quotation`,
         entry.oneWayFareInr * 2,
-        { source: "estimated" },
+        { source: entry.live ? "live" : "estimated" },
         inboundCountry,
         flying ? "flight" : "intercity-transport",
       );

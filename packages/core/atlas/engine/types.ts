@@ -475,6 +475,10 @@ export type Quotation = {
 
 export type PortOfEntryInfo = {
   code: string;
+  /** The airport the trip is planned around, searched for live fares even when the traveller arrives by rail. */
+  airportCode: string;
+  /** A night near the port was added because no way of arriving reaches the first stay in time (or the last road home is too long). */
+  portNight?: { place: string | null; why: string };
   name: string;
   kind: "airport" | "rail";
   /** Selected places that hang off this port, nearest first. */
@@ -490,7 +494,10 @@ export type PortOfEntryInfo = {
     arrivesAt: string;
     daysEnRoute: number;
     userChosen: boolean;
-    options: { mode: "flight" | "train" | "bus"; hub: string; minutes: number; roundTripFareInr: number; arrivesAt: string }[];
+    /** The flight is a real listing for these dates (with its airline), not the modelled schedule. */
+    live?: boolean;
+    airline?: string;
+    options: { mode: "flight" | "train" | "bus"; hub: string; minutes: number; roundTripFareInr: number; arrivesAt: string; live?: boolean }[];
   } | null;
   /** The road from the port to the first stay, and from the last stay back to it. */
   firstStay: { place: string; km: number | null; minutes: number | null };

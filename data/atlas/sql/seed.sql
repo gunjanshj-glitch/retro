@@ -14506,9 +14506,9 @@ INSERT INTO flight_band (id, origin_city, dest_country_id, carrier, cabin, trip_
   ('south-east-asia-singapore:GOI:FSC:Business', 'GOI', 'south-east-asia-singapore', 'FSC', 'Business', 'Round Trip', 82490, 171326, 'INR', 319, 'estimated'),
   ('south-east-asia-malaysia:DEL:LCC:Economy', 'DEL', 'south-east-asia-malaysia', 'LCC', 'Economy', 'Round Trip', 38377, 55433, 'INR', 336, 'live'),
   ('south-east-asia-malaysia:DEL:LCC:Premium-Economy', 'DEL', 'south-east-asia-malaysia', 'LCC', 'Premium Economy', 'Round Trip', 65241, 94237, 'INR', 336, 'live'),
-  ('south-east-asia-malaysia:DEL:FSC:Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Economy', 'Round Trip', 36459, 52663, 'INR', 336, 'live'),
-  ('south-east-asia-malaysia:DEL:FSC:Premium-Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Premium Economy', 'Round Trip', 61980, 89527, 'INR', 336, 'live'),
-  ('south-east-asia-malaysia:DEL:FSC:Business', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Business', 'Round Trip', 116669, 168522, 'INR', 336, 'live'),
+  ('south-east-asia-malaysia:DEL:FSC:Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Economy', 'Round Trip', 36414, 52598, 'INR', 336, 'live'),
+  ('south-east-asia-malaysia:DEL:FSC:Premium-Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Premium Economy', 'Round Trip', 61904, 89417, 'INR', 336, 'live'),
+  ('south-east-asia-malaysia:DEL:FSC:Business', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Business', 'Round Trip', 116525, 168314, 'INR', 336, 'live'),
   ('south-east-asia-malaysia:BOM:LCC:Economy', 'BOM', 'south-east-asia-malaysia', 'LCC', 'Economy', 'Round Trip', 19229, 39938, 'INR', 317, 'estimated'),
   ('south-east-asia-malaysia:BOM:LCC:Premium-Economy', 'BOM', 'south-east-asia-malaysia', 'LCC', 'Premium Economy', 'Round Trip', 32690, 67895, 'INR', 317, 'estimated'),
   ('south-east-asia-malaysia:BOM:FSC:Economy', 'BOM', 'south-east-asia-malaysia', 'FSC', 'Economy', 'Round Trip', 25639, 53251, 'INR', 317, 'estimated'),
@@ -14755,8 +14755,8 @@ INSERT INTO flight_band (id, origin_city, dest_country_id, carrier, cabin, trip_
   ('south-east-asia-phillipines:GOI:FSC:Economy', 'GOI', 'south-east-asia-phillipines', 'FSC', 'Economy', 'Round Trip', 31044, 64476, 'INR', 416, 'estimated'),
   ('south-east-asia-phillipines:GOI:FSC:Premium-Economy', 'GOI', 'south-east-asia-phillipines', 'FSC', 'Premium Economy', 'Round Trip', 52775, 109610, 'INR', 416, 'estimated'),
   ('south-east-asia-phillipines:GOI:FSC:Business', 'GOI', 'south-east-asia-phillipines', 'FSC', 'Business', 'Round Trip', 99342, 206325, 'INR', 416, 'estimated'),
-  ('india-india:DEL:LCC:Economy', 'DEL', 'india-india', 'LCC', 'Economy', 'Round Trip', 18649, 26937, 'INR', 199, 'live'),
-  ('india-india:DEL:LCC:Premium-Economy', 'DEL', 'india-india', 'LCC', 'Premium Economy', 'Round Trip', 31703, 45793, 'INR', 199, 'live'),
+  ('india-india:DEL:LCC:Economy', 'DEL', 'india-india', 'LCC', 'Economy', 'Round Trip', 2133, 3081, 'INR', 199, 'live'),
+  ('india-india:DEL:LCC:Premium-Economy', 'DEL', 'india-india', 'LCC', 'Premium Economy', 'Round Trip', 3626, 5238, 'INR', 199, 'live'),
   ('india-india:DEL:FSC:Economy', 'DEL', 'india-india', 'FSC', 'Economy', 'Round Trip', 17312, 35956, 'INR', 199, 'estimated'),
   ('india-india:DEL:FSC:Premium-Economy', 'DEL', 'india-india', 'FSC', 'Premium Economy', 'Round Trip', 29431, 61125, 'INR', 199, 'estimated'),
   ('india-india:DEL:FSC:Business', 'DEL', 'india-india', 'FSC', 'Business', 'Round Trip', 55399, 115059, 'INR', 199, 'estimated'),
@@ -42096,6 +42096,8 @@ INSERT INTO activity (id, place_id, code, name) VALUES
   ('dirang:dirang-a-sela-pass', 'dirang', 'DIRANG_A_SELA PASS', 'SELA PASS'),
   ('dirang:dirang-a-sangti-sheep-farm', 'dirang', 'DIRANG_A_SANGTI SHEEP FARM', 'SANGTI SHEEP FARM'),
   ('dirang:dirang-a-apple-and-kiwi-orchards', 'dirang', 'DIRANG_A_APPLE & KIWI ORCHARDS', 'APPLE & KIWI ORCHARDS'),
+  ('dirang:dirang-a-nag-temple', 'dirang', 'DIRANG_A_NAG TEMPLE', 'NAG TEMPLE'),
+  ('dirang:dirang-a-monpa-village', 'dirang', 'DIRANG_A_MONPA VILLAGE', 'MONPA VILLAGE'),
   ('tawang:tawang-a-tawang-monastery', 'tawang', 'TAWANG_A_TAWANG MONASTERY', 'Tawang Monastery'),
   ('tawang:tawang-a-sela-pass-and-sela-lake', 'tawang', 'TAWANG_A_SELA PASS & SELA LAKE', 'Sela Pass & Sela Lake'),
   ('tawang:tawang-a-bum-la-pass', 'tawang', 'TAWANG_A_BUM LA PASS', 'Bum La Pass'),
@@ -42246,10 +42248,10 @@ INSERT INTO activity (id, place_id, code, name) VALUES
   ('ahmedabad:ahmedabad-a-old-city-manek-chowk-core', 'ahmedabad', 'AHMEDABAD_A_OLD_CITY_MANEK_CHOWK_CORE', 'Old City Manek Chowk Core'),
   ('ahmedabad:ahmedabad-a-bhadra-sidi-saiyyed-core', 'ahmedabad', 'AHMEDABAD_A_BHADRA_SIDI_SAIYYED_CORE', 'Bhadra Sidi Saiyyed Core'),
   ('ahmedabad:ahmedabad-a-sabarmati-ashram-core', 'ahmedabad', 'AHMEDABAD_A_SABARMATI_ASHRAM_CORE', 'Sabarmati Ashram Core'),
-  ('ahmedabad:ahmedabad-a-sabarmati-riverfront-core', 'ahmedabad', 'AHMEDABAD_A_SABARMATI_RIVERFRONT_CORE', 'Sabarmati Riverfront Core'),
-  ('ahmedabad:ahmedabad-a-kankaria-lake-core', 'ahmedabad', 'AHMEDABAD_A_KANKARIA_LAKE_CORE', 'Kankaria Lake Core'),
-  ('ahmedabad:ahmedabad-a-gujarat-science-city-core', 'ahmedabad', 'AHMEDABAD_A_GUJARAT_SCIENCE_CITY_CORE', 'Gujarat Science City Core');
+  ('ahmedabad:ahmedabad-a-sabarmati-riverfront-core', 'ahmedabad', 'AHMEDABAD_A_SABARMATI_RIVERFRONT_CORE', 'Sabarmati Riverfront Core');
 INSERT INTO activity (id, place_id, code, name) VALUES
+  ('ahmedabad:ahmedabad-a-kankaria-lake-core', 'ahmedabad', 'AHMEDABAD_A_KANKARIA_LAKE_CORE', 'Kankaria Lake Core'),
+  ('ahmedabad:ahmedabad-a-gujarat-science-city-core', 'ahmedabad', 'AHMEDABAD_A_GUJARAT_SCIENCE_CITY_CORE', 'Gujarat Science City Core'),
   ('ahmedabad:ahmedabad-a-shahibaug-calico-core', 'ahmedabad', 'AHMEDABAD_A_SHAHIBAUG_CALICO_CORE', 'Shahibaug Calico Core'),
   ('ahmedabad:ahmedabad-a-hutheesing-dada-harir-core', 'ahmedabad', 'AHMEDABAD_A_HUTHEESING_DADA_HARIR_CORE', 'Hutheesing Dada Harir Core'),
   ('ahmedabad:ahmedabad-a-sarkhej-roza-core', 'ahmedabad', 'AHMEDABAD_A_SARKHEJ_ROZA_CORE', 'Sarkhej Roza Core'),
@@ -42447,10 +42449,10 @@ INSERT INTO activity (id, place_id, code, name) VALUES
   ('paris-act2', 'paris', 'PARIS_A_LOUVRE_AND_ROYAL_GARDENS', 'Louvre and Royal Gardens'),
   ('paris-act3', 'paris', 'PARIS_A_NOTRE_DAME_AND_LATIN_QUARTER', 'Notre-Dame and Latin Quarter'),
   ('paris-act4', 'paris', 'PARIS_A_MONTMARTRE_AND_SACR_C_UR', 'Montmartre and Sacré-Cœur'),
-  ('paris-act5', 'paris', 'PARIS_A_ARC_DE_TRIOMPHE_AND_CHAMPS_LYS_ES', 'Arc de Triomphe and Champs-Élysées'),
-  ('versailles-act1', 'versailles', 'VERSAILLES_A_PALACE_AND_HALL_OF_MIRRORS', 'Palace and Hall of Mirrors'),
-  ('versailles-act2', 'versailles', 'VERSAILLES_A_GARDENS_AND_TRIANON_ESTATE', 'Gardens and Trianon Estate');
+  ('paris-act5', 'paris', 'PARIS_A_ARC_DE_TRIOMPHE_AND_CHAMPS_LYS_ES', 'Arc de Triomphe and Champs-Élysées');
 INSERT INTO activity (id, place_id, code, name) VALUES
+  ('versailles-act1', 'versailles', 'VERSAILLES_A_PALACE_AND_HALL_OF_MIRRORS', 'Palace and Hall of Mirrors'),
+  ('versailles-act2', 'versailles', 'VERSAILLES_A_GARDENS_AND_TRIANON_ESTATE', 'Gardens and Trianon Estate'),
   ('versailles-act3', 'versailles', 'VERSAILLES_A_MARKET_QUARTER_AND_POTAGER_DU_ROI', 'Market Quarter and Potager du Roi'),
   ('strasbourg-act1', 'strasbourg', 'STRASBOURG_A_GRANDE_LE_AND_CATHEDRAL', 'Grande Île and Cathedral'),
   ('strasbourg-act2', 'strasbourg', 'STRASBOURG_A_PETITE_FRANCE_AND_COVERED_BRIDGES', 'Petite France and Covered Bridges'),
@@ -42648,10 +42650,10 @@ INSERT INTO activity (id, place_id, code, name) VALUES
   ('the-hague-act2', 'the-hague', 'THEHAGUE_A_COAST_AND_KURHAUS', 'Coast and Kurhaus'),
   ('the-hague-act3', 'the-hague', 'THEHAGUE_A_PEACE_AND_PANORAMA', 'Peace and Panorama'),
   ('utrecht-act1', 'utrecht', 'UTRECHT_A_DOM_QUARTER', 'Dom Quarter'),
-  ('utrecht-act2', 'utrecht', 'UTRECHT_A_CANALS_AND_MUSEUMS', 'Canals and Museums'),
-  ('utrecht-act3', 'utrecht', 'UTRECHT_A_CASTLES_AND_PARKS', 'Castles and Parks'),
-  ('delft-act1', 'delft', 'DELFT_A_VERMEER_AND_MARKET_SQUARE', 'Vermeer and Market Square');
+  ('utrecht-act2', 'utrecht', 'UTRECHT_A_CANALS_AND_MUSEUMS', 'Canals and Museums');
 INSERT INTO activity (id, place_id, code, name) VALUES
+  ('utrecht-act3', 'utrecht', 'UTRECHT_A_CASTLES_AND_PARKS', 'Castles and Parks'),
+  ('delft-act1', 'delft', 'DELFT_A_VERMEER_AND_MARKET_SQUARE', 'Vermeer and Market Square'),
   ('delft-act2', 'delft', 'DELFT_A_CANALS_AND_PORCELAIN', 'Canals and Porcelain'),
   ('haarlem-act1', 'haarlem', 'HAARLEM_A_GROTE_MARKT_AND_MUSEUMS', 'Grote Markt and Museums'),
   ('haarlem-act2', 'haarlem', 'HAARLEM_A_DUNES_AND_WINDMILLS', 'Dunes and Windmills'),
@@ -42849,10 +42851,10 @@ INSERT INTO activity (id, place_id, code, name) VALUES
   ('akureyri-act3', 'akureyri', 'AKUREYRI_A_WHALES_WATERFALLS', 'Whales & Waterfalls'),
   ('blue-lagoon-act1', 'blue-lagoon', 'BLUELAGOON_A_LAGOON_SOAK', 'Lagoon Soak'),
   ('blue-lagoon-act2', 'blue-lagoon', 'BLUELAGOON_A_REYKJANES_LAVA_COAST', 'Reykjanes Lava Coast'),
-  ('jokulsarlon-act1', 'jokulsarlon', 'JOKULSARLON_A_LAGOON_ICEBERGS', 'Lagoon & Icebergs'),
-  ('jokulsarlon-act2', 'jokulsarlon', 'JOKULSARLON_A_DIAMOND_BEACH_STRETCH', 'Diamond Beach Stretch'),
-  ('selfoss-act1', 'selfoss', 'SELFOSS_A_OLD_DAIRY_CENTRE', 'Old Dairy Centre');
+  ('jokulsarlon-act1', 'jokulsarlon', 'JOKULSARLON_A_LAGOON_ICEBERGS', 'Lagoon & Icebergs');
 INSERT INTO activity (id, place_id, code, name) VALUES
+  ('jokulsarlon-act2', 'jokulsarlon', 'JOKULSARLON_A_DIAMOND_BEACH_STRETCH', 'Diamond Beach Stretch'),
+  ('selfoss-act1', 'selfoss', 'SELFOSS_A_OLD_DAIRY_CENTRE', 'Old Dairy Centre'),
   ('selfoss-act2', 'selfoss', 'SELFOSS_A_HOT_RIVER_OUTING', 'Hot River Outing'),
   ('selfoss-act3', 'selfoss', 'SELFOSS_A_SOUTHWEST_CRATER_LOOP', 'Southwest Crater Loop'),
   ('keflavik-act1', 'keflavik', 'KEFLAVIK_A_HARBOUR_MUSEUMS', 'Harbour & Museums'),
@@ -43050,10 +43052,10 @@ INSERT INTO activity (id, place_id, code, name) VALUES
   ('tenerife-act5', 'tenerife', 'TENERIFE_A_SOUTH_COAST_RESORTS', 'South Coast Resorts'),
   ('gran-canaria-act1', 'gran-canaria', 'GRANCANARIA_A_LAS_PALMAS_HERITAGE', 'Las Palmas Heritage'),
   ('gran-canaria-act2', 'gran-canaria', 'GRANCANARIA_A_MASPALOMAS_SOUTH', 'Maspalomas South'),
-  ('gran-canaria-act3', 'gran-canaria', 'GRANCANARIA_A_MOUNTAIN_INTERIOR', 'Mountain Interior'),
-  ('gran-canaria-act4', 'gran-canaria', 'GRANCANARIA_A_AGAETE_WEST_COAST', 'Agaete West Coast'),
-  ('gran-canaria-act5', 'gran-canaria', 'GRANCANARIA_A_ARUCAS_NORTH', 'Arucas & North');
+  ('gran-canaria-act3', 'gran-canaria', 'GRANCANARIA_A_MOUNTAIN_INTERIOR', 'Mountain Interior');
 INSERT INTO activity (id, place_id, code, name) VALUES
+  ('gran-canaria-act4', 'gran-canaria', 'GRANCANARIA_A_AGAETE_WEST_COAST', 'Agaete West Coast'),
+  ('gran-canaria-act5', 'gran-canaria', 'GRANCANARIA_A_ARUCAS_NORTH', 'Arucas & North'),
   ('lisbon-act1', 'lisbon', 'LISBON_A_BAIXA_ALFAMA', 'Baixa & Alfama'),
   ('lisbon-act2', 'lisbon', 'LISBON_A_BEL_M_MONUMENTS', 'Belém Monuments'),
   ('lisbon-act3', 'lisbon', 'LISBON_A_CHIADO_BAIRRO_ALTO', 'Chiado & Bairro Alto'),
@@ -44874,6 +44876,7 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('bhalukpong', 'BHALUKPONG_A_CHILLIPAM MONASTERY', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('bhalukpong', 'BHALUKPONG_A_THEMBANG', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('bhalukpong', 'BHALUKPONG_A_NECHIPU PASS', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
+  ('bhalukpong', 'BHALUKPONG_A_NAMERI NATIONAL PARK', 'Person', 370, NULL, NULL, 'manual'),
   ('tawang', 'TAWANG_A_TAWANG MONASTERY', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('tawang', 'TAWANG_A_SELA PASS & SELA LAKE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('tawang', 'TAWANG_A_BUM LA PASS', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -44902,9 +44905,9 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('agra', 'AGRA_A_AGRA_FORT_MUGHAL_CORE', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
   ('agra', 'AGRA_A_MEHTAB_BAGH_YAMUNA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_ITIMAD_UD_DAULAH_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('agra', 'AGRA_A_SIKANDRA_AKBAR_TOMB_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('agra', 'AGRA_A_FATEHPUR_SIKRI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+  ('agra', 'AGRA_A_SIKANDRA_AKBAR_TOMB_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('agra', 'AGRA_A_FATEHPUR_SIKRI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_RAM_BAGH_MUGHAL_GARDEN_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_CHINI_KA_RAUZA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_SOOR_SAROVAR_NATURE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -45103,9 +45106,9 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('puri', 'PURI_A_RAMACHANDI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_SATAPADA_CHILIKA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_BALIGHAI_COAST_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('daringbadi', 'DARINGBADI_A_NATURE_PARK_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('daringbadi', 'DARINGBADI_A_PINE_COFFEE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+  ('daringbadi', 'DARINGBADI_A_NATURE_PARK_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('daringbadi', 'DARINGBADI_A_PINE_COFFEE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('daringbadi', 'DARINGBADI_A_HILL_VIEW_SUNSET_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('daringbadi', 'DARINGBADI_A_WATERFALL_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('daringbadi', 'DARINGBADI_A_DOLURI_LOVERS_POINT_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -45304,9 +45307,9 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('vianden', 'VIANDEN_A_VIANDEN_CASTLE_AND_CHAIRLIFT', 'Person', 1900, 19, 'EUR', 'estimated'),
   ('vianden', 'VIANDEN_A_DAM_AND_RIVERSIDE_WALKS', 'Person', 0, 0, 'EUR', 'estimated'),
   ('echternach', 'ECHTERNACH_A_ABBEY_QUARTER_AND_OLD_TOWN', 'Person', 1600, 0, 'EUR', 'estimated'),
-  ('echternach', 'ECHTERNACH_A_MULLERTHAL_NATURE_HIGHLIGHTS', 'Person', 1600, 0, 'EUR', 'estimated'),
-  ('clervaux', 'CLERVAUX_A_CASTLE_MUSEUMS_AND_TOWN_CORE', 'Person', 800, 8, 'EUR', 'estimated');
+  ('echternach', 'ECHTERNACH_A_MULLERTHAL_NATURE_HIGHLIGHTS', 'Person', 1600, 0, 'EUR', 'estimated');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('clervaux', 'CLERVAUX_A_CASTLE_MUSEUMS_AND_TOWN_CORE', 'Person', 800, 8, 'EUR', 'estimated'),
   ('clervaux', 'CLERVAUX_A_ABBEY_AND_ARDENNES_COUNTRYSIDE', 'Person', 1200, 12, 'EUR', 'estimated'),
   ('remich', 'REMICH_A_MOSELLE_PROMENADE_AND_CRUISE', 'Person', 1600, 16, 'EUR', 'estimated'),
   ('remich', 'REMICH_A_WINE_CELLARS_AND_SCHENGEN', 'Person', 1200, 12, 'EUR', 'estimated'),
@@ -45505,9 +45508,9 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('odense', 'ODENSE_A_CASTLE_VILLAGE', 'Person', 3300, 33, 'EUR', 'estimated'),
   ('odense', 'ODENSE_A_HARBOUR_ZOO', 'Person', 2600, 26, 'EUR', 'estimated'),
   ('aalborg', 'AALBORG_A_WATERFRONT_UTZON', 'Person', 1500, 15, 'EUR', 'estimated'),
-  ('aalborg', 'AALBORG_A_OLD_AALBORG', 'Person', 1000, 10, 'EUR', 'estimated'),
-  ('aalborg', 'AALBORG_A_VIKING_FJORD_EDGE', 'Person', 2200, 22, 'EUR', 'estimated');
+  ('aalborg', 'AALBORG_A_OLD_AALBORG', 'Person', 1000, 10, 'EUR', 'estimated');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('aalborg', 'AALBORG_A_VIKING_FJORD_EDGE', 'Person', 2200, 22, 'EUR', 'estimated'),
   ('roskilde', 'ROSKILDE_A_CATHEDRAL_CORE', 'Person', 1900, 19, 'EUR', 'estimated'),
   ('roskilde', 'ROSKILDE_A_VIKING_FJORD_SHIPS', 'Person', 2300, 23, 'EUR', 'estimated'),
   ('billund', 'BILLUND_A_LEGOLAND_DAY', 'Person', 5600, 56, 'EUR', 'estimated'),
@@ -45706,9 +45709,9 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('capri', 'CAPRI_A_BLUE_GROTTO_CIRCUIT', 'Person', 3500, 35, 'EUR', 'estimated'),
   ('capri', 'CAPRI_A_FARAGLIONI_COAST', 'Person', 2200, 22, 'EUR', 'estimated'),
   ('palermo', 'PALERMO_A_HISTORIC_CORE', 'Person', 0, 0, 'EUR', 'estimated'),
-  ('palermo', 'PALERMO_A_ARAB_NORMAN_PALERMO', 'Person', 1900, 19, 'EUR', 'estimated'),
-  ('palermo', 'PALERMO_A_MARKETS_STREET_FOOD', 'Person', 1000, 10, 'EUR', 'estimated');
+  ('palermo', 'PALERMO_A_ARAB_NORMAN_PALERMO', 'Person', 1900, 19, 'EUR', 'estimated');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('palermo', 'PALERMO_A_MARKETS_STREET_FOOD', 'Person', 1000, 10, 'EUR', 'estimated'),
   ('palermo', 'PALERMO_A_SEAFRONT_ORATORY_ART', 'Person', 1500, 15, 'EUR', 'estimated'),
   ('catania', 'CATANIA_A_PIAZZA_DEL_DUOMO', 'Person', 0, 0, 'EUR', 'estimated'),
   ('catania', 'CATANIA_A_BAROQUE_CATANIA', 'Person', 1400, 14, 'EUR', 'estimated'),

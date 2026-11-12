@@ -319,6 +319,12 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
               {quote.portOfEntry.alternativeHub &&
                 ` ${quote.portOfEntry.alternativeHub.name} (${quote.portOfEntry.alternativeHub.code}) is the ${quote.portOfEntry.alternativeHub.kind === "rail" ? "nearest railhead" : "alternative airport"}.`}
             </p>
+            {quote.portOfEntry.portNight && (
+              <p className="rounded-lg border px-3 py-2 text-sm" style={{ borderColor: "var(--sun-deep)" }} data-testid="port-night">
+                <strong>{quote.portOfEntry.portNight.place ? `One night in ${quote.portOfEntry.portNight.place}, near the airport.` : "Book a night near the airport."}</strong>{" "}
+                {quote.portOfEntry.portNight.why}
+              </p>
+            )}
             {quote.portOfEntry.entry && (
               <div className="flex flex-col gap-2">
                 <span className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: "var(--muted)" }}>
@@ -337,7 +343,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                         className={chipClass}
                         style={chipStyle(active)}
                       >
-                        {o.mode === "flight" ? "Flight" : o.mode === "bus" ? "Bus" : "Train"} · {formatDuration(o.minutes)} · {formatInr(o.roundTripFareInr)} pp return · reach {o.arrivesAt}
+                        {o.mode === "flight" ? (o.live ? "Flight (live)" : "Flight") : o.mode === "bus" ? "Bus" : "Train"} · {formatDuration(o.minutes)} · {formatInr(o.roundTripFareInr)} pp return · reach {o.arrivesAt}
                       </button>
                     );
                   })}

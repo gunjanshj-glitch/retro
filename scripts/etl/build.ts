@@ -37,6 +37,7 @@ import { buildCountryCompatibility, defaultNightsFor } from "./compatibility";
 import { resolvePlaceCoords } from "./place-coords";
 import { deriveTransport } from "./transport-derive";
 import transportPatch from "../../content/transport-patch.json";
+import manualActivityRates from "../../content/activity-rates.json";
 import { buildSupplement } from "./europe-cities";
 
 const IN = {
@@ -138,6 +139,17 @@ async function main() {
 
   // --- 2. pricing workbook ------------------------------------------------
   const pricing = parsePricing(IN.pricing, geo.places, aliasOverrides);
+  // Hand-entered rates fill a code the workbook does not price; they never override it.
+  {
+    const have = new Set(pricing.activityRates.map((r) => r.code));
+    let added = 0;
+    for (const r of manualActivityRates.rates) {
+      if (have.has(r.code)) continue;
+      pricing.activityRates.push({ placeId: r.placeId, code: r.code, unit: r.unit, inr: r.inr, baseline: null, baselineCurrency: null, source: "manual" });
+      added++;
+    }
+    if (added) console.log(`  pricing     ${added} hand-entered activity rate(s) from content/activity-rates.json`);
+  }
   console.log(
     `  pricing     ${pricing.hotelRates.length} hotel, ${pricing.transferRates.length} transfer, ` +
       `${pricing.mealRates.length} meal, ${pricing.activityRates.length} activity rates ` +
@@ -506,7 +518,7 @@ for (const place of places) {
 
     // Activity identity comes from the workbook where it exists (it carries the
     // priced codes) and falls back to section 15 of the destination file.
-    const activities = rates.length
+    const activities = rates.some((r) => r.source !== "manual")
       ? pricing.activities.filter((a) => a.placeId === place.id)
       : (c?.activities ?? []);
 
