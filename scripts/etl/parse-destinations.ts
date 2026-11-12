@@ -459,12 +459,14 @@ function parseFile(raw: string, placeId: string): DestinationContent {
     const seen = new Set<string>();
     for (const line of sec(16).split(/\r?\n/)) {
       const t = line.trim();
-      const band = /^Priority\s+(\d+)\s*[-–—]\s*(\d+)/i.exec(t);
+      // Sixty-odd files write the band in bold (`**Priority 90-100:**`); read it the same as plain text.
+      const heading = t.replace(/^[*_#\s]+/, "");
+      const band = /^Priority\s+(\d+)\s*[-–—]\s*(\d+)/i.exec(heading);
       if (band) {
         priority = (Number(band[1]) + Number(band[2])) / 2;
         continue;
       }
-      if (/^optional/i.test(t)) {
+      if (/^optional/i.test(heading)) {
         priority = 50;
         continue;
       }
