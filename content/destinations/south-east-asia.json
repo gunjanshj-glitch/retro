@@ -363,6 +363,14 @@
         "country": "Thailand"
       },
       {
+        "name": "Koh Samui",
+        "lat": 9.512,
+        "lng": 100.013,
+        "type": "city",
+        "group": 2,
+        "country": "Thailand"
+      },
+      {
         "name": "Sentosa Island",
         "lat": 1.249,
         "lng": 103.83,
