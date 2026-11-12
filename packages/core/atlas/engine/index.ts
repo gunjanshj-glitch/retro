@@ -387,6 +387,8 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       );
     }
   }
+  const placeById = new Map(core.places.map((p) => [p.id, p]));
+  const isHubReturnPlace = (id: string) => Boolean(placeById.get(id)?.island) || isHillPlace(core, id);
   const stayArgs = () => [
     placeIds, nights, summaries, request.tripStyle, routeLookup, names, request.nightOverrides,
     portPoint ?? gateway, placePoints, bookendCore,
@@ -397,11 +399,13 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
           roadKm: roadKmToPort,
           anchorId: portCityId && placeIds.includes(portCityId) ? portCityId : null,
           anchorSide: portNightSide,
-          // A hill place more than six hours from the airport has no other way home than the road
-          // (Hanle, Tso Moriri): the trip returns to the port city first, as every Ladakh circuit does.
+          // A satellite may not end the route (the trip would re-enter the port city), except where
+          // the way back is the only way home: islands (Havelock, Neil) and hill places (Hanle, Tso
+          // Moriri). Published Andaman and Ladakh circuits all return to Port Blair or Leh first.
           blockedEnd: (id: string) =>
-            (nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > DOMESTIC_SATELLITE_ROAD_KM) ||
-            (isHillPlace(core, id) && (roadLeg(core, port.airport, id).minutes ?? 0) > 360),
+            nearPort(id) &&
+            (roadKmToPort.get(id) ?? Infinity) > DOMESTIC_SATELLITE_ROAD_KM &&
+            !isHubReturnPlace(id),
         }
       : null,
   ] as const;

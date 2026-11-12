@@ -86,9 +86,12 @@ describe("the port city is a soft start, not a rule", () => {
     expect(ids).toEqual(["varanasi", "ayodhya", "lucknow", "kanpur", "agra"]);
   });
 
-  it("does not end a hill trip on a stop more than six hours from the airport when the port city is on the trip", () => {
+  it("runs Ladakh the way published circuits do: Leh, Nubra, Pangong, Hanle, Tso Moriri, back to Leh", () => {
     const ids = stays("Ladakh");
-    expect(ids[ids.length - 1]).not.toBe("hanle");
-    expect(ids[ids.length - 1]).not.toBe("tso-moriri");
+    const at = (id: string) => ids.indexOf(id);
+    expect(ids[0]).toBe("leh");
+    expect(ids[ids.length - 1]).toBe("leh");
+    expect(at("pangong-lake")).toBeLessThan(at("hanle"));
+    expect(at("hanle")).toBeLessThan(at("tso-moriri"));
   });
 });

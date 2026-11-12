@@ -334,6 +334,6 @@ Run on all 29 India packages (Delhi, couple, balanced) against 6e7cb15 and the c
 The first version of the port-city rule was a hard "port city must be an end of the route". The survey showed it broke Uttar Pradesh (Lucknow, the port, is mid-line, so the route jumped Varanasi back to Kanpur). It is now three separate rules:
 - soft (`ANCHOR_SOFT_PENALTY`, about 125 km of detour): the route should start at the port city when that is cheap;
 - hard (`ANCHOR_PENALTY`): a night added at the port for a long road home or a late arrival sits at the end or start it was added for;
-- hard: a route end that is a satellite of the port, or a hill place more than 360 minutes from the airport, is ruled out while the port city is in the trip (stops Madurai > Rameswaram > Madurai and ending Ladakh at Hanle).
+- hard: a route end that is a satellite of the port is ruled out while the port city is in the trip (stops Madurai > Rameswaram > Madurai), except islands and hill places, where the way back is the only way home. Published Andaman and Ladakh circuits all return to Port Blair or Leh before departure, so those keep the hub return. The first version of this rule also blocked hill places more than six hours out; the published-itinerary check showed that wrongly removed Leh's return and it was dropped.
 
 Known rough spots: Himachal Delights (12 stops in 10 nights) jumps Losar to Kullu near the end; Kashmir Delights puts Katra before Panjtarni; Chhattisgarh starts at Raigarh rather than Raipur. None has a source to say what is right.
