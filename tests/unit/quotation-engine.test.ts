@@ -591,6 +591,37 @@ describe("international airfare", () => {
     expect(out!.label).toContain(q.stays[0].placeName);
   });
 
+  describe("a live open-jaw ticket", () => {
+    const placeIds = ["cairo", "nairobi"];
+    const run = (jawInr: number | null) => {
+      const req = request({ placeIds, nights: 6, includeFlight: true, departureCity: "CCU" });
+      const [inC, outC] = placeIds.map((id) => core.places.find((p) => p.id === id)!.countryId);
+      const live = (key: string, inr: number) =>
+        [`flight:${key}`, { component: "flight" as const, key, inr, fetchedAt: new Date().toISOString(), provider: "google-flights" as const }] as const;
+      const entries = [live(`CCU:${inC}:${req.carrier}`, 40000), live(`CCU:${outC}:${req.carrier}`, 44000)];
+      if (jawInr != null) entries.push(live(`CCU:jaw-${inC}-${outC}:${req.carrier}`, jawInr));
+      const q = generateQuotation(req, { core, routes, visaRules, bundles: bundlesFor(placeIds), liveRates: new Map(entries) });
+      return q.lineItems.filter((i) => i.component === "flight" && !/children|infants/.test(i.label));
+    };
+
+    it("is used as one itinerary when it beats half of each country's round trip", () => {
+      const lines = run(35000); // halves are (40000 + 44000) / 2 = 42000
+      expect(lines).toHaveLength(1);
+      expect(lines[0].label).toMatch(/^Open-jaw airfare/);
+      expect(lines[0].source).toBe("live");
+      expect(lines[0].unitPriceInr).toBe(Math.round(35000 * (1 + policy.liveRates.bookingVariance.flight)));
+    });
+
+    it("is ignored when it costs more than that estimate", () => {
+      const lines = run(60000);
+      expect(lines.map((l) => l.label.split(" — ")[0])).toEqual(["Airfare out", "Airfare home"]);
+    });
+
+    it("leaves the two-leg estimate alone when the search found no open-jaw fare", () => {
+      expect(run(null)).toHaveLength(2);
+    });
+  });
+
   it("does not double-count the airfare on a multi-country trip", () => {
     // Two half-fares, not two full ones.
     const single = quote({ placeIds: ["cairo", "luxor"], nights: 6, includeFlight: true });

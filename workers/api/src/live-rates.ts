@@ -184,16 +184,30 @@ async function fetchGoogleFlight(
   cabin: Cabin,
   carrier: "LCC" | "FSC",
   fareKey: string,
+  returnFrom?: string,
 ): Promise<LiveRate | null> {
   if (!env.SERP_API) return null;
 
   const url = new URL("https://serpapi.com/search.json");
   url.searchParams.set("engine", "google_flights");
-  url.searchParams.set("departure_id", origin);
-  url.searchParams.set("arrival_id", destination);
-  url.searchParams.set("outbound_date", outbound);
-  url.searchParams.set("return_date", inbound);
-  url.searchParams.set("type", "1"); // round trip
+  if (returnFrom) {
+    // An open-jaw ticket (in to one city, home from another): Google Flights' multi-city search prices
+    // both legs together, which is what the traveller pays, rather than half of two round trips.
+    url.searchParams.set("type", "3");
+    url.searchParams.set(
+      "multi_city_json",
+      JSON.stringify([
+        { departure_id: origin, arrival_id: destination, date: outbound },
+        { departure_id: returnFrom, arrival_id: origin, date: inbound },
+      ]),
+    );
+  } else {
+    url.searchParams.set("departure_id", origin);
+    url.searchParams.set("arrival_id", destination);
+    url.searchParams.set("outbound_date", outbound);
+    url.searchParams.set("return_date", inbound);
+    url.searchParams.set("type", "1"); // round trip
+  }
   url.searchParams.set("travel_class", String(TRAVEL_CLASS[cabin]));
   url.searchParams.set("adults", "1");
   url.searchParams.set("currency", "INR");
@@ -472,6 +486,7 @@ export async function handleLiveRates(
   const outbound = url.searchParams.get("outbound") ?? "";
   const inbound = url.searchParams.get("inbound") ?? "";
   const cabin = (url.searchParams.get("cabin") ?? "Economy") as Cabin;
+  const returnFrom = url.searchParams.get("returnFrom") ?? "";
   const cityName = url.searchParams.get("cityName") ?? "";
   const countryCode = url.searchParams.get("countryCode") ?? "";
   const checkin = url.searchParams.get("checkin") ?? "";
@@ -492,6 +507,8 @@ export async function handleLiveRates(
   if (wantsFlight && fareKey && !/^[a-z0-9-]{1,60}$/.test(fareKey)) return none();
   // One airport, or up to four serving the same metro (BKK,DMK) searched together for the cheapest.
   if (wantsFlight && !(/^[A-Z]{3}$/.test(origin) && /^[A-Z]{3}(,[A-Z]{3}){0,3}$/.test(destinationIata) && /^\d{4}-\d{2}$/.test(month) && (carrier === "LCC" || carrier === "FSC"))) return none();
+  // An open-jaw fare only exists as an exact-date multi-city search; there is no monthly equivalent.
+  if (returnFrom && !(wantsFlight && /^[A-Z]{3}(,[A-Z]{3}){0,3}$/.test(returnFrom) && outbound && inbound)) return none();
   // Exact dates are optional (the month search still works without them), but when given they must be a real, bookable trip.
   const wantsExact = wantsFlight && Boolean(outbound && inbound);
   if (wantsExact) {
@@ -515,7 +532,7 @@ export async function handleLiveRates(
   // in particular, or one traveller's room count is served to the next.
   const partyKey = `${party.adults}:${party.childAges.join(",")}:${party.rooms}`;
   const cacheKey =
-    `live:${origin}:${destinationIata}:${fareKey}:${month}:${carrier}:${outbound}:${inbound}:${cabin}:` +
+    `live:${origin}:${destinationIata}:${returnFrom}:${fareKey}:${month}:${carrier}:${outbound}:${inbound}:${cabin}:` +
     `${cityName}:${countryCode}:${checkin}:${checkout}:${partyKey}:${hotelStars ?? ""}:${placeId}:${star}`;
 
   const respond = (rates: LiveRate[], cached: boolean) =>
@@ -537,7 +554,7 @@ export async function handleLiveRates(
     // total, so rotating addresses cannot drain the quota. Over budget, the monthly fare answers instead.
     if (wantsExact && env.SERP_API && !(await overLimit(env, "serp-daily", "all", serpDailyLimit(env), 86_400))) {
       try {
-        const exact = await fetchGoogleFlight(env, origin, destinationIata, outbound, inbound, cabin, carrier, key);
+        const exact = await fetchGoogleFlight(env, origin, destinationIata, outbound, inbound, cabin, carrier, key, returnFrom || undefined);
         if (exact) return exact;
       } catch {
         /* fall through to the approximate fare */
@@ -546,7 +563,7 @@ export async function handleLiveRates(
     // The monthly minimum is an Economy fare. Offered for a premium or business cabin it would be a
     // different class of ticket priced as if it were the one asked for, so those get no fare and the
     // quote keeps its own business-class rate card, flagged as an approximation.
-    if (cabin !== "Economy") return null;
+    if (cabin !== "Economy" || returnFrom) return null;
     // The monthly fare is one airport's: the first, which is the place's own.
     return fetchFlight(env, origin, destinationIata.split(",")[0], month, carrier, key);
   };

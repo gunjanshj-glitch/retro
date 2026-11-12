@@ -721,6 +721,24 @@ export function priceQuotation(input: PricingInput): {
       const inboundResolved = fareOf(inboundBand, inboundCountry);
       const outboundResolved = fareOf(outboundBand, outboundCountry);
 
+      // The real open-jaw ticket, priced as one itinerary by Google Flights. Half of each country's round
+      // trip is only an approximation of it, so take the ticket when it is no dearer than that estimate.
+      const jaw = liveRates.get(`flight:${request.departureCity}:jaw-${inboundCountry}-${outboundCountry}:${request.carrier}`);
+      const halves = (inboundResolved.inr + outboundResolved.inr) / 2;
+      if (jaw && jaw.provider === "google-flights" && jaw.inr <= halves) {
+        const g = input.gateways;
+        const route = g
+          ? `${home} to ${at(g.arrival)}, back from ${at(g.departure)}`
+          : `${home} to ${placeName.get(firstPlace.placeId)}, back from ${placeName.get(lastPlace.placeId)}`;
+        pushFare(
+          `Open-jaw airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}, home from ${placeName.get(lastPlace.placeId)}`,
+          `${route}; ${request.cabin}, one ticket flying in to one city and home from another, priced as a single itinerary ` +
+            `(no dearer than ${Math.round(halves).toLocaleString("en-IN")} INR, the cost of two separate round trips split in half)`,
+          jaw.inr,
+          { source: "live", live: jaw },
+          inboundCountry,
+        );
+      } else {
       pushFare(`Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
         `${routeNote("out")}${carrierNote(inboundBand, inboundResolved.live)}, ${cabinOf(inboundBand, inboundResolved.live)}, one way of an open-jaw ticket`,
         inboundResolved.inr / 2, inboundResolved, inboundCountry);
@@ -728,6 +746,7 @@ export function priceQuotation(input: PricingInput): {
       pushFare(`Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
         `${routeNote("home")}${carrierNote(outboundBand, outboundResolved.live)}, ${cabinOf(outboundBand, outboundResolved.live)}, one way of an open-jaw ticket`,
         outboundResolved.inr / 2, outboundResolved, outboundCountry);
+      }
     }
   }
 

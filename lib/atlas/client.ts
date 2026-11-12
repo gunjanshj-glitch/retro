@@ -127,6 +127,8 @@ export async function loadLiveRates(query: {
   cabin?: string;
   /** Echoed back in the rate's key so the caller can look the fare up by its own id. */
   fareKey?: string;
+  /** Airports the trip flies home from, when that is not where it landed (an open-jaw ticket). */
+  returnFrom?: string;
   countryCode?: string;
   placeId?: string;
   checkin?: string;
@@ -239,6 +241,22 @@ export async function loadFlightLiveRates(
   const inbound = new Date(Date.parse(`${request.startDate}T00:00:00Z`) + request.nights * 86_400_000).toISOString().slice(0, 10);
   const seen = new Set<string>();
   const searches: Promise<LiveRateMap>[] = [];
+
+  // In to one country, home from another: besides each country's round trip, ask Google Flights for the
+  // real open-jaw ticket (the third search), so the quote can take whichever is cheaper.
+  const countries = ends.map((s) => core.places.find((p) => p.id === s.placeId)?.countryId);
+  if (ends.length === 2 && countries[0] && countries[1] && countries[0] !== countries[1]) {
+    const to = airportAlternatives(core, ends[0].placeId).map((a) => a.iata).join(",");
+    const from = airportAlternatives(core, ends[1].placeId).map((a) => a.iata).join(",");
+    if (to && from) {
+      searches.push(
+        loadLiveRates({
+          origin: request.departureCity, destinationIata: to, returnFrom: from, month, carrier: request.carrier,
+          fareKey: `jaw-${countries[0]}-${countries[1]}`, outbound: request.startDate, inbound, cabin: request.cabin,
+        }),
+      );
+    }
+  }
 
   for (const stay of ends) {
     const countryId = core.places.find((p) => p.id === stay.placeId)?.countryId;
