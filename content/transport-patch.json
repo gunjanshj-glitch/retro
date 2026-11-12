@@ -254,6 +254,435 @@
         "https://pickyourtrail.com/blog/7-nights-8-days-kerala-tour-plan",
         "https://traveltriangle.com/packages/7days-6nights-kerala-leisure-package-5star-leisure-starting-from-INR87200?id=60482"
       ]
+    },
+    {
+      "first": "ross-island",
+      "then": "havelock-island",
+      "note": "Andaman circuits go Port Blair (Ross Island is a Port Blair day trip), then Havelock, then Neil, and come back to Port Blair; Baratang is a Port Blair day trip done last.",
+      "sources": [
+        "https://pickyourtrail.com/blog/andaman-tour-itinerary",
+        "https://www.andamanislands.com/package/andaman-delight",
+        "https://tropicalandamans.com/andaman-itinerary"
+      ]
+    },
+    {
+      "first": "havelock-island",
+      "then": "neil-island",
+      "note": "Andaman circuits go Port Blair (Ross Island is a Port Blair day trip), then Havelock, then Neil, and come back to Port Blair; Baratang is a Port Blair day trip done last.",
+      "sources": [
+        "https://pickyourtrail.com/blog/andaman-tour-itinerary",
+        "https://www.andamanislands.com/package/andaman-delight",
+        "https://tropicalandamans.com/andaman-itinerary"
+      ]
+    },
+    {
+      "first": "neil-island",
+      "then": "baratang-island",
+      "note": "Andaman circuits go Port Blair (Ross Island is a Port Blair day trip), then Havelock, then Neil, and come back to Port Blair; Baratang is a Port Blair day trip done last.",
+      "sources": [
+        "https://pickyourtrail.com/blog/andaman-tour-itinerary",
+        "https://www.andamanislands.com/package/andaman-delight",
+        "https://tropicalandamans.com/andaman-itinerary"
+      ]
+    },
+    {
+      "first": "katra-vaishno-devi",
+      "then": "pahalgam",
+      "note": "Kashmir plans that include Vaishno Devi start in Jammu/Katra, then enter the valley (Jammu-Katra-Pahalgam-Srinagar-Gulmarg). The Amarnath trek starts from Pahalgam and passes Panjtarni.",
+      "sources": [
+        "https://www.indianholiday.com/tours-of-india/jammu-and-kashmir/idyllic-kashmir-vaishnodevi.html",
+        "https://www.thrillophilia.com/blog/?p=82029"
+      ]
+    },
+    {
+      "first": "pahalgam",
+      "then": "panjtarni",
+      "note": "Kashmir plans that include Vaishno Devi start in Jammu/Katra, then enter the valley (Jammu-Katra-Pahalgam-Srinagar-Gulmarg). The Amarnath trek starts from Pahalgam and passes Panjtarni.",
+      "sources": [
+        "https://www.indianholiday.com/tours-of-india/jammu-and-kashmir/idyllic-kashmir-vaishnodevi.html",
+        "https://www.thrillophilia.com/blog/?p=82029"
+      ]
+    },
+    {
+      "first": "panjtarni",
+      "then": "amarnath",
+      "note": "Kashmir plans that include Vaishno Devi start in Jammu/Katra, then enter the valley (Jammu-Katra-Pahalgam-Srinagar-Gulmarg). The Amarnath trek starts from Pahalgam and passes Panjtarni.",
+      "sources": [
+        "https://www.indianholiday.com/tours-of-india/jammu-and-kashmir/idyllic-kashmir-vaishnodevi.html",
+        "https://www.thrillophilia.com/blog/?p=82029"
+      ]
+    },
+    {
+      "first": "pahalgam",
+      "then": "srinagar",
+      "note": "Same Kashmir order: Pahalgam, Srinagar, Gulmarg.",
+      "sources": [
+        "https://www.indianholiday.com/tours-of-india/jammu-and-kashmir/idyllic-kashmir-vaishnodevi.html",
+        "https://www.thrillophilia.com/blog/?p=82029"
+      ]
+    },
+    {
+      "first": "srinagar",
+      "then": "gulmarg",
+      "note": "Same Kashmir order: Pahalgam, Srinagar, Gulmarg.",
+      "sources": [
+        "https://www.indianholiday.com/tours-of-india/jammu-and-kashmir/idyllic-kashmir-vaishnodevi.html",
+        "https://www.thrillophilia.com/blog/?p=82029"
+      ]
+    },
+    {
+      "first": "indore",
+      "then": "ujjain",
+      "note": "MP Tourism and TravelTriangle run the western circuit Indore, Ujjain, (Maheshwar), Omkareshwar, Mandu.",
+      "sources": [
+        "https://www.mptourism.com/bhopal-sanchi-pachmarhi-satpura-itinerary.aspx",
+        "https://traveltriangle.com/blog/tourist-circuits-in-madhya-pradesh",
+        "https://www.mptourism.com/bhopal-pachmarhi-jabalpur-kanha-itinerary.aspx"
+      ]
+    },
+    {
+      "first": "ujjain",
+      "then": "omkareshwar",
+      "note": "MP Tourism and TravelTriangle run the western circuit Indore, Ujjain, (Maheshwar), Omkareshwar, Mandu.",
+      "sources": [
+        "https://www.mptourism.com/bhopal-sanchi-pachmarhi-satpura-itinerary.aspx",
+        "https://traveltriangle.com/blog/tourist-circuits-in-madhya-pradesh",
+        "https://www.mptourism.com/bhopal-pachmarhi-jabalpur-kanha-itinerary.aspx"
+      ]
+    },
+    {
+      "first": "omkareshwar",
+      "then": "mandu",
+      "note": "MP Tourism and TravelTriangle run the western circuit Indore, Ujjain, (Maheshwar), Omkareshwar, Mandu.",
+      "sources": [
+        "https://www.mptourism.com/bhopal-sanchi-pachmarhi-satpura-itinerary.aspx",
+        "https://traveltriangle.com/blog/tourist-circuits-in-madhya-pradesh",
+        "https://www.mptourism.com/bhopal-pachmarhi-jabalpur-kanha-itinerary.aspx"
+      ]
+    },
+    {
+      "first": "bhopal",
+      "then": "sanchi",
+      "note": "MP Tourism: Bhopal and Sanchi, then Bhimbetka and Pachmarhi, then Jabalpur and Kanha/Bandhavgarh.",
+      "sources": [
+        "https://www.mptourism.com/bhopal-sanchi-pachmarhi-satpura-itinerary.aspx",
+        "https://traveltriangle.com/blog/tourist-circuits-in-madhya-pradesh",
+        "https://www.mptourism.com/bhopal-pachmarhi-jabalpur-kanha-itinerary.aspx"
+      ]
+    },
+    {
+      "first": "sanchi",
+      "then": "pachmarhi",
+      "note": "MP Tourism: Bhopal and Sanchi, then Bhimbetka and Pachmarhi, then Jabalpur and Kanha/Bandhavgarh.",
+      "sources": [
+        "https://www.mptourism.com/bhopal-sanchi-pachmarhi-satpura-itinerary.aspx",
+        "https://traveltriangle.com/blog/tourist-circuits-in-madhya-pradesh",
+        "https://www.mptourism.com/bhopal-pachmarhi-jabalpur-kanha-itinerary.aspx"
+      ]
+    },
+    {
+      "first": "pachmarhi",
+      "then": "jabalpur",
+      "note": "MP Tourism: Bhopal and Sanchi, then Bhimbetka and Pachmarhi, then Jabalpur and Kanha/Bandhavgarh.",
+      "sources": [
+        "https://www.mptourism.com/bhopal-sanchi-pachmarhi-satpura-itinerary.aspx",
+        "https://traveltriangle.com/blog/tourist-circuits-in-madhya-pradesh",
+        "https://www.mptourism.com/bhopal-pachmarhi-jabalpur-kanha-itinerary.aspx"
+      ]
+    },
+    {
+      "first": "jabalpur",
+      "then": "bandhavgarh-and-kanha",
+      "note": "MP Tourism: Bhopal and Sanchi, then Bhimbetka and Pachmarhi, then Jabalpur and Kanha/Bandhavgarh.",
+      "sources": [
+        "https://www.mptourism.com/bhopal-sanchi-pachmarhi-satpura-itinerary.aspx",
+        "https://traveltriangle.com/blog/tourist-circuits-in-madhya-pradesh",
+        "https://www.mptourism.com/bhopal-pachmarhi-jabalpur-kanha-itinerary.aspx"
+      ]
+    },
+    {
+      "first": "satkosia",
+      "then": "bhitarkanika",
+      "note": "Odisha wildlife circuits: Satkosia, Bhitarkanika, Similipal, then the Daringbadi hills.",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/bhitarkanika-simlipal-tour.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "bhitarkanika",
+      "then": "similipal",
+      "note": "Odisha wildlife circuits: Satkosia, Bhitarkanika, Similipal, then the Daringbadi hills.",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/bhitarkanika-simlipal-tour.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "similipal",
+      "then": "daringbadi",
+      "note": "Odisha wildlife circuits: Satkosia, Bhitarkanika, Similipal, then the Daringbadi hills.",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/bhitarkanika-simlipal-tour.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "bhubaneswar",
+      "then": "puri",
+      "note": "Odisha circuits start at Bhubaneswar and Puri on the coast, reach Bhitarkanika, and only then go inland (Bhitarkanika to Sambalpur is about 6 hours).",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/bhitarkanika-simlipal-tour.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "puri",
+      "then": "bhitarkanika",
+      "note": "Odisha circuits start at Bhubaneswar and Puri on the coast, reach Bhitarkanika, and only then go inland (Bhitarkanika to Sambalpur is about 6 hours).",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/bhitarkanika-simlipal-tour.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "bhitarkanika",
+      "then": "sambalpur",
+      "note": "Odisha circuits start at Bhubaneswar and Puri on the coast, reach Bhitarkanika, and only then go inland (Bhitarkanika to Sambalpur is about 6 hours).",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/bhitarkanika-simlipal-tour.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "vadodara",
+      "then": "rajkot",
+      "note": "Gujarat circuits run Vadodara, Rajkot, Bhuj, then Dhordo and the White Rann last.",
+      "sources": [
+        "https://www.onthegotours.com/India/Ahmedabad-to-Bhuj-Hidden-Gujarat-8-days",
+        "https://www.onthegotours.com/au/India/Gujarat-Archaeology-Nature-9-days"
+      ]
+    },
+    {
+      "first": "rajkot",
+      "then": "bhuj",
+      "note": "Gujarat circuits run Vadodara, Rajkot, Bhuj, then Dhordo and the White Rann last.",
+      "sources": [
+        "https://www.onthegotours.com/India/Ahmedabad-to-Bhuj-Hidden-Gujarat-8-days",
+        "https://www.onthegotours.com/au/India/Gujarat-Archaeology-Nature-9-days"
+      ]
+    },
+    {
+      "first": "bhuj",
+      "then": "dhordo",
+      "note": "Gujarat circuits run Vadodara, Rajkot, Bhuj, then Dhordo and the White Rann last.",
+      "sources": [
+        "https://www.onthegotours.com/India/Ahmedabad-to-Bhuj-Hidden-Gujarat-8-days",
+        "https://www.onthegotours.com/au/India/Gujarat-Archaeology-Nature-9-days"
+      ]
+    },
+    {
+      "first": "raipur",
+      "then": "bilaspur",
+      "note": "Chhattisgarh itineraries go Raipur, Bilaspur (about 2 hours), then on towards Korba. Thin evidence: one source.",
+      "sources": [
+        "https://www.ixigo.com/travel-stories/itinerary-chhattisgarh-story-1104325"
+      ]
+    },
+    {
+      "first": "bilaspur",
+      "then": "korba",
+      "note": "Chhattisgarh itineraries go Raipur, Bilaspur (about 2 hours), then on towards Korba. Thin evidence: one source.",
+      "sources": [
+        "https://www.ixigo.com/travel-stories/itinerary-chhattisgarh-story-1104325"
+      ]
+    },
+    {
+      "first": "narkanda",
+      "then": "sarahan",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "sarahan",
+      "then": "sangla",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "sangla",
+      "then": "kinnaur-and-kalpa",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "kinnaur-and-kalpa",
+      "then": "hurling",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "hurling",
+      "then": "tabo",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "tabo",
+      "then": "kaza",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "kaza",
+      "then": "losar",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "losar",
+      "then": "chandratal",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "chandratal",
+      "then": "manali",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "manali",
+      "then": "kasol",
+      "note": "Spiti circuits run Shimla/Narkanda, Sangla, Kalpa, Nako, Tabo, Kaza, then Kunzum, Chandratal and out to Manali; Kasol is a Manali add-on.",
+      "sources": [
+        "https://discoverwithdheeraj.com/kinnaur-spiti-circuit-itinerary-2026/",
+        "https://travelcoffee.in/packages/most-loved-shimla-to-manali-spiti-circuit-with-chandratal-lake-9d8n",
+        "https://vargiskhan.com/log/spiti-valley-in-10-days"
+      ]
+    },
+    {
+      "first": "corbett",
+      "then": "ranikhet",
+      "note": "Kumaon road trips go Corbett, Ranikhet, Kausani, Munsiyari, then Dharchula/Pithoragarh in the east.",
+      "sources": [
+        "https://www.outlooktraveller.com/destinations/india/your-perfect-7-day-road-trip-itinerary-for-kumaon",
+        "https://himalayashelter.com/?p=839"
+      ]
+    },
+    {
+      "first": "ranikhet",
+      "then": "kausani",
+      "note": "Kumaon road trips go Corbett, Ranikhet, Kausani, Munsiyari, then Dharchula/Pithoragarh in the east.",
+      "sources": [
+        "https://www.outlooktraveller.com/destinations/india/your-perfect-7-day-road-trip-itinerary-for-kumaon",
+        "https://himalayashelter.com/?p=839"
+      ]
+    },
+    {
+      "first": "kausani",
+      "then": "munsiyari",
+      "note": "Kumaon road trips go Corbett, Ranikhet, Kausani, Munsiyari, then Dharchula/Pithoragarh in the east.",
+      "sources": [
+        "https://www.outlooktraveller.com/destinations/india/your-perfect-7-day-road-trip-itinerary-for-kumaon",
+        "https://himalayashelter.com/?p=839"
+      ]
+    },
+    {
+      "first": "munsiyari",
+      "then": "dharchula",
+      "note": "Kumaon road trips go Corbett, Ranikhet, Kausani, Munsiyari, then Dharchula/Pithoragarh in the east.",
+      "sources": [
+        "https://www.outlooktraveller.com/destinations/india/your-perfect-7-day-road-trip-itinerary-for-kumaon",
+        "https://himalayashelter.com/?p=839"
+      ]
+    },
+    {
+      "first": "amarnath",
+      "then": "srinagar",
+      "note": "The Amarnath trek starts from Pahalgam, so it is done before moving on to Srinagar and Gulmarg.",
+      "sources": [
+        "https://www.indianholiday.com/tours-of-india/jammu-and-kashmir/idyllic-kashmir-vaishnodevi.html",
+        "https://www.thrillophilia.com/blog/?p=82029"
+      ]
+    },
+    {
+      "first": "puri",
+      "then": "cuttack",
+      "note": "Odisha circuits do the coast (Bhubaneswar, Konark, Puri) first, then Cuttack and Satkosia on the way into the wildlife circuit.",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "cuttack",
+      "then": "satkosia",
+      "note": "Odisha circuits do the coast (Bhubaneswar, Konark, Puri) first, then Cuttack and Satkosia on the way into the wildlife circuit.",
+      "sources": [
+        "https://tourmyindia.com/packages-tour-india/odisha-tours/wildlife-holidays.html",
+        "https://www.kiomoi.com/holidays/odisha-tour-itinerary-0596"
+      ]
+    },
+    {
+      "first": "valley-of-flowers",
+      "then": "chopta-valley",
+      "note": "Garhwal first: Joshimath/Valley of Flowers to Chopta is 136 km, and Chopta to Corbett is a published link.",
+      "sources": [
+        "https://wwwtrekhievers.vacationlabs.com/tours/chopta-tungnath-jim-corbett-rishikesh",
+        "https://himalayashelter.com/?p=839"
+      ]
+    },
+    {
+      "first": "chopta-valley",
+      "then": "corbett",
+      "note": "Garhwal first: Joshimath/Valley of Flowers to Chopta is 136 km, and Chopta to Corbett is a published link.",
+      "sources": [
+        "https://wwwtrekhievers.vacationlabs.com/tours/chopta-tungnath-jim-corbett-rishikesh",
+        "https://himalayashelter.com/?p=839"
+      ]
     }
   ]
 }

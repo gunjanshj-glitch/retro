@@ -95,3 +95,57 @@ describe("the port city is a soft start, not a rule", () => {
     expect(at("hanle")).toBeLessThan(at("tso-moriri"));
   });
 });
+
+describe("orders taken from published circuits", () => {
+  const before = (ids: string[], a: string, b: string) => expect(ids.indexOf(a), `${a} before ${b}: ${ids.join(" > ")}`).toBeLessThan(ids.indexOf(b));
+
+  it("Andaman: Ross Island, then Havelock, then Neil, with Baratang last", () => {
+    const ids = stays("Andaman Island");
+    expect(ids[0]).toBe("port-blair");
+    before(ids, "ross-island", "havelock-island");
+    before(ids, "havelock-island", "neil-island");
+    before(ids, "neil-island", "baratang-island");
+  });
+
+  it("Kashmir Delights: Katra, then Pahalgam, Panjtarni and Amarnath, then Srinagar and Gulmarg", () => {
+    const ids = stays("Kashmir Delights");
+    expect(ids[0]).toBe("katra-vaishno-devi");
+    before(ids, "pahalgam", "panjtarni");
+    before(ids, "panjtarni", "amarnath");
+    before(ids, "amarnath", "srinagar");
+    before(ids, "srinagar", "gulmarg");
+  });
+
+  it("Madhya Pradesh: Bhopal, Sanchi, Pachmarhi, then Jabalpur and Kanha; Indore, Ujjain, Omkareshwar, Mandu", () => {
+    const ids = stays("Madhya Pradesh");
+    before(ids, "bhopal", "sanchi");
+    before(ids, "sanchi", "pachmarhi");
+    before(ids, "pachmarhi", "jabalpur");
+    before(ids, "jabalpur", "bandhavgarh-and-kanha");
+    before(ids, "indore", "ujjain");
+    before(ids, "ujjain", "omkareshwar");
+    before(ids, "omkareshwar", "mandu");
+  });
+
+  it("Himachal Delights runs Shimla side, Kinnaur, Spiti, then out through Manali", () => {
+    const ids = stays("Himachal Delights");
+    before(ids, "narkanda", "sangla");
+    before(ids, "sangla", "kinnaur-and-kalpa");
+    before(ids, "kinnaur-and-kalpa", "tabo");
+    before(ids, "tabo", "kaza");
+    before(ids, "kaza", "losar");
+    before(ids, "losar", "manali");
+  });
+
+  it("Gujarat and Odisha follow their circuits", () => {
+    const g = stays("Gujarat");
+    before(g, "vadodara", "rajkot");
+    before(g, "rajkot", "bhuj");
+    before(g, "bhuj", "dhordo");
+    const o = stays("Odisha");
+    before(o, "bhubaneswar", "puri");
+    before(o, "puri", "bhitarkanika");
+    before(o, "bhitarkanika", "similipal");
+    before(o, "similipal", "daringbadi");
+  });
+});

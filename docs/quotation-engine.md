@@ -337,3 +337,11 @@ The first version of the port-city rule was a hard "port city must be an end of 
 - hard: a route end that is a satellite of the port is ruled out while the port city is in the trip (stops Madurai > Rameswaram > Madurai), except islands and hill places, where the way back is the only way home. Published Andaman and Ladakh circuits all return to Port Blair or Leh before departure, so those keep the hub return. The first version of this rule also blocked hill places more than six hours out; the published-itinerary check showed that wrongly removed Leh's return and it was dropped.
 
 Known rough spots: Himachal Delights (12 stops in 10 nights) jumps Losar to Kullu near the end; Kashmir Delights puts Katra before Panjtarni; Chhattisgarh starts at Raigarh rather than Raipur. None has a source to say what is right.
+
+### Order rules added after the second published-itinerary check (2026-11-12)
+
+`orderPrecedence` in `content/transport-patch.json` now has 42 pairs, each with its sources: Kerala, Andaman (Ross, Havelock, Neil, Baratang), Kashmir Delights (Katra, Pahalgam, Panjtarni, Amarnath, Srinagar, Gulmarg), Madhya Pradesh (Bhopal, Sanchi, Pachmarhi, Jabalpur, Kanha; Indore, Ujjain, Omkareshwar, Mandu), Odisha, Gujarat, Chhattisgarh (Raipur, Bilaspur, Korba; one source only), Himachal Delights (Narkanda to Manali via Spiti) and Uttarakhand Long Holiday (Garhwal first, then Kumaon). A rule only applies when both places are on the trip.
+
+Sequencer: added an or-opt move (relocate one stop) to the 2-opt search. With several hard rules interacting, 2-opt alone stopped in an order that broke seven of them (Himachal Delights).
+
+Still weak, no source found either way: Uttarakhand Long Holiday (no published itinerary combines Kumaon with Chopta and the Valley of Flowers), Chhattisgarh (fragments only), Goa (sources disagree on where Dudhsagar goes). Himachal Delights has 12 places in 10 nights and the engine drops Kasol to fit.

@@ -1202,6 +1202,22 @@ export function sequencePlaces(
     let length = tourLength(tour);
     while (improved && guard++ < 100) {
       improved = false;
+      // Or-opt: lift one stop out and try it in every other slot. 2-opt alone gets stuck once several
+      // hard ordering rules interact (Himachal Delights), because no single reversal fixes two of them.
+      for (let i = 0; i < tour.length; i++) {
+        for (let j = 0; j < tour.length; j++) {
+          if (i === j) continue;
+          const candidate = [...tour];
+          const [moved] = candidate.splice(i, 1);
+          candidate.splice(j, 0, moved);
+          const candidateLength = tourLength(candidate);
+          if (candidateLength < length - 1e-9) {
+            tour.splice(0, tour.length, ...candidate);
+            length = candidateLength;
+            improved = true;
+          }
+        }
+      }
       for (let i = 0; i < tour.length - 1; i++) {
         for (let j = i + 1; j < tour.length; j++) {
           const candidate = [
