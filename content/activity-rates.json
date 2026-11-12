@@ -1,5 +1,5 @@
 {
-  "_about": "Hand-entered activity rates (source: manual) from public web figures, for attractions the workbook does not price. Per adult, INR, Indian resident. They conflict between sources and none is an official tariff, so each is an estimate for agency review: replace with a supplier rate or a workbook row. Dirang Dzong is free per two listings (Rs 0, not an official tariff). Nag Temple and Monpa Village have no published fee found and are deliberately absent, not priced at zero. Tipi Orchid Research Centre is already in the workbook (about Rs 189), which wins; web figures for it range Rs 10 to Rs 50, so the workbook is the higher, safer number.",
+  "_about": "Hand-entered activity rates (source: manual) from public web figures, for attractions the workbook does not price. Per adult, INR, Indian resident. They conflict between sources and none is an official tariff, so each is an estimate for agency review: replace with a supplier rate or a workbook row. Dirang Dzong is free per two listings (Rs 0, not an official tariff). Nag Temple and Monpa Village: no ticket is published; priced Rs 0 on that basis, each flagged as an estimate. Tipi Orchid Research Centre is already in the workbook (about Rs 189), which wins; web figures for it range Rs 10 to Rs 50, so the workbook is the higher, safer number.",
   "rates": [
     {
       "placeId": "bhalukpong",
@@ -23,6 +23,30 @@
       "sources": [
         "https://www.thrillophilia.com/attractions/dirang-dzong",
         "https://travelsetu.com/guide/dirang-dzong-fort-tourism"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "dirang",
+      "code": "DIRANG_A_NAG TEMPLE",
+      "inr": 0,
+      "unit": "Person",
+      "note": "Singchung shrine; no ticket listed anywhere and area guides list nearby sites as free. Donation only. No source states 'free' outright, so treat as an estimate. Timings conflict (6am-7pm vs 24h). Inner Line Permit is separate.",
+      "sources": [
+        "https://thrillophilia.com/attractions/nag-temple-singchung",
+        "https://www.lonelyplanet.com/points-of-interest/nag-temple/1606912"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "dirang",
+      "code": "DIRANG_A_MONPA VILLAGE",
+      "inr": 0,
+      "unit": "Person",
+      "note": "Open village walk, no entry fee found. Guided heritage walks are sold separately (about USD 80-100 pp private operator); homestay meals extra.",
+      "sources": [
+        "https://theholidayscout.com/tour/dirang-heritage-tour-in-1-day.html",
+        "https://traveltriangle.com/blog/homestays-in-dirang/"
       ],
       "checked": "2026-11-12"
     }

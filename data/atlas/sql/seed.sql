@@ -13332,9 +13332,9 @@ INSERT INTO flight_band (id, origin_city, dest_country_id, carrier, cabin, trip_
   ('south-asia-maldives:GOI:FSC:Business', 'GOI', 'south-asia-maldives', 'FSC', 'Business', 'Round Trip', 42228, 87704, 'INR', 138, 'estimated'),
   ('east-asia-japan:DEL:LCC:Economy', 'DEL', 'east-asia-japan', 'LCC', 'Economy', 'Round Trip', 26239, 54497, 'INR', 488, 'estimated'),
   ('east-asia-japan:DEL:LCC:Premium-Economy', 'DEL', 'east-asia-japan', 'LCC', 'Premium Economy', 'Round Trip', 44607, 92644, 'INR', 488, 'estimated'),
-  ('east-asia-japan:DEL:FSC:Economy', 'DEL', 'east-asia-japan', 'FSC', 'Economy', 'Round Trip', 57531, 83100, 'INR', 488, 'live'),
-  ('east-asia-japan:DEL:FSC:Premium-Economy', 'DEL', 'east-asia-japan', 'FSC', 'Premium Economy', 'Round Trip', 97802, 141270, 'INR', 488, 'live'),
-  ('east-asia-japan:DEL:FSC:Business', 'DEL', 'east-asia-japan', 'FSC', 'Business', 'Round Trip', 184098, 265920, 'INR', 488, 'live'),
+  ('east-asia-japan:DEL:FSC:Economy', 'DEL', 'east-asia-japan', 'FSC', 'Economy', 'Round Trip', 57612, 83217, 'INR', 488, 'live'),
+  ('east-asia-japan:DEL:FSC:Premium-Economy', 'DEL', 'east-asia-japan', 'FSC', 'Premium Economy', 'Round Trip', 97940, 141469, 'INR', 488, 'live'),
+  ('east-asia-japan:DEL:FSC:Business', 'DEL', 'east-asia-japan', 'FSC', 'Business', 'Round Trip', 184357, 266294, 'INR', 488, 'live'),
   ('east-asia-japan:BOM:FSC:Economy', 'BOM', 'east-asia-japan', 'FSC', 'Economy', 'Round Trip', 38910, 80814, 'INR', 554, 'estimated'),
   ('east-asia-japan:BOM:FSC:Premium-Economy', 'BOM', 'east-asia-japan', 'FSC', 'Premium Economy', 'Round Trip', 66148, 137384, 'INR', 554, 'estimated'),
   ('east-asia-japan:BOM:FSC:Business', 'BOM', 'east-asia-japan', 'FSC', 'Business', 'Round Trip', 124514, 258605, 'INR', 554, 'estimated'),
@@ -14524,9 +14524,9 @@ INSERT INTO flight_band (id, origin_city, dest_country_id, carrier, cabin, trip_
   ('south-east-asia-singapore:GOI:FSC:Business', 'GOI', 'south-east-asia-singapore', 'FSC', 'Business', 'Round Trip', 82490, 171326, 'INR', 319, 'estimated'),
   ('south-east-asia-malaysia:DEL:LCC:Economy', 'DEL', 'south-east-asia-malaysia', 'LCC', 'Economy', 'Round Trip', 38377, 55433, 'INR', 336, 'live'),
   ('south-east-asia-malaysia:DEL:LCC:Premium-Economy', 'DEL', 'south-east-asia-malaysia', 'LCC', 'Premium Economy', 'Round Trip', 65241, 94237, 'INR', 336, 'live'),
-  ('south-east-asia-malaysia:DEL:FSC:Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Economy', 'Round Trip', 36414, 52598, 'INR', 336, 'live'),
-  ('south-east-asia-malaysia:DEL:FSC:Premium-Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Premium Economy', 'Round Trip', 61904, 89417, 'INR', 336, 'live'),
-  ('south-east-asia-malaysia:DEL:FSC:Business', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Business', 'Round Trip', 116525, 168314, 'INR', 336, 'live'),
+  ('south-east-asia-malaysia:DEL:FSC:Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Economy', 'Round Trip', 36465, 52672, 'INR', 336, 'live'),
+  ('south-east-asia-malaysia:DEL:FSC:Premium-Economy', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Premium Economy', 'Round Trip', 61991, 89543, 'INR', 336, 'live'),
+  ('south-east-asia-malaysia:DEL:FSC:Business', 'DEL', 'south-east-asia-malaysia', 'FSC', 'Business', 'Round Trip', 116689, 168551, 'INR', 336, 'live'),
   ('south-east-asia-malaysia:BOM:LCC:Economy', 'BOM', 'south-east-asia-malaysia', 'LCC', 'Economy', 'Round Trip', 19229, 39938, 'INR', 317, 'estimated'),
   ('south-east-asia-malaysia:BOM:LCC:Premium-Economy', 'BOM', 'south-east-asia-malaysia', 'LCC', 'Premium Economy', 'Round Trip', 32690, 67895, 'INR', 317, 'estimated'),
   ('south-east-asia-malaysia:BOM:FSC:Economy', 'BOM', 'south-east-asia-malaysia', 'FSC', 'Economy', 'Round Trip', 25639, 53251, 'INR', 317, 'estimated'),
@@ -14773,8 +14773,8 @@ INSERT INTO flight_band (id, origin_city, dest_country_id, carrier, cabin, trip_
   ('south-east-asia-phillipines:GOI:FSC:Economy', 'GOI', 'south-east-asia-phillipines', 'FSC', 'Economy', 'Round Trip', 31044, 64476, 'INR', 416, 'estimated'),
   ('south-east-asia-phillipines:GOI:FSC:Premium-Economy', 'GOI', 'south-east-asia-phillipines', 'FSC', 'Premium Economy', 'Round Trip', 52775, 109610, 'INR', 416, 'estimated'),
   ('south-east-asia-phillipines:GOI:FSC:Business', 'GOI', 'south-east-asia-phillipines', 'FSC', 'Business', 'Round Trip', 99342, 206325, 'INR', 416, 'estimated'),
-  ('india-india:DEL:LCC:Economy', 'DEL', 'india-india', 'LCC', 'Economy', 'Round Trip', 18610, 26881, 'INR', 199, 'live'),
-  ('india-india:DEL:LCC:Premium-Economy', 'DEL', 'india-india', 'LCC', 'Premium Economy', 'Round Trip', 31637, 45698, 'INR', 199, 'live'),
+  ('india-india:DEL:LCC:Economy', 'DEL', 'india-india', 'LCC', 'Economy', 'Round Trip', 18636, 26919, 'INR', 199, 'live'),
+  ('india-india:DEL:LCC:Premium-Economy', 'DEL', 'india-india', 'LCC', 'Premium Economy', 'Round Trip', 31682, 45762, 'INR', 199, 'live'),
   ('india-india:DEL:FSC:Economy', 'DEL', 'india-india', 'FSC', 'Economy', 'Round Trip', 17312, 35956, 'INR', 199, 'estimated'),
   ('india-india:DEL:FSC:Premium-Economy', 'DEL', 'india-india', 'FSC', 'Premium Economy', 'Round Trip', 29431, 61125, 'INR', 199, 'estimated'),
   ('india-india:DEL:FSC:Business', 'DEL', 'india-india', 'FSC', 'Business', 'Round Trip', 55399, 115059, 'INR', 199, 'estimated'),
@@ -28337,7 +28337,7 @@ INSERT INTO monthly_score (place_id, month, weather, crowd, price, overall, reco
   ('koh-samui', 8, 70, 66, 72, 70, 'Showers possible but usually short; moderate crowds and fair pricing.'),
   ('koh-samui', 9, 62, 75, 82, 72, 'Increasing rain, quieter beaches and attractive hotel rates.'),
   ('koh-samui', 10, 45, 80, 85, 66, 'Wet and often choppy; boat trips are unreliable though prices are low.'),
-  ('koh-samui', 11, 38, 82, 85, 62, 'Typically the wettest month; Ang Thong tours are suspended for part of the month.'),
+  ('koh-samui', 11, 38, 82, 85, 62, 'Typically the wettest month; Ang Thong is closed all month (1 Nov to ~15 Dec).'),
   ('koh-samui', 12, 55, 55, 50, 56, 'Rain eases through the month; late December holiday demand returns and boats resume.'),
   ('sentosa-island', 1, 80, 75, 70, 75, 'Good for festive atmosphere; expect some rain.'),
   ('sentosa-island', 2, 92, 80, 85, 85, 'Excellent; among the driest and most comfortable months.'),
@@ -44969,6 +44969,8 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('bhalukpong', 'BHALUKPONG_A_NECHIPU PASS', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('bhalukpong', 'BHALUKPONG_A_NAMERI NATIONAL PARK', 'Person', 370, NULL, NULL, 'manual'),
   ('dirang', 'DIRANG_A_DIRANG DZONG', 'Person', 189, NULL, NULL, 'estimated'),
+  ('dirang', 'DIRANG_A_NAG TEMPLE', 'Person', 189, NULL, NULL, 'estimated'),
+  ('dirang', 'DIRANG_A_MONPA VILLAGE', 'Person', 189, NULL, NULL, 'estimated'),
   ('tawang', 'TAWANG_A_TAWANG MONASTERY', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('tawang', 'TAWANG_A_SELA PASS & SELA LAKE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('tawang', 'TAWANG_A_BUM LA PASS', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -44994,10 +44996,10 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('lucknow', 'LUCKNOW_A_KUKRAIL_NATURE_FOREST_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('lucknow', 'LUCKNOW_A_CHARBAGH_RAILWAY_HERITAGE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_TAJ_MAHAL_TAJGANJ_CORE', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
-  ('agra', 'AGRA_A_AGRA_FORT_MUGHAL_CORE', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
-  ('agra', 'AGRA_A_MEHTAB_BAGH_YAMUNA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('agra', 'AGRA_A_ITIMAD_UD_DAULAH_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+  ('agra', 'AGRA_A_AGRA_FORT_MUGHAL_CORE', 'Person/Group', 566.94, 6, 'USD', 'workbook');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('agra', 'AGRA_A_MEHTAB_BAGH_YAMUNA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
+  ('agra', 'AGRA_A_ITIMAD_UD_DAULAH_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_SIKANDRA_AKBAR_TOMB_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_FATEHPUR_SIKRI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_RAM_BAGH_MUGHAL_GARDEN_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -45195,10 +45197,10 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('puri', 'PURI_A_RAGHURAJPUR_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_KONARK_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_CHANDRABHAGA_MARINE_DRIVE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('puri', 'PURI_A_RAMACHANDI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('puri', 'PURI_A_SATAPADA_CHILIKA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('puri', 'PURI_A_BALIGHAI_COAST_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+  ('puri', 'PURI_A_RAMACHANDI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('puri', 'PURI_A_SATAPADA_CHILIKA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
+  ('puri', 'PURI_A_BALIGHAI_COAST_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('daringbadi', 'DARINGBADI_A_NATURE_PARK_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('daringbadi', 'DARINGBADI_A_PINE_COFFEE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('daringbadi', 'DARINGBADI_A_HILL_VIEW_SUNSET_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -45396,10 +45398,10 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('luxembourg-city', 'LUXEMBOURGCITY_A_CASEMATES_AND_OLD_QUARTER', 'Person', 1800, 18, 'EUR', 'estimated'),
   ('luxembourg-city', 'LUXEMBOURGCITY_A_SQUARES_AND_NATIONAL_COLLECTIONS', 'Person', 800, 8, 'EUR', 'estimated'),
   ('luxembourg-city', 'LUXEMBOURGCITY_A_KIRCHBERG_AND_LOWER_CITY_VIEWS', 'Person', 1600, 16, 'EUR', 'estimated'),
-  ('vianden', 'VIANDEN_A_VIANDEN_CASTLE_AND_CHAIRLIFT', 'Person', 1900, 19, 'EUR', 'estimated'),
-  ('vianden', 'VIANDEN_A_DAM_AND_RIVERSIDE_WALKS', 'Person', 0, 0, 'EUR', 'estimated'),
-  ('echternach', 'ECHTERNACH_A_ABBEY_QUARTER_AND_OLD_TOWN', 'Person', 1600, 0, 'EUR', 'estimated');
+  ('vianden', 'VIANDEN_A_VIANDEN_CASTLE_AND_CHAIRLIFT', 'Person', 1900, 19, 'EUR', 'estimated');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('vianden', 'VIANDEN_A_DAM_AND_RIVERSIDE_WALKS', 'Person', 0, 0, 'EUR', 'estimated'),
+  ('echternach', 'ECHTERNACH_A_ABBEY_QUARTER_AND_OLD_TOWN', 'Person', 1600, 0, 'EUR', 'estimated'),
   ('echternach', 'ECHTERNACH_A_MULLERTHAL_NATURE_HIGHLIGHTS', 'Person', 1600, 0, 'EUR', 'estimated'),
   ('clervaux', 'CLERVAUX_A_CASTLE_MUSEUMS_AND_TOWN_CORE', 'Person', 800, 8, 'EUR', 'estimated'),
   ('clervaux', 'CLERVAUX_A_ABBEY_AND_ARDENNES_COUNTRYSIDE', 'Person', 1200, 12, 'EUR', 'estimated'),
@@ -45597,10 +45599,10 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('aarhus', 'AARHUS_A_AROS_CITY_CULTURE', 'Person', 2200, 22, 'EUR', 'estimated'),
   ('aarhus', 'AARHUS_A_MOESGAARD_MARSELISBORG', 'Person', 2400, 24, 'EUR', 'estimated'),
   ('odense', 'ODENSE_A_ANDERSEN_QUARTER', 'Person', 2700, 27, 'EUR', 'estimated'),
-  ('odense', 'ODENSE_A_CASTLE_VILLAGE', 'Person', 3300, 33, 'EUR', 'estimated'),
-  ('odense', 'ODENSE_A_HARBOUR_ZOO', 'Person', 2600, 26, 'EUR', 'estimated'),
-  ('aalborg', 'AALBORG_A_WATERFRONT_UTZON', 'Person', 1500, 15, 'EUR', 'estimated');
+  ('odense', 'ODENSE_A_CASTLE_VILLAGE', 'Person', 3300, 33, 'EUR', 'estimated');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('odense', 'ODENSE_A_HARBOUR_ZOO', 'Person', 2600, 26, 'EUR', 'estimated'),
+  ('aalborg', 'AALBORG_A_WATERFRONT_UTZON', 'Person', 1500, 15, 'EUR', 'estimated'),
   ('aalborg', 'AALBORG_A_OLD_AALBORG', 'Person', 1000, 10, 'EUR', 'estimated'),
   ('aalborg', 'AALBORG_A_VIKING_FJORD_EDGE', 'Person', 2200, 22, 'EUR', 'estimated'),
   ('roskilde', 'ROSKILDE_A_CATHEDRAL_CORE', 'Person', 1900, 19, 'EUR', 'estimated'),
@@ -45798,10 +45800,10 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('positano', 'POSITANO_A_UPPER_POSITANO_VIEWS', 'Person', 1800, 18, 'EUR', 'estimated'),
   ('positano', 'POSITANO_A_SEA_COVES', 'Person', 4000, 40, 'EUR', 'estimated'),
   ('capri', 'CAPRI_A_CAPRI_TOWN_GARDENS', 'Person', 500, 5, 'EUR', 'estimated'),
-  ('capri', 'CAPRI_A_BLUE_GROTTO_CIRCUIT', 'Person', 3500, 35, 'EUR', 'estimated'),
-  ('capri', 'CAPRI_A_FARAGLIONI_COAST', 'Person', 2200, 22, 'EUR', 'estimated'),
-  ('palermo', 'PALERMO_A_HISTORIC_CORE', 'Person', 0, 0, 'EUR', 'estimated');
+  ('capri', 'CAPRI_A_BLUE_GROTTO_CIRCUIT', 'Person', 3500, 35, 'EUR', 'estimated');
 INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('capri', 'CAPRI_A_FARAGLIONI_COAST', 'Person', 2200, 22, 'EUR', 'estimated'),
+  ('palermo', 'PALERMO_A_HISTORIC_CORE', 'Person', 0, 0, 'EUR', 'estimated'),
   ('palermo', 'PALERMO_A_ARAB_NORMAN_PALERMO', 'Person', 1900, 19, 'EUR', 'estimated'),
   ('palermo', 'PALERMO_A_MARKETS_STREET_FOOD', 'Person', 1000, 10, 'EUR', 'estimated'),
   ('palermo', 'PALERMO_A_SEAFRONT_ORATORY_ART', 'Person', 1500, 15, 'EUR', 'estimated'),
@@ -74273,7 +74275,7 @@ INSERT INTO destination_guidance (place_id, section, topic, section_title, headi
   ('krabi', 36, 'data-quality', 'DATA QUALITY', NULL, NULL, 'information_completeness: 90/100 last_updated: 2026-08-27 last_verified: NOT_LIVE_VERIFIED verified_by: TRAVEL_ENGINE_INITIAL_DATASET sources: IMPORTANT: Prices, opening hours, schedules, visa requirements, availability, accessibility and operational conditions must NOT be treated as permanently valid from this document. These must be sourced from structured, refreshable data.', 4256),
   ('koh-samui', 7, 'seasonality', 'SEASONALITY', 'Dry Season (Peak Season)', NULL, 'months: January–April weather: Warm, sunny and mostly dry (roughly 28–32°C) with calm seas; February is frequently described as the driest, sunniest month, and April is the hottest. crowd_level: HIGH price_level: HIGH overall_score: 85–95 recommended: true reason: Best conditions for beaches, boat trips and Ang Thong Marine Park; April adds the Songkran festival and slightly lower rates.', 4257),
   ('koh-samui', 7, 'seasonality', 'SEASONALITY', 'Summer and Mid-Year Shoulder', NULL, 'months: May–September weather: Hot and humid with intermittent showers, and noticeably less wet than the west-coast Andaman monsoon during the same months. crowd_level: MEDIUM price_level: MEDIUM overall_score: 68–78 recommended: true reason: A good-value period with mostly workable beach days, especially July and August when European and Asian school holidays lift demand.', 4258),
-  ('koh-samui', 7, 'seasonality', 'SEASONALITY', 'Wet Season', NULL, 'months: October–December weather: Heaviest rainfall of the year on the island, with frequent downpours, cloud and rougher seas; November is widely cited as the wettest month. crowd_level: LOW → MEDIUM price_level: LOW → MEDIUM overall_score: 40–60 recommended: false reason: Rain and swell disrupt boat trips, and Ang Thong Marine National Park tours do not run for part of November and December; late December improves and holiday demand pushes prices back up.', 4259),
+  ('koh-samui', 7, 'seasonality', 'SEASONALITY', 'Wet Season', NULL, 'months: October–December weather: Heaviest rainfall of the year on the island, with frequent downpours, cloud and rougher seas; November is widely cited as the wettest month. crowd_level: LOW → MEDIUM price_level: LOW → MEDIUM overall_score: 40–60 recommended: false reason: Rain and swell disrupt boat trips, and Ang Thong Marine National Park is closed each year from 1 November to about 15 December (some calendars say 30 November); late December improves and holiday demand pushes prices back up.', 4259),
   ('koh-samui', 10, 'budget-strategy', 'BUDGET STRATEGY', NULL, NULL, 'Where saving money is not recommended:', 4260),
   ('koh-samui', 18, 'family-travel', 'FAMILY TRAVEL', NULL, NULL, 'child_friendly_score: 86 best_ages: Rules:', 4261),
   ('koh-samui', 19, 'honeymoon-travel', 'HONEYMOON TRAVEL', NULL, NULL, 'Best areas: Choeng Mon: best for a calm private cove, upscale resorts and short transfers from the airport. Bophut & Fisherman''s Village: best for boutique stays, romantic dining and walking evenings. Mae Nam and the north coast: best for quiet villas, wellness retreats and local atmosphere. Hillside villa enclaves: best for sea-view pool villas and sunset terraces. Honeymoon rules: Prefer one signature experience, such as a private boat day to Ang Thong or a beach dinner, paired with unhurried downtime. Avoid Chaweng''s main strip in the evening if privacy is a priority. Invest in private transfers and a well-located villa over multiple group excursions.', 4262),

@@ -185,7 +185,7 @@ Koh Samui is the Gulf-coast counterpart to Phuket: a compact island of about one
 
 **recommended:** false
 
-**reason:** Rain and swell disrupt boat trips, and Ang Thong Marine National Park tours do not run for part of November and December; late December improves and holiday demand pushes prices back up.
+**reason:** Rain and swell disrupt boat trips, and Ang Thong Marine National Park is closed each year from 1 November to about 15 December (some calendars say 30 November); late December improves and holiday demand pushes prices back up.
 
 ---
 
@@ -203,7 +203,7 @@ Koh Samui is the Gulf-coast counterpart to Phuket: a compact island of about one
 | August | 70 | 66 | 72 | 70 | Showers possible but usually short; moderate crowds and fair pricing. |
 | September | 62 | 75 | 82 | 72 | Increasing rain, quieter beaches and attractive hotel rates. |
 | October | 45 | 80 | 85 | 66 | Wet and often choppy; boat trips are unreliable though prices are low. |
-| November | 38 | 82 | 85 | 62 | Typically the wettest month; Ang Thong tours are suspended for part of the month. |
+| November | 38 | 82 | 85 | 62 | Typically the wettest month; Ang Thong is closed all month (1 Nov to ~15 Dec). |
 | December | 55 | 55 | 50 | 56 | Rain eases through the month; late December holiday demand returns and boats resume. |
 
 
