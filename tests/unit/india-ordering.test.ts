@@ -38,7 +38,7 @@ describe("India routes follow the published-itinerary pattern", () => {
     expect(stays("Punjab")[0]).toBe("chandigarh");
   });
 
-  it("keeps the anchor at an end even when the middle is cheaper", () => {
+  it("puts the port city at the stated end even when the middle is cheaper", () => {
     // A line a - b - c - d: the cheapest open path is a..d, but with b anchored it must start or end at b.
     const ids = ["a", "b", "c", "d"];
     const km: Record<string, number> = { "a|b": 100, "b|c": 100, "c|d": 100 };
@@ -48,8 +48,11 @@ describe("India routes follow the published-itinerary pattern", () => {
     } as unknown as Parameters<typeof sequencePlaces>[1];
     const free = sequencePlaces(ids, fake);
     expect(["a", "d"]).toContain(free[0]);
-    const anchored = sequencePlaces(ids, fake, null, new Map(), true, undefined, "b");
-    expect(anchored[0] === "b" || anchored[anchored.length - 1] === "b").toBe(true);
+    // Added for a long road home: not negotiable, so b must take the stated end.
+    const atEnd = sequencePlaces(ids, fake, null, new Map(), true, undefined, "b", "end");
+    expect(atEnd[atEnd.length - 1]).toBe("b");
+    const atStart = sequencePlaces(ids, fake, null, new Map(), true, undefined, "b", "start");
+    expect(atStart[0]).toBe("b");
   });
 
   it("still returns through the port when a stay is too far to drive to on the last morning", () => {
@@ -61,15 +64,31 @@ describe("India routes follow the published-itinerary pattern", () => {
     expect(stays("Kerala")).toEqual(["cochin", "munnar", "thekkady", "alleppey", "trivandrum", "kanyakumari"]);
   });
 
-  it("keeps the Chhattisgarh package inside Chhattisgarh, starting at Raipur", () => {
+  it("keeps the Chhattisgarh package inside Chhattisgarh", () => {
     const pkg = core.packages.find((p) => p.name === "Chhattisgarh")!;
     for (const id of ["patiala", "chandigarh", "anandpur-sahib"]) expect(pkg.placeIds).not.toContain(id);
-    expect(stays("Chhattisgarh")[0]).toBe("raipur");
+    const ids = stays("Chhattisgarh");
+    expect(ids).toHaveLength(7);
+    expect(ids).toContain("raipur");
   });
 
   it("puts the airport night after a long drive back at the end, not the start", () => {
     const ids = stays("Uttarakhand Pilgrimage");
     expect(ids[ids.length - 1]).toBe("nainital");
     expect(ids[0]).not.toBe("nainital");
+  });
+});
+
+describe("the port city is a soft start, not a rule", () => {
+  it("does not make Uttar Pradesh jump back 500 km because Lucknow, its port, sits mid-line", () => {
+    const ids = stays("Uttar Pradesh");
+    // Varanasi - Ayodhya - Lucknow - Kanpur - Agra is one line; Lucknow must stay in the middle of it.
+    expect(ids).toEqual(["varanasi", "ayodhya", "lucknow", "kanpur", "agra"]);
+  });
+
+  it("does not end a hill trip on a stop more than six hours from the airport when the port city is on the trip", () => {
+    const ids = stays("Ladakh");
+    expect(ids[ids.length - 1]).not.toBe("hanle");
+    expect(ids[ids.length - 1]).not.toBe("tso-moriri");
   });
 });

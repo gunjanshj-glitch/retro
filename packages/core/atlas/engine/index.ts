@@ -397,6 +397,11 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
           roadKm: roadKmToPort,
           anchorId: portCityId && placeIds.includes(portCityId) ? portCityId : null,
           anchorSide: portNightSide,
+          // A hill place more than six hours from the airport has no other way home than the road
+          // (Hanle, Tso Moriri): the trip returns to the port city first, as every Ladakh circuit does.
+          blockedEnd: (id: string) =>
+            (nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > DOMESTIC_SATELLITE_ROAD_KM) ||
+            (isHillPlace(core, id) && (roadLeg(core, port.airport, id).minutes ?? 0) > 360),
         }
       : null,
   ] as const;

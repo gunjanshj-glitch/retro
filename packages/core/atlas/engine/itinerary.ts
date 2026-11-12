@@ -1056,8 +1056,16 @@ const ORDER_PRECEDENCE = (
 /** Worth about 1,700 km of detour: decisive between close orders, never enough to cross a country. */
 const PRECEDENCE_PENALTY = 20_000;
 
-/** Cost of leaving the port's own city in the middle of the route. */
+/** Cost of leaving the port's own city in the middle of the route when the night was added for it: not negotiable. */
 const ANCHOR_PENALTY = 1_000_000;
+
+/**
+ * Cost when the port city merely should start the route: about 125 km of detour at the sequencer's
+ * 12 INR/km. Enough to stop Kerala opening at Alleppey (49 km off), too little to make Uttar Pradesh
+ * jump from Varanasi back to Kanpur (about 300 km) because Lucknow, its port, sits mid-line. The
+ * survey of all India packages found 6,000 and 3,000 both break Uttar Pradesh.
+ */
+const ANCHOR_SOFT_PENALTY = 1_500;
 
 /**
  * Orders the places to minimise total transfer cost.
@@ -1092,6 +1100,12 @@ export function sequencePlaces(
   anchorId: string | null = null,
   /** Which end the anchor must take: a night added for a long last road belongs at the end, a late arrival at the start. */
   anchorSide: "start" | "end" | "either" = "either",
+  /**
+   * Places too far from the port to drive to on the last morning. A satellite at either end makes the
+   * trip re-enter the port city (Madurai > Rameswaram > Madurai), which no published circuit does, so an
+   * end like that is ruled out whenever the port city is in the trip.
+   */
+  isSatellite: (id: string) => boolean = () => false,
 ): string[] {
   if (placeIds.length <= 1) return [...placeIds];
   const exitWeight = outAndBack ? 1 : GATEWAY_EXIT_DISCOUNT;
@@ -1130,7 +1144,10 @@ export function sequencePlaces(
       const first = tour[0] === anchorId;
       const last = tour[tour.length - 1] === anchorId;
       const ok = anchorSide === "start" ? first : anchorSide === "end" ? last : first || last;
-      if (!ok) total += ANCHOR_PENALTY;
+      if (!ok) total += anchorSide === "either" ? ANCHOR_SOFT_PENALTY : ANCHOR_PENALTY;
+      for (const end of [tour[0], tour[tour.length - 1]]) {
+        if (end !== anchorId && isSatellite(end)) total += ANCHOR_PENALTY;
+      }
     }
     for (let i = 0; i < tour.length - 1; i++) total += d(tour[i], tour[i + 1]);
     return total;
@@ -1237,6 +1254,8 @@ export function buildStays(
     roadKm: Map<string, number>;
     anchorId?: string | null;
     anchorSide?: "start" | "end" | "either";
+    /** Ends the route may not take while the port city is in the trip: satellites, and hill places a long road from the airport. */
+    blockedEnd?: (id: string) => boolean;
   } | null = null,
 ): PlaceStay[] {
   const nights = allocateNights(placeIds, totalNights, summaries, style, overrides);
@@ -1249,6 +1268,7 @@ export function buildStays(
     port?.roadKm,
     port?.anchorId ?? null,
     port?.anchorSide ?? "either",
+    port?.blockedEnd ?? port?.satellite,
   );
   const visits = ordered.map((placeId) => ({ placeId, nights: nights.get(placeId) ?? 0 }));
   const route = airports ? bookendGateways(airports, visits, port?.satellite) : visits;
