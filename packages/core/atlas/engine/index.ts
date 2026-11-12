@@ -188,6 +188,20 @@ function groupProfile(request: QuoteRequest): GroupProfile {
   };
 }
 
+/**
+ * Road distance from the port beyond which a domestic stay is a "satellite": the trip returns
+ * through the port city instead of driving the whole way to the airport on the last morning.
+ *
+ * 120 km, not 40. Published India itineraries drive straight from the arrival airport to the
+ * first stay up to about this far and never re-enter the airport city: Chandigarh to Shimla is
+ * 117 km on the HPTDC circuit, and Kochi to Munnar or Alleppey is 55-130 km on the Kerala
+ * circuits (travelcoffee.in Himachal route, incredibleindia.gov.in Kerala trip, pickyourtrail
+ * Kerala and Rajasthan plans). At 40 km the rule made Kerala read Cochin > Alleppey > Cochin and
+ * Punjab read Chandigarh > Patiala > Chandigarh, a revisit no planner books. A late arrival or
+ * a road home over six hours still adds a port night (see addPortNight), so nothing is lost.
+ */
+const DOMESTIC_SATELLITE_ROAD_KM = 120;
+
 export function generateQuotation(request: QuoteRequest, data: EngineData): Quotation {
   const warnings: QuoteWarning[] = [];
   const { core, bundles, applied: fxApplied } = applyLiveFx(data.core, data.bundles, data.fxRates);
@@ -375,8 +389,9 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     port
       ? {
           // A place is a satellite of the port unless it is the port's own city.
-          satellite: (id: string) => nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > 40,
+          satellite: (id: string) => nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > DOMESTIC_SATELLITE_ROAD_KM,
           roadKm: roadKmToPort,
+          anchorId: portCityId && placeIds.includes(portCityId) ? portCityId : null,
         }
       : null,
   ] as const;

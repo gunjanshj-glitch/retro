@@ -1046,6 +1046,9 @@ const THIN_GATEWAY_KM = new Map<string, number>(
  */
 const GATEWAY_EXIT_DISCOUNT = 0.85;
 
+/** Cost of leaving the port's own city in the middle of the route. */
+const ANCHOR_PENALTY = 1_000_000;
+
 /**
  * Orders the places to minimise total transfer cost.
  *
@@ -1071,6 +1074,12 @@ export function sequencePlaces(
   outAndBack = false,
   /** Road kilometres from the gateway, where known: a hill road is longer than the crow flies. */
   roadKm?: Map<string, number>,
+  /**
+   * The port's own city, when it is one of the places: it must be an end of the route.
+   * Every published India circuit starts at the gateway city (Kochi, Delhi, Chandigarh)
+   * and works outward; none starts a stop away from it and doubles back through it.
+   */
+  anchorId: string | null = null,
 ): string[] {
   if (placeIds.length <= 1) return [...placeIds];
   const exitWeight = outAndBack ? 1 : GATEWAY_EXIT_DISCOUNT;
@@ -1088,8 +1097,11 @@ export function sequencePlaces(
 
   const entry = (id: string) => gatewayCost(gateway, id, points, roadKm);
 
+  const anchored = anchorId != null && placeIds.includes(anchorId);
   const tourLength = (tour: string[]) => {
     let total = entry(tour[0]) + entry(tour[tour.length - 1]) * exitWeight;
+    // Large enough to beat any saving from ordering around the anchor, small enough to stay finite.
+    if (anchored && tour[0] !== anchorId && tour[tour.length - 1] !== anchorId) total += ANCHOR_PENALTY;
     for (let i = 0; i < tour.length - 1; i++) total += d(tour[i], tour[i + 1]);
     return total;
   };
@@ -1186,7 +1198,7 @@ export function buildStays(
    * places are too far from it to be a gateway city; `roadKm` is the road distance
    * from it to each place.
    */
-  port: { satellite: (id: string) => boolean; roadKm: Map<string, number> } | null = null,
+  port: { satellite: (id: string) => boolean; roadKm: Map<string, number>; anchorId?: string | null } | null = null,
 ): PlaceStay[] {
   const nights = allocateNights(placeIds, totalNights, summaries, style, overrides);
   const ordered = sequencePlaces(
@@ -1196,6 +1208,7 @@ export function buildStays(
     points,
     Boolean(port),
     port?.roadKm,
+    port?.anchorId ?? null,
   );
   const visits = ordered.map((placeId) => ({ placeId, nights: nights.get(placeId) ?? 0 }));
   const route = airports ? bookendGateways(airports, visits, port?.satellite) : visits;

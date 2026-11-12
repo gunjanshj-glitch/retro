@@ -297,3 +297,23 @@ Observed in a browser on India's map: "Kashmir Cluster 1" (6 places including Sr
 - Samui is a thin gateway (`thinGateways` in `content/transport-patch.json`), so multi-stop trips enter at the bigger airport (Krabi) and leave from Samui.
 - The Thailand package now includes Samui: 10 nights, published from INR 72,000 (quoted about INR 74,000 land-only).
 - Nag Temple, Monpa Village and Dirang Dzong are priced at INR 0 on the strength of public listings; none is an official tariff.
+
+### Route ordering checked against published India itineraries (2026-11-12)
+
+Checkpoint to revert to: git tag `checkpoint/pre-order-research` (commit 6e7cb15).
+
+Sources read: HPTDC Himachal circuit (travelcoffee.in), the Incredible India 7-day Kerala trip, Pickyourtrail Kerala and Rajasthan plans, TravelTriangle Kerala, Golden Triangle plans (Expedia, Travel Melodies). staybook.in is a booking site with no readable itineraries, so it was not used.
+
+What the sources agree on:
+- One-way spine, no doubling back ("never makes you drive the same road twice"; a bad order "costs a full extra travel day").
+- The trip starts at the gateway city (Kochi, Delhi, Chandigarh) and the first day is light.
+- The airport city is a pickup point, not a stay revisited at the end, unless it is the only gateway (Golden Triangle through Delhi).
+- First-day drives of 90-130 km straight from the airport are routine (Chandigarh-Shimla 117 km, Kochi-Munnar).
+
+Engine changes, each tied to one of those:
+1. `DOMESTIC_SATELLITE_ROAD_KM` 40 -> 120 (`index.ts`). At 40 km the port rule re-entered the airport city: Kerala read Cochin > Alleppey > Cochin, Punjab Chandigarh > Patiala > Chandigarh. Revisited stays across all India packages: 8 -> 1 (Ladakh's Leh, a real hub).
+2. `anchorId` in `sequencePlaces` (`itinerary.ts`): the port's own city must be an end of the route. Without it, change 1 let the sequencer start Kerala at Alleppey and Assam at Manas.
+
+Tried and rejected: doubling `GATEWAY_KM_WEIGHT` to force "enter nearest home". It made Kerala and Kashmir worse and the sources do not agree on an entry point (Rajasthan plans start at Jaipur in three of four, at Udaipur in the fourth), so the weight is unchanged.
+
+Not changed, still differs from the sources: Himachal Gateway still returns through Dharamshala (Shimla is 147 km away), because the port model is single-airport out-and-back; real circuits fly out of a different airport (Chandigarh in, Pathankot out).
