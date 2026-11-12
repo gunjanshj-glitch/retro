@@ -502,7 +502,7 @@ Use ***walking + local taxis*** around Tawang town and a ***private SUV/cab*** f
 * High-altitude location.
 * Steps and walking.
 
-Founded in 1680–81, Tawang Monastery is the defining cultural attraction of the destination.
+Founded in 1680–81, Tawang Monastery (Galden Namgyal Lhatse, "the celestial paradise of the divine victory") is the defining cultural attraction of the destination.
 
 ---
 

@@ -182,3 +182,20 @@ Yes, on a throwaway copy of the repo, not the working tree. I added Koh Samui to
 - `sync-content` validated the marker once `type` was `city`.
 
 Not run: a real rate sheet in the workbook, the patch overlay (still being written), and a quote through the UI. The copy was discarded.
+
+## Adding a tour or attraction to an existing destination
+
+An attraction is one block of the destination's markdown. No master, marker or transport edit is needed unless the attraction sits in a different town. This is the procedure used for Nameri, Tipi, Nag Temple, Dirang Dzong and Monpa Village.
+
+1. Open `input_files/Destination Files markdown/<region>/<country>/<Place>.md`.
+2. **§ 14**: add `## ATTRACTION NAME` with `best_for`, `price_level`, `transport_convenience`, `advantages`, `disadvantages` and one descriptive paragraph. Put the local name or alias in that paragraph (Tawang Monastery carries "Galden Namgyal Lhatse").
+3. **§ 15**: add the code `<PLACE>_A_<ATTRACTION NAME>`. This is the join key for any contracted activity rate.
+4. **§ 16**: add a bullet so it appears in the attraction list.
+5. **§ 27**: put it in the right `## CLUSTER n` with `recommended_duration`. Clusters are what the day planner schedules; an attraction outside a cluster is listed but never planned.
+6. Use plain `key:` fields and integer cluster numbers. The parser also accepts `***key:***` and `*****key:*****`.
+7. `npm run build-atlas`, then confirm the id `<place>:poi:<slug>` appears in `public/atlas/destinations/<place>.json` under `attractions` and in a cluster.
+8. `npm test`.
+
+An attraction reached from a neighbouring town (Nameri is reached from Bhalukpong) goes in the town that is the overnight base, not the one nearest on the map. Entry tickets stay unpriced until a supplier rate is added to the workbook sheet; do not estimate them.
+
+Not built: a `npm run new-attraction -- --place Dirang --name "Nag Temple"` helper that inserts the four blocks above. The risk is the cluster step, which needs a judgement about which day the attraction belongs with, so the helper should prompt for it rather than guess.
