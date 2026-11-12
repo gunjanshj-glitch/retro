@@ -93,6 +93,8 @@ export type CarEstimate = {
   totalInr: number;
   /** Each traveller's share. */
   perPersonInr: number;
+  /** The agency's own flat figure per vehicle (a driven leg with a ferry): never calibrated or called an estimate. */
+  fixedByAgency?: boolean;
   /** Where the money goes, for all vehicles together. */
   breakdown: { fuelInr: number; vehicleInr: number; tollsInr: number; driverInr: number };
 };

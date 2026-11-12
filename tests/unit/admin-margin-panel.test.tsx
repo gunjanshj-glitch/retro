@@ -96,13 +96,20 @@ describe("live airfare lookup", () => {
     const quote = generateQuotation({ ...initial, placeIds: ["paris", "rome"], nights: 6 }, { core, routes, visaRules, bundles: new Map() });
     const map = await loadFlightLiveRates(core, quote);
     const params = urls.map((u) => new URL(u, "https://x").searchParams);
-    expect(params.length).toBe(2);
+    // Two round trips (one per country) plus the open-jaw ticket, because the trip ends in a different country.
+    expect(params.length).toBe(3);
     expect(params.every((p) => p.get("origin") === "DEL" && p.get("carrier") === "FSC" && p.get("month") === "2026-11")).toBe(true);
     const countryOf = (id: string) => core.places.find((p) => p.id === id)!.countryId;
     const first = quote.stays[0].placeId;
     const last = quote.stays[quote.stays.length - 1].placeId;
-    expect(params.map((p) => p.get("fareKey")).sort()).toEqual([countryOf(first), countryOf(last)].sort());
-    expect(params.map((p) => p.get("destinationIata")).sort()).toEqual([core.placeAirports[first].iata, core.placeAirports[last].iata].sort());
+    const roundTrips = params.filter((p) => !p.get("returnFrom"));
+    const jaw = params.filter((p) => p.get("returnFrom"));
+    expect(roundTrips.map((p) => p.get("fareKey")).sort()).toEqual([countryOf(first), countryOf(last)].sort());
+    expect(roundTrips.map((p) => p.get("destinationIata")).sort()).toEqual([core.placeAirports[first].iata, core.placeAirports[last].iata].sort());
+    expect(jaw).toHaveLength(1);
+    expect(jaw[0].get("fareKey")).toBe(`jaw-${countryOf(first)}-${countryOf(last)}`);
+    expect(jaw[0].get("destinationIata")).toBe(core.placeAirports[first].iata);
+    expect(jaw[0].get("returnFrom")).toBe(core.placeAirports[last].iata);
     expect([...map.keys()].every((k) => k.startsWith("flight:DEL:") && k.endsWith(":FSC"))).toBe(true);
   });
 

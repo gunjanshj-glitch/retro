@@ -859,8 +859,8 @@ export function priceQuotation(input: PricingInput): {
       // A car is billed per vehicle, not per head.
       const car = leg.car;
       push("intercity-transport", `${leg.from} to ${leg.to}`,
-        `private car — ${car.className}${time}${distance} · fuel, driver, tolls included`,
-        car.vehicles, "vehicle", car.perVehicleInr, true, "estimated", day.placeId);
+        `private car — ${car.className}${time}${distance} · ${car.fixedByAgency ? "car, driver and ferry included, agency rate per vehicle" : "fuel, driver, tolls included"}`,
+        car.vehicles, "vehicle", car.perVehicleInr, true, car.fixedByAgency ? "manual" : "estimated", day.placeId, !car.fixedByAgency);
       continue;
     }
     push("intercity-transport", `${leg.from} to ${leg.to}`,

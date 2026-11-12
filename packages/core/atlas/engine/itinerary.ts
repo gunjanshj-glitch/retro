@@ -817,7 +817,7 @@ export function buildRouteLookup(
       ...base,
       className: `${base.className} with the car ferry via ${hit.via}`,
       roadKm: hit.km, billableKm: hit.km, drivingDays: 1,
-      perVehicleInr, totalInr, perPersonInr: Math.round(totalInr / Math.max(1, travellers)),
+      perVehicleInr, totalInr, perPersonInr: Math.round(totalInr / Math.max(1, travellers)), fixedByAgency: true,
       // The ferry is carried in the toll line: it is the one crossing charge on this leg.
       breakdown: { fuelInr: 0, vehicleInr: hit.carInr * base.vehicles, tollsInr: hit.ferryInr * base.vehicles, driverInr: 0 },
     };
