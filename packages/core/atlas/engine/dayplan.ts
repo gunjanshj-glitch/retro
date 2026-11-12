@@ -602,7 +602,7 @@ export function planDays(input: DayPlanInput): DayPlanResult {
       if (isDepartureDay) {
         notes.push(
           gateways
-            ? `Check out and transfer to ${gateways.departure.name} (${gateways.departure.iata}) for the ${gateways.departure.kind === "rail" ? "train" : "flight"} home` +
+            ? `Check out and transfer to ${gateways.departure.name} (${gateways.departure.iata}) for the ${gateways.departure.kind === "rail" ? "train or coach" : "flight"} home` +
                 (gateways.departureMinutes ? ` — about ${formatDuration(gateways.departureMinutes)} by road` : "")
             : "Check-out and departure transfer",
         );

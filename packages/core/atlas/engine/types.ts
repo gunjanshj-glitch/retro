@@ -192,7 +192,7 @@ export const QuoteRequest = z.object({
    * the transport preference"; a flight is never ruled out because the trip is
    * domestic.
    */
-  entryMode: z.enum(["flight", "train"]).optional(),
+  entryMode: z.enum(["flight", "train", "bus"]).optional(),
   /**
    * Which day each outing is planned on, keyed by cluster id. Lets a tour that
    * was planned (or that the traveller adds from "you could also add") be put on
@@ -481,7 +481,7 @@ export type PortOfEntryInfo = {
   serves: string[];
   /** How the traveller gets there from home, with every way on offer. */
   entry: {
-    mode: "flight" | "train";
+    mode: "flight" | "train" | "bus";
     from: string;
     minutes: number;
     /** Round trip, per adult. */
@@ -490,7 +490,7 @@ export type PortOfEntryInfo = {
     arrivesAt: string;
     daysEnRoute: number;
     userChosen: boolean;
-    options: { mode: "flight" | "train"; hub: string; minutes: number; roundTripFareInr: number; arrivesAt: string }[];
+    options: { mode: "flight" | "train" | "bus"; hub: string; minutes: number; roundTripFareInr: number; arrivesAt: string }[];
   } | null;
   /** The road from the port to the first stay, and from the last stay back to it. */
   firstStay: { place: string; km: number | null; minutes: number | null };

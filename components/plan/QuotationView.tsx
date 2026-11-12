@@ -324,7 +324,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                 <span className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: "var(--muted)" }}>
                   How do you get there from {quote.portOfEntry.entry.from}?
                 </span>
-                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Flight or train to the port of entry">
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Flight, train or bus to the port of entry">
                   {quote.portOfEntry.entry.options.map((o) => {
                     const active = o.mode === quote.portOfEntry!.entry!.mode;
                     return (
@@ -337,14 +337,14 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                         className={chipClass}
                         style={chipStyle(active)}
                       >
-                        {o.mode === "flight" ? "Flight" : "Train"} · {formatDuration(o.minutes)} · {formatInr(o.roundTripFareInr)} pp return · reach {o.arrivesAt}
+                        {o.mode === "flight" ? "Flight" : o.mode === "bus" ? "Bus" : "Train"} · {formatDuration(o.minutes)} · {formatInr(o.roundTripFareInr)} pp return · reach {o.arrivesAt}
                       </button>
                     );
                   })}
                 </div>
                 {quote.portOfEntry.entry.daysEnRoute > 0 && (
                   <p className="text-xs" style={{ color: "var(--muted)" }}>
-                    The train leaves the evening before day 1.
+                    The {quote.portOfEntry.entry.mode === "bus" ? "coach" : "train"} leaves the evening before day 1.
                   </p>
                 )}
               </div>
@@ -651,7 +651,7 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
                     >
                       {day.airport.kind === "arrival"
                         ? day.airport.hub === "rail" ? "Arrive" : "Land"
-                        : day.airport.hub === "rail" ? "Train home" : "Fly home"} · {day.airport.iata}
+                        : day.airport.hub === "rail" ? "Train or coach home" : "Fly home"} · {day.airport.iata}
                     </span>
                   )}
                 </span>

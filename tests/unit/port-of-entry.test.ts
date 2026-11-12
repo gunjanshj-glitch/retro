@@ -58,6 +58,22 @@ describe("port of entry on a domestic trip", () => {
     const q = quote(["gangtok"], 3, { entryMode: "train", departureCity: "CCU" });
     expect(q.portOfEntry?.entry?.options.some((o) => o.mode === "train" && /Jalpaiguri/.test(o.hub))).toBe(true);
   });
+
+  it("offers a coach only where the road journey is regional, and prices it as a coach", () => {
+    const near = quote(["gangtok"], 3, { departureCity: "CCU" });
+    const modes = near.portOfEntry?.entry?.options.map((o) => o.mode) ?? [];
+    expect(modes).toContain("bus");
+    const bus = quote(["gangtok"], 3, { departureCity: "CCU", entryMode: "bus" });
+    expect(bus.portOfEntry?.entry?.mode).toBe("bus");
+    expect(bus.lineItems.some((i) => i.label.startsWith("Return coach fare"))).toBe(true);
+    const far = quote(["tawang", "dirang"], 6);
+    expect(far.portOfEntry?.entry?.options.some((o) => o.mode === "bus")).toBe(false);
+  });
+
+  it("has railheads for Himalayan states beyond Sikkim and Arunachal", () => {
+    const q = quote(["nainital", "almora"], 4);
+    expect(q.portOfEntry?.entry?.options.some((o) => o.mode === "train" && /Kathgodam/.test(o.hub))).toBe(true);
+  });
 });
 
 describe("short legs prefer land, then water, air last", () => {

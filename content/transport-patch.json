@@ -48,6 +48,36 @@
       "name": "Indira Gandhi International Airport, Delhi",
       "lat": 28.5562,
       "lon": 77.1
+    },
+    "KLK": {
+      "kind": "rail",
+      "name": "Kalka Railway Station",
+      "lat": 30.8396,
+      "lon": 76.9378
+    },
+    "KGM": {
+      "kind": "rail",
+      "name": "Kathgodam Railway Station",
+      "lat": 29.2667,
+      "lon": 79.5333
+    },
+    "HW": {
+      "kind": "rail",
+      "name": "Haridwar Junction",
+      "lat": 29.9457,
+      "lon": 78.1642
+    },
+    "PTK": {
+      "kind": "rail",
+      "name": "Pathankot Junction",
+      "lat": 32.2719,
+      "lon": 75.6529
+    },
+    "SVDK": {
+      "kind": "rail",
+      "name": "Shri Mata Vaishno Devi Katra Railway Station",
+      "lat": 32.9919,
+      "lon": 74.9544
     }
   },
   "portSubstitutes": {
@@ -63,7 +93,24 @@
     "tawang": "GHY",
     "dirang": "GHY",
     "bhalukpong": "GHY",
-    "kaziranga": "FKG"
+    "kaziranga": "FKG",
+    "shimla": "KLK",
+    "nainital": "KGM",
+    "almora": "KGM",
+    "ranikhet": "KGM",
+    "corbett": "KGM",
+    "kainchi-dham": "KGM",
+    "kausani": "KGM",
+    "binsar": "KGM",
+    "haridwar": "HW",
+    "auli": "HW",
+    "valley-of-flowers": "HW",
+    "kuari-pass": "HW",
+    "dharamshala": "PTK",
+    "mcleod-ganj": "PTK",
+    "katra-vaishno-devi": "SVDK",
+    "shillong": "GHY",
+    "bomdila": "GHY"
   },
   "hillStates": [
     "india-india-arunachal-pradesh",

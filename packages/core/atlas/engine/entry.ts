@@ -18,7 +18,7 @@ import { haversineKm, HILL_ROAD, MODE_PROFILES, type GeoPoint } from "./geo";
 
 export type HubKind = "airport" | "rail";
 export type Hub = { code: string; kind: HubKind; name: string; lat: number; lon: number };
-export type EntryMode = "flight" | "train";
+export type EntryMode = "flight" | "train" | "bus";
 
 type Patch = {
   hubs: Record<string, { kind: HubKind; name: string; lat: number; lon: number }>;
@@ -143,11 +143,14 @@ export function roadLeg(
 const DOMESTIC_FARE = {
   flight: { fixedInr: 2200, perKmInr: 2.6 },
   train: { fixedInr: 250, perKmInr: 2.1 },
+  bus: { fixedInr: 150, perKmInr: 1.2 },
 } as const;
 
 /** The first morning flight leaves about 06:30; a train out leaves about 17:00 the evening before. */
 const FLIGHT_DEPARTS_MIN = 6 * 60 + 30;
 const TRAIN_DEPARTS_MIN = 17 * 60;
+/** An overnight coach leaves in the evening too. */
+const BUS_DEPARTS_MIN = 18 * 60;
 
 export type EntryOption = {
   mode: EntryMode;
@@ -172,7 +175,7 @@ export function entryOptions(home: GeoPoint, port: PortOfEntry): EntryOption[] {
     const km = Math.round(haversineKm(home, hub));
     const profile = MODE_PROFILES[mode];
     const minutes = Math.round(profile.overheadMin + ((km * profile.detour) / profile.kmh) * 60);
-    const departs = mode === "flight" ? FLIGHT_DEPARTS_MIN : TRAIN_DEPARTS_MIN;
+    const departs = mode === "flight" ? FLIGHT_DEPARTS_MIN : mode === "bus" ? BUS_DEPARTS_MIN : TRAIN_DEPARTS_MIN;
     const fare = DOMESTIC_FARE[mode];
     const total = departs + minutes;
     out.push({
@@ -190,6 +193,8 @@ export function entryOptions(home: GeoPoint, port: PortOfEntry): EntryOption[] {
   if (port.rail) {
     const km = haversineKm(home, port.rail);
     if (km >= 80 && km <= 2800) build("train", port.rail);
+    // A coach is a real answer only for a regional trip, and it serves the same city as the station.
+    if (km >= 80 && km <= 900) build("bus", port.rail);
   }
   return out;
 }

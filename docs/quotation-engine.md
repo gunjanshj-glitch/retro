@@ -278,3 +278,7 @@ The review workbook at `data/atlas/Atlas_Rate_Review.xlsx` has a sheet for each 
 | Correct which country a place belongs to | Edit [`content/place-countries.json`](../content/place-countries.json) |
 | Change commercial policy | Edit [`content/quote-policy.json`](../content/quote-policy.json) |
 | Change pricing corrections | Edit [`content/pricing-calibration.json`](../content/pricing-calibration.json) |
+
+### Known map issue: a smaller group hidden by a larger neighbour
+
+Observed in a browser on India's map: "Kashmir Cluster 1" (6 places including Srinagar) and "Kashmir Cluster 2" (7 places) sit a few pixels apart. The larger group expands first and takes the space, so the smaller group's pin fails the spacing rule and is dropped. Srinagar cannot be reached until about 7x zoom. The spacing rule (`map-declutter.test.ts`, "never draws two pins closer than the enforced spacing") is deliberate, so the fix is data or algorithm, not an exception: merge the two Kashmir groups in `india.markers.json`, or let a group that cannot be drawn merge into its neighbour's pin. Not done.

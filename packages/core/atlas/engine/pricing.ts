@@ -343,7 +343,7 @@ export type PricingInput = {
    * replaces the country-level airfare band: the ticket is priced for the real
    * journey (home to the port) in the mode the traveller picked, flight or train.
    */
-  entry?: { mode: "flight" | "train"; homeLabel: string; hubName: string; hubCode: string; minutes: number; oneWayFareInr: number } | null;
+  entry?: { mode: "flight" | "train" | "bus"; homeLabel: string; hubName: string; hubCode: string; minutes: number; oneWayFareInr: number } | null;
 };
 
 function index<T extends { placeId: string }>(rows: T[]): Map<string, T[]> {
@@ -701,8 +701,8 @@ export function priceQuotation(input: PricingInput): {
       // choice whether that is a flight or a train.
       const flying = entry.mode === "flight";
       pushFare(
-        `${flying ? "Return airfare" : "Return train fare"} — ${entry.homeLabel} to ${entry.hubName}`,
-        `${entry.homeLabel} to ${entry.hubName} (${entry.hubCode}) and back, ${flying ? "economy" : "AC train"}, ` +
+        `${flying ? "Return airfare" : entry.mode === "bus" ? "Return coach fare" : "Return train fare"} — ${entry.homeLabel} to ${entry.hubName}`,
+        `${entry.homeLabel} to ${entry.hubName} (${entry.hubCode}) and back, ${flying ? "economy" : entry.mode === "bus" ? "AC sleeper coach" : "AC train"}, ` +
           `about ${formatDuration(entry.minutes)} each way; typical fare, confirmed on the final quotation`,
         entry.oneWayFareInr * 2,
         { source: "estimated" },

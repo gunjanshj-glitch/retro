@@ -13,6 +13,7 @@
     "fetch-natural-earth": "tsx scripts/fetch-natural-earth.ts",
     "build-maps": "tsx scripts/build-maps/index.ts && tsx scripts/build-maps/world.ts",
     "build-atlas": "tsx scripts/etl/build.ts",
+    "new-attraction": "tsx scripts/new-attraction.ts",
     "calibrate": "tsx scripts/etl/calibrate.ts",
     "gaps": "tsx scripts/etl/gaps.ts",
     "route-coverage": "tsx scripts/etl/route-coverage.ts",
