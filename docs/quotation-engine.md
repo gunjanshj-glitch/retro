@@ -317,3 +317,12 @@ Engine changes, each tied to one of those:
 Tried and rejected: doubling `GATEWAY_KM_WEIGHT` to force "enter nearest home". It made Kerala and Kashmir worse and the sources do not agree on an entry point (Rajasthan plans start at Jaipur in three of four, at Udaipur in the fourth), so the weight is unchanged.
 
 Not changed, still differs from the sources: Himachal Gateway still returns through Dharamshala (Shimla is 147 km away), because the port model is single-airport out-and-back; real circuits fly out of a different airport (Chandigarh in, Pathankot out).
+
+### Follow-up fixes after the India ordering review (2026-11-12)
+
+1. **Chhattisgarh package** listed Patiala, Chandigarh and Anandpur Sahib (Punjab) in the source dataset. Removed; now 7 places, 7N/8D. Published price set to 32,500 (quote is about 35,500, same ~9% gap the package had before). The price is derived from the quote, not an agency figure.
+2. **Thin port airport**: `portSubstitutes` gained AHA -> RPR. Ambikapur's airport served three of the seven places, so it was picked as the port of entry; Raipur is the real hub. The trip now starts at Raipur.
+3. **Port night side**: a night added because the road back to the airport is too long now sits at the end of the route; one added for a late arrival sits at the start (`anchorSide`). Uttarakhand Pilgrimage used to start with Nainital and double back to Haridwar.
+4. **Authored precedence**: `orderPrecedence` in `content/transport-patch.json` (Munnar and Thekkady before Alleppey), read from the port's end. Kerala now runs Cochin, Munnar, Thekkady, Alleppey, Trivandrum, Kanyakumari. Straight-line distance cannot produce this order (it favours Alleppey next to Cochin by about 35 km), so it is a curated rule backed by three published circuits.
+
+Left as is: Uttarakhand Pilgrimage runs Adi Kailash, Om Parvat, Haridwar, Nainital. Straight-line distances put it within a few percent of Haridwar first, and no source prefers either.

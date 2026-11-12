@@ -1046,6 +1046,16 @@ const THIN_GATEWAY_KM = new Map<string, number>(
  */
 const GATEWAY_EXIT_DISCOUNT = 0.85;
 
+/**
+ * Authored "this stop comes before that one" rules (content/transport-patch.json). Used where
+ * published circuits agree on an order that straight-line distance cannot reproduce.
+ */
+const ORDER_PRECEDENCE = (
+  (transportPatch as { orderPrecedence?: { first: string; then: string }[] }).orderPrecedence ?? []
+);
+/** Worth about 1,700 km of detour: decisive between close orders, never enough to cross a country. */
+const PRECEDENCE_PENALTY = 20_000;
+
 /** Cost of leaving the port's own city in the middle of the route. */
 const ANCHOR_PENALTY = 1_000_000;
 
@@ -1080,6 +1090,8 @@ export function sequencePlaces(
    * and works outward; none starts a stop away from it and doubles back through it.
    */
   anchorId: string | null = null,
+  /** Which end the anchor must take: a night added for a long last road belongs at the end, a late arrival at the start. */
+  anchorSide: "start" | "end" | "either" = "either",
 ): string[] {
   if (placeIds.length <= 1) return [...placeIds];
   const exitWeight = outAndBack ? 1 : GATEWAY_EXIT_DISCOUNT;
@@ -1098,17 +1110,39 @@ export function sequencePlaces(
   const entry = (id: string) => gatewayCost(gateway, id, points, roadKm);
 
   const anchored = anchorId != null && placeIds.includes(anchorId);
+  /**
+   * Authored orders are read from the port's end: a route that finishes at the anchor is the same
+   * route as its reverse, so it is judged the way round that starts at the anchor.
+   */
+  const precedenceBreaks = (tour: string[]) => {
+    const t = anchored && tour[0] !== anchorId && tour[tour.length - 1] === anchorId ? [...tour].reverse() : tour;
+    return ORDER_PRECEDENCE.filter((r) => {
+      const a = t.indexOf(r.first);
+      const b = t.indexOf(r.then);
+      return a >= 0 && b >= 0 && a > b;
+    }).length;
+  };
   const tourLength = (tour: string[]) => {
     let total = entry(tour[0]) + entry(tour[tour.length - 1]) * exitWeight;
     // Large enough to beat any saving from ordering around the anchor, small enough to stay finite.
-    if (anchored && tour[0] !== anchorId && tour[tour.length - 1] !== anchorId) total += ANCHOR_PENALTY;
+    total += precedenceBreaks(tour) * PRECEDENCE_PENALTY;
+    if (anchored) {
+      const first = tour[0] === anchorId;
+      const last = tour[tour.length - 1] === anchorId;
+      const ok = anchorSide === "start" ? first : anchorSide === "end" ? last : first || last;
+      if (!ok) total += ANCHOR_PENALTY;
+    }
     for (let i = 0; i < tour.length - 1; i++) total += d(tour[i], tour[i + 1]);
     return total;
   };
 
   /** Same price either way round: start at the end nearest the port. */
-  const nearestFirst = (tour: string[]) =>
-    outAndBack && entry(tour[0]) > entry(tour[tour.length - 1]) + 1e-9 ? [...tour].reverse() : tour;
+  const nearestFirst = (tour: string[]) => {
+    if (!outAndBack || anchorSide !== "either" || entry(tour[0]) <= entry(tour[tour.length - 1]) + 1e-9) return tour;
+    const reversed = [...tour].reverse();
+    // Flipping the route must not undo an authored order (Kerala: hills before Alleppey).
+    return precedenceBreaks(reversed) > precedenceBreaks(tour) ? tour : reversed;
+  };
 
   // Two places still have two possible orders once the gateway is in play.
   if (placeIds.length === 2) {
@@ -1198,7 +1232,12 @@ export function buildStays(
    * places are too far from it to be a gateway city; `roadKm` is the road distance
    * from it to each place.
    */
-  port: { satellite: (id: string) => boolean; roadKm: Map<string, number>; anchorId?: string | null } | null = null,
+  port: {
+    satellite: (id: string) => boolean;
+    roadKm: Map<string, number>;
+    anchorId?: string | null;
+    anchorSide?: "start" | "end" | "either";
+  } | null = null,
 ): PlaceStay[] {
   const nights = allocateNights(placeIds, totalNights, summaries, style, overrides);
   const ordered = sequencePlaces(
@@ -1209,6 +1248,7 @@ export function buildStays(
     Boolean(port),
     port?.roadKm,
     port?.anchorId ?? null,
+    port?.anchorSide ?? "either",
   );
   const visits = ordered.map((placeId) => ({ placeId, nights: nights.get(placeId) ?? 0 }));
   const route = airports ? bookendGateways(airports, visits, port?.satellite) : visits;

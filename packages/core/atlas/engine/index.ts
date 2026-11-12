@@ -340,8 +340,11 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     return best?.id ?? null;
   })();
   let portNight: { place: string | null; why: string } | null = null;
-  const addPortNight = (why: string): boolean => {
+  // Where the added port night sits: before the drive out (late arrival) or after the drive back (long last road).
+  let portNightSide: "start" | "end" | "either" = "either";
+  const addPortNight = (why: string, side: "start" | "end"): boolean => {
     if (portNight) return false;
+    portNightSide = side;
     if (portCityId && !placeIds.includes(portCityId)) {
       placeIds = [...placeIds, portCityId];
       nights += 1;
@@ -380,6 +383,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
       addPortNight(
         `${pre.live ? "Every listed flight" : "The best way"} from ${homeCityForEntry?.label ?? request.departureCity} arrives about ${clock(pre.arrivesAtMin)}, ` +
           `too late to reach ${names.get(near!.id) ?? "the first stay"} (${formatDuration(near?.leg.minutes ?? 0)} by road) before dark.`,
+        "start",
       );
     }
   }
@@ -392,6 +396,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
           satellite: (id: string) => nearPort(id) && (roadKmToPort.get(id) ?? Infinity) > DOMESTIC_SATELLITE_ROAD_KM,
           roadKm: roadKmToPort,
           anchorId: portCityId && placeIds.includes(portCityId) ? portCityId : null,
+          anchorSide: portNightSide,
         }
       : null,
   ] as const;
@@ -400,7 +405,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   if (port && stays.length) {
     const lastLeg = roadLeg(core, port.airport, stays[stays.length - 1].placeId);
     if (lastLeg.minutes != null && lastLeg.minutes > 360 && portCityId && !placeIds.includes(portCityId)) {
-      if (addPortNight(`The road from ${stays[stays.length - 1].placeName} back to ${port.airport.name} is ${formatDuration(lastLeg.minutes)}, too long to connect to a flight or train the same day.`)) {
+      if (addPortNight(`The road from ${stays[stays.length - 1].placeName} back to ${port.airport.name} is ${formatDuration(lastLeg.minutes)}, too long to connect to a flight or train the same day.`, "end")) {
         stays = buildStays(...stayArgs());
       }
     }

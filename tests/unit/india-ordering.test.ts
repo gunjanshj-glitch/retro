@@ -56,4 +56,20 @@ describe("India routes follow the published-itinerary pattern", () => {
     const ids = stays("Arunachal Pradesh");
     expect(ids[ids.length - 1]).toBe("guwahati");
   });
+
+  it("runs Kerala the way the published circuits do: hills, then Alleppey, then the south coast", () => {
+    expect(stays("Kerala")).toEqual(["cochin", "munnar", "thekkady", "alleppey", "trivandrum", "kanyakumari"]);
+  });
+
+  it("keeps the Chhattisgarh package inside Chhattisgarh, starting at Raipur", () => {
+    const pkg = core.packages.find((p) => p.name === "Chhattisgarh")!;
+    for (const id of ["patiala", "chandigarh", "anandpur-sahib"]) expect(pkg.placeIds).not.toContain(id);
+    expect(stays("Chhattisgarh")[0]).toBe("raipur");
+  });
+
+  it("puts the airport night after a long drive back at the end, not the start", () => {
+    const ids = stays("Uttarakhand Pilgrimage");
+    expect(ids[ids.length - 1]).toBe("nainital");
+    expect(ids[0]).not.toBe("nainital");
+  });
 });

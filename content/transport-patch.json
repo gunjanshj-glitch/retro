@@ -82,7 +82,8 @@
   },
   "portSubstitutes": {
     "TEZ": "GAU",
-    "AGR": "DEL"
+    "AGR": "DEL",
+    "AHA": "RPR"
   },
   "railheads": {
     "gangtok": "NJP",
@@ -232,6 +233,27 @@
       "placeId": "koh-samui",
       "penaltyKm": 800,
       "note": "USM is a small Bangkok Airways airport with little direct international service; when it is one end of a multi-stop trip, enter and leave at the bigger neighbouring airport."
+    }
+  ],
+  "orderPrecedence": [
+    {
+      "first": "munnar",
+      "then": "alleppey",
+      "note": "Kerala circuits visit the hills (Munnar, Thekkady) before Alleppey and finish on the coast; Alleppey is the lazy houseboat stop near the departure end. Straight-line distance cannot show this: it is about 35 km shorter to put Alleppey between Cochin and Munnar.",
+      "sources": [
+        "https://pickyourtrail.com/blog/7-nights-8-days-kerala-tour-plan",
+        "https://traveltriangle.com/packages/7days-6nights-kerala-leisure-package-5star-leisure-starting-from-INR87200?id=60482",
+        "https://www.incredibleindia.gov.in/en/trips/trip-listing/7-days-in-gods-own-country-kerala-adventure"
+      ]
+    },
+    {
+      "first": "thekkady",
+      "then": "alleppey",
+      "note": "Same rule as above: the Thekkady hills come before the backwaters.",
+      "sources": [
+        "https://pickyourtrail.com/blog/7-nights-8-days-kerala-tour-plan",
+        "https://traveltriangle.com/packages/7days-6nights-kerala-leisure-package-5star-leisure-starting-from-INR87200?id=60482"
+      ]
     }
   ]
 }

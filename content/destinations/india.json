@@ -673,17 +673,14 @@
         "Korba",
         "Raigarh",
         "Jagdalpur",
-        "Ambikapur",
-        "Patiala",
-        "Chandigarh",
-        "Anandpur Sahib"
+        "Ambikapur"
       ],
-      "tagline": "11 Nights, 12 Days · Raipur, Bhilai, Bilaspur, Korba, Raigarh, Jagdalpur, Ambikapur, Patiala, Chandigarh, Anandpur Sahib",
+      "tagline": "7 Nights, 8 Days · Raipur, Bhilai, Bilaspur, Korba, Raigarh, Jagdalpur, Ambikapur",
       "offer": {
-        "days": 12,
-        "price_from_usd": 58000,
+        "days": 8,
+        "price_from_usd": 32500,
         "price_includes_flight": false,
-        "summary": "12 days trip built around Raipur, Bhilai, Bilaspur, Korba, Raigarh, Jagdalpur, Ambikapur, Patiala, Chandigarh, Anandpur Sahib at your pace — no rushed coaches, no fixed groups. It's one of the India journeys we shape by hand through India, and every detail here is a starting point we'll tailor to you. Rate Valid for Group travel of minimum 10 PAX travelling together",
+        "summary": "8 days trip built around Raipur, Bhilai, Bilaspur, Korba, Raigarh, Jagdalpur, Ambikapur at your pace — no rushed coaches, no fixed groups. It's one of the India journeys we shape by hand through India, and every detail here is a starting point we'll tailor to you. Rate Valid for Group travel of minimum 10 PAX travelling together",
         "highlights": [
           "Raipur: Explore Chhattisgarh's lively capital through museums, temples, lakes and vibrant local culture.",
           "Bhilai: Discover the city's green side at Maitri Bagh, with peaceful gardens, a zoo and family-friendly attractions.",
@@ -691,10 +688,7 @@
           "Korba: Escape into forested hills, waterfalls and reservoirs around Devpahari, Chaithurgarh and Hasdeo Bango.",
           "Raigarh: Enjoy Ram Jharna's natural beauty, Gomarda's wildlife and the city's rich music-and-dance heritage.",
           "Jagdalpur: Discover Bastar's soul through Chitrakote Falls, Tirathgarh Falls, Kanger Valley and vibrant tribal traditions.",
-          "Ambikapur: Explore Mainpat's misty hills, waterfalls, Buddhist heritage and the peaceful beauty of northern Chhattisgarh.",
-          "Patiala: Admire royal Punjabi heritage at Qila Mubarak, enjoy the city's refined culture and savour its legendary food traditions.",
-          "Chandigarh: Experience India's beautifully planned city through the Rock Garden, Sukhna Lake and Chandigarh's modernist architecture.",
-          "Anandpur Sahib: Visit Takht Sri Keshgarh Sahib and Virasat-e-Khalsa, where Sikh history, faith and heritage come alive."
+          "Ambikapur: Explore Mainpat's misty hills, waterfalls, Buddhist heritage and the peaceful beauty of northern Chhattisgarh."
         ]
       }
     },
