@@ -1,5 +1,5 @@
 {
-  "_about": "Hand-entered activity rates (source: manual) from public web figures, for attractions the workbook does not price. Per adult, INR, Indian resident. They conflict between sources and none is an official tariff, so each is an estimate for agency review: replace with a supplier rate or a workbook row. Attractions with no published fee found (Dirang Dzong, Nag Temple, Monpa Village) are deliberately absent, not priced at zero. Tipi Orchid Research Centre is already in the workbook (about Rs 189), which wins; web figures for it range Rs 10 to Rs 50, so the workbook is the higher, safer number.",
+  "_about": "Hand-entered activity rates (source: manual) from public web figures, for attractions the workbook does not price. Per adult, INR, Indian resident. They conflict between sources and none is an official tariff, so each is an estimate for agency review: replace with a supplier rate or a workbook row. Dirang Dzong is free per two listings (Rs 0, not an official tariff). Nag Temple and Monpa Village have no published fee found and are deliberately absent, not priced at zero. Tipi Orchid Research Centre is already in the workbook (about Rs 189), which wins; web figures for it range Rs 10 to Rs 50, so the workbook is the higher, safer number.",
   "rates": [
     {
       "placeId": "bhalukpong",
@@ -11,6 +11,18 @@
         "https://www.mapsofindia.com/maps/wildlife/nameri-national-park.html",
         "https://traveltriangle.com/blog/nameri-national-park/",
         "https://india-guide.in/destinations/nameri/timings/"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "dirang",
+      "code": "DIRANG_A_DIRANG DZONG",
+      "inr": 0,
+      "unit": "Person",
+      "note": "Listed as free entry (adult and child). Not an official tariff; closed Sundays per one listing.",
+      "sources": [
+        "https://www.thrillophilia.com/attractions/dirang-dzong",
+        "https://travelsetu.com/guide/dirang-dzong-fort-tourism"
       ],
       "checked": "2026-11-12"
     }
