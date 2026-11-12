@@ -68,3 +68,17 @@ describe("Krabi and Koh Samui", () => {
     expect(fare?.detail).toContain("(USM)");
   });
 });
+
+describe("Krabi and Koh Samui ordering", () => {
+  it("enters at Krabi (the bigger airport) and leaves from Samui", () => {
+    const req = QuoteRequest.parse({
+      placeIds: ["krabi", "koh-samui"], nights: 7, startDate: "2026-12-05", adults: 2, childAges: [], travellerType: "couple",
+      tripStyle: STYLE_FOR_TRAVELLER.couple, nationality: "IND", departureCity: "CCU", hotelStar: "4 Star",
+      hotelZone: "Central", carrier: "FSC", cabin: "Economy", mealPlan: "breakfast", food: "no-preference",
+      pace: "balanced", includeVisa: true, includeInsurance: true, includeFlight: true,
+    });
+    const q = generateQuotation(req, { core, routes, visaRules: [], bundles: new Map() });
+    expect(q.stays[0].placeId).toBe("krabi");
+    expect(q.stays[q.stays.length - 1].placeId).toBe("koh-samui");
+  });
+});

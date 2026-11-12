@@ -44451,17 +44451,23 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('pattaya', 'BANGKOK_A_JOMTIEN BEACH', 'Person/Group', 0, 0, 'USD', 'workbook'),
   ('pattaya', 'BANGKOK_A_NA JOMTIEN', 'Person/Group', 1889.81, 20, 'USD', 'workbook'),
   ('pattaya', 'BANGKOK_A_PRATAMNAK HILL', 'Person/Group', 0, 0, 'USD', 'workbook'),
-  ('phuket', 'PHUKET_A_PATONG BEACH', 'Person/Group', 1417, 0, 'USD', 'estimated'),
-  ('phuket', 'PHUKET_A_KATA & KARON BEACHES', 'Person/Group', 1417, 0, 'USD', 'estimated'),
-  ('phuket', 'PHUKET_A_BANG TAO & LAGUNA', 'Person/Group', 1417, 0, 'USD', 'estimated'),
-  ('phuket', 'PHUKET_A_KAMALA & SURIN BEACHES', 'Person/Group', 1417, 0, 'USD', 'estimated'),
-  ('phuket', 'PHUKET_A_OLD PHUKET TOWN', 'Person/Group', 1417, 0, 'USD', 'estimated'),
-  ('phuket', 'PHUKET_A_RAWAI & NAI HARN', 'Person/Group', 1417, 0, 'USD', 'estimated'),
+  ('phuket', 'PHUKET_A_PATONG BEACH', 'Person/Group', 810, 0, 'USD', 'estimated'),
+  ('phuket', 'PHUKET_A_KATA & KARON BEACHES', 'Person/Group', 810, 0, 'USD', 'estimated'),
+  ('phuket', 'PHUKET_A_BANG TAO & LAGUNA', 'Person/Group', 810, 0, 'USD', 'estimated'),
+  ('phuket', 'PHUKET_A_KAMALA & SURIN BEACHES', 'Person/Group', 810, 0, 'USD', 'estimated'),
+  ('phuket', 'PHUKET_A_OLD PHUKET TOWN', 'Person/Group', 810, 0, 'USD', 'estimated'),
+  ('phuket', 'PHUKET_A_RAWAI & NAI HARN', 'Person/Group', 810, 0, 'USD', 'estimated'),
   ('krabi', 'KRABI_A_AO NANG BEACH', 'Person/Group', 0, 0, 'USD', 'workbook'),
   ('krabi', 'KRABI_A_RAILAY PENINSULA & TONSAI', 'Person/Group', 803.17, 8.5, 'USD', 'workbook'),
   ('krabi', 'KRABI_A_KLONG MUANG BEACH', 'Person/Group', 0, 0, 'USD', 'workbook'),
   ('krabi', 'KRABI_A_TUBKAAK BEACH', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
   ('krabi', 'KRABI_A_KRABI TOWN', 'Person/Group', 0, 0, 'USD', 'workbook'),
+  ('koh-samui', 'SAMUI_A_BIG BUDDHA', 'Person', 270, NULL, NULL, 'manual'),
+  ('koh-samui', 'SAMUI_A_SECRET BUDDHA GARDEN', 'Person', 400, NULL, NULL, 'manual'),
+  ('koh-samui', 'SAMUI_A_NA MUANG WATERFALL', 'Person', 540, NULL, NULL, 'manual'),
+  ('koh-samui', 'SAMUI_A_SAMUI ELEPHANT SANCTUARY', 'Person', 6750, NULL, NULL, 'manual'),
+  ('koh-samui', 'SAMUI_A_ANG THONG MARINE PARK', 'Person', 810, NULL, NULL, 'manual'),
+  ('koh-samui', 'SAMUI_A_WAT PLAI LAEM', 'Person', 0, NULL, NULL, 'manual'),
   ('sentosa-island', 'SIN_A_GARDENSBYTHEBAY', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('sentosa-island', 'SIN_A_MARINABAYSANDSSKYPARK', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('sentosa-island', 'SIN_A_MERLIONPARK', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -44588,14 +44594,14 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('thekkady', 'THEKKADY_PERIYAR_WILDLIFE_SANCTUARY', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('thekkady', 'THEKKADY_PERIYAR_LAKE_BOAT_SAFARI', 'Person/Group', 3779.62, 40, 'USD', 'workbook'),
   ('thekkady', 'THEKKADY_SPICE_PLANTATION_TOURS', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('thekkady', 'THEKKADY_GUIDED_NATURE_WALK', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
+  ('thekkady', 'THEKKADY_GUIDED_NATURE_WALK', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
   ('thekkady', 'THEKKADY_BAMBOO_RAFTING', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('thekkady', 'THEKKADY_MURICKADY_VIEWPOINT', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('thekkady', 'THEKKADY_GAVI_FOREST_TREK', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('thekkady', 'THEKKADY_MANGALA_DEVI_TEMPLE', 'Person/Group', 0, 0, 'USD', 'workbook'),
   ('thekkady', 'THEKKADY_KADATHANADAN_KALARI_CENTER', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('thekkady', 'THEKKADY_ELEPHANT_JUNCTION', 'Person/Group', 188.98, 2, 'USD', 'workbook');
-INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('thekkady', 'THEKKADY_ELEPHANT_JUNCTION', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('kanyakumari', 'KANYAKUMARI_A_VIVEKANANDA_ROCK_MEMORIAL', 'Person/Group', 283.47, 3, 'USD', 'workbook'),
   ('kanyakumari', 'KANYAKUMARI_A_THIRUVALLUVAR_STATUE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('kanyakumari', 'KANYAKUMARI_A_KUMARI_AMMAN_TEMPLE', 'Person/Group', 0, 0, 'USD', 'workbook'),
@@ -44789,14 +44795,14 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('kinnaur-and-kalpa', 'KNR_A_NAKO_LAKE_100KM_MONASTERY_3662M_NAKO_VILLAGE_SPITI_GATEWAY_TABO_65KM_NAKO_KAZA_115KM_NAKO', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('kinnaur-and-kalpa', 'KNR_A_BATSERI_VILLAGE_15KM_SANGLA_RAKCHHAM_VILLAGE_10KM_SANGLA_MEADOWS_PINE_DEODAR_BASPA_RIVER_KAMRU_FORT_1000YR', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
   ('tabo', 'TAB_A_TABO_MONASTERY_996_AD_AJANTA_HIMALAYAS_9_TEMPLES_23_CHORTENS_FRESCOES_THANGKAS_UNESCO_TENTATIVE_OLDEST', 'Person/Group', 0, 0, 'USD', 'workbook'),
-  ('tabo', 'TAB_A_TABO_CAVES_MEDITATION_CAVES_MUD_CAVES_1KM_TREK_BUDDHIST_MONKS_HISTORY', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
+  ('tabo', 'TAB_A_TABO_CAVES_MEDITATION_CAVES_MUD_CAVES_1KM_TREK_BUDDHIST_MONKS_HISTORY', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
   ('tabo', 'TAB_A_SPITI_RIVER_COLD_DESERT_VALLEY_TABO_VILLAGE_OLD_MUD_VILLAGE_HELIPAD_SUNSET', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('tabo', 'TAB_A_DHANKAR_MONASTERY_30KM_FORT_3894M_DHANKAR_LAKE_2KM_TREK_4140M_PIN_VALLEY_50KM_MUDH_KUNGRI', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
   ('tabo', 'TAB_A_KAZA_50KM_KEY_MONASTERY_65KM_KIBBER_70KM_CHICHAM_BRIDGE_LANGZA_BUDDHA_HIKKIM_KOMIC_HIGHEST', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('hurling', 'HRL_A_HURLING_VILLAGE_BARLEY_FIELDS_SMALL_GOMPA_SPITI_RIVER_COLD_DESERT_ZERO_CROWD_SILENCE_OFFBEAT', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('hurling', 'HRL_A_SUMDO_CONFLUENCE_3KM_KINNAUR_SPITI_BORDER_CHECK_POST_SPITI_ENTRY_GATE_SPITI_RIVER_CONFLUENCE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('hurling', 'HRL_A_TABO_MONASTERY_15KM_996_AD_AJANTA_HIMALAYAS_9_TEMPLES_FRESCOES_THANGKAS_UNESCO_TENTATIVE_OLDEST', 'Person/Group', 0, 0, 'USD', 'workbook');
-INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('hurling', 'HRL_A_TABO_MONASTERY_15KM_996_AD_AJANTA_HIMALAYAS_9_TEMPLES_FRESCOES_THANGKAS_UNESCO_TENTATIVE_OLDEST', 'Person/Group', 0, 0, 'USD', 'workbook'),
   ('hurling', 'HRL_A_NAKO_LAKE_35KM_MONASTERY_3662M_NAKO_VILLAGE_SPITI_GATEWAY_LAKE_MONASTERY_VILLAGE_OFFBEAT', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('hurling', 'HRL_A_KAZA_65KM_DHANKAR_45KM_PIN_VALLEY_65KM_SPITI_CORE_SIDE_VALLEYS_MARKET_KEY_KIBBER_CHICHAM_LANGZA_HIKKIM_KOMIC', 'Person/Group', 0, 0, 'USD', 'workbook'),
   ('kaza', 'KZA_A_KAZA_MARKET_3650M_SPITI_HQ_MARKET_CAFES_SPITI_RIVER_SAKYA_TANGYUD_MONASTERY_COLD_DESERT_BASE', 'Person/Group', 0, 0, 'USD', 'workbook'),
@@ -44990,14 +44996,14 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('lucknow', 'LUCKNOW_A_HAZRATGANJ_SIKANDAR_BAGH_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('lucknow', 'LUCKNOW_A_CHOWK_AKBARI_GATE_CULINARY_CRAFT_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('lucknow', 'LUCKNOW_A_AMINABAD_OLD_BAZAAR_CORE', 'Person/Group', 0, 0, 'USD', 'workbook'),
-  ('lucknow', 'LUCKNOW_A_LA_MARTINIERE_DILKUSHA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
+  ('lucknow', 'LUCKNOW_A_LA_MARTINIERE_DILKUSHA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
   ('lucknow', 'LUCKNOW_A_GOMTI_NAGAR_RIVERFRONT_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('lucknow', 'LUCKNOW_A_AMBEDKAR_MEMORIAL_JANESHWAR_PARK_CORE', 'Person/Group', 283.47, 3, 'USD', 'workbook'),
   ('lucknow', 'LUCKNOW_A_KUKRAIL_NATURE_FOREST_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('lucknow', 'LUCKNOW_A_CHARBAGH_RAILWAY_HERITAGE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_TAJ_MAHAL_TAJGANJ_CORE', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
-  ('agra', 'AGRA_A_AGRA_FORT_MUGHAL_CORE', 'Person/Group', 566.94, 6, 'USD', 'workbook');
-INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('agra', 'AGRA_A_AGRA_FORT_MUGHAL_CORE', 'Person/Group', 566.94, 6, 'USD', 'workbook'),
   ('agra', 'AGRA_A_MEHTAB_BAGH_YAMUNA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_ITIMAD_UD_DAULAH_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('agra', 'AGRA_A_SIKANDRA_AKBAR_TOMB_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -45191,14 +45197,14 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('puri', 'PURI_A_JAGANNATH_BADA_DANDA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_BEACH_SWARGADWAR_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_GOLDEN_BEACH_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('puri', 'PURI_A_GUNDICHA_GRAND_ROAD_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
+  ('puri', 'PURI_A_GUNDICHA_GRAND_ROAD_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
+INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
   ('puri', 'PURI_A_NARENDRA_TANK_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_LOKANATH_OLD_CITY_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_RAGHURAJPUR_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_KONARK_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_CHANDRABHAGA_MARINE_DRIVE_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
-  ('puri', 'PURI_A_RAMACHANDI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook');
-INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('puri', 'PURI_A_RAMACHANDI_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_SATAPADA_CHILIKA_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('puri', 'PURI_A_BALIGHAI_COAST_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
   ('daringbadi', 'DARINGBADI_A_NATURE_PARK_CORE', 'Person/Group', 188.98, 2, 'USD', 'workbook'),
@@ -45392,14 +45398,14 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('engelberg', 'ENGELBERG_A_ABBEY_AND_VILLAGE_CENTRE', 'Person', 800, 8, 'EUR', 'estimated'),
   ('engelberg', 'ENGELBERG_A_BRUNNI_AND_SUMMER_TRAILS', 'Person', 3500, 35, 'EUR', 'estimated'),
   ('jungfraujoch', 'JUNGFRAUJOCH_A_TOP_OF_EUROPE_ESSENTIALS', 'Person', 23000, 230, 'EUR', 'estimated'),
-  ('jungfraujoch', 'JUNGFRAUJOCH_A_ALPINE_SENSATION_AND_SNOW_FUN', 'Person', 3500, 35, 'EUR', 'estimated'),
+  ('jungfraujoch', 'JUNGFRAUJOCH_A_ALPINE_SENSATION_AND_SNOW_FUN', 'Person', 3500, 35, 'EUR', 'estimated');
+INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
   ('mount-titlis', 'MOUNTTITLIS_A_TITLIS_SUMMIT_HIGHLIGHTS', 'Person', 10800, 108, 'EUR', 'estimated'),
   ('mount-titlis', 'MOUNTTITLIS_A_TR_BSEE_AND_STAND_STOPOVERS', 'Person', 2800, 28, 'EUR', 'estimated'),
   ('luxembourg-city', 'LUXEMBOURGCITY_A_CASEMATES_AND_OLD_QUARTER', 'Person', 1800, 18, 'EUR', 'estimated'),
   ('luxembourg-city', 'LUXEMBOURGCITY_A_SQUARES_AND_NATIONAL_COLLECTIONS', 'Person', 800, 8, 'EUR', 'estimated'),
   ('luxembourg-city', 'LUXEMBOURGCITY_A_KIRCHBERG_AND_LOWER_CITY_VIEWS', 'Person', 1600, 16, 'EUR', 'estimated'),
-  ('vianden', 'VIANDEN_A_VIANDEN_CASTLE_AND_CHAIRLIFT', 'Person', 1900, 19, 'EUR', 'estimated');
-INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('vianden', 'VIANDEN_A_VIANDEN_CASTLE_AND_CHAIRLIFT', 'Person', 1900, 19, 'EUR', 'estimated'),
   ('vianden', 'VIANDEN_A_DAM_AND_RIVERSIDE_WALKS', 'Person', 0, 0, 'EUR', 'estimated'),
   ('echternach', 'ECHTERNACH_A_ABBEY_QUARTER_AND_OLD_TOWN', 'Person', 1600, 0, 'EUR', 'estimated'),
   ('echternach', 'ECHTERNACH_A_MULLERTHAL_NATURE_HIGHLIGHTS', 'Person', 1600, 0, 'EUR', 'estimated'),
@@ -45593,14 +45599,14 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('lublin', 'LUBLIN_A_MULTICULTURAL_MEMORY', 'Person', 800, 8, 'EUR', 'estimated'),
   ('copenhagen', 'COPENHAGEN_A_NYHAVN_CANALS', 'Person', 4100, 41, 'EUR', 'estimated'),
   ('copenhagen', 'COPENHAGEN_A_ROYAL_COPENHAGEN', 'Person', 3800, 38, 'EUR', 'estimated'),
-  ('copenhagen', 'COPENHAGEN_A_TIVOLI_STR_GET', 'Person', 3200, 32, 'EUR', 'estimated'),
+  ('copenhagen', 'COPENHAGEN_A_TIVOLI_STR_GET', 'Person', 3200, 32, 'EUR', 'estimated');
+INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
   ('copenhagen', 'COPENHAGEN_A_N_RREBRO_LOCAL_LIFE', 'Person', 0, 0, 'EUR', 'estimated'),
   ('aarhus', 'AARHUS_A_LATIN_QUARTER_DOKK1', 'Person', 0, 0, 'EUR', 'estimated'),
   ('aarhus', 'AARHUS_A_AROS_CITY_CULTURE', 'Person', 2200, 22, 'EUR', 'estimated'),
   ('aarhus', 'AARHUS_A_MOESGAARD_MARSELISBORG', 'Person', 2400, 24, 'EUR', 'estimated'),
   ('odense', 'ODENSE_A_ANDERSEN_QUARTER', 'Person', 2700, 27, 'EUR', 'estimated'),
-  ('odense', 'ODENSE_A_CASTLE_VILLAGE', 'Person', 3300, 33, 'EUR', 'estimated');
-INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('odense', 'ODENSE_A_CASTLE_VILLAGE', 'Person', 3300, 33, 'EUR', 'estimated'),
   ('odense', 'ODENSE_A_HARBOUR_ZOO', 'Person', 2600, 26, 'EUR', 'estimated'),
   ('aalborg', 'AALBORG_A_WATERFRONT_UTZON', 'Person', 1500, 15, 'EUR', 'estimated'),
   ('aalborg', 'AALBORG_A_OLD_AALBORG', 'Person', 1000, 10, 'EUR', 'estimated'),
@@ -45794,14 +45800,14 @@ INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currenc
   ('cinque-terre', 'CINQUETERRE_A_RIOMAGGIORE_FINALE', 'Person', 0, 0, 'EUR', 'estimated'),
   ('cinque-terre', 'CINQUETERRE_A_NATIONAL_PARK_TRAILS', 'Person', 1900, 19, 'EUR', 'estimated'),
   ('amalfi', 'AMALFI_A_AMALFI_CORE', 'Person', 1000, 10, 'EUR', 'estimated'),
-  ('amalfi', 'AMALFI_A_COAST_BY_BOAT', 'Person', 2500, 25, 'EUR', 'estimated'),
+  ('amalfi', 'AMALFI_A_COAST_BY_BOAT', 'Person', 2500, 25, 'EUR', 'estimated');
+INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
   ('amalfi', 'AMALFI_A_PAPER_VALLEYS', 'Person', 1500, 15, 'EUR', 'estimated'),
   ('positano', 'POSITANO_A_SPIAGGIA_GRANDE', 'Person', 0, 0, 'EUR', 'estimated'),
   ('positano', 'POSITANO_A_UPPER_POSITANO_VIEWS', 'Person', 1800, 18, 'EUR', 'estimated'),
   ('positano', 'POSITANO_A_SEA_COVES', 'Person', 4000, 40, 'EUR', 'estimated'),
   ('capri', 'CAPRI_A_CAPRI_TOWN_GARDENS', 'Person', 500, 5, 'EUR', 'estimated'),
-  ('capri', 'CAPRI_A_BLUE_GROTTO_CIRCUIT', 'Person', 3500, 35, 'EUR', 'estimated');
-INSERT INTO activity_rate (place_id, code, unit, inr, baseline, baseline_currency, source) VALUES
+  ('capri', 'CAPRI_A_BLUE_GROTTO_CIRCUIT', 'Person', 3500, 35, 'EUR', 'estimated'),
   ('capri', 'CAPRI_A_FARAGLIONI_COAST', 'Person', 2200, 22, 'EUR', 'estimated'),
   ('palermo', 'PALERMO_A_HISTORIC_CORE', 'Person', 0, 0, 'EUR', 'estimated'),
   ('palermo', 'PALERMO_A_ARAB_NORMAN_PALERMO', 'Person', 1900, 19, 'EUR', 'estimated'),

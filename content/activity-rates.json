@@ -49,6 +49,74 @@
         "https://traveltriangle.com/blog/homestays-in-dirang/"
       ],
       "checked": "2026-11-12"
+    },
+    {
+      "placeId": "koh-samui",
+      "code": "SAMUI_A_BIG BUDDHA",
+      "inr": 270,
+      "unit": "Person",
+      "note": "THB 100 at an assumed INR 2.7/THB (set the live rate before quoting). Single guide figure; temple entry is often free.",
+      "sources": [
+        "https://thailandboattickets.com/en/destinations/koh-samui"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "koh-samui",
+      "code": "SAMUI_A_SECRET BUDDHA GARDEN",
+      "inr": 400,
+      "unit": "Person",
+      "note": "THB 150 at an assumed INR 2.7/THB (set the live rate before quoting). Listings say THB 100-200; midpoint used.",
+      "sources": [
+        "https://www.expedia.com.my/things-to-do/koh-samui-elephant-sanctuary-temples-with-secret-buddha-garden.a50583419.activity-details",
+        "https://thailandboattickets.com/en/destinations/koh-samui"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "koh-samui",
+      "code": "SAMUI_A_NA MUANG WATERFALL",
+      "inr": 540,
+      "unit": "Person",
+      "note": "THB 200 at an assumed INR 2.7/THB (set the live rate before quoting). Single guide figure.",
+      "sources": [
+        "https://thailandboattickets.com/en/destinations/koh-samui"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "koh-samui",
+      "code": "SAMUI_A_SAMUI ELEPHANT SANCTUARY",
+      "inr": 6750,
+      "unit": "Person",
+      "note": "THB 2500 at an assumed INR 2.7/THB (set the live rate before quoting). Tour listings range THB 2,100-4,000 for a half day.",
+      "sources": [
+        "https://samui-authentic-dyx.pages.dev/en/exc-safari",
+        "https://thailandboattickets.com/en/destinations/koh-samui"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "koh-samui",
+      "code": "SAMUI_A_ANG THONG MARINE PARK",
+      "inr": 810,
+      "unit": "Person",
+      "note": "THB 300 at an assumed INR 2.7/THB (set the live rate before quoting). National park fee only (foreigner rate; Indian nationals pay it). Boat tour is extra. Park closed 1 Nov to about 15 Dec.",
+      "sources": [
+        "https://www.thainationalparks.com/mu-ko-ang-thong-national-park"
+      ],
+      "checked": "2026-11-12"
+    },
+    {
+      "placeId": "koh-samui",
+      "code": "SAMUI_A_WAT PLAI LAEM",
+      "inr": 0,
+      "unit": "Person",
+      "note": "THB 0 at an assumed INR 2.7/THB (set the live rate before quoting). Free; donations welcome. Hours listed 06:00-18:00.",
+      "sources": [
+        "https://www.thaiholidayguide.com/attraction/wat-plai-laem/"
+      ],
+      "checked": "2026-11-12"
     }
   ]
 }

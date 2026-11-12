@@ -1011,11 +1011,12 @@ function gatewayCost(
   roadKm?: Map<string, number>,
 ): number {
   if (!gateway) return 0;
+  const thin = THIN_GATEWAY_KM.get(placeId) ?? 0;
   const road = roadKm?.get(placeId);
-  if (road != null) return road * GATEWAY_KM_WEIGHT;
+  if (road != null) return (road + thin) * GATEWAY_KM_WEIGHT;
   const point = points.get(placeId);
   if (!point) return 0;
-  return haversineKm(gateway, point) * GATEWAY_KM_WEIGHT;
+  return (haversineKm(gateway, point) + thin) * GATEWAY_KM_WEIGHT;
 }
 
 /**
@@ -1024,6 +1025,14 @@ function gatewayCost(
  * the internal ordering — the internal hops are still the bulk of the trip.
  */
 const GATEWAY_KM_WEIGHT = 8;
+
+/** Small airports with little international service: counted as farther from home when picking the ends of a trip. */
+const THIN_GATEWAY_KM = new Map<string, number>(
+  ((transportPatch as { thinGateways?: { placeId: string; penaltyKm: number }[] }).thinGateways ?? []).map((g) => [
+    g.placeId,
+    g.penaltyKm,
+  ]),
+);
 
 /**
  * How much less the exit leg counts than the entry leg.

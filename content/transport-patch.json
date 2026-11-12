@@ -215,5 +215,12 @@
         "https://www.rome2rio.com/s/Krabi/Ko-Samui"
       ]
     }
+  ],
+  "thinGateways": [
+    {
+      "placeId": "koh-samui",
+      "penaltyKm": 800,
+      "note": "USM is a small Bangkok Airways airport with little direct international service; when it is one end of a multi-stop trip, enter and leave at the bigger neighbouring airport."
+    }
   ]
 }
