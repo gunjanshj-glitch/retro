@@ -1,7 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { pinMetrics, placePinLabels, selectVisiblePins, type DeclutterPin } from "@retro/core/map-declutter";
-import core from "../../public/atlas/core.json";
+import path from "node:path";
+
+// Read at run time, not imported: public/atlas is generated and gitignored, so a static import
+// fails the typecheck on a clean checkout (CI typechecks before it builds the atlas).
+const core = JSON.parse(readFileSync(path.join("public", "atlas", "core.json"), "utf8")) as {
+  places: { name: string }[];
+};
 
 /**
  * Regression: Srinagar is picked at high zoom on India's map, where Gulmarg
