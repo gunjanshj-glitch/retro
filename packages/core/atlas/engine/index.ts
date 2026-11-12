@@ -389,6 +389,14 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
   }
   const placeById = new Map(core.places.map((p) => [p.id, p]));
   const isHubReturnPlace = (id: string) => Boolean(placeById.get(id)?.island) || isHillPlace(core, id);
+  // An order set by hand, kept to the places actually in the trip. A place the engine added
+  // (the airport-city night) is not in it, so it goes where the engine wanted it.
+  const manualOrder = () => {
+    if (!request.placeOrder.length) return null;
+    const listed = request.placeOrder.filter((id) => placeIds.includes(id));
+    const added = placeIds.filter((id) => !listed.includes(id));
+    return portNightSide === "start" ? [...added, ...listed] : [...listed, ...added];
+  };
   const stayArgs = () => [
     placeIds, nights, summaries, request.tripStyle, routeLookup, names, request.nightOverrides,
     portPoint ?? gateway, placePoints, bookendCore,
@@ -408,6 +416,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
             !isHubReturnPlace(id),
         }
       : null,
+    manualOrder(),
   ] as const;
   let stays = buildStays(...stayArgs());
   // The last road home is too long for a flight or train the same day: spend the last night near the port.

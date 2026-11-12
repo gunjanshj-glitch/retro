@@ -28,6 +28,7 @@ import { PricingPanel } from "./PricingPanel";
 import { MarginPanel } from "./MarginPanel";
 import { PriceSplitPanel } from "./PriceSplitPanel";
 import { SightseeingPanel } from "./SightseeingPanel";
+import { AdminRouteEditor } from "./AdminRouteEditor";
 
 const primaryBtn = btnPrimary;
 const ghostBtn = btnGhost;
@@ -107,7 +108,10 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
     return readRequest(detail.workingCopy?.request) ?? readRequest(snapshot?.request);
   }, [detail]);
 
-  const [request, setRequest] = useState<QuoteRequest | null>(initialRequest);
+  // The request and its undo history live in one state so a change and the step it can be
+  // undone to are always recorded together (a bare list of earlier requests: small, plain data).
+  const [trip, setTrip] = useState<{ request: QuoteRequest | null; past: QuoteRequest[]; future: QuoteRequest[] }>({ request: initialRequest, past: [], future: [] });
+  const request = trip.request;
   const [adjustments, setAdjustments] = useState<QuoteAdjustments>(detail.workingCopy?.adjustments ?? emptyAdjustments());
   const [today] = useState(() => new Date().toISOString().slice(0, 10));
   const initialValid = detail.workingCopy?.validUntil && detail.workingCopy.validUntil >= today ? detail.workingCopy.validUntil : detail.defaultValidUntil;
@@ -123,9 +127,22 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   const [confirmSend, setConfirmSend] = useState(false);
 
-  // Every edit funnels through these so "unsaved changes" is tracked in one place.
+  // Every edit funnels through these so "unsaved changes" is tracked in one place,
+  // and so every change to the trip can be undone.
   const editRequest = useCallback((next: QuoteRequest | ((r: QuoteRequest) => QuoteRequest)) => {
-    setRequest((r) => (r ? (typeof next === "function" ? next(r) : next) : r));
+    setTrip((t) => {
+      if (!t.request) return t;
+      const updated = typeof next === "function" ? next(t.request) : next;
+      return updated === t.request ? t : { request: updated, past: [...t.past.slice(-49), t.request], future: [] };
+    });
+    setDirty(true);
+  }, []);
+  const undo = useCallback(() => {
+    setTrip((t) => (t.request && t.past.length ? { request: t.past[t.past.length - 1], past: t.past.slice(0, -1), future: [...t.future, t.request] } : t));
+    setDirty(true);
+  }, []);
+  const redo = useCallback(() => {
+    setTrip((t) => (t.request && t.future.length ? { request: t.future[t.future.length - 1], past: [...t.past, t.request], future: t.future.slice(0, -1) } : t));
     setDirty(true);
   }, []);
   const editAdjustments = (next: QuoteAdjustments) => {
@@ -134,6 +151,13 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
   };
 
   const { core, quote, error } = useQuotation(request ?? ({ placeIds: [] } as unknown as QuoteRequest), request != null);
+
+  // Re-pricing after a change (a new destination needs its content first) briefly has no quote.
+  // The route editor keeps the last good one on screen rather than unmounting, so what the admin
+  // was doing (the message, an open "add a site" list) is not lost mid-edit.
+  const [lastQuote, setLastQuote] = useState<Quotation | null>(null);
+  if (quote && quote !== lastQuote) setLastQuote(quote);
+  const routeQuote = quote ?? lastQuote;
 
   const setPlaces = useCallback(
     (placeIds: string[] | ((current: string[]) => string[])) => {
@@ -285,11 +309,19 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         <DecisionMatrix core={core} value={request} onChange={editRequest} adopt />
       </Section>
 
-      <Section title="2 · Destinations" hint="Add or remove places">
+      <Section title="2 · Route & day plan" hint="Reorder stops, set nights, move outings between days, add sites, pick each transfer" open>
+        {routeQuote ? (
+          <AdminRouteEditor core={core} quote={routeQuote} request={request} onChange={editRequest} history={{ canUndo: trip.past.length > 0, canRedo: trip.future.length > 0, undo, redo }} />
+        ) : (
+          <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>
+        )}
+      </Section>
+
+      <Section title="3 · Destinations on the map" hint="Pick places on the map (this resets the night split and transport picks)">
         <WorldMapPicker core={core} selected={request.placeIds} onChange={setPlaces} />
       </Section>
 
-      <Section title="3 · Itinerary, inclusions & optional items" hint="Switch flights/visa/insurance, adjust nights and transport" open>
+      <Section title="4 · Itinerary, inclusions & optional items" hint="Switch flights/visa/insurance, adjust nights and transport" open>
         {quote ? (
           <QuotationView quote={quote} request={request} onChange={editRequest} destinationSummary={destinationSummary} mode="admin" />
         ) : (
@@ -297,11 +329,11 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         )}
       </Section>
 
-      <Section title="4 · Sightseeing" hint="Every place at every destination, ticked or not; choose exactly which are in" open>
+      <Section title="5 · Sightseeing" hint="Every place at every destination, ticked or not; choose exactly which are in" open>
         {quote ? <SightseeingPanel quote={quote} request={request} onChange={editRequest} /> : <p style={{ color: "var(--muted)" }}>Pricing the itinerary…</p>}
       </Section>
 
-      <Section title="5 · Cost, agency cut & rates" hint="What it costs, what the agency keeps, and every charge behind each category (admin only)" open>
+      <Section title="6 · Cost, agency cut & rates" hint="What it costs, what the agency keeps, and every charge behind each category (admin only)" open>
         {quote ? (
           <div className="flex flex-col gap-6">
             <MarginPanel quote={quote} adjustments={adjustments} request={request ?? undefined} onChange={editRequest} />
@@ -312,7 +344,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         )}
       </Section>
 
-      <Section title="6 · Pricing & terms" hint="Fixed price, discounts, optional extras, deposit, validity" open>
+      <Section title="7 · Pricing & terms" hint="Fixed price, discounts, optional extras, deposit, validity" open>
         <PricingPanel
           engineTotalInr={quote?.totals.total ?? 0}
           adjustments={adjustments}
@@ -330,7 +362,7 @@ export function AdminQuoteEditor({ detail, onSent, onSummary, actionsRef }: Prop
         />
       </Section>
 
-      <Section title="7 · Preview as the traveller will see it" hint="Exactly what the quote page will show">
+      <Section title="8 · Preview as the traveller will see it" hint="Exactly what the quote page will show">
         {publicPreview ? <QuoteOffer quote={publicPreview} selected={[]} version={undefined} /> : <p style={{ color: "var(--muted)" }}>Nothing to preview yet.</p>}
       </Section>
 

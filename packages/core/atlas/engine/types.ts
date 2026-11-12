@@ -184,6 +184,14 @@ export const QuoteRequest = z.object({
    * is reported back rather than silently honoured or silently dropped.
    */
   pinnedClusterIds: z.array(z.string()).default([]),
+  /**
+   * The order the stops are visited in, set by hand in the quote editor. Empty
+   * leaves the route to the sequencer. When set it is followed literally: no
+   * re-sequencing and no airport-city bookends, so the admin's first stop is the
+   * first night. A place missing from the list is placed after (or, for a night
+   * added beside the airport on arrival, before) the listed ones.
+   */
+  placeOrder: z.array(z.string()).default([]),
   /** Manual override of the automatic night split, keyed by place id. */
   nightOverrides: z.record(z.string(), z.number().int().min(0)).default({}),
   /**

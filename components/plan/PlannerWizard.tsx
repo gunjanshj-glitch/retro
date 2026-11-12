@@ -61,6 +61,7 @@ function defaultRequest(): QuoteRequest {
     sightseeingMode: "auto",
     addedActivityCodes: [],
     pinnedClusterIds: [],
+    placeOrder: [],
     nightOverrides: {},
     clusterDays: {},
   };

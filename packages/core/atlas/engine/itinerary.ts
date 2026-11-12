@@ -1273,9 +1273,16 @@ export function buildStays(
     /** Ends the route may not take while the port city is in the trip: satellites, and hill places a long road from the airport. */
     blockedEnd?: (id: string) => boolean;
   } | null = null,
+  /**
+   * A route fixed by hand. Followed as given (places with no nights drop out), with
+   * no sequencing and no bookending, so the first and last stop are what was chosen.
+   */
+  manualOrder: string[] | null = null,
 ): PlaceStay[] {
   const nights = allocateNights(placeIds, totalNights, summaries, style, overrides);
-  const ordered = sequencePlaces(
+  const ordered = manualOrder?.length
+    ? manualOrder.filter((id, i) => manualOrder.indexOf(id) === i && (nights.get(id) ?? 0) > 0)
+    : sequencePlaces(
     placeIds.filter((id) => (nights.get(id) ?? 0) > 0),
     lookup,
     gateway,
@@ -1287,7 +1294,7 @@ export function buildStays(
     port?.blockedEnd ?? port?.satellite,
   );
   const visits = ordered.map((placeId) => ({ placeId, nights: nights.get(placeId) ?? 0 }));
-  const route = airports ? bookendGateways(airports, visits, port?.satellite) : visits;
+  const route = airports && !manualOrder?.length ? bookendGateways(airports, visits, port?.satellite) : visits;
   const seen = new Map<string, number>();
   return route.map((v, position) => {
     const visit = seen.get(v.placeId) ?? 0;
