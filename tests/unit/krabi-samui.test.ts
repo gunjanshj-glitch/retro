@@ -82,3 +82,17 @@ describe("Krabi and Koh Samui ordering", () => {
     expect(q.stays[q.stays.length - 1].placeId).toBe("koh-samui");
   });
 });
+
+describe("Samui in the Thailand package", () => {
+  it("is in the package, and is reached by air or car-and-ferry, never train or bus", () => {
+    const pkg = core.packages.find((p) => p.name === "Thailand")!;
+    expect(pkg.placeIds).toContain("koh-samui");
+    for (const from of ["bangkok", "pattaya", "phuket", "krabi"]) {
+      const modes = lookup.options(from, "koh-samui", "balanced", 2).map((o) => o.mode);
+      expect(modes).not.toContain("train");
+      expect(modes).not.toContain("bus");
+    }
+    const phuket = lookup.options("phuket", "koh-samui", "balanced", 2)[0];
+    expect(phuket.car?.perVehicleInr).toBe(12_000);
+  });
+});

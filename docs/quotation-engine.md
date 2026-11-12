@@ -288,3 +288,12 @@ The review workbook at `data/atlas/Atlas_Rate_Review.xlsx` has a sheet for each 
 ### Known map issue: a smaller group hidden by a larger neighbour
 
 Observed in a browser on India's map: "Kashmir Cluster 1" (6 places including Srinagar) and "Kashmir Cluster 2" (7 places) sit a few pixels apart. The larger group expands first and takes the space, so the smaller group's pin fails the spacing rule and is dropped. Srinagar cannot be reached until about 7x zoom. The spacing rule (`map-declutter.test.ts`, "never draws two pins closer than the enforced spacing") is deliberate, so the fix is data or algorithm, not an exception: merge the two Kashmir groups in `india.markers.json`, or let a group that cannot be drawn merge into its neighbour's pin. Not done.
+
+### Assumptions recorded for Koh Samui (2026-11-12)
+
+- Baht prices in `content/activity-rates.json` use INR 2.7 per baht (confirmed by the agency).
+- Krabi to Samui is INR 7,000 car plus INR 3,000 ferry per vehicle (agency figure). Phuket to Samui is assumed INR 9,000 plus INR 3,000, scaled for the extra distance; replace with a supplier rate.
+- Samui is an island for routing: trains, buses and cars are never offered across the sea; Bangkok and Pattaya reach it by air.
+- Samui is a thin gateway (`thinGateways` in `content/transport-patch.json`), so multi-stop trips enter at the bigger airport (Krabi) and leave from Samui.
+- The Thailand package now includes Samui: 10 nights, published from INR 72,000 (quoted about INR 74,000 land-only).
+- Nag Temple, Monpa Village and Dirang Dzong are priced at INR 0 on the strength of public listings; none is an official tariff.

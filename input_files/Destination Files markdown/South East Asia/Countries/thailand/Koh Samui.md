@@ -1182,7 +1182,7 @@ last_updated:
 2026-11-12
 
 last_verified:
-NOT_LIVE_VERIFIED
+2026-11-12 (fees, hours and Ang Thong closure checked on the web; weather, suitability and budget scores are editorial estimates)
 
 verified_by:
 TRAVEL_ENGINE_INITIAL_DATASET

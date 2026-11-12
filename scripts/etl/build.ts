@@ -89,6 +89,7 @@ const ASIA_ISLANDS: Record<string, string> = {
   "port-blair": "South Andaman",
   "havelock-island": "Havelock",
   "neil-island": "Neil",
+  "koh-samui": "Samui",
 };
 
 const refresh = process.argv.includes("--refresh");
