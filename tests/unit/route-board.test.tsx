@@ -171,13 +171,13 @@ describe("RouteBoard", () => {
     const { onChange } = setup({ routeMode: "classic" });
     fireEvent.keyDown(screen.getByTestId(`route-stop-${order[0]}`), { key: "ArrowRight" });
     expect(placeOrderOf(onChange)).toEqual([order[1], order[0], order[2]]);
-    fireEvent.click(within(screen.getByRole("group", { name: "Move stops" })).getAllByRole("button", { name: /earlier/ })[2]);
+    fireEvent.click(within(screen.getByRole("group", { name: "Route order" })).getAllByRole("button", { name: /earlier/ })[2]);
     expect(placeOrderOf(onChange)).toEqual([order[0], order[2], order[1]]);
   });
 
   it("does not move the first stop earlier or the last later", () => {
     setup({ routeMode: "classic" });
-    const group = within(screen.getByRole("group", { name: "Move stops" }));
+    const group = within(screen.getByRole("group", { name: "Route order" }));
     expect(group.getAllByRole("button", { name: /earlier/ })[0]).toBeDisabled();
     expect(group.getAllByRole("button", { name: /later/ }).at(-1)).toBeDisabled();
   });

@@ -95,12 +95,12 @@ test.describe("route board", () => {
     await page.mouse.up();
 
     await expect(page.getByTestId("route-reset")).toBeEnabled();
-    expect(await stopsInOrder(page)).toEqual([before[1], before[2], before[0]]);
+    await expect.poll(() => stopsInOrder(page)).toEqual([before[1], before[2], before[0]]);
     await expect(page.getByText("Final total").locator("xpath=following-sibling::dd")).not.toHaveText(total);
 
     await page.getByTestId("route-reset").click();
     await expect(page.getByTestId("route-reset")).toBeDisabled();
-    expect(await stopsInOrder(page)).toEqual(before);
+    await expect.poll(() => stopsInOrder(page)).toEqual(before);
     await expect(page.getByText("Final total").locator("xpath=following-sibling::dd")).toHaveText(total);
   });
 
@@ -108,7 +108,7 @@ test.describe("route board", () => {
     await openQuote(page);
     const before = await stopsInOrder(page);
     await page.getByRole("button", { name: "Reverse" }).click();
-    expect(await stopsInOrder(page)).toEqual([...before].reverse());
+    await expect.poll(() => stopsInOrder(page)).toEqual([...before].reverse());
     await page.getByRole("button", { name: "Shuffle" }).click();
     const shuffled = await stopsInOrder(page);
     expect([...shuffled].sort()).toEqual([...before].sort());

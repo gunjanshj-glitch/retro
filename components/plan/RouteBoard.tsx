@@ -209,7 +209,7 @@ export function RouteBoard({ quote, request, onChange }: Props) {
                   tabIndex={0}
                   aria-label={`Stop ${i + 1} of ${order.length}: ${nameOf(id)}, ${nightsOf(id)} night${nightsOf(id) === 1 ? "" : "s"}. Drag, or press the left and right arrow keys, to move it.`}
                   data-testid={`route-stop-${id}`}
-                  style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "none", outline: "none", transition: dragging ? "none" : "transform 160ms ease" }}
+                  style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "none", outline: "none" }}
                   onPointerDown={(e) => onDown(e, id)}
                   onKeyDown={(e) => {
                     if (e.key === "ArrowLeft") { e.preventDefault(); move(id, i - 1); }
@@ -234,12 +234,12 @@ export function RouteBoard({ quote, request, onChange }: Props) {
         )}
 
         {/* the same moves without a drag: for keyboards, touch screens and screen readers */}
-        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Move stops">
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Route order">
           {order.map((id, i) => (
             <span key={id} className="inline-flex items-center gap-1 rounded-full border px-1 py-0.5 text-xs font-semibold" style={{ borderColor: "var(--line)", background: "var(--surface)" }}>
-              <button type="button" className="min-h-8 min-w-8 rounded-full disabled:opacity-35" disabled={i === 0} onClick={() => move(id, i - 1)} aria-label={`Move ${nameOf(id)} earlier`}>←</button>
+              <button type="button" className="min-h-8 min-w-8 rounded-full disabled:opacity-35" disabled={i === 0} onClick={() => move(id, i - 1)} aria-label={`Route order: ${nameOf(id)} one step earlier`}>←</button>
               <span className="px-1">{nameOf(id)}</span>
-              <button type="button" className="min-h-8 min-w-8 rounded-full disabled:opacity-35" disabled={i === order.length - 1} onClick={() => move(id, i + 1)} aria-label={`Move ${nameOf(id)} later`}>→</button>
+              <button type="button" className="min-h-8 min-w-8 rounded-full disabled:opacity-35" disabled={i === order.length - 1} onClick={() => move(id, i + 1)} aria-label={`Route order: ${nameOf(id)} one step later`}>→</button>
             </span>
           ))}
         </div>
