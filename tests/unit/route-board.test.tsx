@@ -141,8 +141,9 @@ describe("RouteBoard", () => {
   });
 
   it("shows the way back to an earlier stop when the trip flies home from one", () => {
-    const { quote } = setup();
-    expect(quote.routePlan!.candidates.find((c) => c.id === quote.routePlan!.currentId)!.returnVia).not.toBeNull();
+    // A route set by hand that ends by naming Brussels again, so it does not depend on what the planner prefers.
+    const { quote } = setup({ placeOrder: ["brussels", "amsterdam", "paris", "brussels"] });
+    expect(quote.routePlan!.candidates.find((c) => c.id === quote.routePlan!.currentId)!.returnVia).toBe("brussels");
     expect(screen.getByTestId("route-board-return")).toBeInTheDocument();
   });
 

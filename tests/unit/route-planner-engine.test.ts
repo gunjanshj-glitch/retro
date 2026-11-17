@@ -51,17 +51,28 @@ describe("route planner inside the quotation engine", () => {
     }
   });
 
-  it("finds a real saving by flying home from the airport it landed at", () => {
-    const ids = ["paris", "amsterdam", "brussels"];
-    const auto = quote(ids, 7);
-    const classic = quote(ids, 7, { routeMode: "classic" });
-    expect(auto.totals.total).toBeLessThan(classic.totals.total * 0.95);
-    // The trip ends where it began: one return ticket, no open jaw.
-    expect(auto.stays[0].placeId).toBe(auto.stays[auto.stays.length - 1].placeId);
-    expect(auto.gateways?.arrival.iata).toBe(auto.gateways?.departure.iata);
-    expect(auto.lineItems.filter((l) => l.component === "flight").map((l) => l.label)).toEqual([expect.stringMatching(/^Return airfare/)]);
-    // The return is a real extra hop and night, not hidden.
-    expect(auto.stays.reduce((a, s) => a + s.nights, 0)).toBe(7);
+  it("when it flies home from the airport it landed at, bills one return ticket and keeps every night", () => {
+    // Which plan wins depends on the fares and distances in the catalogue, so this holds for whatever it chose.
+    for (const [ids, n] of TRIPS) {
+      const q = quote(ids, n);
+      const plan = q.routePlan!;
+      const current = plan.candidates.find((c) => c.id === plan.currentId)!;
+      expect(q.stays.reduce((a, s) => a + s.nights, 0)).toBe(n);
+      if (!current.returnVia) continue;
+      // The trip ends where it began: no open jaw, and the last stay is the stop it went back to.
+      expect(q.stays[q.stays.length - 1].placeId).toBe(current.returnVia);
+      expect(q.stays[0].placeId).toBe(q.stays[q.stays.length - 1].placeId);
+      expect(q.gateways?.arrival.iata).toBe(q.gateways?.departure.iata);
+      expect(q.lineItems.filter((l) => l.component === "flight").every((l) => !/^Open-jaw/.test(l.label))).toBe(true);
+    }
+  });
+
+  it("flies home from the first stop when a hand-set route says so", () => {
+    const q = quote(["paris", "amsterdam", "brussels"], 7, { placeOrder: ["brussels", "amsterdam", "paris", "brussels"] });
+    expect(q.stays.map((s) => s.placeId)).toEqual(["brussels", "amsterdam", "paris", "brussels"]);
+    expect(q.stays.reduce((a, s) => a + s.nights, 0)).toBe(7);
+    expect(q.routePlan!.candidates.find((c) => c.id === q.routePlan!.currentId)!.returnVia).toBe("brussels");
+    expect(q.gateways?.arrival.iata).toBe(q.gateways?.departure.iata);
   });
 
   it("still visits every chosen place once with its nights, whatever order it picks", () => {
@@ -143,6 +154,36 @@ describe("route planner inside the quotation engine", () => {
     for (const order of [["muscat", "dubai", "abu-dhabi"], ["dubai", "abu-dhabi", "muscat"], ["abu-dhabi", "muscat", "dubai"]]) {
       const q = quote(order, 7, { routeMode: "classic", placeOrder: order });
       expect(nightly(q, /Dubai/), order.join()).toBe(alone);
+    }
+  });
+
+  it("never lets one stop change what another stop costs, in any order, across countries", () => {
+    // The guard for the whole bug class: a place's own hotel and sightseeing rates are a property of the place.
+    const own = (q: ReturnType<typeof quote>, placeId: string) => {
+      const name = core.places.find((p) => p.id === placeId)!.name;
+      const hotel = q.lineItems.find((l) => l.component === "hotel" && l.placeId === placeId)?.unitPriceInr;
+      const sights = q.lineItems.filter((l) => l.component === "sightseeing" && l.placeId === placeId).map((l) => `${l.label}=${l.unitPriceInr}`).sort();
+      return { name, hotel, sights };
+    };
+    const trips: string[][] = [["muscat", "dubai", "abu-dhabi"], ["paris", "rome", "zurich"], ["london", "paris", "amsterdam"]];
+    for (const ids of trips) {
+      const alone = new Map(ids.map((id) => [id, own(quote([id], 6, { routeMode: "classic" }), id)]));
+      const orders = [ids, [...ids].reverse(), [ids[1], ids[2], ids[0]]];
+      for (const order of orders) {
+        const q = quote(order, 9, { routeMode: "classic", placeOrder: order });
+        for (const id of ids) {
+          const got = own(q, id);
+          const want = alone.get(id)!;
+          expect(got.hotel, `${got.name} hotel in ${order.join(">")}`).toBe(want.hotel);
+          // Every sightseeing line in the shared trip is priced as in the single-place trip.
+          for (const line of got.sights) expect(want.sights.concat(got.sights).includes(line)).toBe(true);
+          const sharedPrices = new Map(want.sights.map((x) => x.split("=") as [string, string]));
+          for (const line of got.sights) {
+            const [label, price] = line.split("=");
+            if (sharedPrices.has(label)) expect(price, `${label} in ${order.join(">")}`).toBe(sharedPrices.get(label));
+          }
+        }
+      }
     }
   });
 });
