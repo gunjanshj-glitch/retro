@@ -192,6 +192,12 @@ export const QuoteRequest = z.object({
    * added beside the airport on arrival, before) the listed ones.
    */
   placeOrder: z.array(z.string()).default([]),
+  /**
+   * "auto" lets the route planner choose the order and the airports to fly in and out of by
+   * price, time or a balance of both (see `transportPreference`). "classic" keeps the earlier
+   * distance-based sequencer. Ignored when `placeOrder` is set.
+   */
+  routeMode: z.enum(["auto", "classic"]).default("auto"),
   /** Manual override of the automatic night split, keyed by place id. */
   nightOverrides: z.record(z.string(), z.number().int().min(0)).default({}),
   /**
@@ -473,12 +479,56 @@ export type Quotation = {
    * route is sequenced from.
    */
   portOfEntry?: PortOfEntryInfo;
+  /** The route planner's view of this trip's order and airports. Absent for a single-stop trip. */
+  routePlan?: RoutePlanInfo;
   gateways?: {
     /** Where the flight starts and ends its journey home, e.g. Kolkata (CCU). */
     home: { code: string; label: string };
     arrival: GatewayInfo;
     departure: GatewayInfo;
   };
+};
+
+/** One way of ordering the stops and flying in and out, as the route planner scored it. Money is per traveller. */
+export type RoutePlanCandidate = {
+  id: string;
+  order: string[];
+  names: string[];
+  /** The earlier stop the trip returns to before the flight home. */
+  returnVia: string | null;
+  entryAirport: string;
+  exitAirport: string;
+  openJaw: boolean;
+  flightInr: number;
+  groundInr: number;
+  groundMinutes: number;
+  totalInr: number;
+  /** Nothing else is both cheaper and quicker. */
+  pareto: boolean;
+  /**
+   * The whole quotation's total (all travellers, tax and margin included) when the engine priced this plan in
+   * full. Only the leading plans are priced in full; the rest carry the planner's own estimate.
+   */
+  quoteTotalInr?: number;
+};
+
+/** What the route planner considered, for the route board. */
+export type RoutePlanInfo = {
+  objective: "cheapest" | "balanced" | "fastest";
+  /** The order was set by hand rather than suggested. */
+  manual: boolean;
+  suggestedId: string | null;
+  currentId: string | null;
+  /** How many plans were scored. */
+  candidateCount: number;
+  candidates: RoutePlanCandidate[];
+  best: { cheapest: string | null; balanced: string | null; fastest: string | null };
+  /**
+   * What the planner would suggest for this trip, and its price, even when the order was set by hand. This is
+   * what "reset" returns to and what a hand-made order is compared with. Absent in `classic` mode and without a flight.
+   */
+  suggestion?: { id: string; order: string[]; names: string[]; returnVia: string | null; totalInr: number };
+  stops: { id: string; name: string; nights: number; airport: string | null }[];
 };
 
 export type PortOfEntryInfo = {

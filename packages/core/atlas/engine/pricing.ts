@@ -8,6 +8,7 @@
  */
 import policy from "../../../../content/quote-policy.json";
 import calibration from "../../../../content/pricing-calibration.json";
+import { OPEN_JAW_PREMIUM } from "./routeplan";
 import type {
   CityTax,
   CoreBundle,
@@ -739,9 +740,13 @@ export function priceQuotation(input: PricingInput): {
       if (g && g.arrival.iata !== g.departure.iata && openJaw(resolved.inr)) {
         /* flies in and home from different airports: priced as one open-jaw ticket */
       } else {
+        // In at one airport and home from another splits the return fare; it costs a little more than the same
+        // return flown from one airport, which is why the route planner prefers to fly home from where it landed.
+        const split = Boolean(g && g.arrival.iata !== g.departure.iata);
         pushFare(`Return airfare — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
-          `${routeNote("round-trip")}${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip`,
-          resolved.inr, resolved, inboundCountry);
+          `${routeNote("round-trip")}${carrierNote(inboundBand, resolved.live)}, ${cabinOf(inboundBand, resolved.live)}, round trip` +
+            (split ? `, in and out of different airports (${Math.round(OPEN_JAW_PREMIUM * 100)}% above the same-airport return)` : ""),
+          split ? resolved.inr * (1 + OPEN_JAW_PREMIUM) : resolved.inr, resolved, inboundCountry);
       }
     } else if (inboundBand) {
       const outboundBand = selectBand(outboundCountry) ?? inboundBand;
@@ -754,11 +759,11 @@ export function priceQuotation(input: PricingInput): {
       } else {
       pushFare(`Airfare out — ${request.departureCity} to ${placeName.get(firstPlace.placeId)}`,
         `${routeNote("out")}${carrierNote(inboundBand, inboundResolved.live)}, ${cabinOf(inboundBand, inboundResolved.live)}, one way of an open-jaw ticket`,
-        inboundResolved.inr / 2, inboundResolved, inboundCountry);
+        (inboundResolved.inr / 2) * (1 + OPEN_JAW_PREMIUM), inboundResolved, inboundCountry);
 
       pushFare(`Airfare home — ${placeName.get(lastPlace.placeId)} to ${request.departureCity}`,
         `${routeNote("home")}${carrierNote(outboundBand, outboundResolved.live)}, ${cabinOf(outboundBand, outboundResolved.live)}, one way of an open-jaw ticket`,
-        outboundResolved.inr / 2, outboundResolved, outboundCountry);
+        (outboundResolved.inr / 2) * (1 + OPEN_JAW_PREMIUM), outboundResolved, outboundCountry);
       }
     }
   }

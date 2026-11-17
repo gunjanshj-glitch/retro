@@ -12,6 +12,8 @@ import { formatDuration, formatInr } from "@retro/core/atlas/engine/text";
 import policy from "@/content/quote-policy.json";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { COMPONENT_LABEL, hiddenByComponent } from "@retro/core/quote-pricing";
+import { RouteBoard } from "./RouteBoard";
+import { freezeRoute } from "./route-board";
 import { SendForApprovalModal } from "./SendForApprovalModal";
 import { btnGhost, btnInk, cardClass, chipClass, chipStyle, optionCardStyle } from "./theme";
 
@@ -235,7 +237,8 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
   );
 
   const setLegMode = (placeId: string, mode: TransportMode) => {
-    onChange({ ...request, legModes: { ...request.legModes, [placeId]: mode } });
+    // The pin belongs to this hop, so the route it is on stops being re-planned.
+    onChange({ ...freezeRoute(request, quote), legModes: { ...request.legModes, [placeId]: mode } });
   };
 
   return (
@@ -358,6 +361,9 @@ export function QuotationView({ quote, request, onChange, onBack, destinationSum
           </div>
         </section>
       )}
+
+      {/* ---- route: the order of the stops, draggable ---- */}
+      <RouteBoard quote={quote} request={request} onChange={onChange} />
 
       {/* ---- flights ---- */}
       {quote.gateways && (

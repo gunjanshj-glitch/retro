@@ -20,7 +20,7 @@ const ALIAS: Record<string, string> = { edinburgh: "edinburg", crete: "cretehera
 const placeFor = (name: string) =>
   core.places.find((p) => norm(p.name) === (ALIAS[norm(name)] ?? norm(name)));
 
-function quote(ids: string[], nights: number) {
+function quote(ids: string[], nights: number, routeMode: "auto" | "classic" = "auto") {
   const bundles = new Map<string, DestinationBundle>();
   for (const id of ids) {
     const place = core.places.find((p) => p.id === id)!;
@@ -33,7 +33,7 @@ function quote(ids: string[], nights: number) {
       hotelStar: "4 Star", hotelZone: "Central", carrier: "FSC", cabin: "Economy", mealPlan: "breakfast",
       food: "no-preference", pace: "balanced", includeVisa: true, includeInsurance: false, includeFlight: true,
       interests: [], firstTimeVisitor: true, transportPreference: "balanced", legModes: {},
-      excludedActivityCodes: [], excludedClusterIds: [], excludedLineKeys: [], lineOverrides: {}, marginPct: null, componentMarginPct: {}, customLines: [], sightseeingMode: "auto", addedActivityCodes: [], pinnedClusterIds: [], placeOrder: [], nightOverrides: {}, clusterDays: {},
+      excludedActivityCodes: [], excludedClusterIds: [], excludedLineKeys: [], lineOverrides: {}, marginPct: null, componentMarginPct: {}, customLines: [], sightseeingMode: "auto", addedActivityCodes: [], pinnedClusterIds: [], placeOrder: [], routeMode, nightOverrides: {}, clusterDays: {},
     },
     { core, routes, visaRules, bundles },
   );
@@ -75,7 +75,8 @@ describe("Europe city supplement", () => {
   });
 
   it("reaches an island by air or sea, never by road or rail", () => {
-    const q = quote(["barcelona", "mallorca"], 6);
+    // The order is fixed: the test is about how an island is reached, not about which end the trip starts at.
+    const q = quote(["barcelona", "mallorca"], 6, "classic");
     const leg = q.days.find((d) => d.transfer && /mallorca/i.test(d.transfer.to + d.transfer.from));
     expect(leg?.transfer?.mode).toMatch(/flight|ferry/);
   });

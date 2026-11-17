@@ -594,7 +594,8 @@ describe("international airfare", () => {
   describe("a live open-jaw ticket", () => {
     const placeIds = ["cairo", "nairobi"];
     const run = (jawInr: number | null) => {
-      const req = request({ placeIds, nights: 6, includeFlight: true, departureCity: "CCU" });
+      // A live open-jaw ticket is only the ticket when the trip really ends elsewhere, so the order is fixed here.
+      const req = request({ placeIds, nights: 6, includeFlight: true, departureCity: "CCU", routeMode: "classic" });
       const [inC, outC] = placeIds.map((id) => core.places.find((p) => p.id === id)!.countryId);
       const live = (key: string, inr: number) =>
         [`flight:${key}`, { component: "flight" as const, key, inr, fetchedAt: new Date().toISOString(), provider: "google-flights" as const }] as const;
@@ -1629,9 +1630,9 @@ describe("private car on Indian legs", () => {
 
   it("still prices a pinned car per vehicle, not per head, on a trip outside India", () => {
     const places = ["ha-noi", "danang"];
-    const base = quote({ placeIds: places, nights: 5 });
+    const base = quote({ placeIds: places, nights: 5, routeMode: "classic" });
     const leg = base.days.find((d) => d.isTransferDay && d.transfer?.alternatives.some((a) => a.mode === "private_vehicle"))!;
-    const pinned = quote({ placeIds: places, nights: 5, legModes: { [leg.placeId]: "private_vehicle" } });
+    const pinned = quote({ placeIds: places, nights: 5, routeMode: "classic", legModes: { [leg.placeId]: "private_vehicle" } });
     const got = pinned.days.find((d) => d.placeId === leg.placeId)!.transfer!;
     expect(got.mode).toBe("private_vehicle");
     expect(got.car).toBeDefined();
@@ -1661,7 +1662,7 @@ describe("airport links on flight legs", () => {
   const placeIds = ["munich", "interlaken"];
 
   it("adds the missing ground link between the landing airport and the city", () => {
-    const base = quote({ placeIds, nights: 6, legModes: { interlaken: "flight" } });
+    const base = quote({ placeIds, nights: 6, routeMode: "classic", legModes: { interlaken: "flight" } });
     const leg = base.days.find((d) => d.isTransferDay && d.placeId === "interlaken")!.transfer!;
     expect(leg.mode).toBe("flight");
     const inbound = leg.airportLinks?.find((l) => l.direction === "from-airport");
@@ -1679,11 +1680,11 @@ describe("airport links on flight legs", () => {
   });
 
   it("lets the traveller pin the link's mode", () => {
-    const base = quote({ placeIds, nights: 6, legModes: { interlaken: "flight" } });
+    const base = quote({ placeIds, nights: 6, routeMode: "classic", legModes: { interlaken: "flight" } });
     const link = base.days.find((d) => d.placeId === "interlaken" && d.transfer?.airportLinks)!
       .transfer!.airportLinks!.find((l) => l.direction === "from-airport")!;
     const other = link.alternatives.find((a) => a.mode !== link.mode)!;
-    const pinned = quote({ placeIds, nights: 6, legModes: { interlaken: "flight", [link.key]: other.mode } });
+    const pinned = quote({ placeIds, nights: 6, routeMode: "classic", legModes: { interlaken: "flight", [link.key]: other.mode } });
     const got = pinned.days.find((d) => d.placeId === "interlaken" && d.transfer?.airportLinks)!
       .transfer!.airportLinks!.find((l) => l.key === link.key)!;
     expect(got.mode).toBe(other.mode);
@@ -1691,7 +1692,7 @@ describe("airport links on flight legs", () => {
   });
 
   it("adds no airport links to a train leg", () => {
-    const q = quote({ placeIds, nights: 6, legModes: { interlaken: "train" } });
+    const q = quote({ placeIds, nights: 6, routeMode: "classic", legModes: { interlaken: "train" } });
     const leg = q.days.find((d) => d.isTransferDay && d.placeId === "interlaken")!.transfer!;
     expect(leg.airportLinks).toBeUndefined();
   });

@@ -1024,10 +1024,10 @@ function gatewayCost(
  * internal hop. Tuned so the entry/exit choice matters without overwhelming
  * the internal ordering — the internal hops are still the bulk of the trip.
  */
-const GATEWAY_KM_WEIGHT = 8;
+export const GATEWAY_KM_WEIGHT = 8;
 
 /** Small airports with little international service: counted as farther from home when picking the ends of a trip. */
-const THIN_GATEWAY_KM = new Map<string, number>(
+export const THIN_GATEWAY_KM = new Map<string, number>(
   ((transportPatch as { thinGateways?: { placeId: string; penaltyKm: number }[] }).thinGateways ?? []).map((g) => [
     g.placeId,
     g.penaltyKm,
@@ -1044,17 +1044,17 @@ const THIN_GATEWAY_KM = new Map<string, number>(
  * nearest home, which is how these itineraries are actually built: the
  * long-haul lands at the primary gateway and the trip works outward from it.
  */
-const GATEWAY_EXIT_DISCOUNT = 0.85;
+export const GATEWAY_EXIT_DISCOUNT = 0.85;
 
 /**
  * Authored "this stop comes before that one" rules (content/transport-patch.json). Used where
  * published circuits agree on an order that straight-line distance cannot reproduce.
  */
-const ORDER_PRECEDENCE = (
+export const ORDER_PRECEDENCE = (
   (transportPatch as { orderPrecedence?: { first: string; then: string }[] }).orderPrecedence ?? []
 );
 /** Worth about 1,700 km of detour: decisive between close orders, never enough to cross a country. */
-const PRECEDENCE_PENALTY = 20_000;
+export const PRECEDENCE_PENALTY = 20_000;
 
 /** Cost of leaving the port's own city in the middle of the route when the night was added for it: not negotiable. */
 const ANCHOR_PENALTY = 1_000_000;
@@ -1278,11 +1278,22 @@ export function buildStays(
    * no sequencing and no bookending, so the first and last stop are what was chosen.
    */
   manualOrder: string[] | null = null,
+  /**
+   * An order chosen by the route planner. Unlike `manualOrder` it is a suggestion: airport-city bookends
+   * still apply, and `returnVia` sends the trip back to an earlier stop for its last night, which gives
+   * that night up from the stop's own allocation.
+   */
+  planned: { order: string[]; returnVia: string | null } | null = null,
 ): PlaceStay[] {
   const nights = allocateNights(placeIds, totalNights, summaries, style, overrides);
+  const plannedOrder = !manualOrder?.length && planned?.order.length
+    ? planned.order.filter((id, i) => planned.order.indexOf(id) === i && (nights.get(id) ?? 0) > 0)
+    : null;
   const ordered = manualOrder?.length
     ? manualOrder.filter((id, i) => manualOrder.indexOf(id) === i && (nights.get(id) ?? 0) > 0)
-    : sequencePlaces(
+    : plannedOrder?.length === placeIds.filter((id) => (nights.get(id) ?? 0) > 0).length
+      ? plannedOrder
+      : sequencePlaces(
     placeIds.filter((id) => (nights.get(id) ?? 0) > 0),
     lookup,
     gateway,
@@ -1294,6 +1305,19 @@ export function buildStays(
     port?.blockedEnd ?? port?.satellite,
   );
   const visits = ordered.map((placeId) => ({ placeId, nights: nights.get(placeId) ?? 0 }));
+  // A hand-set order that ends by naming an earlier stop again means "go back there for the flight home".
+  const manualBack =
+    manualOrder && manualOrder.length > 1 && manualOrder.indexOf(manualOrder[manualOrder.length - 1]) < manualOrder.length - 1
+      ? manualOrder[manualOrder.length - 1]
+      : null;
+  const backId = manualBack ?? (plannedOrder === ordered ? planned?.returnVia ?? null : null);
+  if (backId) {
+    const back = visits.find((v) => v.placeId === backId);
+    if (back && back.nights >= 2 && visits[visits.length - 1] !== back) {
+      back.nights -= 1;
+      visits.push({ placeId: back.placeId, nights: 1 });
+    }
+  }
   const route = airports && !manualOrder?.length ? bookendGateways(airports, visits, port?.satellite) : visits;
   const seen = new Map<string, number>();
   return route.map((v, position) => {

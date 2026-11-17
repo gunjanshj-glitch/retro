@@ -17,7 +17,7 @@ import type {
   TripStyle,
   VisaRule,
 } from "../schema";
-import { buildRouteLookup, buildStays, matchReferencePackage, styleScore } from "./itinerary";
+import { allocateNights, buildRouteLookup, buildStays, matchReferencePackage, styleScore } from "./itinerary";
 import { planningNotes, seasonalityWarnings, suitabilityWarnings } from "./advisories";
 import { clusterBias, fireRules, type RuleEvaluation, type RuleFacts } from "./rules";
 import type {
@@ -35,6 +35,8 @@ import { normaliseKey, formatDuration } from "./text";
 import { filterRealisticSelection } from "./bounds";
 import { haversineKm } from "./geo";
 import { airportDistanceKm, chooseAirport, type GatewayInfo } from "./gateway";
+import { buildRoutePlanInput, describeRoutePlan } from "./routeplan-engine";
+import { OBJECTIVE_HOUR_VALUE_INR } from "./routeplan";
 import { choosePortOfEntry, clock, entryOptions, isHillPlace, pickEntry, roadLeg, type Hub } from "./entry";
 
 /** Default trip style for each traveller type; the planner lets it be changed. */
@@ -202,7 +204,25 @@ function groupProfile(request: QuoteRequest): GroupProfile {
  */
 const DOMESTIC_SATELLITE_ROAD_KM = 120;
 
-export function generateQuotation(request: QuoteRequest, data: EngineData): Quotation {
+/** The order the quotation actually travels, and the earlier stop it returns to at the end, if any. */
+function shapeOf(stays: { placeId: string }[], input: { stops: { id: string }[] }) {
+  const order = stays.map((s) => s.placeId).filter((id, i, a) => a.indexOf(id) === i && input.stops.some((x) => x.id === id));
+  const last = stays[stays.length - 1]?.placeId;
+  const returnVia = order.length > 1 && order.indexOf(last) < order.length - 1 ? last : null;
+  return { order, returnVia };
+}
+
+function routePlanOf(
+  input: ReturnType<typeof buildRoutePlanInput>,
+  request: QuoteRequest,
+  names: Map<string, string>,
+  stays: { placeId: string }[],
+  manual: boolean,
+) {
+  return describeRoutePlan(input, request, names, shapeOf(stays, input), manual);
+}
+
+function generateOnce(request: QuoteRequest, data: EngineData, forcedPlan: { order: string[]; returnVia: string | null } | null): Quotation {
   const warnings: QuoteWarning[] = [];
   const { core, bundles, applied: fxApplied } = applyLiveFx(data.core, data.bundles, data.fxRates);
 
@@ -397,6 +417,14 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     const added = placeIds.filter((id) => !listed.includes(id));
     return portNightSide === "start" ? [...added, ...listed] : [...listed, ...added];
   };
+  // The route planner picks the order, and where the trip ends, by price, time or both. It only steers an
+  // international trip with a flight to cost; a hand-set order or `routeMode: "classic"` bypasses it.
+  const planNights = allocateNights(placeIds, nights, summaries, request.tripStyle, request.nightOverrides);
+  const planStops = placeIds.filter((id) => (planNights.get(id) ?? 0) > 0).map((id) => ({ id, nights: planNights.get(id) ?? 0 }));
+  const planInput = international && planStops.length >= 2
+    ? buildRoutePlanInput(core, request, planStops, routeLookup, names)
+    : null;
+  const suggestedPlan = forcedPlan;
   const stayArgs = () => [
     placeIds, nights, summaries, request.tripStyle, routeLookup, names, request.nightOverrides,
     portPoint ?? gateway, placePoints, bookendCore,
@@ -417,6 +445,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
         }
       : null,
     manualOrder(),
+    suggestedPlan,
   ] as const;
   let stays = buildStays(...stayArgs());
   // The last road home is too long for a flight or train the same day: spend the last night near the port.
@@ -985,6 +1014,7 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
     ),
     appliedRules,
     ...(portInfo ? { portOfEntry: portInfo } : {}),
+    ...(planInput && stays.length >= 2 ? { routePlan: routePlanOf(planInput, request, names, stays, request.placeOrder.length > 0) } : {}),
     ...(arrivalGateway && departureGateway
       ? {
           gateways: {
@@ -997,6 +1027,68 @@ export function generateQuotation(request: QuoteRequest, data: EngineData): Quot
           },
         }
       : {}),
+  };
+}
+
+/** How many of the planner's best plans are priced in full before one is chosen. */
+const VERIFY_PLANS = 4;
+
+/**
+ * Prices the trip. For a trip abroad the route planner first ranks every order and every airport pair by a quick
+ * model of flights and hops. That model cannot see everything the full engine bills (a stop visited twice is
+ * booked and planned twice), so the leading plans are priced in full and the quotation keeps the one that is
+ * best for the traveller's objective: price, journey time, or a balance (`transportPreference`). The sequencer's
+ * own order is always among them and wins ties, so the planner only changes a route for a real saving.
+ */
+export function generateQuotation(request: QuoteRequest, data: EngineData): Quotation {
+  const base = generateOnce(request, data, null);
+  const info = base.routePlan;
+  if (!info || request.routeMode !== "auto" || !request.includeFlight) return base;
+
+  const suggestionOf = (q: Quotation) => {
+    const p = q.routePlan!;
+    const c = p.candidates.find((x) => x.id === p.currentId);
+    return c ? { id: c.id, order: c.order, names: c.names, returnVia: c.returnVia, totalInr: q.totals.total } : undefined;
+  };
+  if (request.placeOrder.length) {
+    // Set by hand: kept as given, and compared with what the planner would have suggested.
+    const suggested = generateQuotation({ ...request, placeOrder: [] }, data);
+    const suggestion = suggested.routePlan ? suggestionOf(suggested) : undefined;
+    return suggestion ? { ...base, routePlan: { ...info, suggestion } } : base;
+  }
+
+  const rate = OBJECTIVE_HOUR_VALUE_INR[request.transportPreference];
+  const minutesOf = (q: Quotation, id: string | null) => q.routePlan?.candidates.find((c) => c.id === id)?.groundMinutes ?? 0;
+  const scoreOf = (q: Quotation) => q.totals.total + (minutesOf(q, q.routePlan?.currentId ?? null) / 60) * rate * q.pax.total;
+
+  const priced = new Map<string, number>();
+  let best = base;
+  let bestScore = scoreOf(base);
+  priced.set(info.currentId ?? "", base.totals.total);
+  const tried = new Set<string>([info.currentId ?? ""]);
+  for (const cand of info.candidates) {
+    if (tried.size > VERIFY_PLANS) break;
+    if (tried.has(cand.id)) continue;
+    tried.add(cand.id);
+    const q = generateOnce(request, data, { order: cand.order, returnVia: cand.returnVia });
+    // The engine may have shaped the stays differently from the plan (a night it could not give); judge what it built.
+    const built = q.routePlan?.currentId ?? cand.id;
+    priced.set(built, q.totals.total);
+    const score = scoreOf(q);
+    if (score < bestScore - 1) {
+      best = q;
+      bestScore = score;
+    }
+  }
+  if (!best.routePlan) return best;
+  return {
+    ...best,
+    routePlan: {
+      ...best.routePlan,
+      suggestion: suggestionOf(best),
+      suggestedId: best.routePlan.currentId,
+      candidates: best.routePlan.candidates.map((c) => (priced.has(c.id) ? { ...c, quoteTotalInr: priced.get(c.id) } : c)),
+    },
   };
 }
 
