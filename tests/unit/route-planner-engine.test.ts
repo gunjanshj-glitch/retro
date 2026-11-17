@@ -133,4 +133,16 @@ describe("route planner inside the quotation engine", () => {
     const fare = q.lineItems.find((l) => l.component === "flight" && l.label.startsWith("Return airfare"))!;
     expect(fare.detail).toMatch(/different airports \(5% above/);
   });
+
+  it("prices a place by its own country, whichever stop the trip starts with", () => {
+    // Calibration used to take the first stop's country for every line: Oman's x2.5 landed on Dubai's hotel
+    // (UAE is x0.497) whenever Muscat came first, a five-fold swing for a place the order never touched.
+    const nightly = (q: ReturnType<typeof quote>, label: RegExp) =>
+      q.lineItems.find((l) => l.component === "hotel" && label.test(l.label))!.unitPriceInr;
+    const alone = nightly(quote(["dubai", "abu-dhabi"], 7, { routeMode: "classic" }), /Dubai/);
+    for (const order of [["muscat", "dubai", "abu-dhabi"], ["dubai", "abu-dhabi", "muscat"], ["abu-dhabi", "muscat", "dubai"]]) {
+      const q = quote(order, 7, { routeMode: "classic", placeOrder: order });
+      expect(nightly(q, /Dubai/), order.join()).toBe(alone);
+    }
+  });
 });

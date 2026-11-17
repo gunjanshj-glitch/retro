@@ -485,7 +485,16 @@ export function priceQuotation(input: PricingInput): {
     // Calibration is applied here so every component is corrected the same way,
     // whatever priced it. An agency's own flat rate is already the real figure,
     // so it opts out rather than being scaled a second time.
-    const calibrated = unitPriceInr * (calibrate ? calibrationFactor(component, placeId ? { ...scope, placeId } : scope) : 1);
+    // A line that belongs to a place is corrected by that place's own country and region. Scoping every line to
+    // the trip's first country priced a Dubai hotel at Oman's x2.5 whenever Muscat came first (UAE is x0.497),
+    // so the order of the stops moved the price of places it never touched.
+    const lineScope = placeId
+      ? (() => {
+          const own = countryOf.get(placeId) ?? null;
+          return { ...scope, placeId, countryId: own, regionId: core.countries.find((c) => c.id === own)?.regionId ?? null };
+        })()
+      : scope;
+    const calibrated = unitPriceInr * (calibrate ? calibrationFactor(component, lineScope) : 1);
     if (quantity <= 0 || calibrated <= 0) return;
     // Same label twice (rare) gets a counter so each line has its own switch.
     const base = `${component}|${label}`;
